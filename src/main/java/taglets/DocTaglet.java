@@ -1,41 +1,18 @@
 package taglets;
 
-import com.sun.javadoc.Tag;
+import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.UnknownBlockTagTree;
-import com.sun.tools.doclets.Taglet;
+import java.util.List;
+import java.util.Set;
+import javax.lang.model.element.Element;
+import jdk.javadoc.doclet.Taglet;
 
 public abstract class DocTaglet implements Taglet {
-    @Override
-    public boolean inField() {
-        return true;
+
+    public Set<Location> getAllowedLocations() {
+        return Set.of(Location.TYPE, Location.METHOD, Location.MODULE, Location.CONSTRUCTOR, Location.FIELD);
     }
 
-    @Override
-    public boolean inConstructor() {
-        return true;
-    }
-
-    @Override
-    public boolean inMethod() {
-        return true;
-    }
-
-    @Override
-    public boolean inOverview() {
-        return true;
-    }
-
-    @Override
-    public boolean inPackage() {
-        return true;
-    }
-
-    @Override
-    public boolean inType() {
-        return true;
-    }
-
-    @Override
     public boolean isInlineTag() {
         return false;
     }
@@ -47,23 +24,18 @@ public abstract class DocTaglet implements Taglet {
 
     protected abstract String getBaseDocURI();
 
-    @Override
-    public String toString(Tag tag) {
-        return toString(new Tag[]{ tag} );
-    }
-
-    @Override
-    public String toString(Tag[] tags) {
-        if (tags.length == 0) {
+    public String toString(List<? extends DocTree> tags, Element element) {
+        if (tags.size() == 0) {
             return null;
         }
 
         StringBuilder buf = new StringBuilder(String.format("<dl><dt><span class=\"strong\">%s</span></dt>", getHeader()));
-        for (Tag tag : tags) {
+        for (DocTree tag : tags) {
             String text = ((UnknownBlockTagTree) tag).getContent().get(0).toString();
             buf.append("<dd>").append(genLink(text)).append("</dd>");
         }
         return buf.toString();
+
     }
 
     protected String genLink(final String text) {
