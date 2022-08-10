@@ -1,5 +1,7 @@
 package io.vertx.mongo.client;
+import com.mongodb.event.ClusterListener;
 
+import com.mongodb.connection.ClusterSettings;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.connection.ClusterDescription;
 import io.vertx.core.AsyncResult;
