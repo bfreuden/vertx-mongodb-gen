@@ -1,0 +1,18 @@
+
+https://github.com/vert-x3/vertx-mongo-client/issues/235
+
+@tsegismont: I have some questions :)
+
+I studied the API docs of the MongoDB reactive driver and discovered a lot of things like the notion of ClientSession to support transactions.
+At first sight, the number of reactive classes (with methods returning publishers) is quite limited (MongoClient, MongoDatabase, MongoCollection, ClientSession, GridFSBucket,ClientEncryption). But there are 140 API classes reacheable from those. 
+
+During summer, @vietj asked:
+> Do you think you could provide a new implementation from scratch of this instead ?
+
+So right now my question are: 
+- how "free" am I in a "from scratch" approach? 
+  - For instance renaming collection methods for them to have the same name in mongo and vertx drivers (it would make it easier to get back to MongoDB official docs from vertx API docs)
+- would it be acceptable to leave some "open doors" to get back to the official Mongo API from the vertx API (and have the ability to reach those 140 classes without having to "wrap" them)? 
+  - For instance vertx.MongoClient.getClusterDescription() returns an object of the official MongoAPI.
+
+
