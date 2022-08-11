@@ -157,9 +157,9 @@ public class FindOneAndDeleteOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  <p>Note: If {@link FindOneAndDeleteOptions#hint(Bson)} is set that will be used instead of any hint string.</p>
+   *  <p>Note: If {@link FindOneAndDeleteOptions#hint(JsonObject)} is set that will be used instead of any hint string.</p>
    *
-   *  @param hint the name of the index which should be used for the operation
+   *  @param hintString the name of the index which should be used for the operation
    *  @return this
    *  @since 4.1
    *  @mongodb.server.release 4.4

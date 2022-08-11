@@ -161,7 +161,7 @@ public class UpdateOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  @param hint the name of the index which should be used for the operation
+   *  @param hintString the name of the index which should be used for the operation
    *  @return this
    *  @since 4.1
    */
