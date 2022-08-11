@@ -1,9 +1,9 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.TransactionOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.mongo.TransactionOptions;
 import java.lang.Void;
 
 /**
@@ -65,7 +65,7 @@ public interface ClientSession {
   /**
    *  Commit a transaction in the context of this session.  A transaction can only be commmited if one has first been started.
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 4.0
    */
   ClientSession commitTransaction(Handler<AsyncResult<Future<Void>>> handler);
@@ -80,7 +80,7 @@ public interface ClientSession {
   /**
    *  Abort a transaction in the context of this session.  A transaction can only be aborted if one has first been started.
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 4.0
    */
   ClientSession abortTransaction(Handler<AsyncResult<Future<Void>>> handler);

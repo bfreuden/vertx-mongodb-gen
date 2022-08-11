@@ -1,15 +1,15 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.WriteConcern;
-import com.mongodb.client.model.CreateCollectionOptions;
-import com.mongodb.client.model.CreateViewOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
+import io.vertx.mongo.ReadConcern;
+import io.vertx.mongo.ReadPreference;
+import io.vertx.mongo.WriteConcern;
+import io.vertx.mongo.client.model.CreateCollectionOptions;
+import io.vertx.mongo.client.model.CreateViewOptions;
 import java.lang.Class;
 import java.lang.String;
 import java.lang.Void;
@@ -143,7 +143,7 @@ public interface MongoDatabase {
   /**
    *  Drops this database.
    *  @param handler an async result identifying when the database has been dropped
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
    */
   MongoDatabase drop(Handler<AsyncResult<Future<Void>>> handler);
@@ -162,7 +162,7 @@ public interface MongoDatabase {
    *  Drops this database.
    *  @param clientSession the client session with which to associate this operation
    *  @param handler an async result identifying when the database has been dropped
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -213,7 +213,7 @@ public interface MongoDatabase {
    *  Create a new collection with the given name.
    *  @param collectionName the name for the new collection to create
    *  @param handler an async result identifying when the collection has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
   MongoDatabase createCollection(String collectionName, Handler<AsyncResult<Future<Void>>> handler);
@@ -232,7 +232,7 @@ public interface MongoDatabase {
    *  @param collectionName the name for the new collection to create
    *  @param options        various options for creating the collection
    *  @param handler an async result identifying when the collection has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
   MongoDatabase createCollection(String collectionName, CreateCollectionOptions options,
@@ -254,7 +254,7 @@ public interface MongoDatabase {
    *  @param clientSession the client session with which to associate this operation
    *  @param collectionName the name for the new collection to create
    *  @param handler an async result identifying when the collection has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -281,7 +281,7 @@ public interface MongoDatabase {
    *  @param collectionName the name for the new collection to create
    *  @param options        various options for creating the collection
    *  @param handler an async result identifying when the collection has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -307,7 +307,7 @@ public interface MongoDatabase {
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
    *  @param handler an async result identifying when the collection view has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.3
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
@@ -336,7 +336,7 @@ public interface MongoDatabase {
    *  @param pipeline the pipeline that defines the view
    *  @param createViewOptions various options for creating the view
    *  @param handler an async result identifying when the collection view has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.3
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
@@ -365,7 +365,7 @@ public interface MongoDatabase {
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
    *  @param handler an async result identifying when the collection view has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -396,7 +396,7 @@ public interface MongoDatabase {
    *  @param pipeline the pipeline that defines the view
    *  @param createViewOptions various options for creating the view
    *  @param handler an async result identifying when the collection view has been created
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7

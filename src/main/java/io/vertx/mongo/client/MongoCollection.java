@@ -1,26 +1,7 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.MongoNamespace;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.WriteConcern;
 import com.mongodb.bulk.BulkWriteResult;
-import com.mongodb.client.model.BulkWriteOptions;
-import com.mongodb.client.model.CountOptions;
-import com.mongodb.client.model.CreateIndexOptions;
-import com.mongodb.client.model.DeleteOptions;
-import com.mongodb.client.model.DropIndexOptions;
-import com.mongodb.client.model.EstimatedDocumentCountOptions;
-import com.mongodb.client.model.FindOneAndDeleteOptions;
-import com.mongodb.client.model.FindOneAndReplaceOptions;
-import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.IndexModel;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.InsertManyOptions;
-import com.mongodb.client.model.InsertOneOptions;
-import com.mongodb.client.model.RenameCollectionOptions;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
@@ -30,6 +11,25 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
+import io.vertx.mongo.MongoNamespace;
+import io.vertx.mongo.ReadConcern;
+import io.vertx.mongo.ReadPreference;
+import io.vertx.mongo.WriteConcern;
+import io.vertx.mongo.client.model.BulkWriteOptions;
+import io.vertx.mongo.client.model.CountOptions;
+import io.vertx.mongo.client.model.CreateIndexOptions;
+import io.vertx.mongo.client.model.DeleteOptions;
+import io.vertx.mongo.client.model.DropIndexOptions;
+import io.vertx.mongo.client.model.EstimatedDocumentCountOptions;
+import io.vertx.mongo.client.model.FindOneAndDeleteOptions;
+import io.vertx.mongo.client.model.FindOneAndReplaceOptions;
+import io.vertx.mongo.client.model.FindOneAndUpdateOptions;
+import io.vertx.mongo.client.model.IndexOptions;
+import io.vertx.mongo.client.model.InsertManyOptions;
+import io.vertx.mongo.client.model.InsertOneOptions;
+import io.vertx.mongo.client.model.RenameCollectionOptions;
+import io.vertx.mongo.client.model.ReplaceOptions;
+import io.vertx.mongo.client.model.UpdateOptions;
 import java.lang.Class;
 import java.lang.Long;
 import java.lang.String;
@@ -124,7 +124,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Gets an estimate of the count of documents in a collection using collection metadata.
    *  @param handler an async result with a single element indicating the estimated number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.9
    */
   MongoCollection estimatedDocumentCount(Handler<AsyncResult<Future<Long>>> handler);
@@ -141,7 +141,7 @@ public interface MongoCollection<TDocument> {
    *  Gets an estimate of the count of documents in a collection using collection metadata.
    *  @param options the options describing the count
    *  @param handler an async result with a single element indicating the estimated number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.9
    */
   MongoCollection estimatedDocumentCount(EstimatedDocumentCountOptions options,
@@ -187,7 +187,7 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param handler an async result with a single element indicating the number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.9
    */
   MongoCollection countDocuments(Handler<AsyncResult<Future<Long>>> handler);
@@ -234,7 +234,7 @@ public interface MongoCollection<TDocument> {
    *  </pre>
    *  @param filter the query filter
    *  @param handler an async result with a single element indicating the number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.9
    */
   MongoCollection countDocuments(JsonObject filter, Handler<AsyncResult<Future<Long>>> handler);
@@ -283,7 +283,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter  the query filter
    *  @param options the options describing the count
    *  @param handler an async result with a single element indicating the number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.9
    */
   MongoCollection countDocuments(JsonObject filter, CountOptions options,
@@ -332,7 +332,7 @@ public interface MongoCollection<TDocument> {
    *  </pre>
    *  @param clientSession the client session with which to associate this operation
    *  @param handler an async result with a single element indicating the number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
@@ -360,7 +360,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param filter the query filter
    *  @param handler an async result with a single element indicating the number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
@@ -414,7 +414,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter  the query filter
    *  @param options the options describing the count
    *  @param handler an async result with a single element indicating the number of documents
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
@@ -548,7 +548,7 @@ public interface MongoCollection<TDocument> {
    *  Executes a mix of inserts, updates, replaces, and deletes.
    *  @param requests the writes to execute
    *  @param handler an async result with a single element the BulkWriteResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   MongoCollection bulkWrite(List<JsonObject> requests,
       Handler<AsyncResult<Future<BulkWriteResult>>> handler);
@@ -566,7 +566,7 @@ public interface MongoCollection<TDocument> {
    *  @param requests the writes to execute
    *  @param options  the options to apply to the bulk write operation
    *  @param handler an async result with a single element the BulkWriteResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   MongoCollection bulkWrite(List<JsonObject> requests, BulkWriteOptions options,
       Handler<AsyncResult<Future<BulkWriteResult>>> handler);
@@ -586,7 +586,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param requests the writes to execute
    *  @param handler an async result with a single element the BulkWriteResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -611,7 +611,7 @@ public interface MongoCollection<TDocument> {
    *  @param requests the writes to execute
    *  @param options  the options to apply to the bulk write operation
    *  @param handler an async result with a single element the BulkWriteResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -630,7 +630,7 @@ public interface MongoCollection<TDocument> {
    *  Inserts the provided document. If the document is missing an identifier, the driver should generate one.
    *  @param document the document to insert
    *  @param handler an async result with a single element with the InsertOneResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
   MongoCollection insertOne(JsonObject document,
@@ -651,7 +651,7 @@ public interface MongoCollection<TDocument> {
    *  @param document the document to insert
    *  @param options  the options to apply to the operation
    *  @param handler an async result with a single element with the InsertOneResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    *  @since 1.2
    */
@@ -674,7 +674,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param document the document to insert
    *  @param handler an async result with a single element with the InsertOneResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -701,7 +701,7 @@ public interface MongoCollection<TDocument> {
    *  @param document the document to insert
    *  @param options  the options to apply to the operation
    *  @param handler an async result with a single element with the InsertOneResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -721,7 +721,7 @@ public interface MongoCollection<TDocument> {
    *  Inserts a batch of documents.
    *  @param documents the documents to insert
    *  @param handler an async result with a single element with the InsertManyResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
   MongoCollection insertMany(List<? super TDocument> documents,
@@ -741,7 +741,7 @@ public interface MongoCollection<TDocument> {
    *  @param documents the documents to insert
    *  @param options   the options to apply to the operation
    *  @param handler an async result with a single element with the InsertManyResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
   MongoCollection insertMany(List<? super TDocument> documents, InsertManyOptions options,
@@ -764,7 +764,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param documents the documents to insert
    *  @param handler an async result with a single element with the InsertManyResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -791,7 +791,7 @@ public interface MongoCollection<TDocument> {
    *  @param documents the documents to insert
    *  @param options   the options to apply to the operation
    *  @param handler an async result with a single element with the InsertManyResult or with either a
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -812,7 +812,7 @@ public interface MongoCollection<TDocument> {
    *  modified.
    *  @param filter the query filter to apply the the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   MongoCollection deleteOne(JsonObject filter, Handler<AsyncResult<Future<DeleteResult>>> handler);
 
@@ -832,7 +832,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter the query filter to apply the the delete operation
    *  @param options the options to apply to the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.5
    */
   MongoCollection deleteOne(JsonObject filter, DeleteOptions options,
@@ -855,7 +855,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param filter the query filter to apply the the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -882,7 +882,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter the query filter to apply the the delete operation
    *  @param options the options to apply to the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -900,7 +900,7 @@ public interface MongoCollection<TDocument> {
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
    *  @param filter the query filter to apply the the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   MongoCollection deleteMany(JsonObject filter, Handler<AsyncResult<Future<DeleteResult>>> handler);
 
@@ -918,7 +918,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter the query filter to apply the the delete operation
    *  @param options the options to apply to the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.5
    */
   MongoCollection deleteMany(JsonObject filter, DeleteOptions options,
@@ -939,7 +939,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param filter the query filter to apply the the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -964,7 +964,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter the query filter to apply the the delete operation
    *  @param options the options to apply to the delete operation
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -985,7 +985,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter      the query filter to apply the the replace operation
    *  @param replacement the replacement document
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
    */
   MongoCollection replaceOne(JsonObject filter, JsonObject replacement,
@@ -1009,7 +1009,7 @@ public interface MongoCollection<TDocument> {
    *  @param replacement the replacement document
    *  @param options     the options to apply to the replace operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
    *  @since 1.8
    */
@@ -1035,7 +1035,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter      the query filter to apply the the replace operation
    *  @param replacement the replacement document
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1064,7 +1064,7 @@ public interface MongoCollection<TDocument> {
    *  @param replacement the replacement document
    *  @param options     the options to apply to the replace operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
    *  @mongodb.server.release 3.6
    *  @since 1.8
@@ -1087,7 +1087,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
@@ -1111,7 +1111,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
@@ -1137,7 +1137,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    *  @mongodb.server.release 3.6
@@ -1168,7 +1168,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    *  @mongodb.server.release 3.6
@@ -1196,7 +1196,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a pipeline describing the update, which may not be null.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1226,7 +1226,7 @@ public interface MongoCollection<TDocument> {
    *  @param update        a pipeline describing the update, which may not be null.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1257,7 +1257,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a pipeline describing the update, which may not be null.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1290,7 +1290,7 @@ public interface MongoCollection<TDocument> {
    *  @param update        a pipeline describing the update, which may not be null.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1314,7 +1314,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
@@ -1338,7 +1338,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
@@ -1365,7 +1365,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    *  @mongodb.server.release 3.6
@@ -1396,7 +1396,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    *  @mongodb.server.release 3.6
@@ -1422,7 +1422,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a pipeline describing the update, which may not be null.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1451,7 +1451,7 @@ public interface MongoCollection<TDocument> {
    *  @param update        a pipeline describing the update, which may not be null.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1480,7 +1480,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a pipeline describing the update, which may not be null.
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1511,7 +1511,7 @@ public interface MongoCollection<TDocument> {
    *  @param update        a pipeline describing the update, which may not be null.
    *  @param options the options to apply to the update operation
    *  @param handler an async result with a single element the UpdateResult
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.12
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
@@ -1533,7 +1533,7 @@ public interface MongoCollection<TDocument> {
    *  Atomically find a document and remove it.
    *  @param filter the query filter to find the document with
    *  @param handler an async result with a single element the document that was removed.  If no documents matched the query filter, then null will be
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  returned
    */
   MongoCollection findOneAndDelete(JsonObject filter,
@@ -1553,7 +1553,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter  the query filter to find the document with
    *  @param options the options to apply to the operation
    *  @param handler an async result with a single element the document that was removed.  If no documents matched the query filter, then null will be
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  returned
    */
   MongoCollection findOneAndDelete(JsonObject filter, FindOneAndDeleteOptions options,
@@ -1575,7 +1575,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param filter the query filter to find the document with
    *  @param handler an async result with a single element the document that was removed.  If no documents matched the query filter, then null will be
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  returned
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1602,7 +1602,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter  the query filter to find the document with
    *  @param options the options to apply to the operation
    *  @param handler an async result with a single element the document that was removed.  If no documents matched the query filter, then null will be
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  returned
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1625,7 +1625,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter      the query filter to apply the the replace operation
    *  @param replacement the replacement document
    *  @param handler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    */
@@ -1650,7 +1650,7 @@ public interface MongoCollection<TDocument> {
    *  @param replacement the replacement document
    *  @param options     the options to apply to the operation
    *  @param handler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    */
@@ -1677,7 +1677,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter      the query filter to apply the the replace operation
    *  @param replacement the replacement document
    *  @param handler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    *  @mongodb.server.release 3.6
@@ -1708,7 +1708,7 @@ public interface MongoCollection<TDocument> {
    *  @param replacement the replacement document
    *  @param options     the options to apply to the operation
    *  @param handler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    *  @mongodb.server.release 3.6
@@ -1732,7 +1732,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param handler an async result with a single element the document that was updated before the update was applied.  If no documents matched the
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  query filter, then null will be returned
    */
   MongoCollection findOneAndUpdate(JsonObject filter, JsonObject update,
@@ -1756,7 +1756,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param options the options to apply to the operation
    *  @param handler an async result with a single element the document that was updated.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    */
@@ -1782,7 +1782,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param handler an async result with a single element the document that was updated before the update was applied.  If no documents matched the
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  query filter, then null will be returned
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1812,7 +1812,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a document describing the update, which may not be null. The update to apply must include only update operators.
    *  @param options the options to apply to the operation
    *  @param handler an async result with a single element the document that was updated.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    *  @mongodb.server.release 3.6
@@ -1841,7 +1841,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a pipeline describing the update, which may not be null.
    *  @param handler an async result with a single element the document that was updated.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    *  @since 1.12
@@ -1872,7 +1872,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a pipeline describing the update, which may not be null.
    *  @param options the options to apply to the operation
    *  @param handler an async result with a single element the document that was updated.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    *  @since 1.12
@@ -1903,7 +1903,7 @@ public interface MongoCollection<TDocument> {
    *  @param filter a document describing the query filter, which may not be null.
    *  @param update a pipeline describing the update, which may not be null.
    *  @param handler an async result with a single element the document that was updated.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    *  @since 1.12
@@ -1936,7 +1936,7 @@ public interface MongoCollection<TDocument> {
    *  @param update  a pipeline describing the update, which may not be null.
    *  @param options the options to apply to the operation
    *  @param handler an async result with a single element the document that was updated.  Depending on the value of the {@code returnOriginal}
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
    *  query filter, then null will be returned
    *  @since 1.12
@@ -1956,7 +1956,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Drops this collection from the Database.
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/drop/ Drop Collection
    */
   MongoCollection drop(Handler<AsyncResult<Future<Void>>> handler);
@@ -1975,7 +1975,7 @@ public interface MongoCollection<TDocument> {
    *  Drops this collection from the Database.
    *  @param clientSession the client session with which to associate this operation
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/drop/ Drop Collection
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1985,86 +1985,180 @@ public interface MongoCollection<TDocument> {
   /**
    *  Creates an index.
    *  @param key an object describing the index key(s), which may not be null.
-   *  @return an empty result that indicates when the operation has completed
+   *  @return an empty future that indicates when the operation has completed
    *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
    */
-  MongoResult<String> createIndex(JsonObject key);
+  Future<String> createIndex(JsonObject key);
+
+  /**
+   *  Creates an index.
+   *  @param key an object describing the index key(s), which may not be null.
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
+   */
+  MongoCollection createIndex(JsonObject key, Handler<AsyncResult<Future<String>>> handler);
 
   /**
    *  Creates an index.
    *  @param key     an object describing the index key(s), which may not be null.
    *  @param options the options for the index
-   *  @return an empty result that indicates when the operation has completed
+   *  @return an empty future that indicates when the operation has completed
    *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
    */
-  MongoResult<String> createIndex(JsonObject key, IndexOptions options);
+  Future<String> createIndex(JsonObject key, IndexOptions options);
+
+  /**
+   *  Creates an index.
+   *  @param key     an object describing the index key(s), which may not be null.
+   *  @param options the options for the index
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
+   */
+  MongoCollection createIndex(JsonObject key, IndexOptions options,
+      Handler<AsyncResult<Future<String>>> handler);
 
   /**
    *  Creates an index.
    *  @param clientSession the client session with which to associate this operation
    *  @param key an object describing the index key(s), which may not be null.
-   *  @return an empty result that indicates when the operation has completed
+   *  @return an empty future that indicates when the operation has completed
    *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<String> createIndex(ClientSession clientSession, JsonObject key);
+  Future<String> createIndex(ClientSession clientSession, JsonObject key);
+
+  /**
+   *  Creates an index.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param key an object describing the index key(s), which may not be null.
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoCollection createIndex(ClientSession clientSession, JsonObject key,
+      Handler<AsyncResult<Future<String>>> handler);
 
   /**
    *  Creates an index.
    *  @param clientSession the client session with which to associate this operation
    *  @param key     an object describing the index key(s), which may not be null.
    *  @param options the options for the index
-   *  @return an empty result that indicates when the operation has completed
+   *  @return an empty future that indicates when the operation has completed
    *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<String> createIndex(ClientSession clientSession, JsonObject key,
-      IndexOptions options);
+  Future<String> createIndex(ClientSession clientSession, JsonObject key, IndexOptions options);
+
+  /**
+   *  Creates an index.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param key     an object describing the index key(s), which may not be null.
+   *  @param options the options for the index
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoCollection createIndex(ClientSession clientSession, JsonObject key, IndexOptions options,
+      Handler<AsyncResult<Future<String>>> handler);
 
   /**
    *  Create multiple indexes.
    *  @param indexes the list of indexes
-   *  @return an empty result that indicates when the operation has completed
+   *  @return an empty future that indicates when the operation has completed
    *  @mongodb.driver.manual reference/command/createIndexes Create indexes
    */
-  MongoResult<String> createIndexes(List<IndexModel> indexes);
+  Future<String> createIndexes(List<IndexModel> indexes);
+
+  /**
+   *  Create multiple indexes.
+   *  @param indexes the list of indexes
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/command/createIndexes Create indexes
+   */
+  MongoCollection createIndexes(List<IndexModel> indexes,
+      Handler<AsyncResult<Future<String>>> handler);
 
   /**
    *  Create multiple indexes.
    *  @param indexes the list of indexes
    *  @param createIndexOptions options to use when creating indexes
-   *  @return an empty result that indicates when the operation has completed
+   *  @return an empty future that indicates when the operation has completed
    *  @mongodb.driver.manual reference/command/createIndexes Create indexes
    *  @since 1.7
    */
-  MongoResult<String> createIndexes(List<IndexModel> indexes,
+  Future<String> createIndexes(List<IndexModel> indexes, CreateIndexOptions createIndexOptions);
+
+  /**
+   *  Create multiple indexes.
+   *  @param indexes the list of indexes
+   *  @param createIndexOptions options to use when creating indexes
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/command/createIndexes Create indexes
+   *  @since 1.7
+   */
+  MongoCollection createIndexes(List<IndexModel> indexes, CreateIndexOptions createIndexOptions,
+      Handler<AsyncResult<Future<String>>> handler);
+
+  /**
+   *  Create multiple indexes.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param indexes the list of indexes
+   *  @return an empty future that indicates when the operation has completed
+   *  @mongodb.driver.manual reference/command/createIndexes Create indexes
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<String> createIndexes(ClientSession clientSession, List<IndexModel> indexes);
+
+  /**
+   *  Create multiple indexes.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param indexes the list of indexes
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/command/createIndexes Create indexes
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoCollection createIndexes(ClientSession clientSession, List<IndexModel> indexes,
+      Handler<AsyncResult<Future<String>>> handler);
+
+  /**
+   *  Create multiple indexes.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param indexes the list of indexes
+   *  @param createIndexOptions options to use when creating indexes
+   *  @return an empty future that indicates when the operation has completed
+   *  @mongodb.driver.manual reference/command/createIndexes Create indexes
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<String> createIndexes(ClientSession clientSession, List<IndexModel> indexes,
       CreateIndexOptions createIndexOptions);
 
   /**
    *  Create multiple indexes.
    *  @param clientSession the client session with which to associate this operation
    *  @param indexes the list of indexes
-   *  @return an empty result that indicates when the operation has completed
-   *  @mongodb.driver.manual reference/command/createIndexes Create indexes
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoResult<String> createIndexes(ClientSession clientSession, List<IndexModel> indexes);
-
-  /**
-   *  Create multiple indexes.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param indexes the list of indexes
    *  @param createIndexOptions options to use when creating indexes
-   *  @return an empty result that indicates when the operation has completed
+   *  @param handler an empty async result that indicates when the operation has completed
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/createIndexes Create indexes
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<String> createIndexes(ClientSession clientSession, List<IndexModel> indexes,
-      CreateIndexOptions createIndexOptions);
+  MongoCollection createIndexes(ClientSession clientSession, List<IndexModel> indexes,
+      CreateIndexOptions createIndexOptions, Handler<AsyncResult<Future<String>>> handler);
 
   /**
    *  Get all the indexes in this collection.
@@ -2095,7 +2189,7 @@ public interface MongoCollection<TDocument> {
    *  Drops the given index.
    *  @param indexName the name of the index to remove
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    */
   MongoCollection dropIndex(String indexName, Handler<AsyncResult<Future<Void>>> handler);
@@ -2112,7 +2206,7 @@ public interface MongoCollection<TDocument> {
    *  Drops the index given the keys used to create it.
    *  @param keys the keys of the index to remove
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop indexes
    */
   MongoCollection dropIndex(JsonObject keys, Handler<AsyncResult<Future<Void>>> handler);
@@ -2132,7 +2226,7 @@ public interface MongoCollection<TDocument> {
    *  @param indexName the name of the index to remove
    *  @param dropIndexOptions options to use when dropping indexes
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    *  @since 1.7
    */
@@ -2154,7 +2248,7 @@ public interface MongoCollection<TDocument> {
    *  @param keys the keys of the index to remove
    *  @param dropIndexOptions options to use when dropping indexes
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop indexes
    *  @since 1.7
    */
@@ -2177,7 +2271,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param indexName the name of the index to remove
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -2201,7 +2295,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param keys the keys of the index to remove
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop indexes
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -2228,7 +2322,7 @@ public interface MongoCollection<TDocument> {
    *  @param indexName the name of the index to remove
    *  @param dropIndexOptions options to use when dropping indexes
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -2255,7 +2349,7 @@ public interface MongoCollection<TDocument> {
    *  @param keys the keys of the index to remove
    *  @param dropIndexOptions options to use when dropping indexes
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop indexes
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -2273,7 +2367,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Drop all the indexes on this collection, except for the default on _id.
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    */
   MongoCollection dropIndexes(Handler<AsyncResult<Future<Void>>> handler);
@@ -2291,7 +2385,7 @@ public interface MongoCollection<TDocument> {
    *  Drop all the indexes on this collection, except for the default on _id.
    *  @param dropIndexOptions options to use when dropping indexes
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    *  @since 1.7
    */
@@ -2312,7 +2406,7 @@ public interface MongoCollection<TDocument> {
    *  Drop all the indexes on this collection, except for the default on _id.
    *  @param clientSession the client session with which to associate this operation
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -2336,7 +2430,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param dropIndexOptions options to use when dropping indexes
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -2356,7 +2450,7 @@ public interface MongoCollection<TDocument> {
    *  Rename the collection with oldCollectionName to the newCollectionName.
    *  @param newCollectionNamespace the namespace the collection will be renamed to
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/renameCollection Rename collection
    */
   MongoCollection renameCollection(MongoNamespace newCollectionNamespace,
@@ -2377,7 +2471,7 @@ public interface MongoCollection<TDocument> {
    *  @param newCollectionNamespace the name the collection will be renamed to
    *  @param options                the options for renaming a collection
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/renameCollection Rename collection
    */
   MongoCollection renameCollection(MongoNamespace newCollectionNamespace,
@@ -2399,7 +2493,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param newCollectionNamespace the namespace the collection will be renamed to
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/renameCollection Rename collection
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -2426,7 +2520,7 @@ public interface MongoCollection<TDocument> {
    *  @param newCollectionNamespace the name the collection will be renamed to
    *  @param options                the options for renaming a collection
    *  @param handler an empty async result that indicates when the operation has completed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/renameCollection Rename collection
    *  @mongodb.server.release 3.6
    *  @since 1.7

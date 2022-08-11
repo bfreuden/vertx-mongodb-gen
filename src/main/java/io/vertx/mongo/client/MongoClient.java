@@ -1,6 +1,5 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.ClientSessionOptions;
 import com.mongodb.connection.ClusterDescription;
 import com.mongodb.connection.ClusterSettings;
 import com.mongodb.event.ClusterListener;
@@ -9,6 +8,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
+import io.vertx.mongo.ClientSessionOptions;
 import java.io.Closeable;
 import java.lang.String;
 import java.util.List;
@@ -120,7 +120,7 @@ public interface MongoClient extends Closeable {
   /**
    *  Creates a client session.
    *  @param handler an async result for the client session.
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
@@ -139,7 +139,7 @@ public interface MongoClient extends Closeable {
    *  Creates a client session.
    *  @param options the options for the client session
    *  @param handler an async result for the client session.
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */

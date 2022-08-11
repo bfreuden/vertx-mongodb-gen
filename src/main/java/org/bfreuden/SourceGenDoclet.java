@@ -1,5 +1,6 @@
 package org.bfreuden;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.LanguageVersion;
@@ -65,7 +66,7 @@ public class SourceGenDoclet {
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.MongoClients"));
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.gridfs.GridFSBuckets"));
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.vault.ClientEncryption"));
-        inspectionContext.finalizeNonApiParameterAndReturnClasses();
+        inspectionContext.finalizeInspection();
 
         Graph<String, DefaultEdge> graph = inspectionContext.graph;
         exportToGephi(inspectionContext, sugGraphFrom(graph, "com.mongodb.CreateIndexCommitQuorum"), new File("CreateIndexCommitQuorum.gexf"));
@@ -110,6 +111,13 @@ public class SourceGenDoclet {
     }
 
     private static void generateSources(InspectionContext inspectionContext, Graph<String, DefaultEdge> graph) throws IOException {
+        for (Set<String> classes: Lists.newArrayList(
+                inspectionContext.reactiveApiClasses, inspectionContext.enumApiClasses, inspectionContext.publishersApiClasses,
+                inspectionContext.nonApiParameterAndReturnClasses,
+                inspectionContext.optionsApiClasses, inspectionContext.reactiveClasses,
+                inspectionContext.builderClasses, inspectionContext.bsonBasedClasses) )
+            classes.removeIf(it -> !graph.vertexSet().contains(it));
+
         System.out.println("reactive classes: rxjava classes used in mongodb api");
         System.out.println("reactive classes: " + inspectionContext.reactiveClasses);
         System.out.println("reactive api classes: api classes using rxjava, that must be rewritten using callbacks and futures");
@@ -157,12 +165,26 @@ public class SourceGenDoclet {
             )
                 inspectionContext.others.add(isolatedApiClass);
         }
+        ArrayList<String> objects = new ArrayList<>(inspectionContext.others);
+        for (String other: objects) {
+            ClassDoc classDoc = inspectionContext.classDocs.get(other);
+            if (classDoc.getRawCommentText().trim().startsWith("The default options")) {
+                inspectionContext.others.remove(other);
+                inspectionContext.optionsApiClasses.add(other);
+            }
+        }
+
         System.out.println("other api classes: ?");
         System.out.println("other api classes (" + inspectionContext.others.size() + "): " + inspectionContext.others);
         File genSourceDir = new File("src/main/java");
+//        for (String options : inspectionContext.optionsApiClasses) {
+//            if (options.equals("com.mongodb.TransactionOptions"))
+//                continue;
+//            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options)).generate(genSourceDir);
+//
+//        }
         for (String reactive : inspectionContext.reactiveApiClasses) {
             new ReactiveAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive)).generate(genSourceDir);
-
         }
     }
 

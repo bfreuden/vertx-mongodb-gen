@@ -1,10 +1,10 @@
 package io.vertx.mongo.client.vault;
 
-import com.mongodb.client.model.vault.DataKeyOptions;
-import com.mongodb.client.model.vault.EncryptOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.mongo.client.model.vault.DataKeyOptions;
+import io.vertx.mongo.client.model.vault.EncryptOptions;
 import java.io.Closeable;
 import java.lang.Object;
 import java.lang.String;
@@ -38,7 +38,7 @@ public interface ClientEncryption extends Closeable {
    *  </p>
    *  @param kmsProvider the KMS provider
    *  @param handler an async result containing the identifier for the created data key
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   ClientEncryption createDataKey(String kmsProvider, Handler<AsyncResult<Future<byte[]>>> handler);
 
@@ -61,7 +61,7 @@ public interface ClientEncryption extends Closeable {
    *  @param kmsProvider    the KMS provider
    *  @param dataKeyOptions the options for data key creation
    *  @param handler an async result containing the identifier for the created data key
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   ClientEncryption createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions,
       Handler<AsyncResult<Future<byte[]>>> handler);
@@ -85,7 +85,7 @@ public interface ClientEncryption extends Closeable {
    *  @param value   the value to encrypt
    *  @param options the options for data encryption
    *  @param handler an async result containing the encrypted value, a BSON binary of subtype 6
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   ClientEncryption encrypt(Object value, EncryptOptions options,
       Handler<AsyncResult<Future<byte[]>>> handler);
@@ -101,7 +101,7 @@ public interface ClientEncryption extends Closeable {
    *  Decrypt the given value.
    *  @param value the value to decrypt, which must be of subtype 6
    *  @param handler an async result containing the decrypted value
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   ClientEncryption decrypt(byte[] value, Handler<AsyncResult<Future<Object>>> handler);
 

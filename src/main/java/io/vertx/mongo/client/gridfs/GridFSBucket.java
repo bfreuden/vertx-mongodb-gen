@@ -1,16 +1,16 @@
 package io.vertx.mongo.client.gridfs;
 
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.WriteConcern;
-import com.mongodb.client.gridfs.model.GridFSDownloadOptions;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.ReadConcern;
+import io.vertx.mongo.ReadPreference;
+import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.MongoResult;
+import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
@@ -103,7 +103,7 @@ public interface GridFSBucket {
    *  Downloads the contents of the stored file specified by {@code id} into the {@code Publisher}.
    *  @param id          the ObjectId of the file to be written to the destination Publisher
    *  @param handler an async result with a single element, representing the amount of data written
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.13
    */
   GridFSBucket downloadByObjectId(JsonObject id, Handler<AsyncResult<Void>> handler);
@@ -120,7 +120,7 @@ public interface GridFSBucket {
    *  Downloads the contents of the stored file specified by {@code filename} into the {@code Publisher}.
    *  @param filename    the name of the file to be downloaded
    *  @param handler an async result with a single element, representing the amount of data written
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.13
    */
   GridFSBucket downloadByFilename(String filename, Handler<AsyncResult<Void>> handler);
@@ -141,7 +141,7 @@ public interface GridFSBucket {
    *  @param filename    the name of the file to be downloaded
    *  @param options     the download options
    *  @param handler an async result with a single element, representing the amount of data written
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @since 1.13
    */
   GridFSBucket downloadByFilename(String filename, GridFSDownloadOptions options,
@@ -162,7 +162,7 @@ public interface GridFSBucket {
    *  @param clientSession the client session with which to associate this operation
    *  @param id          the ObjectId of the file to be written to the destination Publisher
    *  @param handler an async result with a single element, representing the amount of data written
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
@@ -184,7 +184,7 @@ public interface GridFSBucket {
    *  @param clientSession the client session with which to associate this operation
    *  @param filename    the name of the file to be downloaded
    *  @param handler an async result with a single element, representing the amount of data written
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
@@ -211,7 +211,7 @@ public interface GridFSBucket {
    *  @param filename    the name of the file to be downloaded
    *  @param options     the download options
    *  @param handler an async result with a single element, representing the amount of data written
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
@@ -279,7 +279,7 @@ public interface GridFSBucket {
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
    *  @param id       the ObjectId of the file to be deleted
    *  @param handler an async result with a single element, representing that the file has been deleted
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   GridFSBucket delete(JsonObject id, Handler<AsyncResult<Future<Void>>> handler);
 
@@ -294,7 +294,7 @@ public interface GridFSBucket {
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
    *  @param id       the ObjectId of the file to be deleted
    *  @param handler an async result with a single element, representing that the file has been deleted
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   GridFSBucket delete(Object id, Handler<AsyncResult<Future<Void>>> handler);
 
@@ -313,7 +313,7 @@ public interface GridFSBucket {
    *  @param clientSession the client session with which to associate this operation
    *  @param id       the ObjectId of the file to be deleted
    *  @param handler an async result with a single element, representing that the file has been deleted
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -335,7 +335,7 @@ public interface GridFSBucket {
    *  @param clientSession the client session with which to associate this operation
    *  @param id       the ObjectId of the file to be deleted
    *  @param handler an async result with a single element, representing that the file has been deleted
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -355,7 +355,7 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param handler an async result with a single element, representing that the file has been renamed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   GridFSBucket rename(JsonObject id, String newFilename,
       Handler<AsyncResult<Future<Void>>> handler);
@@ -373,7 +373,7 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param handler an async result with a single element, representing that the file has been renamed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   GridFSBucket rename(Object id, String newFilename, Handler<AsyncResult<Future<Void>>> handler);
 
@@ -394,7 +394,7 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param handler an async result with a single element, representing that the file has been renamed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -418,7 +418,7 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param handler an async result with a single element, representing that the file has been renamed
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -434,7 +434,7 @@ public interface GridFSBucket {
   /**
    *  Drops the data associated with this bucket from the database.
    *  @param handler an async result with a single element, representing that the collections have been dropped
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    */
   GridFSBucket drop(Handler<AsyncResult<Future<Void>>> handler);
 
@@ -451,7 +451,7 @@ public interface GridFSBucket {
    *  Drops the data associated with this bucket from the database.
    *  @param clientSession the client session with which to associate this operation
    *  @param handler an async result with a single element, representing that the collections have been dropped
-   *  @return a reference to <code>this</code>
+   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */

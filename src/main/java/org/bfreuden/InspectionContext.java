@@ -1,17 +1,13 @@
 package org.bfreuden;
 
 import com.google.common.collect.HashMultimap;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.sun.javadoc.*;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class InspectionContext {
 
@@ -19,7 +15,7 @@ public class InspectionContext {
     public final Set<String> dependenciesPackages = new HashSet<>();
     public final Set<String> stopClasses = new HashSet<>();
     public final Set<String> stopEdges = new HashSet<>();
-    public HashSet<Object> others = new HashSet<>();
+    public HashSet<String> others = new HashSet<>();
     HashMultimap<String, String> edgeLabels = HashMultimap.create();
     public final Set<String> reactiveApiClasses = new HashSet<>();
     public final Set<String> enumApiClasses = new HashSet<>();
@@ -90,6 +86,9 @@ public class InspectionContext {
             } else {
                 throw new IllegalArgumentException();
             }
+            if (qualifiedTypeName.endsWith("Options"))
+                optionsApiClasses.add(qualifiedTypeName);
+
             // process fields
             FieldDoc[] fields = classDoc.fields(true);
             for (FieldDoc fieldDoc : fields) {
@@ -149,9 +148,6 @@ public class InspectionContext {
                         nonApiParameterAndReturnClasses.add(typeQualifiedName);
                         if (typeQualifiedName.startsWith("org.bson"))
                             bsonBasedClasses.add(qualifiedTypeName);
-                        if (reactiveApiMethod && typeQualifiedName.endsWith("Options")) {
-                            optionsApiClasses.add(typeQualifiedName);
-                        }
                         if (inspect(classDoc1))
                             maybeAddEdge(qualifiedTypeName, typeQualifiedName, "param:"+methodDoc.name());
                     }
@@ -193,10 +189,9 @@ public class InspectionContext {
         }
     }
 
-    public void finalizeNonApiParameterAndReturnClasses() {
+    public void finalizeInspection() {
         for (String vertx : graph.vertexSet())
             nonApiParameterAndReturnClasses.remove(vertx);
-
     }
 
 }
