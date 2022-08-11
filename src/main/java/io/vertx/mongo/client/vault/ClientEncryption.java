@@ -40,7 +40,7 @@ public interface ClientEncryption extends Closeable {
    *  @param handler an async result containing the identifier for the created data key
    *  @return <code>this</code>
    */
-  ClientEncryption createDataKey(String kmsProvider, Handler<AsyncResult<Future<byte[]>>> handler);
+  ClientEncryption createDataKey(String kmsProvider, Handler<AsyncResult<byte[]>> handler);
 
   /**
    *  Create a data key with the given KMS provider and options.
@@ -64,7 +64,7 @@ public interface ClientEncryption extends Closeable {
    *  @return <code>this</code>
    */
   ClientEncryption createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions,
-      Handler<AsyncResult<Future<byte[]>>> handler);
+      Handler<AsyncResult<byte[]>> handler);
 
   /**
    *  Encrypt the given value with the given options.
@@ -88,7 +88,7 @@ public interface ClientEncryption extends Closeable {
    *  @return <code>this</code>
    */
   ClientEncryption encrypt(Object value, EncryptOptions options,
-      Handler<AsyncResult<Future<byte[]>>> handler);
+      Handler<AsyncResult<byte[]>> handler);
 
   /**
    *  Decrypt the given value.
@@ -103,7 +103,7 @@ public interface ClientEncryption extends Closeable {
    *  @param handler an async result containing the decrypted value
    *  @return <code>this</code>
    */
-  ClientEncryption decrypt(byte[] value, Handler<AsyncResult<Future<Object>>> handler);
+  ClientEncryption decrypt(byte[] value, Handler<AsyncResult<Object>> handler);
 
   void close();
 }

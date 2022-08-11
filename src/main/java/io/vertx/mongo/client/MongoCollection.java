@@ -127,7 +127,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @since 1.9
    */
-  MongoCollection estimatedDocumentCount(Handler<AsyncResult<Future<Long>>> handler);
+  MongoCollection estimatedDocumentCount(Handler<AsyncResult<Long>> handler);
 
   /**
    *  Gets an estimate of the count of documents in a collection using collection metadata.
@@ -145,7 +145,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.9
    */
   MongoCollection estimatedDocumentCount(EstimatedDocumentCountOptions options,
-      Handler<AsyncResult<Future<Long>>> handler);
+      Handler<AsyncResult<Long>> handler);
 
   /**
    *  Counts the number of documents in the collection.
@@ -190,7 +190,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @since 1.9
    */
-  MongoCollection countDocuments(Handler<AsyncResult<Future<Long>>> handler);
+  MongoCollection countDocuments(Handler<AsyncResult<Long>> handler);
 
   /**
    *  Counts the number of documents in the collection according to the given options.
@@ -237,7 +237,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @since 1.9
    */
-  MongoCollection countDocuments(JsonObject filter, Handler<AsyncResult<Future<Long>>> handler);
+  MongoCollection countDocuments(JsonObject filter, Handler<AsyncResult<Long>> handler);
 
   /**
    *  Counts the number of documents in the collection according to the given options.
@@ -287,7 +287,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.9
    */
   MongoCollection countDocuments(JsonObject filter, CountOptions options,
-      Handler<AsyncResult<Future<Long>>> handler);
+      Handler<AsyncResult<Long>> handler);
 
   /**
    *  Counts the number of documents in the collection.
@@ -336,8 +336,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
-  MongoCollection countDocuments(ClientSession clientSession,
-      Handler<AsyncResult<Future<Long>>> handler);
+  MongoCollection countDocuments(ClientSession clientSession, Handler<AsyncResult<Long>> handler);
 
   /**
    *  Counts the number of documents in the collection according to the given options.
@@ -365,7 +364,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.9
    */
   MongoCollection countDocuments(ClientSession clientSession, JsonObject filter,
-      Handler<AsyncResult<Future<Long>>> handler);
+      Handler<AsyncResult<Long>> handler);
 
   /**
    *  Counts the number of documents in the collection according to the given options.
@@ -419,7 +418,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.9
    */
   MongoCollection countDocuments(ClientSession clientSession, JsonObject filter,
-      CountOptions options, Handler<AsyncResult<Future<Long>>> handler);
+      CountOptions options, Handler<AsyncResult<Long>> handler);
 
   /**
    *  Finds all documents in the collection.
@@ -551,7 +550,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    */
   MongoCollection bulkWrite(List<JsonObject> requests,
-      Handler<AsyncResult<Future<BulkWriteResult>>> handler);
+      Handler<AsyncResult<BulkWriteResult>> handler);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -569,7 +568,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    */
   MongoCollection bulkWrite(List<JsonObject> requests, BulkWriteOptions options,
-      Handler<AsyncResult<Future<BulkWriteResult>>> handler);
+      Handler<AsyncResult<BulkWriteResult>> handler);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -591,7 +590,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection bulkWrite(ClientSession clientSession, List<JsonObject> requests,
-      Handler<AsyncResult<Future<BulkWriteResult>>> handler);
+      Handler<AsyncResult<BulkWriteResult>> handler);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -616,7 +615,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection bulkWrite(ClientSession clientSession, List<JsonObject> requests,
-      BulkWriteOptions options, Handler<AsyncResult<Future<BulkWriteResult>>> handler);
+      BulkWriteOptions options, Handler<AsyncResult<BulkWriteResult>> handler);
 
   /**
    *  Inserts the provided document. If the document is missing an identifier, the driver should generate one.
@@ -633,8 +632,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  MongoCollection insertOne(JsonObject document,
-      Handler<AsyncResult<Future<InsertOneResult>>> handler);
+  MongoCollection insertOne(JsonObject document, Handler<AsyncResult<InsertOneResult>> handler);
 
   /**
    *  Inserts the provided document. If the document is missing an identifier, the driver should generate one.
@@ -656,7 +654,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.2
    */
   MongoCollection insertOne(JsonObject document, InsertOneOptions options,
-      Handler<AsyncResult<Future<InsertOneResult>>> handler);
+      Handler<AsyncResult<InsertOneResult>> handler);
 
   /**
    *  Inserts the provided document. If the document is missing an identifier, the driver should generate one.
@@ -680,7 +678,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection insertOne(ClientSession clientSession, JsonObject document,
-      Handler<AsyncResult<Future<InsertOneResult>>> handler);
+      Handler<AsyncResult<InsertOneResult>> handler);
 
   /**
    *  Inserts the provided document. If the document is missing an identifier, the driver should generate one.
@@ -707,7 +705,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection insertOne(ClientSession clientSession, JsonObject document,
-      InsertOneOptions options, Handler<AsyncResult<Future<InsertOneResult>>> handler);
+      InsertOneOptions options, Handler<AsyncResult<InsertOneResult>> handler);
 
   /**
    *  Inserts a batch of documents.
@@ -725,7 +723,7 @@ public interface MongoCollection<TDocument> {
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
   MongoCollection insertMany(List<? super TDocument> documents,
-      Handler<AsyncResult<Future<InsertManyResult>>> handler);
+      Handler<AsyncResult<InsertManyResult>> handler);
 
   /**
    *  Inserts a batch of documents.
@@ -745,7 +743,7 @@ public interface MongoCollection<TDocument> {
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
   MongoCollection insertMany(List<? super TDocument> documents, InsertManyOptions options,
-      Handler<AsyncResult<Future<InsertManyResult>>> handler);
+      Handler<AsyncResult<InsertManyResult>> handler);
 
   /**
    *  Inserts a batch of documents.
@@ -770,7 +768,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection insertMany(ClientSession clientSession, List<? super TDocument> documents,
-      Handler<AsyncResult<Future<InsertManyResult>>> handler);
+      Handler<AsyncResult<InsertManyResult>> handler);
 
   /**
    *  Inserts a batch of documents.
@@ -797,7 +795,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection insertMany(ClientSession clientSession, List<? super TDocument> documents,
-      InsertManyOptions options, Handler<AsyncResult<Future<InsertManyResult>>> handler);
+      InsertManyOptions options, Handler<AsyncResult<InsertManyResult>> handler);
 
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
@@ -814,7 +812,7 @@ public interface MongoCollection<TDocument> {
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @return <code>this</code>
    */
-  MongoCollection deleteOne(JsonObject filter, Handler<AsyncResult<Future<DeleteResult>>> handler);
+  MongoCollection deleteOne(JsonObject filter, Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
@@ -836,7 +834,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.5
    */
   MongoCollection deleteOne(JsonObject filter, DeleteOptions options,
-      Handler<AsyncResult<Future<DeleteResult>>> handler);
+      Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
@@ -860,7 +858,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection deleteOne(ClientSession clientSession, JsonObject filter,
-      Handler<AsyncResult<Future<DeleteResult>>> handler);
+      Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
@@ -887,7 +885,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection deleteOne(ClientSession clientSession, JsonObject filter, DeleteOptions options,
-      Handler<AsyncResult<Future<DeleteResult>>> handler);
+      Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
@@ -902,7 +900,7 @@ public interface MongoCollection<TDocument> {
    *  @param handler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @return <code>this</code>
    */
-  MongoCollection deleteMany(JsonObject filter, Handler<AsyncResult<Future<DeleteResult>>> handler);
+  MongoCollection deleteMany(JsonObject filter, Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
@@ -922,7 +920,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.5
    */
   MongoCollection deleteMany(JsonObject filter, DeleteOptions options,
-      Handler<AsyncResult<Future<DeleteResult>>> handler);
+      Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
@@ -944,7 +942,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection deleteMany(ClientSession clientSession, JsonObject filter,
-      Handler<AsyncResult<Future<DeleteResult>>> handler);
+      Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
@@ -969,7 +967,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection deleteMany(ClientSession clientSession, JsonObject filter, DeleteOptions options,
-      Handler<AsyncResult<Future<DeleteResult>>> handler);
+      Handler<AsyncResult<DeleteResult>> handler);
 
   /**
    *  Replace a document in the collection according to the specified arguments.
@@ -989,7 +987,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
    */
   MongoCollection replaceOne(JsonObject filter, JsonObject replacement,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Replace a document in the collection according to the specified arguments.
@@ -1014,7 +1012,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.8
    */
   MongoCollection replaceOne(JsonObject filter, JsonObject replacement, ReplaceOptions options,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Replace a document in the collection according to the specified arguments.
@@ -1041,7 +1039,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection replaceOne(ClientSession clientSession, JsonObject filter, JsonObject replacement,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Replace a document in the collection according to the specified arguments.
@@ -1070,7 +1068,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.8
    */
   MongoCollection replaceOne(ClientSession clientSession, JsonObject filter, JsonObject replacement,
-      ReplaceOptions options, Handler<AsyncResult<Future<UpdateResult>>> handler);
+      ReplaceOptions options, Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1092,7 +1090,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateOne(JsonObject filter, JsonObject update,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1116,7 +1114,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateOne(JsonObject filter, JsonObject update, UpdateOptions options,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1144,7 +1142,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection updateOne(ClientSession clientSession, JsonObject filter, JsonObject update,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1175,7 +1173,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection updateOne(ClientSession clientSession, JsonObject filter, JsonObject update,
-      UpdateOptions options, Handler<AsyncResult<Future<UpdateResult>>> handler);
+      UpdateOptions options, Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1203,7 +1201,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateOne(JsonObject filter, List<JsonObject> update,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1233,7 +1231,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateOne(JsonObject filter, List<JsonObject> update, UpdateOptions options,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1264,7 +1262,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateOne(ClientSession clientSession, JsonObject filter, List<JsonObject> update,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1297,7 +1295,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateOne(ClientSession clientSession, JsonObject filter, List<JsonObject> update,
-      UpdateOptions options, Handler<AsyncResult<Future<UpdateResult>>> handler);
+      UpdateOptions options, Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1319,7 +1317,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateMany(JsonObject filter, JsonObject update,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1343,7 +1341,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateMany(JsonObject filter, JsonObject update, UpdateOptions options,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1372,7 +1370,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection updateMany(ClientSession clientSession, JsonObject filter, JsonObject update,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1403,7 +1401,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection updateMany(ClientSession clientSession, JsonObject filter, JsonObject update,
-      UpdateOptions options, Handler<AsyncResult<Future<UpdateResult>>> handler);
+      UpdateOptions options, Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1429,7 +1427,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateMany(JsonObject filter, List<JsonObject> update,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1458,7 +1456,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateMany(JsonObject filter, List<JsonObject> update, UpdateOptions options,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1487,7 +1485,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, Handler<AsyncResult<Future<UpdateResult>>> handler);
+      List<JsonObject> update, Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1518,8 +1516,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, UpdateOptions options,
-      Handler<AsyncResult<Future<UpdateResult>>> handler);
+      List<JsonObject> update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> handler);
 
   /**
    *  Atomically find a document and remove it.
@@ -1959,7 +1956,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/drop/ Drop Collection
    */
-  MongoCollection drop(Handler<AsyncResult<Future<Void>>> handler);
+  MongoCollection drop(Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops this collection from the Database.
@@ -1980,7 +1977,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollection drop(ClientSession clientSession, Handler<AsyncResult<Future<Void>>> handler);
+  MongoCollection drop(ClientSession clientSession, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Creates an index.
@@ -1997,7 +1994,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
    */
-  MongoCollection createIndex(JsonObject key, Handler<AsyncResult<Future<String>>> handler);
+  MongoCollection createIndex(JsonObject key, Handler<AsyncResult<String>> handler);
 
   /**
    *  Creates an index.
@@ -2017,7 +2014,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/method/db.collection.ensureIndex Ensure Index
    */
   MongoCollection createIndex(JsonObject key, IndexOptions options,
-      Handler<AsyncResult<Future<String>>> handler);
+      Handler<AsyncResult<String>> handler);
 
   /**
    *  Creates an index.
@@ -2041,7 +2038,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection createIndex(ClientSession clientSession, JsonObject key,
-      Handler<AsyncResult<Future<String>>> handler);
+      Handler<AsyncResult<String>> handler);
 
   /**
    *  Creates an index.
@@ -2067,7 +2064,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection createIndex(ClientSession clientSession, JsonObject key, IndexOptions options,
-      Handler<AsyncResult<Future<String>>> handler);
+      Handler<AsyncResult<String>> handler);
 
   /**
    *  Create multiple indexes.
@@ -2084,8 +2081,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/createIndexes Create indexes
    */
-  MongoCollection createIndexes(List<IndexModel> indexes,
-      Handler<AsyncResult<Future<String>>> handler);
+  MongoCollection createIndexes(List<IndexModel> indexes, Handler<AsyncResult<String>> handler);
 
   /**
    *  Create multiple indexes.
@@ -2107,7 +2103,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection createIndexes(List<IndexModel> indexes, CreateIndexOptions createIndexOptions,
-      Handler<AsyncResult<Future<String>>> handler);
+      Handler<AsyncResult<String>> handler);
 
   /**
    *  Create multiple indexes.
@@ -2131,7 +2127,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection createIndexes(ClientSession clientSession, List<IndexModel> indexes,
-      Handler<AsyncResult<Future<String>>> handler);
+      Handler<AsyncResult<String>> handler);
 
   /**
    *  Create multiple indexes.
@@ -2158,7 +2154,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection createIndexes(ClientSession clientSession, List<IndexModel> indexes,
-      CreateIndexOptions createIndexOptions, Handler<AsyncResult<Future<String>>> handler);
+      CreateIndexOptions createIndexOptions, Handler<AsyncResult<String>> handler);
 
   /**
    *  Get all the indexes in this collection.
@@ -2192,7 +2188,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    */
-  MongoCollection dropIndex(String indexName, Handler<AsyncResult<Future<Void>>> handler);
+  MongoCollection dropIndex(String indexName, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the index given the keys used to create it.
@@ -2209,7 +2205,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop indexes
    */
-  MongoCollection dropIndex(JsonObject keys, Handler<AsyncResult<Future<Void>>> handler);
+  MongoCollection dropIndex(JsonObject keys, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the given index.
@@ -2231,7 +2227,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndex(String indexName, DropIndexOptions dropIndexOptions,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the index given the keys used to create it.
@@ -2253,7 +2249,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndex(JsonObject keys, DropIndexOptions dropIndexOptions,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the given index.
@@ -2277,7 +2273,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndex(ClientSession clientSession, String indexName,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the index given the keys used to create it.
@@ -2301,7 +2297,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndex(ClientSession clientSession, JsonObject keys,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the given index.
@@ -2328,7 +2324,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndex(ClientSession clientSession, String indexName,
-      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Future<Void>>> handler);
+      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the index given the keys used to create it.
@@ -2355,7 +2351,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndex(ClientSession clientSession, JsonObject keys,
-      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Future<Void>>> handler);
+      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drop all the indexes on this collection, except for the default on _id.
@@ -2370,7 +2366,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/dropIndexes/ Drop Indexes
    */
-  MongoCollection dropIndexes(Handler<AsyncResult<Future<Void>>> handler);
+  MongoCollection dropIndexes(Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drop all the indexes on this collection, except for the default on _id.
@@ -2390,7 +2386,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndexes(DropIndexOptions dropIndexOptions,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drop all the indexes on this collection, except for the default on _id.
@@ -2411,8 +2407,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollection dropIndexes(ClientSession clientSession,
-      Handler<AsyncResult<Future<Void>>> handler);
+  MongoCollection dropIndexes(ClientSession clientSession, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drop all the indexes on this collection, except for the default on _id.
@@ -2436,7 +2431,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection dropIndexes(ClientSession clientSession, DropIndexOptions dropIndexOptions,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Rename the collection with oldCollectionName to the newCollectionName.
@@ -2454,7 +2449,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/commands/renameCollection Rename collection
    */
   MongoCollection renameCollection(MongoNamespace newCollectionNamespace,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Rename the collection with oldCollectionName to the newCollectionName.
@@ -2475,7 +2470,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/commands/renameCollection Rename collection
    */
   MongoCollection renameCollection(MongoNamespace newCollectionNamespace,
-      RenameCollectionOptions options, Handler<AsyncResult<Future<Void>>> handler);
+      RenameCollectionOptions options, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Rename the collection with oldCollectionName to the newCollectionName.
@@ -2499,7 +2494,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection renameCollection(ClientSession clientSession,
-      MongoNamespace newCollectionNamespace, Handler<AsyncResult<Future<Void>>> handler);
+      MongoNamespace newCollectionNamespace, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Rename the collection with oldCollectionName to the newCollectionName.
@@ -2527,5 +2522,5 @@ public interface MongoCollection<TDocument> {
    */
   MongoCollection renameCollection(ClientSession clientSession,
       MongoNamespace newCollectionNamespace, RenameCollectionOptions options,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 }

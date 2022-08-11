@@ -146,7 +146,7 @@ public interface MongoDatabase {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
    */
-  MongoDatabase drop(Handler<AsyncResult<Future<Void>>> handler);
+  MongoDatabase drop(Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops this database.
@@ -167,7 +167,7 @@ public interface MongoDatabase {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase drop(ClientSession clientSession, Handler<AsyncResult<Future<Void>>> handler);
+  MongoDatabase drop(ClientSession clientSession, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Gets the names of all the collections in this database.
@@ -216,7 +216,7 @@ public interface MongoDatabase {
    *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
-  MongoDatabase createCollection(String collectionName, Handler<AsyncResult<Future<Void>>> handler);
+  MongoDatabase createCollection(String collectionName, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Create a new collection with the selected options
@@ -236,7 +236,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
   MongoDatabase createCollection(String collectionName, CreateCollectionOptions options,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Create a new collection with the given name.
@@ -260,7 +260,7 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   MongoDatabase createCollection(ClientSession clientSession, String collectionName,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Create a new collection with the selected options
@@ -287,7 +287,7 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   MongoDatabase createCollection(ClientSession clientSession, String collectionName,
-      CreateCollectionOptions options, Handler<AsyncResult<Future<Void>>> handler);
+      CreateCollectionOptions options, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
@@ -313,7 +313,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/create Create Command
    */
   MongoDatabase createView(String viewName, String viewOn, List<JsonObject> pipeline,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
@@ -342,7 +342,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/create Create Command
    */
   MongoDatabase createView(String viewName, String viewOn, List<JsonObject> pipeline,
-      CreateViewOptions createViewOptions, Handler<AsyncResult<Future<Void>>> handler);
+      CreateViewOptions createViewOptions, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
@@ -371,7 +371,7 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
-      List<JsonObject> pipeline, Handler<AsyncResult<Future<Void>>> handler);
+      List<JsonObject> pipeline, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
@@ -403,7 +403,7 @@ public interface MongoDatabase {
    */
   MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
       List<JsonObject> pipeline, CreateViewOptions createViewOptions,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Creates a change stream for this database.

@@ -124,7 +124,7 @@ public interface MongoClient extends Closeable {
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
-  MongoClient startSession(Handler<AsyncResult<Future<ClientSession>>> handler);
+  MongoClient startSession(Handler<AsyncResult<ClientSession>> handler);
 
   /**
    *  Creates a client session.
@@ -144,7 +144,7 @@ public interface MongoClient extends Closeable {
    *  @since 1.7
    */
   MongoClient startSession(ClientSessionOptions options,
-      Handler<AsyncResult<Future<ClientSession>>> handler);
+      Handler<AsyncResult<ClientSession>> handler);
 
   /**
    *  Gets the current cluster description.

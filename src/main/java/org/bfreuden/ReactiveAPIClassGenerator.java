@@ -207,8 +207,8 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                                     paramTypeName = ClassName.bestGuess(mapped);
                             } else
                                 paramTypeName = ClassName.bestGuess(actualReturnType.parameterClassName);
-                            returnType = ParameterizedTypeName.get(ClassName.get(Future.class), paramTypeName);
-                            methodBuilder1.returns(returnType);
+                            returnType = paramTypeName;
+                            methodBuilder1.returns(ParameterizedTypeName.get(ClassName.get(Future.class), paramTypeName));
                         }
                     } else {
                         methodBuilder1.returns(ParameterizedTypeName.get(ClassName.get(Future.class), ClassName.get(Void.class)));

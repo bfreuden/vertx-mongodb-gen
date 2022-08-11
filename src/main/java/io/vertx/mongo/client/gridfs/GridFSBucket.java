@@ -281,7 +281,7 @@ public interface GridFSBucket {
    *  @param handler an async result with a single element, representing that the file has been deleted
    *  @return <code>this</code>
    */
-  GridFSBucket delete(JsonObject id, Handler<AsyncResult<Future<Void>>> handler);
+  GridFSBucket delete(JsonObject id, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -296,7 +296,7 @@ public interface GridFSBucket {
    *  @param handler an async result with a single element, representing that the file has been deleted
    *  @return <code>this</code>
    */
-  GridFSBucket delete(Object id, Handler<AsyncResult<Future<Void>>> handler);
+  GridFSBucket delete(Object id, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -318,7 +318,7 @@ public interface GridFSBucket {
    *  @since 1.7
    */
   GridFSBucket delete(ClientSession clientSession, JsonObject id,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -339,8 +339,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  GridFSBucket delete(ClientSession clientSession, Object id,
-      Handler<AsyncResult<Future<Void>>> handler);
+  GridFSBucket delete(ClientSession clientSession, Object id, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -357,8 +356,7 @@ public interface GridFSBucket {
    *  @param handler an async result with a single element, representing that the file has been renamed
    *  @return <code>this</code>
    */
-  GridFSBucket rename(JsonObject id, String newFilename,
-      Handler<AsyncResult<Future<Void>>> handler);
+  GridFSBucket rename(JsonObject id, String newFilename, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -375,7 +373,7 @@ public interface GridFSBucket {
    *  @param handler an async result with a single element, representing that the file has been renamed
    *  @return <code>this</code>
    */
-  GridFSBucket rename(Object id, String newFilename, Handler<AsyncResult<Future<Void>>> handler);
+  GridFSBucket rename(Object id, String newFilename, Handler<AsyncResult<Void>> handler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -399,7 +397,7 @@ public interface GridFSBucket {
    *  @since 1.7
    */
   GridFSBucket rename(ClientSession clientSession, JsonObject id, String newFilename,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -423,7 +421,7 @@ public interface GridFSBucket {
    *  @since 1.7
    */
   GridFSBucket rename(ClientSession clientSession, Object id, String newFilename,
-      Handler<AsyncResult<Future<Void>>> handler);
+      Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the data associated with this bucket from the database.
@@ -436,7 +434,7 @@ public interface GridFSBucket {
    *  @param handler an async result with a single element, representing that the collections have been dropped
    *  @return <code>this</code>
    */
-  GridFSBucket drop(Handler<AsyncResult<Future<Void>>> handler);
+  GridFSBucket drop(Handler<AsyncResult<Void>> handler);
 
   /**
    *  Drops the data associated with this bucket from the database.
@@ -455,5 +453,5 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  GridFSBucket drop(ClientSession clientSession, Handler<AsyncResult<Future<Void>>> handler);
+  GridFSBucket drop(ClientSession clientSession, Handler<AsyncResult<Void>> handler);
 }

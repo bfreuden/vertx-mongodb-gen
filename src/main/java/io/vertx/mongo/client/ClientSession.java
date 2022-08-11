@@ -68,7 +68,7 @@ public interface ClientSession {
    *  @return <code>this</code>
    *  @mongodb.server.release 4.0
    */
-  ClientSession commitTransaction(Handler<AsyncResult<Future<Void>>> handler);
+  ClientSession commitTransaction(Handler<AsyncResult<Void>> handler);
 
   /**
    *  Abort a transaction in the context of this session.  A transaction can only be aborted if one has first been started.
@@ -83,5 +83,5 @@ public interface ClientSession {
    *  @return <code>this</code>
    *  @mongodb.server.release 4.0
    */
-  ClientSession abortTransaction(Handler<AsyncResult<Future<Void>>> handler);
+  ClientSession abortTransaction(Handler<AsyncResult<Void>> handler);
 }
