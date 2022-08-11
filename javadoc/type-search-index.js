@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"io.vertx.mongo.client","l":"ClientSession"},{"p":"io.vertx.mongo.client","l":"MongoAggregateResult"},{"p":"io.vertx.mongo.client","l":"MongoClient"},{"p":"io.vertx.mongo.client","l":"MongoCollection"},{"p":"io.vertx.mongo.client","l":"MongoDatabase"},{"p":"io.vertx.mongo.client","l":"MongoResult"}]
