@@ -1,1 +1,6 @@
+io.vertx.mongo
 io.vertx.mongo.client
+io.vertx.mongo.client.gridfs
+io.vertx.mongo.client.gridfs.model
+io.vertx.mongo.client.model
+io.vertx.mongo.client.model.vault

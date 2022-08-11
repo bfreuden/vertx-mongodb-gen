@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"io.vertx.mongo.client"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"io.vertx.mongo"},{"l":"io.vertx.mongo.client"},{"l":"io.vertx.mongo.client.gridfs"},{"l":"io.vertx.mongo.client.gridfs.model"},{"l":"io.vertx.mongo.client.model"},{"l":"io.vertx.mongo.client.model.vault"}]
