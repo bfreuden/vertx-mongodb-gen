@@ -25,13 +25,13 @@ public interface MongoResult<TDocument> {
      * Handler called with a list containing all items of the result
      * @param handler handler called with a list containing all items of the result
      */
-    void toList(Handler<AsyncResult<List<TDocument>>> handler);
+    void all(Handler<AsyncResult<List<TDocument>>> handler);
 
     /**
      * Returns a future of the list containing all items of the result
      * @return a future of the list containing all items of the result
      */
-    Future<List<TDocument>> toList();
+    Future<List<TDocument>> all();
 
     /**
      * Returns the result as a read stream of items
