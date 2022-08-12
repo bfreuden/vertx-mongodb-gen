@@ -21,6 +21,10 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         super(context, classDoc);
     }
 
+    @Override
+    protected void analyzeClass() {
+    }
+
     protected JavaFile getJavaFile() {
         if (!classDoc.isInterface() && !classDoc.isClass())
             throw new IllegalArgumentException("not implemented");
@@ -236,9 +240,9 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
             }
         }
         if (rawCommentText != null)
-            methodBuilder1.addJavadoc(rawCommentText.replace('$', ' '));
+            methodBuilder1.addJavadoc(rawCommentText.replace("$", "&#x24;"));
         if (singlePublisher && rawCommentText2 != null)
-            methodBuilder2.addJavadoc(rawCommentText2.replace('$', ' '));
+            methodBuilder2.addJavadoc(rawCommentText2.replace("$", "&#x24;"));
 
         for (Parameter param : methodDoc.parameters()) {
             ActualType actualParamType = getActualType(methodDoc, param.name(), param.type(), TypeLocation.PARAMETER);

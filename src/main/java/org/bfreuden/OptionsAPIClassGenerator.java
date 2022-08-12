@@ -14,9 +14,10 @@ import java.util.stream.Collectors;
 public class OptionsAPIClassGenerator extends APIClassGenerator {
 
 
-    private LinkedHashMap<String, Option> options = new LinkedHashMap<>();
-    private static class Option {
+    protected LinkedHashMap<String, Option> options = new LinkedHashMap<>();
+    protected static class Option {
         String name;
+        String setterParamName;
         TypeName mongoType;
         TypeName vertxType;
         String mongoSetterName;
@@ -28,6 +29,9 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
     }
     public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         super(context, classDoc);
+    }
+    @Override
+    protected void analyzeClass() {
         Type superclassType = classDoc.superclassType();
         if (!superclassType.qualifiedTypeName().equals("java.lang.Object"))
             throw new IllegalStateException("unsupported super class: " + superclassType + " for " + classDoc.qualifiedTypeName());
@@ -77,7 +81,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                     Type optionType = parameter.type();
                     String optionName = parameter.name();
                     String mongoJavadoc = null;
-                    createOption(methods, optionType, optionName, mongoJavadoc, null, false, parameter.name());
+                    createOption(methods, optionType, optionName, optionName, mongoJavadoc, null, false, parameter.name());
                 }
 
             }
@@ -96,21 +100,23 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             throw new IllegalStateException("unknown method: " + methods);
     }
 
-    private void analyzeSetterOptions(List<MethodDoc> methods, List<MethodDoc> setters) {
+    protected void analyzeSetterOptions(List<MethodDoc> methods, List<MethodDoc> setters) {
         for (MethodDoc setter: setters) {
             methods.remove(setter);
-            Type optionType = setter.parameters()[0].type();
+            Parameter parameter = setter.parameters()[0];
+            String setterParamName = parameter.name();
+            Type optionType = parameter.type();
             String optionName = setter.name();
             boolean hasTimeUnit = setter.parameters().length == 2;
             if (optionName.startsWith("set") && Character.isUpperCase(optionName.charAt(3)))
                 optionName = Character.toLowerCase(optionName.charAt(3)) + optionName.substring(3);
             String mongoJavadoc = setter.getRawCommentText();
             String mongoSetterName = setter.name();
-            createOption(methods, optionType, optionName, mongoJavadoc, mongoSetterName, hasTimeUnit, null);
+            createOption(methods, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null);
         }
     }
 
-    private void createOption(List<MethodDoc> methods, Type optionType, String optionName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName) {
+    protected void createOption(List<MethodDoc> methods, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName) {
         if (options.containsKey(optionName))
             throw new IllegalStateException("option already exists: " + optionName + " for " + classDoc.qualifiedTypeName());
         Option option = new Option();
@@ -119,6 +125,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
         options.put(option.name, option);
         option.mongoJavadoc = mongoJavadoc;
         option.mongoSetterName = mongoSetterName;
+        option.setterParamName = setterParamName;
         if (mongoCtorParamName != null)
             option.inCtor = true;
         if (optionType.asParameterizedType() != null) {
@@ -151,11 +158,17 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             option.vertxType = option.mongoType.box();
         } else if (Types.isKnown(qualifiedTypeName)) {
             String mapped = Types.getMapped(qualifiedTypeName);
-            option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-            if (mapped.equals("byte[]"))
-                option.vertxType = TypeName.get(byte[].class);
-            else
-                option.vertxType = ClassName.bestGuess(mapped);
+            if (mapped.equals("long")) {
+                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                option.vertxType = ClassName.get(Long.class);
+            } else {
+                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                if (mapped.equals("byte[]"))
+                    option.vertxType = TypeName.get(byte[].class);
+                else
+                    option.vertxType = ClassName.bestGuess(mapped);
+
+            }
         } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
             option.optionType = true;
             option.mongoType = ClassName.bestGuess(qualifiedTypeName);
@@ -186,10 +199,10 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
         }
     }
 
-    private boolean isFluentSetter(ClassDoc classDoc, MethodDoc m) {
+    protected boolean isFluentSetter(ClassDoc classDoc, MethodDoc m) {
         return m.returnType().qualifiedTypeName().equals(classDoc.qualifiedTypeName()) || m.returnType().qualifiedTypeName().equals(classDoc.qualifiedTypeName() + ".Builder");
     }
-    private boolean isRegularSetter(MethodDoc m) {
+    protected boolean isRegularSetter(MethodDoc m) {
         return m.name().startsWith("set") && Character.isUpperCase(m.name().charAt(3));
     }
 
@@ -197,7 +210,22 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
     protected JavaFile getJavaFile() {
         TypeSpec.Builder type = TypeSpec.classBuilder(getClassName())
                 .addModifiers(Modifier.PUBLIC);
-        type.addJavadoc(classDoc.getRawCommentText());
+        String rawCommentText = classDoc.getRawCommentText();
+        if (rawCommentText != null) {
+            String[] split = rawCommentText.split("\n");
+            StringJoiner joiner = new StringJoiner("\n");
+            boolean first = true;
+            for (String line : split) {
+                if (first) {
+                    line = line.replaceAll("([Pp]ublisher|[Ii]terable)( interface)?", "Options");
+                    first = false;
+                }
+                if (!line.contains("@param")) {
+                    joiner.add(line);
+                }
+            }
+            type.addJavadoc(joiner.toString().replace("$", "&#x24;"));
+        }
         type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
         for (Option option: options.values()) {
             if (option.name.equals("commitQuorum"))
@@ -215,7 +243,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             type.addField(fieldBuilder.build());
             MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder(option.name)
                     .addModifiers(Modifier.PUBLIC)
-                    .addParameter(option.vertxType, option.name)
+                    .addParameter(option.vertxType, option.setterParamName)
                     .returns(ClassName.bestGuess(getTargetPackage() + "." + getClassName()))
                     .addStatement("return this");
             if (option.mongoJavadoc != null) {
@@ -233,9 +261,9 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                             joiner.add(line);
                         }
                     }
-                    setterBuilder.addJavadoc(joiner.toString());
+                    setterBuilder.addJavadoc(joiner.toString().replace("$", "&#x24;"));
                 } else {
-                    setterBuilder.addJavadoc(option.mongoJavadoc);
+                    setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "&#x24;"));
                 }
             }
             type.addMethod(setterBuilder.build());
@@ -255,9 +283,9 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                             line = line.replace("in the given time unit", "(in milliseconds)");
                         joiner.add(line);
                     }
-                    getterBuilder.addJavadoc(joiner.toString());
+                    getterBuilder.addJavadoc(joiner.toString().replace("$", "&#x24;"));
                 } else {
-                    getterBuilder.addJavadoc(option.mongoGetterJavadoc);
+                    getterBuilder.addJavadoc(option.mongoGetterJavadoc.replace("$", "&#x24;"));
                 }
             }
             type.addMethod(getterBuilder.build());

@@ -31,9 +31,12 @@ public abstract class APIClassGenerator {
     }
 
     public void generate(File genSourceDir) throws IOException {
+        analyzeClass();
         JavaFile javaFile = getJavaFile();
         javaFile.writeTo(genSourceDir);
     }
+
+    protected abstract void analyzeClass();
 
     protected ActualType getActualType(MethodDoc methodDoc, String name, Type type, TypeLocation location) {
         if (!type.isPrimitive()) {
