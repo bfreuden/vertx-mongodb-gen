@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
+/*
+ FIXME: take into account class parameters of generic types to build the graph
+ */
 public class SourceGenDoclet {
 
 
