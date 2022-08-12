@@ -188,10 +188,10 @@ public class SourceGenDoclet {
 //        for (String reactive : inspectionContext.reactiveApiClasses) {
 //            new ReactiveAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive)).generate(genSourceDir);
 //        }
+        Map<String, String> publisherOptionsClasses = new HashMap<>();
         for (String reactive : inspectionContext.publishersApiClasses) {
-            new PublisherAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
-                    .generate(genSourceDir)
-            ;
+            new PublisherAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive), publisherOptionsClasses)
+                    .generate(genSourceDir);
         }
     }
 

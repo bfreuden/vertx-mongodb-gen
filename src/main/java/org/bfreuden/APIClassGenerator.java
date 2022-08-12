@@ -33,7 +33,8 @@ public abstract class APIClassGenerator {
     public void generate(File genSourceDir) throws IOException {
         analyzeClass();
         JavaFile javaFile = getJavaFile();
-        javaFile.writeTo(genSourceDir);
+        if (javaFile != null)
+            javaFile.writeTo(genSourceDir);
     }
 
     protected abstract void analyzeClass();

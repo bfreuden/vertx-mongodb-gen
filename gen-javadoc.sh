@@ -11,6 +11,6 @@ javadoc -link https://javadoc.io/doc/io.vertx/vertx-core/latest/ \
   -taglet taglets.ServerReleaseTaglet \
   -taglet taglets.ManualTaglet \
   -taglet taglets.DochubTaglet \
-  io.vertx.mongo io.vertx.mongo.client io.vertx.mongo.client.model io.vertx.mongo.client.model.vault io.vertx.mongo.client.gridfs io.vertx.mongo.client.gridfs.model
+  io.vertx.mongo io.vertx.mongo.client io.vertx.mongo.client.model io.vertx.mongo.client.vault io.vertx.mongo.client.model.vault io.vertx.mongo.client.gridfs io.vertx.mongo.client.gridfs.model
 
 #javadoc -doclet org.bfreuden.SourceGenDoclet -docletpath target/classes -sourcepath merged-sources -public -exclude "**/com/mongodb/**/internal/**" com.mongodb.reactivestreams.client

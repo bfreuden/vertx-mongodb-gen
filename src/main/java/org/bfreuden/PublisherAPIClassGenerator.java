@@ -1,5 +1,6 @@
 package org.bfreuden;
 
+import com.squareup.javapoet.JavaFile;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Type;
@@ -8,13 +9,17 @@ import org.reactivestreams.Publisher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class PublisherAPIClassGenerator extends OptionsAPIClassGenerator {
 
-    public PublisherAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
+    private final Map<String, String> publisherOptionsClasses;
+
+    public PublisherAPIClassGenerator(InspectionContext context, ClassDoc classDoc, Map<String, String> publisherOptionsClasses) {
         super(context, classDoc);
+        this.publisherOptionsClasses = publisherOptionsClasses;
     }
 
     @Override
@@ -63,6 +68,14 @@ public class PublisherAPIClassGenerator extends OptionsAPIClassGenerator {
         analyzeSetterOptions(methods, fluentSetters);
         if (!methods.isEmpty())
             throw new IllegalStateException("unknown method: " + methods);
+        if (!options.isEmpty())
+            publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getClassName());
     }
 
+    @Override
+    protected JavaFile getJavaFile() {
+        if (options.isEmpty())
+            return null;
+        return super.getJavaFile();
+    }
 }
