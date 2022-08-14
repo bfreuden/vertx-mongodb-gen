@@ -1,30 +1,29 @@
 package org.bfreuden;
 
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Type;
 import org.reactivestreams.Publisher;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import javax.lang.model.element.Modifier;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class PublisherAPIClassGenerator extends OptionsAPIClassGenerator {
+public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator {
 
     private final Map<String, String> publisherOptionsClasses;
 
-    public PublisherAPIClassGenerator(InspectionContext context, ClassDoc classDoc, Map<String, String> publisherOptionsClasses) {
+    public PublisherOptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc, Map<String, String> publisherOptionsClasses) {
         super(context, classDoc);
         this.publisherOptionsClasses = publisherOptionsClasses;
     }
 
     @Override
-    protected String getClassName() {
-        return super.getClassName().replace("Publisher", "Options");
+    protected String getTargetClassName() {
+        return super.getTargetClassName().replace("Publisher", "Options");
     }
 
     @Override
@@ -69,13 +68,29 @@ public class PublisherAPIClassGenerator extends OptionsAPIClassGenerator {
         if (!methods.isEmpty())
             throw new IllegalStateException("unknown method: " + methods);
         if (!options.isEmpty())
-            publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getClassName());
+            publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
     }
 
     @Override
     protected JavaFile getJavaFile() {
         if (options.isEmpty())
             return null;
-        return super.getJavaFile();
+        TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
+                .addModifiers(Modifier.PUBLIC);
+        String rawCommentText = classDoc.getRawCommentText();
+        if (rawCommentText != null) {
+            String[] split = rawCommentText.split("\n");
+            StringJoiner joiner = new StringJoiner("\n");
+            boolean first = true;
+            for (String line : split) {
+                if (first) {
+                    line = line.replaceAll("([Pp]ublisher|[Ii]terable)( interface)?", "Result");
+                    first = false;
+                }
+                joiner.add(line);
+            }
+            type.addJavadoc(joiner.toString().replace("$", "&#x24;"));
+        }
+        return JavaFile.builder(getTargetPackage(), type.build()).build();
     }
 }

@@ -208,7 +208,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
 
     @Override
     protected JavaFile getJavaFile() {
-        TypeSpec.Builder type = TypeSpec.classBuilder(getClassName())
+        TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
                 .addModifiers(Modifier.PUBLIC);
         String rawCommentText = classDoc.getRawCommentText();
         if (rawCommentText != null) {
@@ -244,7 +244,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder(option.name)
                     .addModifiers(Modifier.PUBLIC)
                     .addParameter(option.vertxType, option.setterParamName)
-                    .returns(ClassName.bestGuess(getTargetPackage() + "." + getClassName()))
+                    .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()))
                     .addStatement("return this");
             if (option.mongoJavadoc != null) {
                 if (option.withTimeUnit) {

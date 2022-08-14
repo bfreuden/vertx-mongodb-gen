@@ -10,6 +10,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
+import io.vertx.mongo.client.MongoResult;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
@@ -17,21 +18,42 @@ import java.util.stream.Collectors;
 
 public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
+
+    protected LinkedHashMap<String, OptionsAPIClassGenerator.Option> options = new LinkedHashMap<>();
+    protected static class ReactiveMethod {
+        String publisherQualifiedName;
+        boolean isSinglePublisher;
+        TypeName mongoType;
+        TypeName vertxType;
+        String mongoMethodName;
+        String mongoMethodJavadoc;
+    }
+
+
+
+    protected static class MethodParameter {
+        String name;
+        TypeName mongoType;
+        TypeName vertxType;
+    }
+
+
     public ReactiveAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         super(context, classDoc);
     }
 
     @Override
     protected void analyzeClass() {
+
     }
 
     protected JavaFile getJavaFile() {
         if (!classDoc.isInterface() && !classDoc.isClass())
             throw new IllegalArgumentException("not implemented");
         String packageName = getTargetPackage();
-        TypeSpec.Builder type = classDoc.isClass() ? TypeSpec.classBuilder(getClassName()) :  TypeSpec.interfaceBuilder(getClassName());
+        TypeSpec.Builder type = classDoc.isClass() ? TypeSpec.classBuilder(getTargetClassName()) :  TypeSpec.interfaceBuilder(getTargetClassName());
         type.addModifiers(Modifier.PUBLIC);
-        this.targetClassName = mapPackageName(classDoc.containingPackage().name()) + "." + getClassName();
+        this.targetClassName = mapPackageName(classDoc.containingPackage().name()) + "." + getTargetClassName();
         ParameterizedType parameterizedType = classDoc.asParameterizedType();
         if (parameterizedType != null) {
             // fixme hardcoded TDocument
@@ -220,7 +242,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                     }
                 } else {
                     if (actualReturnType.parameterClassName != null) {
-                        ClassName mongoResultClass = methodDoc.name().equals("watch") ? ClassName.get(ReadStream.class) : ClassName.get("io.vertx.mongo.client", "MongoResult");
+                        ClassName mongoResultClass = methodDoc.name().equals("watch") ? ClassName.get(ReadStream.class) : ClassName.get(MongoResult.class);
                         if (actualReturnType.parameterClassName.equals("TDocument"))
                             methodBuilder1.returns(ParameterizedTypeName.get(mongoResultClass, TypeVariableName.get("TDocument")));
                         else {
@@ -231,7 +253,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                         }
 
                     } else if (actualReturnType.publisherClassName.equals("com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher"))
-                        methodBuilder1.returns(ParameterizedTypeName.get(ClassName.get("io.vertx.mongo.client", "MongoResult"), ClassName.get("com.mongodb.client.gridfs.model", "GridFSFile")));
+                        methodBuilder1.returns(ParameterizedTypeName.get(ClassName.get(MongoResult.class), ClassName.get("com.mongodb.client.gridfs.model", "GridFSFile")));
                     else
                         throw new IllegalStateException("not implemented or not supported");
                 }

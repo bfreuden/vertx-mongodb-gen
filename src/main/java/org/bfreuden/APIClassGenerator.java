@@ -1,16 +1,13 @@
 package org.bfreuden;
 
-import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.core.json.JsonObject;
 
-import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class APIClassGenerator {
 
@@ -108,7 +105,7 @@ public abstract class APIClassGenerator {
         return context.classDocs.containsKey(superClassName) && !context.others.contains(superClassName);
     }
 
-    protected String getClassName() {
+    protected String getTargetClassName() {
         return classDoc.typeName();
     }
 
