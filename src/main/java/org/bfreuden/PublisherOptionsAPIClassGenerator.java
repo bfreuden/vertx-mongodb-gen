@@ -1,14 +1,14 @@
 package org.bfreuden;
 
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Type;
 import org.reactivestreams.Publisher;
 
-import javax.lang.model.element.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -71,26 +71,4 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
             publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
     }
 
-    @Override
-    protected JavaFile getJavaFile() {
-        if (options.isEmpty())
-            return null;
-        TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
-                .addModifiers(Modifier.PUBLIC);
-        String rawCommentText = classDoc.getRawCommentText();
-        if (rawCommentText != null) {
-            String[] split = rawCommentText.split("\n");
-            StringJoiner joiner = new StringJoiner("\n");
-            boolean first = true;
-            for (String line : split) {
-                if (first) {
-                    line = line.replaceAll("([Pp]ublisher|[Ii]terable)( interface)?", "Result");
-                    first = false;
-                }
-                joiner.add(line);
-            }
-            type.addJavadoc(joiner.toString().replace("$", "&#x24;"));
-        }
-        return JavaFile.builder(getTargetPackage(), type.build()).build();
-    }
 }

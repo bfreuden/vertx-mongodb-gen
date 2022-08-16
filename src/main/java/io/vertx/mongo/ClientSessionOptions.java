@@ -1,6 +1,5 @@
 package io.vertx.mongo;
 
-import com.mongodb.TransactionOptions;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.client.ClientSession;
 

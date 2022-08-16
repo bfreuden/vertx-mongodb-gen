@@ -1,6 +1,5 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.connection.ClusterDescription;
 import com.mongodb.connection.ClusterSettings;
 import com.mongodb.event.ClusterListener;
 import io.vertx.core.AsyncResult;
@@ -9,6 +8,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.ClientSessionOptions;
+import io.vertx.mongo.connection.ClusterDescription;
 import java.io.Closeable;
 import java.lang.String;
 import java.util.List;

@@ -10,10 +10,7 @@ import io.vertx.mongo.client.MongoResult;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PublisherResultAPIClassGenerator extends APIClassGenerator {
@@ -93,11 +90,11 @@ public class PublisherResultAPIClassGenerator extends APIClassGenerator {
     }
 
     @Override
-    protected JavaFile getJavaFile() {
+    protected List<JavaFile> getJavaFiles() {
         if (!hasSpecial && !hasOtherReactive)
-            return null;
+            return Collections.emptyList();
         TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
                 .addModifiers(Modifier.PUBLIC);
-        return JavaFile.builder(getTargetPackage(), type.build()).build();
+        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()).build());
     }
 }

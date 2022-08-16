@@ -157,18 +157,8 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             }
             option.vertxType = option.mongoType.box();
         } else if (Types.isKnown(qualifiedTypeName)) {
-            String mapped = Types.getMapped(qualifiedTypeName);
-            if (mapped.equals("long")) {
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                option.vertxType = ClassName.get(Long.class);
-            } else {
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                if (mapped.equals("byte[]"))
-                    option.vertxType = TypeName.get(byte[].class);
-                else
-                    option.vertxType = ClassName.bestGuess(mapped);
-
-            }
+            option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+            option.vertxType = Types.getMapped(qualifiedTypeName);
         } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
             option.optionType = true;
             option.mongoType = ClassName.bestGuess(qualifiedTypeName);
@@ -207,7 +197,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
     }
 
     @Override
-    protected JavaFile getJavaFile() {
+    protected List<JavaFile> getJavaFiles() {
         TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
                 .addModifiers(Modifier.PUBLIC);
         String rawCommentText = classDoc.getRawCommentText();
@@ -232,6 +222,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                 continue;
             FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.vertxType, option.name).addModifiers(Modifier.PRIVATE);
             if (option.mongoJavadoc != null) {
+                option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "hint(JsonObject)");
                 Optional<String> firstParam = Arrays.stream(option.mongoJavadoc.split("\n+")).filter(it -> it.contains("@param")).findFirst();
                 if (firstParam.isPresent()) {
                     String paramLine = firstParam.get();
@@ -290,6 +281,6 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             }
             type.addMethod(getterBuilder.build());
         }
-        return JavaFile.builder(getTargetPackage(), type.build()).build();
+        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()).build());
     }
 }

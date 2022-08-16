@@ -12,25 +12,21 @@ import java.util.*;
 public abstract class APIClassGenerator {
 
 
-    protected static Set<String> SUPPORTED_SUPER_CLASSES = new HashSet<>();
-    static {
-        SUPPORTED_SUPER_CLASSES.add("java.io.Closeable");
-        SUPPORTED_SUPER_CLASSES.add("java.lang.AutoCloseable");
-    }
     protected final InspectionContext context;
     protected final ClassDoc classDoc;
-    protected String targetClassName;
-    protected TypeName maybeParameterizedTypeName;
+    protected TypeName fluentReturnType;
 
     public APIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         this.context = context;
         this.classDoc = classDoc;
     }
 
+    protected abstract List<JavaFile> getJavaFiles();
+
     public void generate(File genSourceDir) throws IOException {
         analyzeClass();
-        JavaFile javaFile = getJavaFile();
-        if (javaFile != null)
+        List<JavaFile> javaFiles = getJavaFiles();
+        for (JavaFile javaFile : javaFiles)
             javaFile.writeTo(genSourceDir);
     }
 
@@ -40,49 +36,45 @@ public abstract class APIClassGenerator {
         if (!type.isPrimitive()) {
             String qualifiedTypeName = type.qualifiedTypeName();
             if (qualifiedTypeName.equals("TDocument")) {
-                return ActualType.fromFullyQualifiedName(JsonObject.class.getName());
+                return ActualType.fromMappedTypeName(TypeVariableName.get("TDocument"), ClassName.get(JsonObject.class));
             } else if (Types.isIgnored(qualifiedTypeName)) {
-                System.out.println("ignored method: " + methodDoc);
+                System.out.println("WARNING: ignored method because return type is ignored: " + methodDoc);
                 return null;
             } else if (Types.isKnown(qualifiedTypeName)) {
                 ParameterizedType parameterizedType = type.asParameterizedType();
-                String mappedType = Types.getMapped(qualifiedTypeName);
+                TypeName mappedType = Types.getMapped(qualifiedTypeName);
                 if (parameterizedType != null) {
                     String qualified = parameterizedType.toString();
                     String parameterClassName = qualified.substring(qualified.indexOf('<') + 1, qualified.length() - 1);
                     if (parameterClassName.equals("TDocument")) {
-                        return ActualType.fromTypeName(ParameterizedTypeName.get(ClassName.bestGuess(mappedType), TypeVariableName.get("TDocument")));
+                        return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, TypeVariableName.get("TDocument")));
                     } else if (parameterClassName.equals("? extends TDocument")) {
-                        return ActualType.fromTypeName(ParameterizedTypeName.get(ClassName.bestGuess(mappedType), WildcardTypeName.supertypeOf(TypeVariableName.get("TDocument"))));
+                        return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, WildcardTypeName.supertypeOf(TypeVariableName.get("TDocument"))));
                     } else {
                         if (Types.isKnown(parameterClassName)) {
-                            String mappedParameterClassName = Types.getMapped("? extends org.bson.conversions.Bson");
-                            return ActualType.fromTypeName(ParameterizedTypeName.get(ClassName.bestGuess(mappedType), ClassName.bestGuess(mappedParameterClassName)));
+                            TypeName mappedParameterClassName = Types.getMapped("? extends org.bson.conversions.Bson");
+                            return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, mappedParameterClassName));
                         } else {
-                            return ActualType.fromTypeName(ParameterizedTypeName.get(ClassName.bestGuess(mappedType), ClassName.bestGuess(parameterClassName)));
+                            return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, ClassName.bestGuess(parameterClassName)));
                         }
                     }
                 } else {
-                    mappedType = mappedType.isEmpty() ? qualifiedTypeName : mappedType;
-                    if (mappedType.contains("["))
-                        return ActualType.fromArray(mappedType);
-                    else
-                        return ActualType.fromFullyQualifiedName(mappedType);
+                    return ActualType.fromTypeName(mappedType);
                 }
             } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
-                return ActualType.fromFullyQualifiedName(qualifiedTypeName);
+                return ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));
             } else if (context.reactiveApiClasses.contains(qualifiedTypeName)) {
-                return ActualType.fromFullyQualifiedName(mapPackageName(qualifiedTypeName));
+                return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
             } else if (context.builderClasses.contains(qualifiedTypeName)) {
-                return ActualType.fromFullyQualifiedName(mapPackageName(qualifiedTypeName));
+                return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
             } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
-                return ActualType.fromFullyQualifiedName(mapPackageName(qualifiedTypeName));
+                return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
             } else if (qualifiedTypeName.equals("org.reactivestreams.Publisher")) {
                 return ActualType.fromPublisher(methodDoc, type);
             } else if (context.publishersApiClasses.contains(qualifiedTypeName)) {
                 return ActualType.fromPublisher(methodDoc, type);
             } else if (context.others.contains(qualifiedTypeName)) {
-                return ActualType.fromFullyQualifiedName(mapPackageName(qualifiedTypeName));
+                return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
             }
             throw new IllegalStateException(qualifiedTypeName);
         } else {
@@ -100,9 +92,13 @@ public abstract class APIClassGenerator {
     }
 
     protected boolean isSupportedSuperClass(String superClassName) {
-        if (SUPPORTED_SUPER_CLASSES.contains(superClassName))
+        if (Types.isSupportedSuperClass(superClassName))
             return true;
         return context.classDocs.containsKey(superClassName) && !context.others.contains(superClassName);
+    }
+
+    protected String getTargetQualifiedClassName() {
+        return mapPackageName(classDoc.containingPackage().name()) + "." + getTargetClassName();
     }
 
     protected String getTargetClassName() {
@@ -126,54 +122,35 @@ public abstract class APIClassGenerator {
         }
     }
 
-    protected abstract JavaFile getJavaFile();
     enum TypeLocation {
         PARAMETER,
         RETURN
     }
 
     static class ActualType {
-        TypeName typeName;
+        TypeName mongoType;
+        TypeName vertxType;
         java.lang.reflect.Type type;
         boolean isPublisher;
         boolean singlePublisher;
         String publisherClassName;
-        String parameterClassName;
+        String publisherParameterClassName;
 
         private ActualType() {
         }
 
-        static ActualType fromType(java.lang.reflect.Type type) {
+
+        static ActualType fromTypeName(TypeName type) {
             ActualType actualType = new ActualType();
-            actualType.type = type;
+            actualType.mongoType = type;
+            actualType.vertxType = type;
             return actualType;
         }
 
-        static ActualType fromTypeName(TypeName typeName) {
+        static ActualType fromMappedTypeName(TypeName mongoType, TypeName vertxType) {
             ActualType actualType = new ActualType();
-            actualType.typeName = typeName;
-            return actualType;
-        }
-
-        static ActualType fromFullyQualifiedName(String fullyQualifiedName) {
-            ActualType actualType = new ActualType();
-            String packageName = fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf('.'));
-            String simpleName = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf('.') + 1);
-            actualType.typeName = ClassName.get(packageName, simpleName);
-            return actualType;
-        }
-
-        static ActualType fromPackageAndSimpleName(String packageName, String simpleName) {
-            ActualType actualType = new ActualType();
-            actualType.typeName = ClassName.get(packageName, simpleName);
-            return actualType;
-        }
-
-        public static ActualType fromArray(String mappedType) {
-            ActualType actualType = new ActualType();
-            if (!mappedType.equals("byte[]"))
-                throw new IllegalArgumentException();
-            actualType.type = byte[].class;
+            actualType.mongoType = mongoType;
+            actualType.vertxType = vertxType;
             return actualType;
         }
 
@@ -184,12 +161,12 @@ public abstract class APIClassGenerator {
             ParameterizedType parameterizedType = type.asParameterizedType();
             if (parameterizedType != null) {
                 String qualified = parameterizedType.toString();
-                actualType.parameterClassName = qualified.substring(qualified.indexOf('<') + 1, qualified.length() - 1);
-                if (actualType.parameterClassName.equals("com.mongodb.reactivestreams.client.Success") ||
-                        actualType.parameterClassName.equals(Void.class.getName())
+                actualType.publisherParameterClassName = qualified.substring(qualified.indexOf('<') + 1, qualified.length() - 1);
+                if (actualType.publisherParameterClassName.equals("com.mongodb.reactivestreams.client.Success") ||
+                        actualType.publisherParameterClassName.equals(Void.class.getName())
                 ) {
                     actualType.singlePublisher = true;
-                    actualType.parameterClassName = Void.class.getName();
+                    actualType.publisherParameterClassName = Void.class.getName();
                 }
             }
             if (!actualType.singlePublisher) {
@@ -209,14 +186,14 @@ public abstract class APIClassGenerator {
             if (type != null)
                 methodBuilder.returns(type);
             else
-                methodBuilder.returns(typeName);
+                methodBuilder.returns(vertxType);
         }
 
         public ParameterSpec.Builder paramSpecBuilder(String name) {
             if (type != null)
                 return ParameterSpec.builder(type, name);
             else
-                return ParameterSpec.builder(typeName, name);
+                return ParameterSpec.builder(vertxType, name);
         }
     }
 }
