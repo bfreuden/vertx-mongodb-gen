@@ -128,11 +128,11 @@ public class ReplaceOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  @param hintString the name of the index which should be used for the operation
+   *  @param hint the name of the index which should be used for the operation
    *  @return this
    *  @since 4.1
    */
-  public ReplaceOptions hintString(String hintString) {
+  public ReplaceOptions hintString(String hint) {
     return this;
   }
 

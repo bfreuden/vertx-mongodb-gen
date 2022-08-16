@@ -263,11 +263,11 @@ public class FindOneAndUpdateOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  @param hintString the name of the index which should be used for the operation
+   *  @param hint the name of the index which should be used for the operation
    *  @return this
    *  @since 4.1
    */
-  public FindOneAndUpdateOptions hintString(String hintString) {
+  public FindOneAndUpdateOptions hintString(String hint) {
     return this;
   }
 

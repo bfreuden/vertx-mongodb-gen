@@ -70,10 +70,10 @@ public class CountOptions {
    *
    *  <p>Note: If {@link CountOptions#hint(JsonObject)} is set that will be used instead of any hint string.</p>
    *
-   *  @param hintString the name of the index which should be used for the operation
+   *  @param hint the name of the index which should be used for the operation
    *  @return this
    */
-  public CountOptions hintString(String hintString) {
+  public CountOptions hintString(String hint) {
     return this;
   }
 

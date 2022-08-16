@@ -161,11 +161,11 @@ public class UpdateOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  @param hintString the name of the index which should be used for the operation
+   *  @param hint the name of the index which should be used for the operation
    *  @return this
    *  @since 4.1
    */
-  public UpdateOptions hintString(String hintString) {
+  public UpdateOptions hintString(String hint) {
     return this;
   }
 
