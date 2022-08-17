@@ -1,12 +1,15 @@
 package io.vertx.mongo.client;
 
+import com.mongodb.reactivestreams.client.AggregatePublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Options for aggregate.
@@ -190,5 +193,35 @@ public class AggregateOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(AggregatePublisher<TDocument> publisher) {
+    if (this.allowDiskUse != null) {
+      publisher.allowDiskUse(this.allowDiskUse);
+    }
+    if (this.maxTime != null) {
+      publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.maxAwaitTime != null) {
+      publisher.maxAwaitTime(this.maxAwaitTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.bypassDocumentValidation != null) {
+      publisher.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    if (this.collation != null) {
+      publisher.collation(this.collation.toDriverClass());
+    }
+    if (this.comment != null) {
+      publisher.comment(this.comment);
+    }
+    if (this.hint != null) {
+      publisher.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+    }
+    if (this.batchSize != null) {
+      publisher.batchSize(this.batchSize);
+    }
   }
 }

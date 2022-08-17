@@ -2,9 +2,11 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  The options for a count operation.
@@ -169,5 +171,31 @@ public class CountOptions {
    */
   public Collation getCollation() {
     return collation;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.CountOptions toDriverClass() {
+    com.mongodb.client.model.CountOptions result = new com.mongodb.client.model.CountOptions();
+    if (this.hint != null) {
+      result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+    }
+    if (this.hintString != null) {
+      result.hintString(this.hintString);
+    }
+    if (this.limit != null) {
+      result.limit(this.limit);
+    }
+    if (this.skip != null) {
+      result.skip(this.skip);
+    }
+    if (this.maxTime != null) {
+      result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.collation != null) {
+      result.collation(this.collation.toDriverClass());
+    }
+    return result;
   }
 }

@@ -1,10 +1,13 @@
 package io.vertx.mongo.client;
 
+import com.mongodb.reactivestreams.client.DistinctPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Integer;
 import java.lang.Long;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Options for distinct.
@@ -98,5 +101,23 @@ public class DistinctOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(DistinctPublisher<TDocument> publisher) {
+    if (this.filter != null) {
+      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+    }
+    if (this.maxTime != null) {
+      publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.collation != null) {
+      publisher.collation(this.collation.toDriverClass());
+    }
+    if (this.batchSize != null) {
+      publisher.batchSize(this.batchSize);
+    }
   }
 }

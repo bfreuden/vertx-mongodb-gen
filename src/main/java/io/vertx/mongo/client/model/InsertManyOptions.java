@@ -66,4 +66,18 @@ public class InsertManyOptions {
   public Boolean isBypassDocumentValidation() {
     return bypassDocumentValidation;
   }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.InsertManyOptions toDriverClass() {
+    com.mongodb.client.model.InsertManyOptions result = new com.mongodb.client.model.InsertManyOptions();
+    if (this.ordered != null) {
+      result.ordered(this.ordered);
+    }
+    if (this.bypassDocumentValidation != null) {
+      result.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    return result;
+  }
 }

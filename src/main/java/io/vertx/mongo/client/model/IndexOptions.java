@@ -2,11 +2,13 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  The options to apply to the creation of an index.
@@ -539,5 +541,73 @@ public class IndexOptions {
    */
   public Boolean isHidden() {
     return hidden;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.IndexOptions toDriverClass() {
+    com.mongodb.client.model.IndexOptions result = new com.mongodb.client.model.IndexOptions();
+    if (this.background != null) {
+      result.background(this.background);
+    }
+    if (this.unique != null) {
+      result.unique(this.unique);
+    }
+    if (this.name != null) {
+      result.name(this.name);
+    }
+    if (this.sparse != null) {
+      result.sparse(this.sparse);
+    }
+    if (this.expireAfter != null) {
+      result.expireAfter(this.expireAfter, TimeUnit.MILLISECONDS);
+    }
+    if (this.version != null) {
+      result.version(this.version);
+    }
+    if (this.weights != null) {
+      result.weights(ConversionUtilsImpl.INSTANCE.toBson(this.weights));
+    }
+    if (this.defaultLanguage != null) {
+      result.defaultLanguage(this.defaultLanguage);
+    }
+    if (this.languageOverride != null) {
+      result.languageOverride(this.languageOverride);
+    }
+    if (this.textVersion != null) {
+      result.textVersion(this.textVersion);
+    }
+    if (this.sphereVersion != null) {
+      result.sphereVersion(this.sphereVersion);
+    }
+    if (this.bits != null) {
+      result.bits(this.bits);
+    }
+    if (this.min != null) {
+      result.min(this.min);
+    }
+    if (this.max != null) {
+      result.max(this.max);
+    }
+    if (this.bucketSize != null) {
+      result.bucketSize(this.bucketSize);
+    }
+    if (this.storageEngine != null) {
+      result.storageEngine(ConversionUtilsImpl.INSTANCE.toBson(this.storageEngine));
+    }
+    if (this.partialFilterExpression != null) {
+      result.partialFilterExpression(ConversionUtilsImpl.INSTANCE.toBson(this.partialFilterExpression));
+    }
+    if (this.collation != null) {
+      result.collation(this.collation.toDriverClass());
+    }
+    if (this.wildcardProjection != null) {
+      result.wildcardProjection(ConversionUtilsImpl.INSTANCE.toBson(this.wildcardProjection));
+    }
+    if (this.hidden != null) {
+      result.hidden(this.hidden);
+    }
+    return result;
   }
 }

@@ -1,5 +1,6 @@
 package io.vertx.mongo.client.gridfs;
 
+import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import java.lang.Integer;
 
@@ -40,5 +41,14 @@ public class GridFSDownloadOptions {
 
   public Integer getBufferSizeBytes() {
     return bufferSizeBytes;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(GridFSDownloadPublisher<TDocument> publisher) {
+    if (this.bufferSizeBytes != null) {
+      publisher.bufferSizeBytes(this.bufferSizeBytes);
+    }
   }
 }

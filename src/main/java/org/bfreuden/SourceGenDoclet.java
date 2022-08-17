@@ -157,7 +157,7 @@ public class SourceGenDoclet {
         System.out.println("bson-based api classes (" + inspectionContext.bsonBasedClasses.size() + "): " + inspectionContext.bsonBasedClasses);
         System.out.println("non-api parameter and return classes: classes of method parameters and return values not belonging to the api");
         System.out.println("non-api parameter and return classes (" + inspectionContext.nonApiParameterAndReturnClasses.size() + "): " + inspectionContext.nonApiParameterAndReturnClasses);
-        inspectionContext.others = new HashSet<>();
+        inspectionContext.otherApiClasses = new HashSet<>();
         for (String isolatedApiClass : isolatedApiClasses) {
             if (!inspectionContext.reactiveApiClasses.contains(isolatedApiClass) &&
             !inspectionContext.publishersApiClasses.contains(isolatedApiClass) &&
@@ -165,20 +165,21 @@ public class SourceGenDoclet {
             !inspectionContext.builderClasses.contains(isolatedApiClass) &&
             !inspectionContext.optionsApiClasses.contains(isolatedApiClass)
             )
-                inspectionContext.others.add(isolatedApiClass);
+                inspectionContext.otherApiClasses.add(isolatedApiClass);
         }
-        ArrayList<String> objects = new ArrayList<>(inspectionContext.others);
+        ArrayList<String> objects = new ArrayList<>(inspectionContext.otherApiClasses);
         for (String other: objects) {
             ClassDoc classDoc = inspectionContext.classDocs.get(other);
             if (classDoc.getRawCommentText().trim().startsWith("The default options")) {
-                inspectionContext.others.remove(other);
+                inspectionContext.otherApiClasses.remove(other);
                 inspectionContext.optionsApiClasses.add(other);
             }
         }
 
         System.out.println("other api classes: ?");
-        System.out.println("other api classes (" + inspectionContext.others.size() + "): " + inspectionContext.others);
+        System.out.println("other api classes (" + inspectionContext.otherApiClasses.size() + "): " + inspectionContext.otherApiClasses);
         File genSourceDir = new File("src/main/java");
+
         for (String options : inspectionContext.optionsApiClasses) {
             if (options.equals("com.mongodb.TransactionOptions"))
                 continue;
@@ -198,6 +199,7 @@ public class SourceGenDoclet {
             new PublisherResultAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive), publisherResultClasses)
                     .generate(genSourceDir);
         }
+        inspectionContext.conversionUtilsGenerator.generateSource(genSourceDir);
     }
 
     private static Graph<String, DefaultEdge> sugGraphFrom(Graph<String, DefaultEdge> graph, String... startVertices) {

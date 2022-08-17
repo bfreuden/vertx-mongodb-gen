@@ -3,9 +3,11 @@ package io.vertx.mongo.client.model;
 import com.mongodb.client.model.ReturnDocument;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
 import java.lang.Long;
 import java.lang.String;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  The options to apply to an operation that atomically finds a document and replaces it.
@@ -249,5 +251,40 @@ public class FindOneAndReplaceOptions {
    */
   public String getHintString() {
     return hintString;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.FindOneAndReplaceOptions toDriverClass() {
+    com.mongodb.client.model.FindOneAndReplaceOptions result = new com.mongodb.client.model.FindOneAndReplaceOptions();
+    if (this.projection != null) {
+      result.projection(ConversionUtilsImpl.INSTANCE.toBson(this.projection));
+    }
+    if (this.sort != null) {
+      result.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+    }
+    if (this.upsert != null) {
+      result.upsert(this.upsert);
+    }
+    if (this.returnDocument != null) {
+      result.returnDocument(this.returnDocument);
+    }
+    if (this.maxTime != null) {
+      result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.bypassDocumentValidation != null) {
+      result.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    if (this.collation != null) {
+      result.collation(this.collation.toDriverClass());
+    }
+    if (this.hint != null) {
+      result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+    }
+    if (this.hintString != null) {
+      result.hintString(this.hintString);
+    }
+    return result;
   }
 }

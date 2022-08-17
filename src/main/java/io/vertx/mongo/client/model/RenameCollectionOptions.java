@@ -36,4 +36,15 @@ public class RenameCollectionOptions {
   public Boolean isDropTarget() {
     return dropTarget;
   }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.RenameCollectionOptions toDriverClass() {
+    com.mongodb.client.model.RenameCollectionOptions result = new com.mongodb.client.model.RenameCollectionOptions();
+    if (this.dropTarget != null) {
+      result.dropTarget(this.dropTarget);
+    }
+    return result;
+  }
 }

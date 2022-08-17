@@ -1,13 +1,17 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.client.model.MapReduceAction;
+import com.mongodb.reactivestreams.client.MapReducePublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
+import java.lang.Deprecated;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Options for map reduce.
@@ -272,10 +276,12 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/command/mapReduce/#output-to-a-collection-with-an-action output with an action
    *  @deprecated this option will no longer be supported in MongoDB 4.4
    */
+  @Deprecated
   public MapReduceOptions sharded(Boolean sharded) {
     return this;
   }
 
+  @Deprecated
   public Boolean isSharded() {
     return sharded;
   }
@@ -290,10 +296,12 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/command/mapReduce/#output-to-a-collection-with-an-action output with an action
    *  @deprecated this option will no longer be supported in MongoDB 4.4 as it will no longer hold a global or database level write lock.
    */
+  @Deprecated
   public MapReduceOptions nonAtomic(Boolean nonAtomic) {
     return this;
   }
 
+  @Deprecated
   public Boolean isNonAtomic() {
     return nonAtomic;
   }
@@ -351,5 +359,59 @@ public class MapReduceOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(MapReducePublisher<TDocument> publisher) {
+    if (this.collectionName != null) {
+      publisher.collectionName(this.collectionName);
+    }
+    if (this.finalizeFunction != null) {
+      publisher.finalizeFunction(this.finalizeFunction);
+    }
+    if (this.scope != null) {
+      publisher.scope(ConversionUtilsImpl.INSTANCE.toBson(this.scope));
+    }
+    if (this.sort != null) {
+      publisher.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+    }
+    if (this.filter != null) {
+      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+    }
+    if (this.limit != null) {
+      publisher.limit(this.limit);
+    }
+    if (this.jsMode != null) {
+      publisher.jsMode(this.jsMode);
+    }
+    if (this.verbose != null) {
+      publisher.verbose(this.verbose);
+    }
+    if (this.maxTime != null) {
+      publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.action != null) {
+      publisher.action(this.action);
+    }
+    if (this.databaseName != null) {
+      publisher.databaseName(this.databaseName);
+    }
+    if (this.sharded != null) {
+      publisher.sharded(this.sharded);
+    }
+    if (this.nonAtomic != null) {
+      publisher.nonAtomic(this.nonAtomic);
+    }
+    if (this.bypassDocumentValidation != null) {
+      publisher.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    if (this.collation != null) {
+      publisher.collation(this.collation.toDriverClass());
+    }
+    if (this.batchSize != null) {
+      publisher.batchSize(this.batchSize);
+    }
   }
 }

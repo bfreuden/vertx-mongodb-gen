@@ -48,4 +48,15 @@ public class GridFSDownloadOptions {
   public Integer getRevision() {
     return revision;
   }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.gridfs.model.GridFSDownloadOptions toDriverClass() {
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions result = new com.mongodb.client.gridfs.model.GridFSDownloadOptions();
+    if (this.revision != null) {
+      result.revision(this.revision);
+    }
+    return result;
+  }
 }

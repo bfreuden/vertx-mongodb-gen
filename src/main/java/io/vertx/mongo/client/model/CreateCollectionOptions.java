@@ -2,6 +2,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
 import java.lang.Long;
 
@@ -196,5 +197,34 @@ public class CreateCollectionOptions {
    */
   public Collation getCollation() {
     return collation;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.CreateCollectionOptions toDriverClass() {
+    com.mongodb.client.model.CreateCollectionOptions result = new com.mongodb.client.model.CreateCollectionOptions();
+    if (this.maxDocuments != null) {
+      result.maxDocuments(this.maxDocuments);
+    }
+    if (this.capped != null) {
+      result.capped(this.capped);
+    }
+    if (this.sizeInBytes != null) {
+      result.sizeInBytes(this.sizeInBytes);
+    }
+    if (this.storageEngineOptions != null) {
+      result.storageEngineOptions(ConversionUtilsImpl.INSTANCE.toBson(this.storageEngineOptions));
+    }
+    if (this.indexOptionDefaults != null) {
+      result.indexOptionDefaults(this.indexOptionDefaults.toDriverClass());
+    }
+    if (this.validationOptions != null) {
+      result.validationOptions(this.validationOptions.toDriverClass());
+    }
+    if (this.collation != null) {
+      result.collation(this.collation.toDriverClass());
+    }
+    return result;
   }
 }

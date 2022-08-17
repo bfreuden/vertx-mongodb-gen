@@ -1,14 +1,13 @@
 package org.bfreuden;
 
+import com.squareup.javapoet.*;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Type;
 import org.reactivestreams.Publisher;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import javax.lang.model.element.Modifier;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -69,6 +68,24 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
             throw new IllegalStateException("unknown method: " + methods);
         if (!options.isEmpty())
             publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
+    }
+
+    protected MethodSpec.Builder toMongoBuilder() {
+        MethodSpec.Builder toMongo = MethodSpec.methodBuilder("initializePublisher")
+                .addTypeVariable(TypeVariableName.get("TDocument"))
+                .addJavadoc("@hidden")
+                .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), TypeVariableName.get("TDocument")), "publisher").build())
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.VOID);
+        List<Option> requiredOptions = options.values().stream().filter(it -> it.inCtor).collect(Collectors.toList());
+        if (!requiredOptions.isEmpty())
+            throw new IllegalStateException("not supported");
+        configurableName = "publisher";
+        return toMongo;
+    }
+
+    protected MethodSpec toMongo(MethodSpec.Builder toMongoBuilder) {
+        return toMongoBuilder.build();
     }
 
 }

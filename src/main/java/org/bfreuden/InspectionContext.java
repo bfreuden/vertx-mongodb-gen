@@ -11,11 +11,12 @@ import java.util.*;
 
 public class InspectionContext {
 
+    ConversionUtilsGenerator conversionUtilsGenerator = new ConversionUtilsGenerator();
     public final Set<String> apiPackages = new HashSet<>();
     public final Set<String> dependenciesPackages = new HashSet<>();
     public final Set<String> stopClasses = new HashSet<>();
     public final Set<String> stopEdges = new HashSet<>();
-    public HashSet<String> others = new HashSet<>();
+    public HashSet<String> otherApiClasses = new HashSet<>();
     HashMultimap<String, String> edgeLabels = HashMultimap.create();
     public final Set<String> reactiveApiClasses = new HashSet<>();
     public final Set<String> enumApiClasses = new HashSet<>();

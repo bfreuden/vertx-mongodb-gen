@@ -1,8 +1,10 @@
 package io.vertx.mongo.client;
 
+import com.mongodb.reactivestreams.client.ListIndexesPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import java.lang.Integer;
 import java.lang.Long;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Options for ListIndexes.
@@ -55,5 +57,17 @@ public class ListIndexesOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(ListIndexesPublisher<TDocument> publisher) {
+    if (this.maxTime != null) {
+      publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.batchSize != null) {
+      publisher.batchSize(this.batchSize);
+    }
   }
 }

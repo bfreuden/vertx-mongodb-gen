@@ -2,6 +2,7 @@ package io.vertx.mongo.client.model.vault;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.util.List;
 
 /**
@@ -77,5 +78,19 @@ public class DataKeyOptions {
    */
   public JsonObject getMasterKey() {
     return masterKey;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.vault.DataKeyOptions toDriverClass() {
+    com.mongodb.client.model.vault.DataKeyOptions result = new com.mongodb.client.model.vault.DataKeyOptions();
+    if (this.keyAltNames != null) {
+      result.keyAltNames(this.keyAltNames);
+    }
+    if (this.masterKey != null) {
+      result.masterKey(ConversionUtilsImpl.INSTANCE.toBsonDocument(this.masterKey));
+    }
+    return result;
   }
 }

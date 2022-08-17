@@ -1,7 +1,5 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.connection.ClusterSettings;
-import com.mongodb.event.ClusterListener;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

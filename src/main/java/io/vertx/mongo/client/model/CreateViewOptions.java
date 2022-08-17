@@ -37,4 +37,15 @@ public class CreateViewOptions {
   public Collation getCollation() {
     return collation;
   }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.CreateViewOptions toDriverClass() {
+    com.mongodb.client.model.CreateViewOptions result = new com.mongodb.client.model.CreateViewOptions();
+    if (this.collation != null) {
+      result.collation(this.collation.toDriverClass());
+    }
+    return result;
+  }
 }

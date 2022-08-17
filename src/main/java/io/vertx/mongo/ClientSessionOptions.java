@@ -1,8 +1,6 @@
 package io.vertx.mongo;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.mongo.client.ClientSession;
-
 import java.lang.Boolean;
 
 /**
@@ -71,5 +69,19 @@ public class ClientSessionOptions {
    */
   public TransactionOptions getDefaultTransactionOptions() {
     return defaultTransactionOptions;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.ClientSessionOptions toDriverClass() {
+    com.mongodb.ClientSessionOptions.Builder builder = com.mongodb.ClientSessionOptions.builder();
+    if (this.causallyConsistent != null) {
+      builder.causallyConsistent(this.causallyConsistent);
+    }
+    if (this.defaultTransactionOptions != null) {
+      builder.defaultTransactionOptions(this.defaultTransactionOptions.toDriverClass());
+    }
+    return builder.build();
   }
 }

@@ -1,11 +1,14 @@
 package io.vertx.mongo.client.gridfs;
 
+import com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Options for the GridFS Files Collection.
@@ -188,5 +191,35 @@ public class GridFSFindOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(GridFSFindPublisher<TDocument> publisher) {
+    if (this.filter != null) {
+      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+    }
+    if (this.limit != null) {
+      publisher.limit(this.limit);
+    }
+    if (this.skip != null) {
+      publisher.skip(this.skip);
+    }
+    if (this.sort != null) {
+      publisher.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+    }
+    if (this.noCursorTimeout != null) {
+      publisher.noCursorTimeout(this.noCursorTimeout);
+    }
+    if (this.maxTime != null) {
+      publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.collation != null) {
+      publisher.collation(this.collation.toDriverClass());
+    }
+    if (this.batchSize != null) {
+      publisher.batchSize(this.batchSize);
+    }
   }
 }

@@ -2,8 +2,10 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Long;
 import java.lang.String;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  The options to apply to an operation that atomically finds a document and deletes it.
@@ -177,5 +179,31 @@ public class FindOneAndDeleteOptions {
    */
   public String getHintString() {
     return hintString;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.FindOneAndDeleteOptions toDriverClass() {
+    com.mongodb.client.model.FindOneAndDeleteOptions result = new com.mongodb.client.model.FindOneAndDeleteOptions();
+    if (this.projection != null) {
+      result.projection(ConversionUtilsImpl.INSTANCE.toBson(this.projection));
+    }
+    if (this.sort != null) {
+      result.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+    }
+    if (this.maxTime != null) {
+      result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.collation != null) {
+      result.collation(this.collation.toDriverClass());
+    }
+    if (this.hint != null) {
+      result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+    }
+    if (this.hintString != null) {
+      result.hintString(this.hintString);
+    }
+    return result;
   }
 }

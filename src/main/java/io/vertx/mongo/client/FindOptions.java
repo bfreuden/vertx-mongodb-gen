@@ -1,13 +1,17 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.CursorType;
+import com.mongodb.reactivestreams.client.FindPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
+import java.lang.Deprecated;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Options for find.
@@ -260,10 +264,12 @@ public class FindOptions {
    *  @return this
    *  @deprecated oplogReplay has been deprecated in MongoDB 4.4.
    */
+  @Deprecated
   public FindOptions oplogReplay(Boolean oplogReplay) {
     return this;
   }
 
+  @Deprecated
   public Boolean isOplogReplay() {
     return oplogReplay;
   }
@@ -454,5 +460,74 @@ public class FindOptions {
 
   public Boolean isAllowDiskUse() {
     return allowDiskUse;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(FindPublisher<TDocument> publisher) {
+    if (this.filter != null) {
+      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+    }
+    if (this.limit != null) {
+      publisher.limit(this.limit);
+    }
+    if (this.skip != null) {
+      publisher.skip(this.skip);
+    }
+    if (this.maxTime != null) {
+      publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.maxAwaitTime != null) {
+      publisher.maxAwaitTime(this.maxAwaitTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.projection != null) {
+      publisher.projection(ConversionUtilsImpl.INSTANCE.toBson(this.projection));
+    }
+    if (this.sort != null) {
+      publisher.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+    }
+    if (this.noCursorTimeout != null) {
+      publisher.noCursorTimeout(this.noCursorTimeout);
+    }
+    if (this.oplogReplay != null) {
+      publisher.oplogReplay(this.oplogReplay);
+    }
+    if (this.partial != null) {
+      publisher.partial(this.partial);
+    }
+    if (this.cursorType != null) {
+      publisher.cursorType(this.cursorType);
+    }
+    if (this.collation != null) {
+      publisher.collation(this.collation.toDriverClass());
+    }
+    if (this.comment != null) {
+      publisher.comment(this.comment);
+    }
+    if (this.hint != null) {
+      publisher.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+    }
+    if (this.hintString != null) {
+      publisher.hintString(this.hintString);
+    }
+    if (this.max != null) {
+      publisher.max(ConversionUtilsImpl.INSTANCE.toBson(this.max));
+    }
+    if (this.min != null) {
+      publisher.min(ConversionUtilsImpl.INSTANCE.toBson(this.min));
+    }
+    if (this.returnKey != null) {
+      publisher.returnKey(this.returnKey);
+    }
+    if (this.showRecordId != null) {
+      publisher.showRecordId(this.showRecordId);
+    }
+    if (this.batchSize != null) {
+      publisher.batchSize(this.batchSize);
+    }
+    if (this.allowDiskUse != null) {
+      publisher.allowDiskUse(this.allowDiskUse);
+    }
   }
 }

@@ -2,6 +2,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.String;
 
 /**
@@ -98,5 +99,22 @@ public class DeleteOptions {
    */
   public String getHintString() {
     return hintString;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.DeleteOptions toDriverClass() {
+    com.mongodb.client.model.DeleteOptions result = new com.mongodb.client.model.DeleteOptions();
+    if (this.collation != null) {
+      result.collation(this.collation.toDriverClass());
+    }
+    if (this.hint != null) {
+      result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+    }
+    if (this.hintString != null) {
+      result.hintString(this.hintString);
+    }
+    return result;
   }
 }

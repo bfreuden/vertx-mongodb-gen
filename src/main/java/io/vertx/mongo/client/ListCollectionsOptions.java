@@ -1,9 +1,12 @@
 package io.vertx.mongo.client;
 
+import com.mongodb.reactivestreams.client.ListCollectionsPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Integer;
 import java.lang.Long;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Options for ListCollections.
@@ -76,5 +79,20 @@ public class ListCollectionsOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(ListCollectionsPublisher<TDocument> publisher) {
+    if (this.filter != null) {
+      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+    }
+    if (this.maxTime != null) {
+      publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.batchSize != null) {
+      publisher.batchSize(this.batchSize);
+    }
   }
 }

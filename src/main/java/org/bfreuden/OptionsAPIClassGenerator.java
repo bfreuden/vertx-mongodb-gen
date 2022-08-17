@@ -15,7 +15,12 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
 
 
     protected LinkedHashMap<String, Option> options = new LinkedHashMap<>();
+    protected boolean hasBuilder;
+    protected String configurableName;
+
     protected static class Option {
+        public boolean deprecated;
+        public String conversionMethod;
         String name;
         String setterParamName;
         TypeName mongoType;
@@ -46,6 +51,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                 .collect(Collectors.toList()));
         String builderFullyQualifiedName = classDoc.qualifiedTypeName() + ".Builder";
         if (context.builderClasses.contains(builderFullyQualifiedName)) {
+            this.hasBuilder = true;
             List<MethodDoc> builders = methods.stream()
                     .filter(m -> m.isStatic() && m.name().equals("builder") && m.returnType().qualifiedTypeName().equals(builderFullyQualifiedName))
                     .collect(Collectors.toList());
@@ -81,7 +87,9 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                     Type optionType = parameter.type();
                     String optionName = parameter.name();
                     String mongoJavadoc = null;
-                    createOption(methods, optionType, optionName, optionName, mongoJavadoc, null, false, parameter.name());
+                    AnnotationDesc[] annotations = parameter.annotations();
+                    boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
+                    createOption(methods, optionType, optionName, optionName, mongoJavadoc, null, false, parameter.name(), deprecated);
                 }
 
             }
@@ -112,15 +120,19 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                 optionName = Character.toLowerCase(optionName.charAt(3)) + optionName.substring(3);
             String mongoJavadoc = setter.getRawCommentText();
             String mongoSetterName = setter.name();
-            createOption(methods, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null);
+            AnnotationDesc[] annotations = setter.annotations();
+            boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
+            createOption(methods, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null, deprecated);
+
         }
     }
 
-    protected void createOption(List<MethodDoc> methods, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName) {
+    protected void createOption(List<MethodDoc> methods, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName, boolean deprecated) {
         if (options.containsKey(optionName))
             throw new IllegalStateException("option already exists: " + optionName + " for " + classDoc.qualifiedTypeName());
         Option option = new Option();
         option.name = optionName;
+        option.deprecated = deprecated;
         option.withTimeUnit = withTimeUnit;
         options.put(option.name, option);
         option.mongoJavadoc = mongoJavadoc;
@@ -128,11 +140,14 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
         option.setterParamName = setterParamName;
         if (mongoCtorParamName != null)
             option.inCtor = true;
+        boolean needConversion = false;
         if (optionType.asParameterizedType() != null) {
             if (optionType.asParameterizedType().toString().equals("java.util.List<? extends org.bson.conversions.Bson>")) {
+                needConversion = true;
                 option.mongoType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), WildcardTypeName.subtypeOf(Bson.class));
                 option.vertxType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(JsonObject.class));
             } else if (optionType.asParameterizedType().toString().equals("java.util.List<java.lang.String>")) {
+                needConversion = true;
                 option.mongoType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(String.class));
                 option.vertxType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(String.class));
             } else {
@@ -157,14 +172,18 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             }
             option.vertxType = option.mongoType.box();
         } else if (Types.isKnown(qualifiedTypeName)) {
+            needConversion = true;
             option.mongoType = ClassName.bestGuess(qualifiedTypeName);
             option.vertxType = Types.getMapped(qualifiedTypeName);
         } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
             option.optionType = true;
             option.mongoType = ClassName.bestGuess(qualifiedTypeName);
             option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
-        } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
+        } else if (context.otherApiClasses.contains(qualifiedTypeName)) {
             option.optionType = true;
+            option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+            option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
+        } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
             option.mongoType = ClassName.bestGuess(qualifiedTypeName);
             option.vertxType = ClassName.bestGuess(qualifiedTypeName);
         } else {
@@ -176,6 +195,9 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                 if (!qualifiedTypeName.equals("com.mongodb.CreateIndexCommitQuorum"))
                     throw new IllegalStateException("unsupported parameter type: " + qualifiedTypeName + " for " + classDoc.qualifiedTypeName());
             }
+        }
+        if (!option.optionType && !option.withTimeUnit && needConversion && !option.vertxType.toString().equals(option.mongoType.toString())) {
+            option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.vertxType, option.mongoType);
         }
         Optional<MethodDoc> maybeGetter = methods.stream()
                 .filter(m -> m.parameters().length == 0 || option.withTimeUnit && m.parameters().length == 1 && m.parameters()[0].type().qualifiedTypeName().equals(TimeUnit.class.getName()))
@@ -217,9 +239,11 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             type.addJavadoc(joiner.toString().replace("$", "&#x24;"));
         }
         type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
+        MethodSpec.Builder toMongoMethod = toMongoBuilder();
         for (Option option: options.values()) {
             if (option.name.equals("commitQuorum"))
                 continue;
+            addOptionToMongoBuilder(toMongoMethod, option);
             FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.vertxType, option.name).addModifiers(Modifier.PRIVATE);
             if (option.mongoJavadoc != null) {
                 option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "hint(JsonObject)");
@@ -257,12 +281,16 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                     setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "&#x24;"));
                 }
             }
+            if (option.deprecated)
+                setterBuilder.addAnnotation(Deprecated.class);
             type.addMethod(setterBuilder.build());
-             boolean isBoolean = option.vertxType.toString().toLowerCase().contains("boolean");
+            boolean isBoolean = option.vertxType.toString().toLowerCase().contains("boolean");
             MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder((isBoolean ? "is" : "get") + Character.toUpperCase(option.name.charAt(0)) + option.name.substring(1))
                     .addModifiers(Modifier.PUBLIC)
                     .returns(option.vertxType)
                     .addStatement("return " + option.name);
+            if (option.deprecated)
+                getterBuilder.addAnnotation(Deprecated.class);
             if (option.mongoGetterJavadoc != null) {
                 if (option.withTimeUnit) {
                     String[] split = option.mongoGetterJavadoc.split("\n");
@@ -281,6 +309,58 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             }
             type.addMethod(getterBuilder.build());
         }
+        type.addMethod(toMongo(toMongoMethod));
         return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()).build());
     }
+
+    protected MethodSpec.Builder toMongoBuilder() {
+        MethodSpec.Builder toMongo = MethodSpec.methodBuilder("toDriverClass")
+                .addJavadoc("@hidden")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
+        List<Option> requiredOptions = options.values().stream().filter(it -> it.inCtor).collect(Collectors.toList());
+        StringJoiner ctorParams = new StringJoiner(", ");
+        for (Option option : requiredOptions) {
+            toMongo
+                    .beginControlFlow("if (this." + option.name + " == null)")
+                    .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
+                    .endControlFlow();
+            if (option.withTimeUnit || option.optionType)
+                throw new IllegalStateException("not implemented");
+            ctorParams.add("this." +option.name);
+        }
+        if (hasBuilder) {
+            configurableName = "builder";
+            toMongo.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+        } else {
+            configurableName = "result";
+            toMongo.addStatement("$T result = new $T(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+        }
+        return toMongo;
+    }
+
+    private void addOptionToMongoBuilder(MethodSpec.Builder toMongoBuilder, Option option) {
+        if (option.inCtor)
+            return;
+        toMongoBuilder.beginControlFlow("if (this." + option.name + " != null)");
+        if (option.withTimeUnit) {
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ", $T.MILLISECONDS)", TimeUnit.class);
+        } else if (option.optionType) {
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".toDriverClass())");
+        } else if (option.conversionMethod != null) {
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "($T.INSTANCE." + option.conversionMethod + "(this." + option.name + "))", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+        } else {
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ")");
+        }
+        toMongoBuilder.endControlFlow();
+
+    }
+    protected MethodSpec toMongo(MethodSpec.Builder toMongoBuilder) {
+        if (hasBuilder)
+            toMongoBuilder.addStatement("return builder.build()");
+        else
+            toMongoBuilder.addStatement("return result");
+        return toMongoBuilder.build();
+    }
+
 }

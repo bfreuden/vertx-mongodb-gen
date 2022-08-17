@@ -38,4 +38,15 @@ public class InsertOneOptions {
   public Boolean isBypassDocumentValidation() {
     return bypassDocumentValidation;
   }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.InsertOneOptions toDriverClass() {
+    com.mongodb.client.model.InsertOneOptions result = new com.mongodb.client.model.InsertOneOptions();
+    if (this.bypassDocumentValidation != null) {
+      result.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    return result;
+  }
 }

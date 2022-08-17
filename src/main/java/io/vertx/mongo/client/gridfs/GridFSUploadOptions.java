@@ -1,5 +1,6 @@
 package io.vertx.mongo.client.gridfs;
 
+import com.mongodb.reactivestreams.client.gridfs.GridFSUploadPublisher;
 import io.vertx.codegen.annotations.DataObject;
 
 /**
@@ -14,4 +15,9 @@ import io.vertx.codegen.annotations.DataObject;
     generateConverter = true
 )
 public class GridFSUploadOptions {
+  /**
+   * @hidden
+   */
+  public <TDocument> void initializePublisher(GridFSUploadPublisher<TDocument> publisher) {
+  }
 }

@@ -67,4 +67,18 @@ public class BulkWriteOptions {
   public Boolean isBypassDocumentValidation() {
     return bypassDocumentValidation;
   }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.BulkWriteOptions toDriverClass() {
+    com.mongodb.client.model.BulkWriteOptions result = new com.mongodb.client.model.BulkWriteOptions();
+    if (this.ordered != null) {
+      result.ordered(this.ordered);
+    }
+    if (this.bypassDocumentValidation != null) {
+      result.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    return result;
+  }
 }

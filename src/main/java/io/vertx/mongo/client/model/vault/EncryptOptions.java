@@ -1,6 +1,7 @@
 package io.vertx.mongo.client.model.vault;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.String;
 
 /**
@@ -84,5 +85,22 @@ public class EncryptOptions {
    */
   public String getKeyAltName() {
     return keyAltName;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.vault.EncryptOptions toDriverClass() {
+    if (this.algorithm == null) {
+      throw new IllegalArgumentException("algorithm is mandatory");
+    }
+    com.mongodb.client.model.vault.EncryptOptions result = new com.mongodb.client.model.vault.EncryptOptions(this.algorithm);
+    if (this.keyId != null) {
+      result.keyId(ConversionUtilsImpl.INSTANCE.toBsonBinary(this.keyId));
+    }
+    if (this.keyAltName != null) {
+      result.keyAltName(this.keyAltName);
+    }
+    return result;
   }
 }

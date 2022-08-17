@@ -2,6 +2,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import java.lang.Long;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  The options an estimated count operation.
@@ -35,5 +36,16 @@ public class EstimatedDocumentCountOptions {
    */
   public Long getMaxTime() {
     return maxTime;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.model.EstimatedDocumentCountOptions toDriverClass() {
+    com.mongodb.client.model.EstimatedDocumentCountOptions result = new com.mongodb.client.model.EstimatedDocumentCountOptions();
+    if (this.maxTime != null) {
+      result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    return result;
   }
 }

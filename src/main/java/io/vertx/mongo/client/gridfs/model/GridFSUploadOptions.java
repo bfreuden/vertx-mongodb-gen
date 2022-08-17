@@ -2,6 +2,7 @@ package io.vertx.mongo.client.gridfs.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Integer;
 
 /**
@@ -63,5 +64,19 @@ public class GridFSUploadOptions {
    */
   public JsonObject getMetadata() {
     return metadata;
+  }
+
+  /**
+   * @hidden
+   */
+  public com.mongodb.client.gridfs.model.GridFSUploadOptions toDriverClass() {
+    com.mongodb.client.gridfs.model.GridFSUploadOptions result = new com.mongodb.client.gridfs.model.GridFSUploadOptions();
+    if (this.chunkSizeBytes != null) {
+      result.chunkSizeBytes(this.chunkSizeBytes);
+    }
+    if (this.metadata != null) {
+      result.metadata(ConversionUtilsImpl.INSTANCE.toDocument(this.metadata));
+    }
+    return result;
   }
 }

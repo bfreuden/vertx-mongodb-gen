@@ -73,7 +73,7 @@ public abstract class APIClassGenerator {
                 return ActualType.fromPublisher(methodDoc, type);
             } else if (context.publishersApiClasses.contains(qualifiedTypeName)) {
                 return ActualType.fromPublisher(methodDoc, type);
-            } else if (context.others.contains(qualifiedTypeName)) {
+            } else if (context.otherApiClasses.contains(qualifiedTypeName)) {
                 return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
             }
             throw new IllegalStateException(qualifiedTypeName);
@@ -94,7 +94,7 @@ public abstract class APIClassGenerator {
     protected boolean isSupportedSuperClass(String superClassName) {
         if (Types.isSupportedSuperClass(superClassName))
             return true;
-        return context.classDocs.containsKey(superClassName) && !context.others.contains(superClassName);
+        return context.classDocs.containsKey(superClassName) && !context.otherApiClasses.contains(superClassName);
     }
 
     protected String getTargetQualifiedClassName() {
