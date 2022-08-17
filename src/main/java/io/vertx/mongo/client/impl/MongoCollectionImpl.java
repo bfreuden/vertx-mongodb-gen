@@ -1,3 +1,18 @@
+//
+//  Copyright 2022 The Vert.x Community.
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 package io.vertx.mongo.client.impl;
 
 import static io.vertx.mongo.impl.Utils.setHandler;
@@ -13,6 +28,8 @@ import com.mongodb.reactivestreams.client.MongoCollection;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoNamespace;
@@ -42,6 +59,7 @@ import io.vertx.mongo.client.model.RenameCollectionOptions;
 import io.vertx.mongo.client.model.ReplaceOptions;
 import io.vertx.mongo.client.model.UpdateOptions;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Class;
 import java.lang.Long;
 import java.lang.Override;
@@ -49,37 +67,35 @@ import java.lang.String;
 import java.lang.Void;
 import java.util.List;
 import org.bson.conversions.Bson;
+import org.reactivestreams.Publisher;
 
 public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocument> {
   protected MongoCollection<TDocument> wrapped;
 
+  protected Vertx vertx;
+
   @Override
   public MongoNamespace getNamespace() {
-    wrapped.getNamespace();
     return null;
   }
 
   @Override
   public Class<TDocument> getDocumentClass() {
-    wrapped.getDocumentClass();
     return null;
   }
 
   @Override
   public ReadPreference getReadPreference() {
-    wrapped.getReadPreference();
     return null;
   }
 
   @Override
   public WriteConcern getWriteConcern() {
-    wrapped.getWriteConcern();
     return null;
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    wrapped.getReadConcern();
     return null;
   }
 
@@ -87,7 +103,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public <NewTDocument> io.vertx.mongo.client.MongoCollection withDocumentClass(
       Class<NewTDocument> clazz) {
     requireNonNull(clazz, "clazz cannot be null");
-    wrapped.withDocumentClass(clazz);
     return null;
   }
 
@@ -96,7 +111,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference cannot be null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    wrapped.withReadPreference(__readPreference);
     return null;
   }
 
@@ -105,7 +119,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern cannot be null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    wrapped.withWriteConcern(__writeConcern);
     return null;
   }
 
@@ -113,14 +126,15 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public io.vertx.mongo.client.MongoCollection<TDocument> withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern cannot be null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    wrapped.withReadConcern(__readConcern);
     return null;
   }
 
   @Override
   public Future<Long> estimatedDocumentCount() {
-    wrapped.estimatedDocumentCount();
-    return null;
+    Publisher<Long> __publisher = wrapped.estimatedDocumentCount();
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -135,8 +149,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Long> estimatedDocumentCount(EstimatedDocumentCountOptions options) {
     requireNonNull(options, "options cannot be null");
     com.mongodb.client.model.EstimatedDocumentCountOptions __options = options.toDriverClass();
-    wrapped.estimatedDocumentCount(__options);
-    return null;
+    Publisher<Long> __publisher = wrapped.estimatedDocumentCount(__options);
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -149,8 +165,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Long> countDocuments() {
-    wrapped.countDocuments();
-    return null;
+    Publisher<Long> __publisher = wrapped.countDocuments();
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -165,8 +183,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Long> countDocuments(JsonObject filter) {
     requireNonNull(filter, "filter cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.countDocuments(__filter);
-    return null;
+    Publisher<Long> __publisher = wrapped.countDocuments(__filter);
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -183,8 +203,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.CountOptions __options = options.toDriverClass();
-    wrapped.countDocuments(__filter, __options);
-    return null;
+    Publisher<Long> __publisher = wrapped.countDocuments(__filter, __options);
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -199,8 +221,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Long> countDocuments(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.countDocuments(__clientSession);
-    return null;
+    Publisher<Long> __publisher = wrapped.countDocuments(__clientSession);
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -217,8 +241,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.countDocuments(__clientSession, __filter);
-    return null;
+    Publisher<Long> __publisher = wrapped.countDocuments(__clientSession, __filter);
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -238,8 +264,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.CountOptions __options = options.toDriverClass();
-    wrapped.countDocuments(__clientSession, __filter, __options);
-    return null;
+    Publisher<Long> __publisher = wrapped.countDocuments(__clientSession, __filter, __options);
+    Promise<Long> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -253,7 +281,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoResult<TDocument> find() {
-    wrapped.find();
     return null;
   }
 
@@ -266,7 +293,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> find(JsonObject filter) {
     requireNonNull(filter, "filter cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.find(__filter);
     return null;
   }
 
@@ -279,7 +305,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> find(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.find(__clientSession);
     return null;
   }
 
@@ -294,7 +319,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.find(__clientSession, __filter);
     return null;
   }
 
@@ -308,7 +332,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> aggregate(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline cannot be null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    wrapped.aggregate(__pipeline);
     return null;
   }
 
@@ -323,7 +346,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(pipeline, "pipeline cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    wrapped.aggregate(__clientSession, __pipeline);
     return null;
   }
 
@@ -335,7 +357,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public ReadStream<JsonObject> watch() {
-    wrapped.watch();
     return null;
   }
 
@@ -348,7 +369,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public ReadStream<JsonObject> watch(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline cannot be null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    wrapped.watch(__pipeline);
     return null;
   }
 
@@ -361,7 +381,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public ReadStream<JsonObject> watch(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.watch(__clientSession);
     return null;
   }
 
@@ -376,7 +395,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(pipeline, "pipeline cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    wrapped.watch(__clientSession, __pipeline);
     return null;
   }
 
@@ -390,7 +408,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction) {
     requireNonNull(mapFunction, "mapFunction cannot be null");
     requireNonNull(reduceFunction, "reduceFunction cannot be null");
-    wrapped.mapReduce(mapFunction, reduceFunction);
     return null;
   }
 
@@ -407,7 +424,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(mapFunction, "mapFunction cannot be null");
     requireNonNull(reduceFunction, "reduceFunction cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.mapReduce(__clientSession, mapFunction, reduceFunction);
     return null;
   }
 
@@ -490,8 +506,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<InsertOneResult> insertOne(TDocument document) {
     requireNonNull(document, "document cannot be null");
-    wrapped.insertOne(document);
-    return null;
+    Publisher<InsertOneResult> __publisher = wrapped.insertOne(document);
+    Promise<InsertOneResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -507,8 +525,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(document, "document cannot be null");
     requireNonNull(options, "options cannot be null");
     com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass();
-    wrapped.insertOne(document, __options);
-    return null;
+    Publisher<InsertOneResult> __publisher = wrapped.insertOne(document, __options);
+    Promise<InsertOneResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -524,8 +544,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession cannot be null");
     requireNonNull(document, "document cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.insertOne(__clientSession, document);
-    return null;
+    Publisher<InsertOneResult> __publisher = wrapped.insertOne(__clientSession, document);
+    Promise<InsertOneResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -544,8 +566,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass();
-    wrapped.insertOne(__clientSession, document, __options);
-    return null;
+    Publisher<InsertOneResult> __publisher = wrapped.insertOne(__clientSession, document, __options);
+    Promise<InsertOneResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -560,8 +584,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<InsertManyResult> insertMany(List<? extends TDocument> documents) {
     requireNonNull(documents, "documents cannot be null");
-    wrapped.insertMany(documents);
-    return null;
+    Publisher<InsertManyResult> __publisher = wrapped.insertMany(documents);
+    Promise<InsertManyResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -578,8 +604,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(documents, "documents cannot be null");
     requireNonNull(options, "options cannot be null");
     com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass();
-    wrapped.insertMany(documents, __options);
-    return null;
+    Publisher<InsertManyResult> __publisher = wrapped.insertMany(documents, __options);
+    Promise<InsertManyResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -597,8 +625,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession cannot be null");
     requireNonNull(documents, "documents cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.insertMany(__clientSession, documents);
-    return null;
+    Publisher<InsertManyResult> __publisher = wrapped.insertMany(__clientSession, documents);
+    Promise<InsertManyResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -617,8 +647,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass();
-    wrapped.insertMany(__clientSession, documents, __options);
-    return null;
+    Publisher<InsertManyResult> __publisher = wrapped.insertMany(__clientSession, documents, __options);
+    Promise<InsertManyResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -634,8 +666,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<DeleteResult> deleteOne(JsonObject filter) {
     requireNonNull(filter, "filter cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.deleteOne(__filter);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteOne(__filter);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -652,8 +686,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
-    wrapped.deleteOne(__filter, __options);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteOne(__filter, __options);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -670,8 +706,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.deleteOne(__clientSession, __filter);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteOne(__clientSession, __filter);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -691,8 +729,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
-    wrapped.deleteOne(__clientSession, __filter, __options);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteOne(__clientSession, __filter, __options);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -707,8 +747,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<DeleteResult> deleteMany(JsonObject filter) {
     requireNonNull(filter, "filter cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.deleteMany(__filter);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteMany(__filter);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -725,8 +767,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
-    wrapped.deleteMany(__filter, __options);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteMany(__filter, __options);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -743,8 +787,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.deleteMany(__clientSession, __filter);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteMany(__clientSession, __filter);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -764,8 +810,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
-    wrapped.deleteMany(__clientSession, __filter, __options);
-    return null;
+    Publisher<DeleteResult> __publisher = wrapped.deleteMany(__clientSession, __filter, __options);
+    Promise<DeleteResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -781,8 +829,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     requireNonNull(replacement, "replacement cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.replaceOne(__filter, replacement);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -801,8 +851,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass();
-    wrapped.replaceOne(__filter, replacement, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -822,8 +874,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(replacement, "replacement cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.replaceOne(__clientSession, __filter, replacement);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -844,8 +898,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass();
-    wrapped.replaceOne(__clientSession, __filter, replacement, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -863,8 +919,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(update, "update cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
-    wrapped.updateOne(__filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -884,8 +942,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateOne(__filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -905,8 +965,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
-    wrapped.updateOne(__clientSession, __filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -928,8 +990,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateOne(__clientSession, __filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -947,8 +1011,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(update, "update cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
-    wrapped.updateOne(__filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -968,8 +1034,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateOne(__filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -990,8 +1058,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
-    wrapped.updateOne(__clientSession, __filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1014,8 +1084,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateOne(__clientSession, __filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1033,8 +1105,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(update, "update cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
-    wrapped.updateMany(__filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1054,8 +1128,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateMany(__filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1075,8 +1151,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
-    wrapped.updateMany(__clientSession, __filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1098,8 +1176,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateMany(__clientSession, __filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1117,8 +1197,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(update, "update cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
-    wrapped.updateMany(__filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1138,8 +1220,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateMany(__filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1160,8 +1244,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
-    wrapped.updateMany(__clientSession, __filter, __update);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1184,8 +1270,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
-    wrapped.updateMany(__clientSession, __filter, __update, __options);
-    return null;
+    Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update, __options);
+    Promise<UpdateResult> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1201,8 +1289,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<TDocument> findOneAndDelete(JsonObject filter) {
     requireNonNull(filter, "filter cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.findOneAndDelete(__filter);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__filter);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1219,8 +1309,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndDeleteOptions __options = options.toDriverClass();
-    wrapped.findOneAndDelete(__filter, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__filter, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1237,8 +1329,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.findOneAndDelete(__clientSession, __filter);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__clientSession, __filter);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1259,8 +1353,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndDeleteOptions __options = options.toDriverClass();
-    wrapped.findOneAndDelete(__clientSession, __filter, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__clientSession, __filter, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1277,8 +1373,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     requireNonNull(replacement, "replacement cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.findOneAndReplace(__filter, replacement);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1297,8 +1395,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass();
-    wrapped.findOneAndReplace(__filter, replacement, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1318,8 +1418,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(replacement, "replacement cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    wrapped.findOneAndReplace(__clientSession, __filter, replacement);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1341,8 +1443,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass();
-    wrapped.findOneAndReplace(__clientSession, __filter, replacement, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1360,8 +1464,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(update, "update cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
-    wrapped.findOneAndUpdate(__filter, __update);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1381,8 +1487,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
-    wrapped.findOneAndUpdate(__filter, __update, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1403,8 +1511,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
-    wrapped.findOneAndUpdate(__clientSession, __filter, __update);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1427,8 +1537,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
-    wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1446,8 +1558,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(update, "update cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
-    wrapped.findOneAndUpdate(__filter, __update);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1467,8 +1581,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
-    wrapped.findOneAndUpdate(__filter, __update, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1489,8 +1605,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
-    wrapped.findOneAndUpdate(__clientSession, __filter, __update);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1513,8 +1631,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
-    wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
-    return null;
+    Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
+    Promise<TDocument> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1528,8 +1648,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Void> drop() {
-    wrapped.drop();
-    return null;
+    Publisher<Void> __publisher = wrapped.drop();
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1544,8 +1666,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Void> drop(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.drop(__clientSession);
-    return null;
+    Publisher<Void> __publisher = wrapped.drop(__clientSession);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1560,8 +1684,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<String> createIndex(JsonObject key) {
     requireNonNull(key, "key cannot be null");
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
-    wrapped.createIndex(__key);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndex(__key);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1578,8 +1704,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
     com.mongodb.client.model.IndexOptions __options = options.toDriverClass();
-    wrapped.createIndex(__key, __options);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndex(__key, __options);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1596,8 +1724,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(key, "key cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
-    wrapped.createIndex(__clientSession, __key);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndex(__clientSession, __key);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1617,8 +1747,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
     com.mongodb.client.model.IndexOptions __options = options.toDriverClass();
-    wrapped.createIndex(__clientSession, __key, __options);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndex(__clientSession, __key, __options);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1632,8 +1764,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<String> createIndexes(List<IndexModel> indexes) {
     requireNonNull(indexes, "indexes cannot be null");
-    wrapped.createIndexes(indexes);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndexes(indexes);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1650,8 +1784,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(indexes, "indexes cannot be null");
     requireNonNull(createIndexOptions, "createIndexOptions cannot be null");
     com.mongodb.client.model.CreateIndexOptions __createIndexOptions = createIndexOptions.toDriverClass();
-    wrapped.createIndexes(indexes, __createIndexOptions);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndexes(indexes, __createIndexOptions);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1667,8 +1803,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession cannot be null");
     requireNonNull(indexes, "indexes cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.createIndexes(__clientSession, indexes);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndexes(__clientSession, indexes);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1687,8 +1825,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(createIndexOptions, "createIndexOptions cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.CreateIndexOptions __createIndexOptions = createIndexOptions.toDriverClass();
-    wrapped.createIndexes(__clientSession, indexes, __createIndexOptions);
-    return null;
+    Publisher<String> __publisher = wrapped.createIndexes(__clientSession, indexes, __createIndexOptions);
+    Promise<String> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1702,7 +1842,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoResult<JsonObject> listIndexes() {
-    wrapped.listIndexes();
     return null;
   }
 
@@ -1715,7 +1854,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<JsonObject> listIndexes(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.listIndexes(__clientSession);
     return null;
   }
 
@@ -1728,8 +1866,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Void> dropIndex(String indexName) {
     requireNonNull(indexName, "indexName cannot be null");
-    wrapped.dropIndex(indexName);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(indexName);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1744,8 +1884,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Void> dropIndex(JsonObject keys) {
     requireNonNull(keys, "keys cannot be null");
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
-    wrapped.dropIndex(__keys);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(__keys);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1761,8 +1903,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(indexName, "indexName cannot be null");
     requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
-    wrapped.dropIndex(indexName, __dropIndexOptions);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(indexName, __dropIndexOptions);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1779,8 +1923,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
-    wrapped.dropIndex(__keys, __dropIndexOptions);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(__keys, __dropIndexOptions);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1796,8 +1942,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession cannot be null");
     requireNonNull(indexName, "indexName cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.dropIndex(__clientSession, indexName);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, indexName);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1814,8 +1962,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(keys, "keys cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
-    wrapped.dropIndex(__clientSession, __keys);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, __keys);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1834,8 +1984,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
-    wrapped.dropIndex(__clientSession, indexName, __dropIndexOptions);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, indexName, __dropIndexOptions);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1856,8 +2008,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
-    wrapped.dropIndex(__clientSession, __keys, __dropIndexOptions);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, __keys, __dropIndexOptions);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1871,8 +2025,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Void> dropIndexes() {
-    wrapped.dropIndexes();
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndexes();
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1887,8 +2043,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Void> dropIndexes(DropIndexOptions dropIndexOptions) {
     requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
-    wrapped.dropIndexes(__dropIndexOptions);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndexes(__dropIndexOptions);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1903,8 +2061,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Void> dropIndexes(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    wrapped.dropIndexes(__clientSession);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndexes(__clientSession);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1921,8 +2081,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
-    wrapped.dropIndexes(__clientSession, __dropIndexOptions);
-    return null;
+    Publisher<Void> __publisher = wrapped.dropIndexes(__clientSession, __dropIndexOptions);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1937,8 +2099,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<Void> renameCollection(MongoNamespace newCollectionNamespace) {
     requireNonNull(newCollectionNamespace, "newCollectionNamespace cannot be null");
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
-    wrapped.renameCollection(__newCollectionNamespace);
-    return null;
+    Publisher<Void> __publisher = wrapped.renameCollection(__newCollectionNamespace);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1956,8 +2120,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
-    wrapped.renameCollection(__newCollectionNamespace, __options);
-    return null;
+    Publisher<Void> __publisher = wrapped.renameCollection(__newCollectionNamespace, __options);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1976,8 +2142,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(newCollectionNamespace, "newCollectionNamespace cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
-    wrapped.renameCollection(__clientSession, __newCollectionNamespace);
-    return null;
+    Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, __newCollectionNamespace);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override
@@ -1998,8 +2166,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
-    wrapped.renameCollection(__clientSession, __newCollectionNamespace, __options);
-    return null;
+    Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, __newCollectionNamespace, __options);
+    Promise<Void> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future();
   }
 
   @Override

@@ -55,7 +55,7 @@ public class ConversionUtilsGenerator {
                 String type = matcher.group(2);
                 methodName = "to" + type + "List";
             } else  {
-                throw new IllegalArgumentException("can't generate method name from" + to);
+                throw new IllegalArgumentException("can't generate method name from " + to);
             }
             conversions.put(conversion, methodName);
         }
@@ -77,7 +77,9 @@ public class ConversionUtilsGenerator {
                     .build();
             conversionUtils.addMethod(method);
         }
-        JavaFile javaFile = JavaFile.builder("io.vertx.mongo.impl", conversionUtils.build()).build();
+        JavaFile javaFile = JavaFile.builder("io.vertx.mongo.impl", conversionUtils.build())
+                .addFileComment(Copyright.COPYRIGHT)
+                .build();
         javaFile.writeTo(baseDir);
 
     }

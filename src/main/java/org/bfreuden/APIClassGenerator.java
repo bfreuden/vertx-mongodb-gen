@@ -2,7 +2,7 @@ package org.bfreuden;
 
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
-import io.vertx.core.json.JsonObject;
+import org.reactivestreams.Publisher;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,13 +21,15 @@ public abstract class APIClassGenerator {
         this.classDoc = classDoc;
     }
 
-    protected abstract List<JavaFile> getJavaFiles();
+    protected abstract List<JavaFile.Builder> getJavaFiles();
 
     public void generate(File genSourceDir) throws IOException {
         analyzeClass();
-        List<JavaFile> javaFiles = getJavaFiles();
-        for (JavaFile javaFile : javaFiles)
-            javaFile.writeTo(genSourceDir);
+        List<JavaFile.Builder> javaFiles = getJavaFiles();
+        for (JavaFile.Builder javaFile : javaFiles) {
+            javaFile.addFileComment(Copyright.COPYRIGHT);
+            javaFile.build().writeTo(genSourceDir);
+        }
     }
 
     protected abstract void analyzeClass();
@@ -140,8 +142,8 @@ public abstract class APIClassGenerator {
         java.lang.reflect.Type type;
         boolean isPublisher;
         boolean singlePublisher;
-        String publisherClassName;
-        String publisherParameterClassName;
+        boolean noArgPublisher;
+        ClassName publisherClassName;
 
         private ActualType() {
         }
@@ -164,16 +166,39 @@ public abstract class APIClassGenerator {
         public static ActualType fromPublisher(MethodDoc methodDoc, Type type) {
             ActualType actualType = new ActualType();
             actualType.isPublisher = true;
-            actualType.publisherClassName = type.qualifiedTypeName();
+            actualType.publisherClassName = ClassName.bestGuess(type.qualifiedTypeName());
             ParameterizedType parameterizedType = type.asParameterizedType();
             if (parameterizedType != null) {
                 String qualified = parameterizedType.toString();
-                actualType.publisherParameterClassName = qualified.substring(qualified.indexOf('<') + 1, qualified.length() - 1);
-                if (actualType.publisherParameterClassName.equals("com.mongodb.reactivestreams.client.Success") ||
-                        actualType.publisherParameterClassName.equals(Void.class.getName())
+                if (qualified.contains(".")) {
+                    actualType.mongoType = ClassName.bestGuess(qualified.substring(qualified.indexOf('<') + 1, qualified.length() - 1));
+                } else {
+                    actualType.mongoType = TypeVariableName.get(qualified);
+                }
+                actualType.vertxType = actualType.mongoType;
+                if (qualified.equals("com.mongodb.reactivestreams.client.Success") ||
+                        qualified.equals(Void.class.getName())
                 ) {
                     actualType.singlePublisher = true;
-                    actualType.publisherParameterClassName = Void.class.getName();
+                    actualType.vertxType = ClassName.get(Void.class);
+                }
+            } else {
+                Type[] types = type.asClassDoc().interfaceTypes();
+                if (types != null) {
+                    for (Type atype : types) {
+                        if (atype.qualifiedTypeName().equals(Publisher.class.getName())) {
+                            ParameterizedType parameterizedType1 = atype.asParameterizedType();
+                            Type[] types1 = parameterizedType1.typeArguments();
+                            actualType.mongoType = ClassName.bestGuess(types1[0].qualifiedTypeName());
+                        }
+                    }
+                }
+                if (actualType.mongoType == null)
+                    throw new IllegalStateException("Unable to detect published type of " + type.qualifiedTypeName());
+                actualType.vertxType = actualType.mongoType;
+                actualType.noArgPublisher = true;
+                if (Types.isKnown(actualType.mongoType.toString())) {
+                    actualType.vertxType = Types.getMapped(actualType.mongoType.toString());
                 }
             }
             if (!actualType.singlePublisher) {

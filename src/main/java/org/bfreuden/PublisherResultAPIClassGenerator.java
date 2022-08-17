@@ -90,11 +90,11 @@ public class PublisherResultAPIClassGenerator extends APIClassGenerator {
     }
 
     @Override
-    protected List<JavaFile> getJavaFiles() {
+    protected List<JavaFile.Builder> getJavaFiles() {
         if (!hasSpecial && !hasOtherReactive)
             return Collections.emptyList();
         TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
                 .addModifiers(Modifier.PUBLIC);
-        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()).build());
+        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()));
     }
 }

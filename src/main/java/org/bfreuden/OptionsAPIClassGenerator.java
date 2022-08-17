@@ -219,7 +219,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
     }
 
     @Override
-    protected List<JavaFile> getJavaFiles() {
+    protected List<JavaFile.Builder> getJavaFiles() {
         TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
                 .addModifiers(Modifier.PUBLIC);
         String rawCommentText = classDoc.getRawCommentText();
@@ -310,7 +310,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             type.addMethod(getterBuilder.build());
         }
         type.addMethod(toMongo(toMongoMethod));
-        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()).build());
+        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()));
     }
 
     protected MethodSpec.Builder toMongoBuilder() {
