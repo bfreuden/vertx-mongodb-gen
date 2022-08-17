@@ -510,4 +510,10 @@ public interface GridFSBucket {
    *  @since 1.7
    */
   GridFSBucket drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler);
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  com.mongodb.reactivestreams.client.gridfs.GridFSBucket toDriverClass();
 }

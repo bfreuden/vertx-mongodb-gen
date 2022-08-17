@@ -558,4 +558,10 @@ public interface MongoDatabase {
    */
   MongoResult<JsonObject> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
       AggregateOptions options);
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  com.mongodb.reactivestreams.client.MongoDatabase toDriverClass();
 }

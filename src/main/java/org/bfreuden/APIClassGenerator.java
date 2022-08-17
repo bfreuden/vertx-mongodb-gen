@@ -50,17 +50,23 @@ public abstract class APIClassGenerator {
                     if (parameterClassName.equals("TDocument")) {
                         return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, TypeVariableName.get("TDocument")));
                     } else if (parameterClassName.equals("? extends TDocument")) {
-                        return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, WildcardTypeName.supertypeOf(TypeVariableName.get("TDocument"))));
+                        return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, WildcardTypeName.subtypeOf(TypeVariableName.get("TDocument"))));
                     } else {
                         if (Types.isKnown(parameterClassName)) {
                             TypeName mappedParameterClassName = Types.getMapped("? extends org.bson.conversions.Bson");
-                            return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, mappedParameterClassName));
+                            return ActualType.fromMappedTypeName(
+                                    ParameterizedTypeName.get((ClassName) mappedType, WildcardTypeName.subtypeOf(ClassName.bestGuess("org.bson.conversions.Bson"))),
+                                    ParameterizedTypeName.get((ClassName) mappedType, mappedParameterClassName)
+                            );
                         } else {
                             return ActualType.fromTypeName(ParameterizedTypeName.get((ClassName) mappedType, ClassName.bestGuess(parameterClassName)));
                         }
                     }
                 } else {
-                    return ActualType.fromTypeName(mappedType);
+                    if (mappedType.toString().equals(qualifiedTypeName))
+                        return ActualType.fromTypeName(mappedType);
+                    else
+                        return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), mappedType);
                 }
             } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
                 return ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));

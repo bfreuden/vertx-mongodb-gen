@@ -847,7 +847,7 @@ public interface MongoCollection<TDocument> {
    *  @return a future with a single element with the InsertManyResult or with either a
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  Future<InsertManyResult> insertMany(List<? super TDocument> documents);
+  Future<InsertManyResult> insertMany(List<? extends TDocument> documents);
 
   /**
    *  Inserts a batch of documents.
@@ -856,7 +856,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  MongoCollection<TDocument> insertMany(List<? super TDocument> documents,
+  MongoCollection<TDocument> insertMany(List<? extends TDocument> documents,
       Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
@@ -866,7 +866,8 @@ public interface MongoCollection<TDocument> {
    *  @return a future with a single element with the InsertManyResult or with either a
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  Future<InsertManyResult> insertMany(List<? super TDocument> documents, InsertManyOptions options);
+  Future<InsertManyResult> insertMany(List<? extends TDocument> documents,
+      InsertManyOptions options);
 
   /**
    *  Inserts a batch of documents.
@@ -876,7 +877,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  MongoCollection<TDocument> insertMany(List<? super TDocument> documents,
+  MongoCollection<TDocument> insertMany(List<? extends TDocument> documents,
       InsertManyOptions options, Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
@@ -889,7 +890,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   Future<InsertManyResult> insertMany(ClientSession clientSession,
-      List<? super TDocument> documents);
+      List<? extends TDocument> documents);
 
   /**
    *  Inserts a batch of documents.
@@ -902,7 +903,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection<TDocument> insertMany(ClientSession clientSession,
-      List<? super TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler);
+      List<? extends TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
    *  Inserts a batch of documents.
@@ -915,7 +916,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   Future<InsertManyResult> insertMany(ClientSession clientSession,
-      List<? super TDocument> documents, InsertManyOptions options);
+      List<? extends TDocument> documents, InsertManyOptions options);
 
   /**
    *  Inserts a batch of documents.
@@ -929,7 +930,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoCollection<TDocument> insertMany(ClientSession clientSession,
-      List<? super TDocument> documents, InsertManyOptions options,
+      List<? extends TDocument> documents, InsertManyOptions options,
       Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
@@ -2685,4 +2686,10 @@ public interface MongoCollection<TDocument> {
   MongoCollection<TDocument> renameCollection(ClientSession clientSession,
       MongoNamespace newCollectionNamespace, RenameCollectionOptions options,
       Handler<AsyncResult<Void>> resultHandler);
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  com.mongodb.reactivestreams.client.MongoCollection<TDocument> toDriverClass();
 }

@@ -1,11 +1,11 @@
 package io.vertx.mongo.impl;
 
 import io.vertx.core.json.JsonObject;
-import org.bson.BsonBinary;
-import org.bson.BsonDocument;
-import org.bson.BsonTimestamp;
-import org.bson.Document;
+import org.bson.*;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+
+import java.util.List;
 
 public class ConversionUtilsImpl implements ConversionUtils {
 
@@ -28,12 +28,27 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
+    public List<? extends Bson> toBsonList(List<JsonObject> from) {
+        return null;
+    }
+
+    @Override
     public BsonTimestamp toBsonTimestamp(Long from) {
         return null;
     }
 
     @Override
+    public BsonValue toBsonValue(Object from) {
+        return null;
+    }
+
+    @Override
     public Document toDocument(JsonObject from) {
+        return null;
+    }
+
+    @Override
+    public ObjectId toObjectId(JsonObject from) {
         return null;
     }
 }

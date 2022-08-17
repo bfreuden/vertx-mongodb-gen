@@ -16,18 +16,19 @@ import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
 
+    private Set<String> staticImports = new HashSet<>();
     private String classJavadoc;
     private ArrayList<TypeVariableName> typeVariables;
     private ArrayList<TypeName> superInterfaces;
     private TypeName superClass;
     private List<MongoMethod> methods =  new ArrayList<>();
+    private TypeName wrappedType;
 
 
     protected class MongoMethod {
@@ -147,6 +148,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
     protected static class MongoMethodParameter {
         boolean optionType = false;
         public String conversionMethod;
+        boolean reactiveType = false;
         String name;
         String publisherClassName;
         boolean isPublisher;
@@ -169,8 +171,10 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         if (typeVariables != null  && typeVariables.length > 0) {
             // fixme hardcoded TDocument
             this.fluentReturnType = ParameterizedTypeName.get(ClassName.bestGuess(getTargetQualifiedClassName()), TypeVariableName.get("TDocument"));
+            this.wrappedType = ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), TypeVariableName.get("TDocument"));
         } else {
             this.fluentReturnType = ClassName.bestGuess(getTargetQualifiedClassName());
+            this.wrappedType = ClassName.bestGuess(classDoc.qualifiedTypeName());
         }
 
         this.classJavadoc = classDoc.getRawCommentText();
@@ -233,36 +237,73 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
     }
 
     private JavaFile getInterfaceFile() {
-        TypeSpec.Builder type = TypeSpec.interfaceBuilder(getTargetClassName());
-        type.addModifiers(Modifier.PUBLIC);
+        TypeSpec.Builder typeBuilder = TypeSpec.interfaceBuilder(getTargetClassName());
+        typeBuilder.addModifiers(Modifier.PUBLIC);
         boolean isImpl = false;
-
+        staticImports.clear();
         for (TypeName inter : superInterfaces)
-            type.addSuperinterface(inter);
+            typeBuilder.addSuperinterface(inter);
 
-        inflateType(type, isImpl, null, null, null);
+        inflateType(typeBuilder, isImpl, null, null, null);
 
-        return JavaFile.builder(getTargetPackage(), type.build()).build();
+        typeBuilder.addMethod(
+                MethodSpec.methodBuilder("toDriverClass")
+                        .addJavadoc("@return mongo object\n@hidden")
+                        .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
+                        .returns(wrappedType)
+                        .build()
+        );
+        JavaFile.Builder builder = JavaFile.builder(getTargetPackage(), typeBuilder.build());
+        addStaticImports(builder);
+        return builder.build();
     }
-    private JavaFile getImplFile() {
-        TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName() + "Impl");
-        type.addModifiers(Modifier.PUBLIC);
-        boolean isImpl = true;
 
+    private void addStaticImports(JavaFile.Builder builder) {
+        for (String staticImport : staticImports) {
+            int index = staticImport.lastIndexOf('.');
+            String className = staticImport.substring(0, index);
+            String methodName = staticImport.substring(index + 1);
+            builder.addStaticImport(ClassName.bestGuess(className), methodName);
+        }
+    }
+
+    private JavaFile getImplFile() {
+        TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(getTargetClassName() + "Impl");
+        typeBuilder.addModifiers(Modifier.PUBLIC);
+        boolean isImpl = true;
+        staticImports.clear();
         ClassName superclass = ClassName.bestGuess(getTargetPackage() + ".impl." + getTargetClassName() + "Base");
         TypeName extendsClassType = typeVariables.isEmpty() ? superclass : ParameterizedTypeName.get(superclass, typeVariables.toArray(new TypeVariableName[0]));
 
-        type.superclass(extendsClassType);
+        typeBuilder.superclass(extendsClassType);
 
         for (TypeName inter : superInterfaces)
-            type.addSuperinterface(inter);
+            typeBuilder.addSuperinterface(inter);
 
-        inflateType(type, isImpl, this::implementMethod, this::implementHandlerMethod, this::implementWithOptionsMethod);
+        inflateType(typeBuilder, isImpl, this::implementMethod, this::implementHandlerMethod, this::implementWithOptionsMethod);
 
-        return JavaFile.builder(getTargetPackage()+ ".impl", type.build()).build();
+        typeBuilder.addField(FieldSpec.builder(wrappedType, "wrapped").addModifiers(Modifier.PROTECTED).build());
+
+        typeBuilder.addMethod(
+                MethodSpec.methodBuilder("toDriverClass")
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(wrappedType)
+                        .addStatement("return wrapped")
+                        .build()
+        );
+
+        JavaFile.Builder builder = JavaFile.builder(getTargetPackage() + ".impl", typeBuilder.build());
+        addStaticImports(builder);
+        return builder.build();
     }
 
     private void implementMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
+        for (MongoMethodParameter param : method.params) {
+            if (!param.vertxType.isPrimitive()) {
+                staticImports.add("java.util.Objects.requireNonNull");
+                methodBuilder.addStatement("requireNonNull(" + param.name + ", $S)", param.name + " cannot be null");
+            }
+        }
         StringJoiner paramNames = new StringJoiner(", ");
         for (MongoMethodParameter param : method.params) {
             if (param.optionType) {
@@ -272,13 +313,20 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
             } else if (param.conversionMethod != null) {
                 String paramName = "__" + param.name;
                 paramNames.add(paramName);
-                methodBuilder.addStatement("$T " + param.name +  " = $T.INSTANCE." + param.conversionMethod + "(" + param.name + ")",
+                methodBuilder.addStatement("$T " + paramName +  " = $T.INSTANCE." + param.conversionMethod + "(" + param.name + ")",
                         param.mongoType,
                         ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+            } else if (param.reactiveType) {
+                String paramName = "__" + param.name;
+                paramNames.add(paramName);
+                methodBuilder.addStatement("$T " + paramName +  " = " + param.name + ".toDriverClass()", param.mongoType);
             } else {
                 paramNames.add(param.name);
             }
         }
+        if (!method.mongoName.contains("ulk")) // FIXME
+            methodBuilder.addStatement("wrapped." + method.mongoName +  "(" + paramNames + ")");
+
 //        if (method.returnType.isSinglePublisher) {
 //            StringJoiner paramNames = new StringJoiner(", ");
 //            for (MongoMethodParameter param : method.params)
@@ -306,10 +354,10 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         StringJoiner paramNames = new StringJoiner(", ");
         for (MongoMethodParameter param : method.params)
             paramNames.add(param.name);
-
+        staticImports.add("io.vertx.mongo.impl.Utils.setHandler");
         methodBuilder
                 .addStatement("$T future = this." + method.vertxName + "(" + paramNames + ")", method.returnType.vertxType)
-                .addStatement("$T.setHandler(future, resultHandler)", ClassName.bestGuess("io.vertx.mongo.impl.Utils"))
+                .addStatement("setHandler(future, resultHandler)")
                 .addStatement("return this");
 
     }
@@ -481,8 +529,17 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
             }
             methodParameter.mongoType = actualParamType.mongoType;
             methodParameter.vertxType = actualParamType.vertxType;
+            ClassName mongoRawType = null;
+            if (methodParameter.mongoType instanceof ParameterizedTypeName) {
+                ParameterizedTypeName pmongoType = (ParameterizedTypeName)methodParameter.mongoType;
+                mongoRawType = pmongoType.rawType;
+            } else if (methodParameter.mongoType instanceof ClassName) {
+                mongoRawType = (ClassName) methodParameter.mongoType;
+            }
             if (context.optionsApiClasses.contains(methodParameter.mongoType.toString()) || context.otherApiClasses.contains(methodParameter.mongoType.toString())) {
                 methodParameter.optionType = true;
+            } else if (mongoRawType != null && context.reactiveApiClasses.contains(mongoRawType.toString())) {
+                methodParameter.reactiveType = true;
             }
 
             if (!(methodParameter.vertxType instanceof TypeVariableName) &&

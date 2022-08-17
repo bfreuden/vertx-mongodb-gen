@@ -222,4 +222,10 @@ public interface MongoClient extends Closeable {
    *  @since 4.1
    */
   ClusterDescription getClusterDescription();
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  com.mongodb.reactivestreams.client.MongoClient toDriverClass();
 }

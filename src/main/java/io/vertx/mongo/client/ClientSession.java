@@ -84,4 +84,10 @@ public interface ClientSession {
    *  @mongodb.server.release 4.0
    */
   ClientSession abortTransaction(Handler<AsyncResult<Void>> resultHandler);
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  com.mongodb.reactivestreams.client.ClientSession toDriverClass();
 }

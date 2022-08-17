@@ -106,4 +106,10 @@ public interface ClientEncryption extends Closeable {
   ClientEncryption decrypt(byte[] value, Handler<AsyncResult<Object>> resultHandler);
 
   void close();
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  com.mongodb.reactivestreams.client.vault.ClientEncryption toDriverClass();
 }

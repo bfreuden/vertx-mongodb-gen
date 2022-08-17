@@ -38,7 +38,7 @@ public class ConversionUtilsGenerator {
         }
     }
 
-    private static final Pattern LIST_REGEX = Pattern.compile("java\\.util\\.List<(?:\\? extends )(?:([a-z]+\\.)+)([^.]+)>");
+    private static final Pattern LIST_REGEX = Pattern.compile("java\\.util\\.List<(?:\\? (?:extends|super) )(?:([a-z]+\\.)+)([^.]+)>");
     String addConversion(TypeName from, TypeName to) {
         Conversion conversion = new Conversion(from, to);
         String methodName = conversions.get(conversion);
@@ -52,8 +52,7 @@ public class ConversionUtilsGenerator {
                 type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
                 methodName = "to" + type + "Array";
             } else if (matcher.matches()){
-                String type = matcher.group(1);
-                type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
+                String type = matcher.group(2);
                 methodName = "to" + type + "List";
             } else  {
                 throw new IllegalArgumentException("can't generate method name from" + to);
