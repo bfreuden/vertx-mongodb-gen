@@ -36,7 +36,8 @@ public abstract class APIClassGenerator {
         if (!type.isPrimitive()) {
             String qualifiedTypeName = type.qualifiedTypeName();
             if (qualifiedTypeName.equals("TDocument")) {
-                return ActualType.fromMappedTypeName(TypeVariableName.get("TDocument"), ClassName.get(JsonObject.class));
+//                return ActualType.fromMappedTypeName(TypeVariableName.get("TDocument"), ClassName.get(JsonObject.class));
+                return ActualType.fromTypeName(TypeVariableName.get("TDocument"));
             } else if (Types.isIgnored(qualifiedTypeName)) {
                 System.out.println("WARNING: ignored method because return type is ignored: " + methodDoc);
                 return null;

@@ -37,10 +37,10 @@ public interface ClientEncryption extends Closeable {
    *  Creates a new key document and inserts into the key vault collection.
    *  </p>
    *  @param kmsProvider the KMS provider
-   *  @param handler an async result containing the identifier for the created data key
+   *  @param resultHandler an async result containing the identifier for the created data key
    *  @return <code>this</code>
    */
-  ClientEncryption createDataKey(String kmsProvider, Handler<AsyncResult<byte[]>> handler);
+  ClientEncryption createDataKey(String kmsProvider, Handler<AsyncResult<byte[]>> resultHandler);
 
   /**
    *  Create a data key with the given KMS provider and options.
@@ -60,11 +60,11 @@ public interface ClientEncryption extends Closeable {
    *  </p>
    *  @param kmsProvider    the KMS provider
    *  @param dataKeyOptions the options for data key creation
-   *  @param handler an async result containing the identifier for the created data key
+   *  @param resultHandler an async result containing the identifier for the created data key
    *  @return <code>this</code>
    */
   ClientEncryption createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions,
-      Handler<AsyncResult<byte[]>> handler);
+      Handler<AsyncResult<byte[]>> resultHandler);
 
   /**
    *  Encrypt the given value with the given options.
@@ -84,11 +84,11 @@ public interface ClientEncryption extends Closeable {
    *  </p>
    *  @param value   the value to encrypt
    *  @param options the options for data encryption
-   *  @param handler an async result containing the encrypted value, a BSON binary of subtype 6
+   *  @param resultHandler an async result containing the encrypted value, a BSON binary of subtype 6
    *  @return <code>this</code>
    */
   ClientEncryption encrypt(Object value, EncryptOptions options,
-      Handler<AsyncResult<byte[]>> handler);
+      Handler<AsyncResult<byte[]>> resultHandler);
 
   /**
    *  Decrypt the given value.
@@ -100,10 +100,10 @@ public interface ClientEncryption extends Closeable {
   /**
    *  Decrypt the given value.
    *  @param value the value to decrypt, which must be of subtype 6
-   *  @param handler an async result containing the decrypted value
+   *  @param resultHandler an async result containing the decrypted value
    *  @return <code>this</code>
    */
-  ClientEncryption decrypt(byte[] value, Handler<AsyncResult<Object>> handler);
+  ClientEncryption decrypt(byte[] value, Handler<AsyncResult<Object>> resultHandler);
 
   void close();
 }

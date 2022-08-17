@@ -64,11 +64,11 @@ public interface ClientSession {
 
   /**
    *  Commit a transaction in the context of this session.  A transaction can only be commmited if one has first been started.
-   *  @param handler an empty async result that indicates when the operation has completed
+   *  @param resultHandler an empty async result that indicates when the operation has completed
    *  @return <code>this</code>
    *  @mongodb.server.release 4.0
    */
-  ClientSession commitTransaction(Handler<AsyncResult<Void>> handler);
+  ClientSession commitTransaction(Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Abort a transaction in the context of this session.  A transaction can only be aborted if one has first been started.
@@ -79,9 +79,9 @@ public interface ClientSession {
 
   /**
    *  Abort a transaction in the context of this session.  A transaction can only be aborted if one has first been started.
-   *  @param handler an empty async result that indicates when the operation has completed
+   *  @param resultHandler an empty async result that indicates when the operation has completed
    *  @return <code>this</code>
    *  @mongodb.server.release 4.0
    */
-  ClientSession abortTransaction(Handler<AsyncResult<Void>> handler);
+  ClientSession abortTransaction(Handler<AsyncResult<Void>> resultHandler);
 }

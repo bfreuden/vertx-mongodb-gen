@@ -1,7 +1,5 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.connection.ClusterSettings;
-import com.mongodb.event.ClusterListener;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -181,12 +179,12 @@ public interface MongoClient extends Closeable {
 
   /**
    *  Creates a client session.
-   *  @param handler an async result for the client session.
+   *  @param resultHandler an async result for the client session.
    *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
-  MongoClient startSession(Handler<AsyncResult<ClientSession>> handler);
+  MongoClient startSession(Handler<AsyncResult<ClientSession>> resultHandler);
 
   /**
    *  Creates a client session.
@@ -200,13 +198,13 @@ public interface MongoClient extends Closeable {
   /**
    *  Creates a client session.
    *  @param options the options for the client session
-   *  @param handler an async result for the client session.
+   *  @param resultHandler an async result for the client session.
    *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
   MongoClient startSession(ClientSessionOptions options,
-      Handler<AsyncResult<ClientSession>> handler);
+      Handler<AsyncResult<ClientSession>> resultHandler);
 
   /**
    *  Gets the current cluster description.

@@ -1,5 +1,6 @@
 package org.bfreuden;
 
+import com.google.common.collect.Lists;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
@@ -15,6 +16,8 @@ import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class ReactiveAPIClassGenerator extends APIClassGenerator {
@@ -115,7 +118,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                             newRawCommentText.add(newDocLine);
                             withOptionsNewRawCommentText.add(newDocLine);
                             String newDocLine2 = docLine
-                                    .replace("@return", "@param handler")
+                                    .replace("@return", "@param resultHandler")
                                     .replace("Iterable", "async result")
                                     .replace("iterable", "async result")
                                     .replace("observable", "async result")
@@ -142,6 +145,8 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
     }
 
     protected static class MongoMethodParameter {
+        boolean optionType = false;
+        public String conversionMethod;
         String name;
         String publisherClassName;
         boolean isPublisher;
@@ -177,8 +182,9 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         }
 
         this.typeVariables = new ArrayList<>();
-        for (TypeVariable typeVariable : typeVariables)
-            this.typeVariables.add(TypeVariableName.get(typeVariable.toString()));
+        if (typeVariables != null)
+            for (TypeVariable typeVariable : typeVariables)
+                this.typeVariables.add(TypeVariableName.get(typeVariable.toString()));
 
         this.superInterfaces = new ArrayList<TypeName>();
         for (ClassDoc inter : classDoc.interfaces()) {
@@ -221,56 +227,156 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
     }
 
-    protected List<JavaFile> getJavaFiles() {
-        TypeSpec.Builder type = classDoc.isClass() ? TypeSpec.classBuilder(getTargetClassName()) :  TypeSpec.interfaceBuilder(getTargetClassName());
-        type.addModifiers(Modifier.PUBLIC);
-        type.addJavadoc(classJavadoc);
 
-        for (TypeVariableName typeVariable : typeVariables)
-            type.addTypeVariable(typeVariable);
+    protected List<JavaFile> getJavaFiles() {
+        return Lists.newArrayList(getInterfaceFile(), getImplFile());
+    }
+
+    private JavaFile getInterfaceFile() {
+        TypeSpec.Builder type = TypeSpec.interfaceBuilder(getTargetClassName());
+        type.addModifiers(Modifier.PUBLIC);
+        boolean isImpl = false;
 
         for (TypeName inter : superInterfaces)
             type.addSuperinterface(inter);
 
-        if (superClass != null)
-            type.superclass(superClass);
+        inflateType(type, isImpl, null, null, null);
+
+        return JavaFile.builder(getTargetPackage(), type.build()).build();
+    }
+    private JavaFile getImplFile() {
+        TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName() + "Impl");
+        type.addModifiers(Modifier.PUBLIC);
+        boolean isImpl = true;
+
+        ClassName superclass = ClassName.bestGuess(getTargetPackage() + ".impl." + getTargetClassName() + "Base");
+        TypeName extendsClassType = typeVariables.isEmpty() ? superclass : ParameterizedTypeName.get(superclass, typeVariables.toArray(new TypeVariableName[0]));
+
+        type.superclass(extendsClassType);
+
+        for (TypeName inter : superInterfaces)
+            type.addSuperinterface(inter);
+
+        inflateType(type, isImpl, this::implementMethod, this::implementHandlerMethod, this::implementWithOptionsMethod);
+
+        return JavaFile.builder(getTargetPackage()+ ".impl", type.build()).build();
+    }
+
+    private void implementMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
+//        StringJoiner paramNames = new StringJoiner(", ");
+//        for (MongoMethodParameter param : method.params) {
+//            if (param.optionType) {
+//                String paramName = "__" + param.name;
+//                paramNames.add(paramName);
+//                methodBuilder.addStatement("$T " + paramName + " = this." + param.name + ".toDriverClass())", param.mongoType);
+//            } else if (param.conversionMethod != null) {
+//                String paramName = "__" + param.name;
+//                paramNames.add(paramName);
+//                methodBuilder.addStatement("$T " + param.name +  " = this.($T.INSTANCE." + param.conversionMethod + "(" + param.name + "))", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+//            } else {
+//                paramNames.add(param.name);
+//            }
+//        }
+//        if (method.returnType.isSinglePublisher) {
+//            StringJoiner paramNames = new StringJoiner(", ");
+//            for (MongoMethodParameter param : method.params)
+//                paramNames.add(param.name);
+//
+//            methodBuilder
+//                    .addStatement("$T future = this." + method.mongoName + "(" + paramNames + ")", method.returnType.vertxType)
+//                    .addStatement("$T.setHandler(future, resultHandler)", ClassName.bestGuess("io.vertx.mongo.impl.Utils"))
+//                    .addStatement("return this");
+//
+//        } else {
+            String returnType = method.returnType.vertxType.toString();
+            if (!returnType.equals("void") && !returnType.equals("java.lang.Void")) {
+                if (returnType.equals("int"))
+                    methodBuilder.addStatement("return 0");
+                else if (returnType.equals("boolean"))
+                    methodBuilder.addStatement("return false");
+                else if (returnType.equals("long"))
+                    methodBuilder.addStatement("return 0L");
+                else
+                    methodBuilder.addStatement("return null");
+            }
+//        }
+    }
+    private void implementHandlerMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
+        StringJoiner paramNames = new StringJoiner(", ");
+        for (MongoMethodParameter param : method.params)
+            paramNames.add(param.name);
+
+        methodBuilder
+                .addStatement("$T future = this." + method.vertxName + "(" + paramNames + ")", method.returnType.vertxType)
+                .addStatement("$T.setHandler(future, resultHandler)", ClassName.bestGuess("io.vertx.mongo.impl.Utils"))
+                .addStatement("return this");
+
+    }
+
+    private void implementWithOptionsMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
+        String returnType = method.returnType.paramType.toString();
+        if (!returnType.equals("void") && !returnType.equals("java.lang.Void"))
+            methodBuilder.addStatement("return null");
+    }
+
+    public void inflateType(
+        TypeSpec.Builder type,
+        boolean isImpl,
+        BiConsumer<MongoMethod, MethodSpec.Builder> methodCustomizer,
+        BiConsumer<MongoMethod, MethodSpec.Builder> handlerMethodCustomizer,
+        BiConsumer<MongoMethod, MethodSpec.Builder> withOptionsMethodCustomizer
+    ) {
+        if (!isImpl)
+            type.addJavadoc(classJavadoc);
+        for (TypeVariableName typeVariable : typeVariables)
+            type.addTypeVariable(typeVariable);
 
         for (MongoMethod method : methods) {
             {
                 MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.vertxName)
                         .addModifiers(Modifier.PUBLIC)
-                        .addModifiers(Modifier.ABSTRACT)
                         .returns(method.returnType.vertxType);
+                if (!isImpl)
+                    methodBuilder.addModifiers(Modifier.ABSTRACT);
                 for (TypeVariableName variable : method.typeVariables)
                     methodBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
                     methodBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
                 }
-                if (method.vertxResultOrFutureJavadoc != null)
+                if (method.vertxResultOrFutureJavadoc != null && !isImpl)
                     methodBuilder.addJavadoc(method.vertxResultOrFutureJavadoc);
+                if (isImpl)
+                    methodBuilder.addAnnotation(Override.class);
+                if (methodCustomizer != null)
+                    methodCustomizer.accept(method, methodBuilder);
                 type.addMethod(methodBuilder.build());
-
             }
 
             if (method.returnType.isSinglePublisher) {
                 MethodSpec.Builder handlerMethodBuilder = MethodSpec.methodBuilder(method.vertxName)
                         .addModifiers(Modifier.PUBLIC)
-                        .addModifiers(Modifier.ABSTRACT)
                         .returns(fluentReturnType);
+                if (!isImpl)
+                    handlerMethodBuilder.addModifiers(Modifier.ABSTRACT);
                 for (TypeVariableName variable : method.typeVariables)
                     handlerMethodBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
                     handlerMethodBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
                 }
-                handlerMethodBuilder.addParameter(ParameterSpec.builder(method.handlerParam, "handler").build());
-                if (method.vertxAsyncJavadoc != null)
+                handlerMethodBuilder.addParameter(ParameterSpec.builder(method.handlerParam, "resultHandler").build());
+                if (method.vertxAsyncJavadoc != null && !isImpl)
                     handlerMethodBuilder.addJavadoc(method.vertxAsyncJavadoc);
+                if (isImpl)
+                    handlerMethodBuilder.addAnnotation(Override.class);
+                if (handlerMethodCustomizer != null)
+                    handlerMethodCustomizer.accept(method, handlerMethodBuilder);
                 type.addMethod(handlerMethodBuilder.build());
             } else if (method.returnType.isPublisher && !method.returnType.publisherClassName.equals(Publisher.class.getName())) {
                 MethodSpec.Builder methodWithOptionsBuilder = MethodSpec.methodBuilder(method.vertxName)
                         .addModifiers(Modifier.PUBLIC)
-                        .addModifiers(Modifier.ABSTRACT)
                         .returns(method.returnType.vertxType);
+                if (!isImpl)
+                    methodWithOptionsBuilder.addModifiers(Modifier.ABSTRACT);
                 for (TypeVariableName variable : method.typeVariables)
                     methodWithOptionsBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
@@ -278,14 +384,17 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 }
                 String optionsClass = context.publisherOptionsClasses.get(method.returnType.publisherClassName);
                 methodWithOptionsBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(optionsClass), "options").build());
-                if (method.vertxWithOptionsJavadoc != null)
+                if (method.vertxWithOptionsJavadoc != null &&!isImpl)
                     methodWithOptionsBuilder.addJavadoc(method.vertxWithOptionsJavadoc);
+                if (isImpl)
+                    methodWithOptionsBuilder.addAnnotation(Override.class);
+                if (withOptionsMethodCustomizer != null)
+                    withOptionsMethodCustomizer.accept(method, methodWithOptionsBuilder);
                 type.addMethod(methodWithOptionsBuilder.build());
 
             }
 
         }
-        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()).build());
     }
 
     protected MongoMethod analyzeMethod(MethodDoc methodDoc) {
@@ -357,19 +466,6 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
         }
 
-//        if (classDoc.qualifiedTypeName().equals(MongoDatabase.class.getName()) &&
-//            methodDoc.name().equals("getCollection") &&
-//                Arrays.stream(methodDoc.typeParameters()).findFirst().isPresent()
-//        ) {
-//            mongoMethod.typeVariables.add(TypeVariableName.get("TDocument"));
-//        } else  if (classDoc.qualifiedTypeName().equals(MongoCollection.class.getName()) &&
-//            methodDoc.name().equals("withDocumentClass") &&
-//                Arrays.stream(methodDoc.typeParameters()).findFirst().isPresent()
-//        ) {
-//            mongoMethod.typeVariables.add(TypeVariableName.get("NewTDocument"));
-//        }
-
-
         for (Parameter param : methodDoc.parameters()) {
             MongoMethodParameter methodParameter = new MongoMethodParameter();
             methodParameter.name = param.name();
@@ -378,14 +474,19 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 System.out.println("WARNING: param type of " + methodDoc + " is unknown so method has been ignored");
                 return null;
             }
-//            ParameterizedType parameterizedType = param.type().asParameterizedType();
-//            if (param.type().qualifiedTypeName().equals(Class.class.getName()) && parameterizedType != null) {
-//                for (Type type : parameterizedType.typeArguments()) {
-//                    mongoMethod.typeVariables.add(TypeVariableName.get(type.typeName()));
-//                }
-//            }
-            methodParameter.mongoType = actualParamType.vertxType;
+            if (actualParamType.isPublisher) {
+                System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored");
+                return null;
+            }
+            methodParameter.mongoType = actualParamType.mongoType;
             methodParameter.vertxType = actualParamType.vertxType;
+            if (context.optionsApiClasses.contains(methodParameter.mongoType.toString()) || context.otherApiClasses.contains(methodParameter.mongoType.toString())) {
+                methodParameter.optionType = true;
+            }
+
+            if (!(methodParameter.vertxType instanceof TypeVariableName) && !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString())) {
+                methodParameter.conversionMethod = context.conversionUtilsGenerator.addConversion(methodParameter.vertxType, methodParameter.mongoType);
+            }
             mongoMethod.params.add(methodParameter);
             // FIXME: for the moment publisher parameters are ignored
             if (actualParamType.isPublisher) {

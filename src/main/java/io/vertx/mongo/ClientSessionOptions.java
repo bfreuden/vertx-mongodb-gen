@@ -1,8 +1,6 @@
 package io.vertx.mongo;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.mongo.client.ClientSession;
-
 import java.lang.Boolean;
 
 /**
