@@ -309,7 +309,7 @@ public class MapReduceOptions {
   /**
    *  Sets the bypass document level validation flag.
    *
-   *  <p>Note: This only applies when an &#x24;out stage is specified</p>.
+   *  <p>Note: This only applies when an $out stage is specified</p>.
    *
    *  @param bypassDocumentValidation If true, allows the write to opt-out of document level validation.
    *  @return this

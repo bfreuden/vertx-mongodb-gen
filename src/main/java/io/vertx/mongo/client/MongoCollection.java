@@ -157,11 +157,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @return a future with a single element indicating the number of documents
@@ -179,11 +179,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param handler an async result with a single element indicating the number of documents
@@ -202,11 +202,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param filter the query filter
@@ -225,11 +225,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param filter the query filter
@@ -249,11 +249,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param filter  the query filter
@@ -273,11 +273,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param filter  the query filter
@@ -299,11 +299,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param clientSession the client session with which to associate this operation
@@ -323,11 +323,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param clientSession the client session with which to associate this operation
@@ -377,11 +377,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param clientSession the client session with which to associate this operation
@@ -403,11 +403,11 @@ public interface MongoCollection<TDocument> {
    *   +-------------+--------------------------------+
    *   | Operator    | Replacement                    |
    *   +=============+================================+
-   *   | &#x24;where      |  &#x24;expr                         |
+   *   | $where      |  $expr                         |
    *   +-------------+--------------------------------+
-   *   | &#x24;near       |  &#x24;geoWithin with &#x24;center       |
+   *   | $near       |  $geoWithin with $center       |
    *   +-------------+--------------------------------+
-   *   | &#x24;nearSphere |  &#x24;geoWithin with &#x24;centerSphere |
+   *   | $nearSphere |  $geoWithin with $centerSphere |
    *   +-------------+--------------------------------+
    *  </pre>
    *  @param clientSession the client session with which to associate this operation
@@ -541,7 +541,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Creates a change stream for this collection.
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -551,7 +551,7 @@ public interface MongoCollection<TDocument> {
    *  Creates a change stream for this collection.
    *  @param options options
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -561,7 +561,7 @@ public interface MongoCollection<TDocument> {
    *  Creates a change stream for this collection.
    *  @param pipeline the aggregation pipeline to apply to the change stream
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
   ReadStream<JsonObject> watch(List<JsonObject> pipeline);
@@ -571,7 +571,7 @@ public interface MongoCollection<TDocument> {
    *  @param pipeline the aggregation pipeline to apply to the change stream
    *  @param options options
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
   ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
@@ -580,7 +580,7 @@ public interface MongoCollection<TDocument> {
    *  Creates a change stream for this collection.
    *  @param clientSession the client session with which to associate this operation
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -591,7 +591,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param options options
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -602,7 +602,7 @@ public interface MongoCollection<TDocument> {
    *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline to apply to the change stream
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -614,7 +614,7 @@ public interface MongoCollection<TDocument> {
    *  @param pipeline the aggregation pipeline to apply to the change stream
    *  @param options options
    *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */

@@ -236,7 +236,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                     joiner.add(line);
                 }
             }
-            type.addJavadoc(joiner.toString().replace("$", "&#x24;"));
+            type.addJavadoc(joiner.toString().replace("$", "$$"));
         }
         type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
         MethodSpec.Builder toMongoMethod = toMongoBuilder();
@@ -276,9 +276,9 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                             joiner.add(line);
                         }
                     }
-                    setterBuilder.addJavadoc(joiner.toString().replace("$", "&#x24;"));
+                    setterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
                 } else {
-                    setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "&#x24;"));
+                    setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "$$"));
                 }
             }
             if (option.deprecated)
@@ -302,9 +302,9 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
                             line = line.replace("in the given time unit", "(in milliseconds)");
                         joiner.add(line);
                     }
-                    getterBuilder.addJavadoc(joiner.toString().replace("$", "&#x24;"));
+                    getterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
                 } else {
-                    getterBuilder.addJavadoc(option.mongoGetterJavadoc.replace("$", "&#x24;"));
+                    getterBuilder.addJavadoc(option.mongoGetterJavadoc.replace("$", "$$"));
                 }
             }
             type.addMethod(getterBuilder.build());

@@ -512,7 +512,7 @@ public interface MongoDatabase {
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
-   *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
+   *  that do not require an underlying collection, such as {@code $currentOp} and {@code $listLocalSessions}.
    *  @param pipeline the aggregation pipeline
    *  @return an result containing the result of the aggregation operation
    *  @since 1.11
@@ -523,7 +523,7 @@ public interface MongoDatabase {
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
-   *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
+   *  that do not require an underlying collection, such as {@code $currentOp} and {@code $listLocalSessions}.
    *  @param pipeline the aggregation pipeline
    *  @param options options
    *  @return an result containing the result of the aggregation operation
@@ -535,7 +535,7 @@ public interface MongoDatabase {
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
-   *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
+   *  that do not require an underlying collection, such as {@code $currentOp} and {@code $listLocalSessions}.
    *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline
    *  @return an result containing the result of the aggregation operation
@@ -547,7 +547,7 @@ public interface MongoDatabase {
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
-   *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
+   *  that do not require an underlying collection, such as {@code $currentOp} and {@code $listLocalSessions}.
    *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline
    *  @param options options

@@ -91,7 +91,7 @@ public class AggregateOptions {
   }
 
   /**
-   *  The maximum amount of time for the server to wait on new documents to satisfy a {@code &#x24;changeStream} aggregation.
+   *  The maximum amount of time for the server to wait on new documents to satisfy a {@code $changeStream} aggregation.
    *
    *  A zero value will be ignored.
    *
@@ -111,7 +111,7 @@ public class AggregateOptions {
   /**
    *  Sets the bypass document level validation flag.
    *
-   *  <p>Note: This only applies when an &#x24;out stage is specified</p>.
+   *  <p>Note: This only applies when an $out stage is specified</p>.
    *
    *  @param bypassDocumentValidation If true, allows the write to opt-out of document level validation.
    *  @return this

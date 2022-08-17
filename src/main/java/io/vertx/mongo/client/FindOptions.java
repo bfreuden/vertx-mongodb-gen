@@ -410,7 +410,7 @@ public class FindOptions {
   }
 
   /**
-   *  Sets the showRecordId. Set to true to add a field {@code &#x24;recordId} to the returned documents.
+   *  Sets the showRecordId. Set to true to add a field {@code $recordId} to the returned documents.
    *
    *  @param showRecordId the showRecordId
    *  @return this

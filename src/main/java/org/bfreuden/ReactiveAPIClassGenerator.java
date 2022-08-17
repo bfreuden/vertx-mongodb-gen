@@ -95,7 +95,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         }
         void computeJavadocs() {
             if (mongoJavadoc != null) {
-                mongoJavadoc = mongoJavadoc.replace("$", "&#x24;");
+                mongoJavadoc = mongoJavadoc.replace("$", "$$");
                 this.vertxResultOrFutureJavadoc = this.mongoJavadoc;
                 if (returnType.isPublisher) {
                     StringJoiner newRawCommentText = new StringJoiner("\n");
@@ -170,7 +170,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
         this.classJavadoc = classDoc.getRawCommentText();
         if (this.classJavadoc != null) {
-            this.classJavadoc = classJavadoc.replace("$", "&#x24;");
+            this.classJavadoc = classJavadoc.replace("$", "$$");
             this.classJavadoc = Arrays.stream(this.classJavadoc.split("[\\n\\r]+"))
                     .filter(s -> !s.trim().isEmpty() && !s.contains("TDocument"))
                     .collect(Collectors.joining("\n"));
