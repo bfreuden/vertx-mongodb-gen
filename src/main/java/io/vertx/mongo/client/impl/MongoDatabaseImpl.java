@@ -47,16 +47,19 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
 
   @Override
   public MongoDatabase withReadPreference(ReadPreference readPreference) {
+    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     return null;
   }
 
   @Override
   public MongoDatabase withWriteConcern(WriteConcern writeConcern) {
+    com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
     return null;
   }
 
   @Override
   public MongoDatabase withReadConcern(ReadConcern readConcern) {
+    com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
     return null;
   }
 
@@ -78,6 +81,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
 
   @Override
   public MongoResult<JsonObject> runCommand(JsonObject command, ReadPreference readPreference) {
+    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     return null;
   }
 
@@ -89,6 +93,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public MongoResult<JsonObject> runCommand(ClientSession clientSession, JsonObject command,
       ReadPreference readPreference) {
+    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     return null;
   }
 
@@ -162,6 +167,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
 
   @Override
   public Future<Void> createCollection(String collectionName, CreateCollectionOptions options) {
+    com.mongodb.client.model.CreateCollectionOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -189,6 +195,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public Future<Void> createCollection(ClientSession clientSession, String collectionName,
       CreateCollectionOptions options) {
+    com.mongodb.client.model.CreateCollectionOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -216,6 +223,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public Future<Void> createView(String viewName, String viewOn, List<JsonObject> pipeline,
       CreateViewOptions createViewOptions) {
+    com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     return null;
   }
 
@@ -244,6 +252,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public Future<Void> createView(ClientSession clientSession, String viewName, String viewOn,
       List<JsonObject> pipeline, CreateViewOptions createViewOptions) {
+    com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     return null;
   }
 

@@ -263,20 +263,22 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
     }
 
     private void implementMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
-//        StringJoiner paramNames = new StringJoiner(", ");
-//        for (MongoMethodParameter param : method.params) {
-//            if (param.optionType) {
-//                String paramName = "__" + param.name;
-//                paramNames.add(paramName);
-//                methodBuilder.addStatement("$T " + paramName + " = this." + param.name + ".toDriverClass())", param.mongoType);
-//            } else if (param.conversionMethod != null) {
-//                String paramName = "__" + param.name;
-//                paramNames.add(paramName);
-//                methodBuilder.addStatement("$T " + param.name +  " = this.($T.INSTANCE." + param.conversionMethod + "(" + param.name + "))", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
-//            } else {
-//                paramNames.add(param.name);
-//            }
-//        }
+        StringJoiner paramNames = new StringJoiner(", ");
+        for (MongoMethodParameter param : method.params) {
+            if (param.optionType) {
+                String paramName = "__" + param.name;
+                paramNames.add(paramName);
+                methodBuilder.addStatement("$T " + paramName + " = " + param.name + ".toDriverClass()", param.mongoType);
+            } else if (param.conversionMethod != null) {
+                String paramName = "__" + param.name;
+                paramNames.add(paramName);
+                methodBuilder.addStatement("$T " + param.name +  " = $T.INSTANCE." + param.conversionMethod + "(" + param.name + ")",
+                        param.mongoType,
+                        ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+            } else {
+                paramNames.add(param.name);
+            }
+        }
 //        if (method.returnType.isSinglePublisher) {
 //            StringJoiner paramNames = new StringJoiner(", ");
 //            for (MongoMethodParameter param : method.params)
@@ -287,19 +289,18 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 //                    .addStatement("$T.setHandler(future, resultHandler)", ClassName.bestGuess("io.vertx.mongo.impl.Utils"))
 //                    .addStatement("return this");
 //
-//        } else {
-            String returnType = method.returnType.vertxType.toString();
-            if (!returnType.equals("void") && !returnType.equals("java.lang.Void")) {
-                if (returnType.equals("int"))
-                    methodBuilder.addStatement("return 0");
-                else if (returnType.equals("boolean"))
-                    methodBuilder.addStatement("return false");
-                else if (returnType.equals("long"))
-                    methodBuilder.addStatement("return 0L");
-                else
-                    methodBuilder.addStatement("return null");
-            }
 //        }
+        String returnType = method.returnType.vertxType.toString();
+        if (!returnType.equals("void") && !returnType.equals("java.lang.Void")) {
+            if (returnType.equals("int"))
+                methodBuilder.addStatement("return 0");
+            else if (returnType.equals("boolean"))
+                methodBuilder.addStatement("return false");
+            else if (returnType.equals("long"))
+                methodBuilder.addStatement("return 0L");
+            else
+                methodBuilder.addStatement("return null");
+        }
     }
     private void implementHandlerMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
         StringJoiner paramNames = new StringJoiner(", ");
@@ -484,7 +485,12 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 methodParameter.optionType = true;
             }
 
-            if (!(methodParameter.vertxType instanceof TypeVariableName) && !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString())) {
+            if (!(methodParameter.vertxType instanceof TypeVariableName) &&
+                    !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString()) &&
+                    !context.otherApiClasses.contains(methodParameter.mongoType.toString()) &&
+                    !context.optionsApiClasses.contains(methodParameter.mongoType.toString()) &&
+                    !context.reactiveApiClasses.contains(methodParameter.mongoType.toString())
+            ) {
                 methodParameter.conversionMethod = context.conversionUtilsGenerator.addConversion(methodParameter.vertxType, methodParameter.mongoType);
             }
             mongoMethod.params.add(methodParameter);

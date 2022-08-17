@@ -28,6 +28,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
 
   @Override
   public Future<byte[]> createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions) {
+    com.mongodb.client.model.vault.DataKeyOptions __dataKeyOptions = dataKeyOptions.toDriverClass();
     return null;
   }
 
@@ -41,6 +42,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
 
   @Override
   public Future<byte[]> encrypt(Object value, EncryptOptions options) {
+    com.mongodb.client.model.vault.EncryptOptions __options = options.toDriverClass();
     return null;
   }
 

@@ -115,6 +115,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public Future<ClientSession> startSession(ClientSessionOptions options) {
+    com.mongodb.ClientSessionOptions __options = options.toDriverClass();
     return null;
   }
 

@@ -52,16 +52,19 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public GridFSBucket withReadPreference(ReadPreference readPreference) {
+    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     return null;
   }
 
   @Override
   public GridFSBucket withWriteConcern(WriteConcern writeConcern) {
+    com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
     return null;
   }
 
   @Override
   public GridFSBucket withReadConcern(ReadConcern readConcern) {
+    com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
     return null;
   }
 
@@ -92,6 +95,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public Future<Void> downloadByFilename(String filename, GridFSDownloadOptions options) {
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -132,6 +136,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public Future<Void> downloadByFilename(ClientSession clientSession, String filename,
       GridFSDownloadOptions options) {
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
     return null;
   }
 

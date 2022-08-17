@@ -79,16 +79,19 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoCollection<TDocument> withReadPreference(ReadPreference readPreference) {
+    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     return null;
   }
 
   @Override
   public MongoCollection<TDocument> withWriteConcern(WriteConcern writeConcern) {
+    com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
     return null;
   }
 
   @Override
   public MongoCollection<TDocument> withReadConcern(ReadConcern readConcern) {
+    com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
     return null;
   }
 
@@ -107,6 +110,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Long> estimatedDocumentCount(EstimatedDocumentCountOptions options) {
+    com.mongodb.client.model.EstimatedDocumentCountOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -145,6 +149,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Long> countDocuments(JsonObject filter, CountOptions options) {
+    com.mongodb.client.model.CountOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -185,6 +190,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Long> countDocuments(ClientSession clientSession, JsonObject filter,
       CountOptions options) {
+    com.mongodb.client.model.CountOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -337,6 +343,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<BulkWriteResult> bulkWrite(List<JsonObject> requests, BulkWriteOptions options) {
+    com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -364,6 +371,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<JsonObject> requests,
       BulkWriteOptions options) {
+    com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -391,6 +399,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<InsertOneResult> insertOne(TDocument document, InsertOneOptions options) {
+    com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -418,6 +427,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<InsertOneResult> insertOne(ClientSession clientSession, TDocument document,
       InsertOneOptions options) {
+    com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -445,6 +455,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<InsertManyResult> insertMany(List<? super TDocument> documents,
       InsertManyOptions options) {
+    com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -473,6 +484,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<InsertManyResult> insertMany(ClientSession clientSession,
       List<? super TDocument> documents, InsertManyOptions options) {
+    com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -500,6 +512,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<DeleteResult> deleteOne(JsonObject filter, DeleteOptions options) {
+    com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -527,6 +540,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<DeleteResult> deleteOne(ClientSession clientSession, JsonObject filter,
       DeleteOptions options) {
+    com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -553,6 +567,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<DeleteResult> deleteMany(JsonObject filter, DeleteOptions options) {
+    com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -580,6 +595,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<DeleteResult> deleteMany(ClientSession clientSession, JsonObject filter,
       DeleteOptions options) {
+    com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -607,6 +623,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> replaceOne(JsonObject filter, TDocument replacement,
       ReplaceOptions options) {
+    com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -635,6 +652,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> replaceOne(ClientSession clientSession, JsonObject filter,
       TDocument replacement, ReplaceOptions options) {
+    com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -663,6 +681,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateOne(JsonObject filter, JsonObject update,
       UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -691,6 +710,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
       JsonObject update, UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -718,6 +738,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateOne(JsonObject filter, List<JsonObject> update,
       UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -746,6 +767,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update, UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -774,6 +796,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateMany(JsonObject filter, JsonObject update,
       UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -802,6 +825,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
       JsonObject update, UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -829,6 +853,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateMany(JsonObject filter, List<JsonObject> update,
       UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -857,6 +882,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update, UpdateOptions options) {
+    com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -884,6 +910,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<TDocument> findOneAndDelete(JsonObject filter, FindOneAndDeleteOptions options) {
+    com.mongodb.client.model.FindOneAndDeleteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -911,6 +938,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<TDocument> findOneAndDelete(ClientSession clientSession, JsonObject filter,
       FindOneAndDeleteOptions options) {
+    com.mongodb.client.model.FindOneAndDeleteOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -938,6 +966,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<TDocument> findOneAndReplace(JsonObject filter, TDocument replacement,
       FindOneAndReplaceOptions options) {
+    com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -966,6 +995,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<TDocument> findOneAndReplace(ClientSession clientSession, JsonObject filter,
       TDocument replacement, FindOneAndReplaceOptions options) {
+    com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -994,6 +1024,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<TDocument> findOneAndUpdate(JsonObject filter, JsonObject update,
       FindOneAndUpdateOptions options) {
+    com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -1022,6 +1053,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
       JsonObject update, FindOneAndUpdateOptions options) {
+    com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -1050,6 +1082,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update,
       FindOneAndUpdateOptions options) {
+    com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -1078,6 +1111,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update, FindOneAndUpdateOptions options) {
+    com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -1130,6 +1164,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<String> createIndex(JsonObject key, IndexOptions options) {
+    com.mongodb.client.model.IndexOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -1157,6 +1192,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<String> createIndex(ClientSession clientSession, JsonObject key,
       IndexOptions options) {
+    com.mongodb.client.model.IndexOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -1184,6 +1220,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<String> createIndexes(List<IndexModel> indexes,
       CreateIndexOptions createIndexOptions) {
+    com.mongodb.client.model.CreateIndexOptions __createIndexOptions = createIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1211,6 +1248,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<String> createIndexes(ClientSession clientSession, List<IndexModel> indexes,
       CreateIndexOptions createIndexOptions) {
+    com.mongodb.client.model.CreateIndexOptions __createIndexOptions = createIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1272,6 +1310,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Void> dropIndex(String indexName, DropIndexOptions dropIndexOptions) {
+    com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1285,6 +1324,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Void> dropIndex(JsonObject keys, DropIndexOptions dropIndexOptions) {
+    com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1325,6 +1365,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Void> dropIndex(ClientSession clientSession, String indexName,
       DropIndexOptions dropIndexOptions) {
+    com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1339,6 +1380,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Void> dropIndex(ClientSession clientSession, JsonObject keys,
       DropIndexOptions dropIndexOptions) {
+    com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1364,6 +1406,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Void> dropIndexes(DropIndexOptions dropIndexOptions) {
+    com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1390,6 +1433,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Void> dropIndexes(ClientSession clientSession, DropIndexOptions dropIndexOptions) {
+    com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     return null;
   }
 
@@ -1403,6 +1447,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<Void> renameCollection(MongoNamespace newCollectionNamespace) {
+    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     return null;
   }
 
@@ -1417,6 +1462,8 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Void> renameCollection(MongoNamespace newCollectionNamespace,
       RenameCollectionOptions options) {
+    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
+    com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
     return null;
   }
 
@@ -1431,6 +1478,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Void> renameCollection(ClientSession clientSession,
       MongoNamespace newCollectionNamespace) {
+    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     return null;
   }
 
@@ -1445,6 +1493,8 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Void> renameCollection(ClientSession clientSession,
       MongoNamespace newCollectionNamespace, RenameCollectionOptions options) {
+    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
+    com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
     return null;
   }
 

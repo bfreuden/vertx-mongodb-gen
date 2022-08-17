@@ -31,6 +31,7 @@ public class ClientSessionImpl extends ClientSessionBase {
 
   @Override
   public void startTransaction(TransactionOptions transactionOptions) {
+    com.mongodb.TransactionOptions __transactionOptions = transactionOptions.toDriverClass();
   }
 
   @Override
