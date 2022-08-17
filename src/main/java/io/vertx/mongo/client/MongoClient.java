@@ -1,5 +1,7 @@
 package io.vertx.mongo.client;
 
+import com.mongodb.connection.ClusterSettings;
+import com.mongodb.event.ClusterListener;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -38,7 +40,7 @@ public interface MongoClient extends Closeable {
   /**
    *  Get a list of the database names
    *  @mongodb.driver.manual reference/commands/listDatabases List Databases
-   *  @return an iterable containing all the names of all the databases
+   *  @return an result containing all the names of all the databases
    */
   MongoResult<String> listDatabaseNames();
 
@@ -46,7 +48,7 @@ public interface MongoClient extends Closeable {
    *  Get a list of the database names
    *  @param clientSession the client session with which to associate this operation
    *  @mongodb.driver.manual reference/commands/listDatabases List Databases
-   *  @return an iterable containing all the names of all the databases
+   *  @return an result containing all the names of all the databases
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
@@ -60,6 +62,13 @@ public interface MongoClient extends Closeable {
 
   /**
    *  Gets the list of databases
+   *  @param options options
+   *  @return the fluent list databases interface
+   */
+  MongoResult<JsonObject> listDatabases(ListDatabasesOptions options);
+
+  /**
+   *  Gets the list of databases
    *  @param clientSession the client session with which to associate this operation
    *  @return the fluent list databases interface
    *  @mongodb.server.release 3.6
@@ -68,8 +77,18 @@ public interface MongoClient extends Closeable {
   MongoResult<JsonObject> listDatabases(ClientSession clientSession);
 
   /**
+   *  Gets the list of databases
+   *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the fluent list databases interface
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<JsonObject> listDatabases(ClientSession clientSession, ListDatabasesOptions options);
+
+  /**
    *  Creates a change stream for this client.
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.dochub core/changestreams Change Streams
    *  @since 1.9
    *  @mongodb.server.release 4.0
@@ -78,8 +97,18 @@ public interface MongoClient extends Closeable {
 
   /**
    *  Creates a change stream for this client.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   */
+  ReadStream<JsonObject> watch(ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this client.
    *  @param pipeline the aggregation pipeline to apply to the change stream.
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.dochub core/changestreams Change Streams
    *  @since 1.9
    *  @mongodb.server.release 4.0
@@ -88,8 +117,19 @@ public interface MongoClient extends Closeable {
 
   /**
    *  Creates a change stream for this client.
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   */
+  ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this client.
    *  @param clientSession the client session with which to associate this operation
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @since 1.9
    *  @mongodb.server.release 4.0
    *  @mongodb.driver.dochub core/changestreams Change Streams
@@ -99,13 +139,37 @@ public interface MongoClient extends Closeable {
   /**
    *  Creates a change stream for this client.
    *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this client.
+   *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline to apply to the change stream.
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @since 1.9
    *  @mongodb.server.release 4.0
    *  @mongodb.driver.dochub core/changestreams Change Streams
    */
   ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
+
+  /**
+   *  Creates a change stream for this client.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+      ChangeStreamOptions options);
 
   /**
    *  Creates a client session.

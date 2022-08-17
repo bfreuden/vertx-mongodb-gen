@@ -102,6 +102,7 @@ public class DeleteOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.DeleteOptions toDriverClass() {

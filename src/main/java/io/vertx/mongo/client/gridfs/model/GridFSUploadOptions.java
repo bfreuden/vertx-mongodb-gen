@@ -67,6 +67,7 @@ public class GridFSUploadOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.gridfs.model.GridFSUploadOptions toDriverClass() {

@@ -196,6 +196,8 @@ public class AggregateOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
+   * @param <TDocument> document class
    * @hidden
    */
   public <TDocument> void initializePublisher(AggregatePublisher<TDocument> publisher) {

@@ -81,6 +81,7 @@ public class DataKeyOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.vault.DataKeyOptions toDriverClass() {

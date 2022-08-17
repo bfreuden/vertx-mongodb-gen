@@ -44,9 +44,10 @@ public class GridFSDownloadOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
    * @hidden
    */
-  public <TDocument> void initializePublisher(GridFSDownloadPublisher<TDocument> publisher) {
+  public void initializePublisher(GridFSDownloadPublisher publisher) {
     if (this.bufferSizeBytes != null) {
       publisher.bufferSizeBytes(this.bufferSizeBytes);
     }

@@ -193,6 +193,14 @@ public interface MongoDatabase {
 
   /**
    *  Finds all the collections in this database.
+   *  @param options options
+   *  @return the fluent list collections interface
+   *  @mongodb.driver.manual reference/command/listCollections listCollections
+   */
+  MongoResult<JsonObject> listCollections(ListCollectionsOptions options);
+
+  /**
+   *  Finds all the collections in this database.
    *  @param clientSession the client session with which to associate this operation
    *  @return the fluent list collections interface
    *  @mongodb.driver.manual reference/command/listCollections listCollections
@@ -200,6 +208,18 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   MongoResult<JsonObject> listCollections(ClientSession clientSession);
+
+  /**
+   *  Finds all the collections in this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the fluent list collections interface
+   *  @mongodb.driver.manual reference/command/listCollections listCollections
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<JsonObject> listCollections(ClientSession clientSession,
+      ListCollectionsOptions options);
 
   /**
    *  Create a new collection with the given name.
@@ -407,7 +427,7 @@ public interface MongoDatabase {
 
   /**
    *  Creates a change stream for this database.
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.dochub core/changestreams Change Streams
    *  @since 1.9
    *  @mongodb.server.release 4.0
@@ -416,8 +436,18 @@ public interface MongoDatabase {
 
   /**
    *  Creates a change stream for this database.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   */
+  ReadStream<JsonObject> watch(ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this database.
    *  @param pipeline the aggregation pipeline to apply to the change stream.
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.dochub core/changestreams Change Streams
    *  @since 1.9
    *  @mongodb.server.release 4.0
@@ -426,8 +456,19 @@ public interface MongoDatabase {
 
   /**
    *  Creates a change stream for this database.
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   */
+  ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this database.
    *  @param clientSession the client session with which to associate this operation
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @since 1.9
    *  @mongodb.server.release 4.0
    *  @mongodb.driver.dochub core/changestreams Change Streams
@@ -437,8 +478,19 @@ public interface MongoDatabase {
   /**
    *  Creates a change stream for this database.
    *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline to apply to the change stream.
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @since 1.9
    *  @mongodb.server.release 4.0
    *  @mongodb.driver.dochub core/changestreams Change Streams
@@ -446,10 +498,23 @@ public interface MongoDatabase {
   ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
 
   /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+      ChangeStreamOptions options);
+
+  /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
    *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
    *  @param pipeline the aggregation pipeline
-   *  @return an iterable containing the result of the aggregation operation
+   *  @return an result containing the result of the aggregation operation
    *  @since 1.11
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
@@ -459,12 +524,38 @@ public interface MongoDatabase {
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
    *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
+   *  @param pipeline the aggregation pipeline
+   *  @param options options
+   *  @return an result containing the result of the aggregation operation
+   *  @since 1.11
+   *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
+   *  @mongodb.server.release 3.6
+   */
+  MongoResult<JsonObject> aggregate(List<JsonObject> pipeline, AggregateOptions options);
+
+  /**
+   *  Runs an aggregation framework pipeline on the database for pipeline stages
+   *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
    *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline
-   *  @return an iterable containing the result of the aggregation operation
+   *  @return an result containing the result of the aggregation operation
    *  @since 1.11
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
   MongoResult<JsonObject> aggregate(ClientSession clientSession, List<JsonObject> pipeline);
+
+  /**
+   *  Runs an aggregation framework pipeline on the database for pipeline stages
+   *  that do not require an underlying collection, such as {@code &#x24;currentOp} and {@code &#x24;listLocalSessions}.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline
+   *  @param options options
+   *  @return an result containing the result of the aggregation operation
+   *  @since 1.11
+   *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
+   *  @mongodb.server.release 3.6
+   */
+  MongoResult<JsonObject> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
+      AggregateOptions options);
 }

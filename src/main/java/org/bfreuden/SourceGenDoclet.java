@@ -186,13 +186,12 @@ public class SourceGenDoclet {
             new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options)).generate(genSourceDir);
 
         }
+        for (String reactive : inspectionContext.publishersApiClasses) {
+            new PublisherOptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
+                    .generate(genSourceDir);
+        }
         for (String reactive : inspectionContext.reactiveApiClasses) {
             new ReactiveAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive)).generate(genSourceDir);
-        }
-        Map<String, String> publisherOptionsClasses = new HashMap<>();
-        for (String reactive : inspectionContext.publishersApiClasses) {
-            new PublisherOptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive), publisherOptionsClasses)
-                    .generate(genSourceDir);
         }
         Map<String, String> publisherResultClasses = new HashMap<>();
         for (String reactive : inspectionContext.publishersApiClasses) {

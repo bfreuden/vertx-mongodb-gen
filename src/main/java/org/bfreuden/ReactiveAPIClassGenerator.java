@@ -11,6 +11,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.client.MongoResult;
+import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
@@ -33,7 +34,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         String mongoJavadoc;
         String vertxResultOrFutureJavadoc;
         String vertxAsyncJavadoc;
-        String vertxFutureJavadoc;
+        String vertxWithOptionsJavadoc;
         MongoMethodParameter returnType;
         List<MongoMethodParameter> params = new ArrayList<>();
         ParameterizedTypeName handlerParam;
@@ -43,6 +44,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
             if (actualReturnType.isPublisher) {
                 returnType.isPublisher = true;
+                returnType.publisherClassName = actualReturnType.publisherClassName;
                 if (actualReturnType.singlePublisher) {
                     returnType.isSinglePublisher = true;
                     if (actualReturnType.publisherParameterClassName != null) {
@@ -98,17 +100,24 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 if (returnType.isPublisher) {
                     StringJoiner newRawCommentText = new StringJoiner("\n");
                     StringJoiner asyncNewRawCommentText = new StringJoiner("\n");
+                    StringJoiner withOptionsNewRawCommentText = new StringJoiner("\n");
                     String replacement = mongoName.equals("watch") ? "read stream" : (returnType.isSinglePublisher ? "future" : "result");
                     for (String docLine : Arrays.stream(mongoJavadoc.split("\\n+")).collect(Collectors.toList())) {
                         if (docLine.contains("@return")) {
+                            withOptionsNewRawCommentText.add(docLine.replaceAll("@return.*", "@param options options"));
                             String newDocLine = docLine
+                                    .replace("Iterable", replacement)
+                                    .replace("iterable", replacement)
                                     .replace("observable", replacement)
                                     .replace("Observable", replacement)
                                     .replace("publisher", replacement)
                                     .replace("Publisher", replacement);
                             newRawCommentText.add(newDocLine);
+                            withOptionsNewRawCommentText.add(newDocLine);
                             String newDocLine2 = docLine
                                     .replace("@return", "@param handler")
+                                    .replace("Iterable", "async result")
+                                    .replace("iterable", "async result")
                                     .replace("observable", "async result")
                                     .replace("Observable", "async result")
                                     .replace("publisher", "async result")
@@ -121,10 +130,12 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                         } else {
                             newRawCommentText.add(docLine);
                             asyncNewRawCommentText.add(docLine);
+                            withOptionsNewRawCommentText.add(docLine);
                         }
                     }
                     this.vertxResultOrFutureJavadoc = newRawCommentText.toString();
                     this.vertxAsyncJavadoc = asyncNewRawCommentText.toString();
+                    this.vertxWithOptionsJavadoc = withOptionsNewRawCommentText.toString();
                 }
             }
         }
@@ -132,7 +143,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
     protected static class MongoMethodParameter {
         String name;
-        String publisherQualifiedName;
+        String publisherClassName;
         boolean isPublisher;
         boolean isSinglePublisher;
         TypeName mongoType;
@@ -230,15 +241,13 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                         .addModifiers(Modifier.PUBLIC)
                         .addModifiers(Modifier.ABSTRACT)
                         .returns(method.returnType.vertxType);
-//                if (method.returnType.vertxType.equals(fluentReturnType)) {
-                    for (TypeVariableName variable : method.typeVariables)
-                        methodBuilder.addTypeVariable(variable);
-//                }
+                for (TypeVariableName variable : method.typeVariables)
+                    methodBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
                     methodBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
                 }
                 if (method.vertxResultOrFutureJavadoc != null)
-                    methodBuilder.addJavadoc(CodeBlock.of(method.vertxResultOrFutureJavadoc));
+                    methodBuilder.addJavadoc(method.vertxResultOrFutureJavadoc);
                 type.addMethod(methodBuilder.build());
 
             }
@@ -248,17 +257,31 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                         .addModifiers(Modifier.PUBLIC)
                         .addModifiers(Modifier.ABSTRACT)
                         .returns(fluentReturnType);
-//                if (method.returnType.vertxType.equals(fluentReturnType)) {
-                    for (TypeVariableName variable : method.typeVariables)
-                        handlerMethodBuilder.addTypeVariable(variable);
-//                }
+                for (TypeVariableName variable : method.typeVariables)
+                    handlerMethodBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
                     handlerMethodBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
                 }
                 handlerMethodBuilder.addParameter(ParameterSpec.builder(method.handlerParam, "handler").build());
                 if (method.vertxAsyncJavadoc != null)
-                    handlerMethodBuilder.addJavadoc(CodeBlock.of(method.vertxAsyncJavadoc));
+                    handlerMethodBuilder.addJavadoc(method.vertxAsyncJavadoc);
                 type.addMethod(handlerMethodBuilder.build());
+            } else if (method.returnType.isPublisher && !method.returnType.publisherClassName.equals(Publisher.class.getName())) {
+                MethodSpec.Builder methodWithOptionsBuilder = MethodSpec.methodBuilder(method.vertxName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addModifiers(Modifier.ABSTRACT)
+                        .returns(method.returnType.vertxType);
+                for (TypeVariableName variable : method.typeVariables)
+                    methodWithOptionsBuilder.addTypeVariable(variable);
+                for (MongoMethodParameter param : method.params) {
+                    methodWithOptionsBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
+                }
+                String optionsClass = context.publisherOptionsClasses.get(method.returnType.publisherClassName);
+                methodWithOptionsBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(optionsClass), "options").build());
+                if (method.vertxWithOptionsJavadoc != null)
+                    methodWithOptionsBuilder.addJavadoc(method.vertxWithOptionsJavadoc);
+                type.addMethod(methodWithOptionsBuilder.build());
+
             }
 
         }

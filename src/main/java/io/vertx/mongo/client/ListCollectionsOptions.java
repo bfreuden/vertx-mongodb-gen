@@ -82,6 +82,8 @@ public class ListCollectionsOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
+   * @param <TDocument> document class
    * @hidden
    */
   public <TDocument> void initializePublisher(ListCollectionsPublisher<TDocument> publisher) {

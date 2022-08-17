@@ -50,6 +50,7 @@ public class GridFSDownloadOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.gridfs.model.GridFSDownloadOptions toDriverClass() {

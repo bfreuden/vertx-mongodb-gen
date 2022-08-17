@@ -463,6 +463,8 @@ public class FindOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
+   * @param <TDocument> document class
    * @hidden
    */
   public <TDocument> void initializePublisher(FindPublisher<TDocument> publisher) {

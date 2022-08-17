@@ -7,10 +7,14 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class InspectionContext {
 
+    public Map<String, String> publisherOptionsClasses = new HashMap<>();
     ConversionUtilsGenerator conversionUtilsGenerator = new ConversionUtilsGenerator();
     public final Set<String> apiPackages = new HashSet<>();
     public final Set<String> dependenciesPackages = new HashSet<>();
@@ -21,8 +25,7 @@ public class InspectionContext {
     public final Set<String> reactiveApiClasses = new HashSet<>();
     public final Set<String> enumApiClasses = new HashSet<>();
     public final Set<String> publishersApiClasses = new HashSet<>();
-    public final Set<String> nonApiParameterAndReturnClasses
-            = new HashSet<>();
+    public final Set<String> nonApiParameterAndReturnClasses = new HashSet<>();
     public final Map<String, ClassDoc> classDocs = new HashMap<String, ClassDoc>();
     public final Map<String, TypeSpec.Builder> typeBuilders = new HashMap<String, TypeSpec.Builder>();
     public final Set<String> optionsApiClasses = new HashSet<>();

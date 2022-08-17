@@ -220,10 +220,18 @@ public interface GridFSBucket {
 
   /**
    *  Finds all documents in the files collection.
-   *  @return the GridFS find iterable interface
+   *  @return the GridFS find result interface
    *  @mongodb.driver.manual tutorial/query-documents/ Find
    */
   MongoResult<GridFSFile> find();
+
+  /**
+   *  Finds all documents in the files collection.
+   *  @param options options
+   *  @return the GridFS find result interface
+   *  @mongodb.driver.manual tutorial/query-documents/ Find
+   */
+  MongoResult<GridFSFile> find(GridFSFindOptions options);
 
   /**
    *  Finds all documents in the collection that match the filter.
@@ -235,15 +243,31 @@ public interface GridFSBucket {
    *   }
    *   </pre>
    *  @param filter the query filter
-   *  @return the GridFS find iterable interface
+   *  @return the GridFS find result interface
    *  @see com.mongodb.client.model.Filters
    */
   MongoResult<GridFSFile> find(JsonObject filter);
 
   /**
+   *  Finds all documents in the collection that match the filter.
+   *  <p>
+   *  Below is an example of filtering against the filename and some nested metadata that can also be stored along with the file data:
+   *  <pre>
+   *   {@code
+   *       Filters.and(Filters.eq("filename", "mongodb.png"), Filters.eq("metadata.contentType", "image/png"));
+   *   }
+   *   </pre>
+   *  @param filter the query filter
+   *  @param options options
+   *  @return the GridFS find result interface
+   *  @see com.mongodb.client.model.Filters
+   */
+  MongoResult<GridFSFile> find(JsonObject filter, GridFSFindOptions options);
+
+  /**
    *  Finds all documents in the files collection.
    *  @param clientSession the client session with which to associate this operation
-   *  @return the GridFS find iterable interface
+   *  @return the GridFS find result interface
    *  @mongodb.driver.manual tutorial/query-documents/ Find
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -251,6 +275,17 @@ public interface GridFSBucket {
   MongoResult<GridFSFile> find(ClientSession clientSession);
 
   /**
+   *  Finds all documents in the files collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the GridFS find result interface
+   *  @mongodb.driver.manual tutorial/query-documents/ Find
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<GridFSFile> find(ClientSession clientSession, GridFSFindOptions options);
+
+  /**
    *  Finds all documents in the collection that match the filter.
    *  <p>
    *  Below is an example of filtering against the filename and some nested metadata that can also be stored along with the file data:
@@ -261,12 +296,32 @@ public interface GridFSBucket {
    *   </pre>
    *  @param clientSession the client session with which to associate this operation
    *  @param filter the query filter
-   *  @return the GridFS find iterable interface
+   *  @return the GridFS find result interface
    *  @see com.mongodb.client.model.Filters
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
   MongoResult<GridFSFile> find(ClientSession clientSession, JsonObject filter);
+
+  /**
+   *  Finds all documents in the collection that match the filter.
+   *  <p>
+   *  Below is an example of filtering against the filename and some nested metadata that can also be stored along with the file data:
+   *  <pre>
+   *   {@code
+   *       Filters.and(Filters.eq("filename", "mongodb.png"), Filters.eq("metadata.contentType", "image/png"));
+   *   }
+   *   </pre>
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filter the query filter
+   *  @param options options
+   *  @return the GridFS find result interface
+   *  @see com.mongodb.client.model.Filters
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<GridFSFile> find(ClientSession clientSession, JsonObject filter,
+      GridFSFindOptions options);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.

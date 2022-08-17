@@ -39,6 +39,7 @@ public class DropIndexOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.DropIndexOptions toDriverClass() {

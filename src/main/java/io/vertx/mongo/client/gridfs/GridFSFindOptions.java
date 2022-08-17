@@ -194,9 +194,10 @@ public class GridFSFindOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
    * @hidden
    */
-  public <TDocument> void initializePublisher(GridFSFindPublisher<TDocument> publisher) {
+  public void initializePublisher(GridFSFindPublisher publisher) {
     if (this.filter != null) {
       publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
     }

@@ -60,6 +60,8 @@ public class ListIndexesOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
+   * @param <TDocument> document class
    * @hidden
    */
   public <TDocument> void initializePublisher(ListIndexesPublisher<TDocument> publisher) {

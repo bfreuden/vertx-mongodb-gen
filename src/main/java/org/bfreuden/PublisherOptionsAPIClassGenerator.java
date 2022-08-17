@@ -13,11 +13,8 @@ import java.util.stream.Collectors;
 
 public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator {
 
-    private final Map<String, String> publisherOptionsClasses;
-
-    public PublisherOptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc, Map<String, String> publisherOptionsClasses) {
+    public PublisherOptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         super(context, classDoc);
-        this.publisherOptionsClasses = publisherOptionsClasses;
     }
 
     @Override
@@ -67,16 +64,21 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
         if (!methods.isEmpty())
             throw new IllegalStateException("unknown method: " + methods);
         if (!options.isEmpty())
-            publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
+            context.publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
     }
 
     protected MethodSpec.Builder toMongoBuilder() {
+        boolean hasParam = Arrays.stream(classDoc.typeParameters()).count() != 0;
+        ClassName publisherType = ClassName.bestGuess(classDoc.qualifiedTypeName());
+        TypeName publisherTypeWithParam = ParameterizedTypeName.get(publisherType, TypeVariableName.get("TDocument"));
+        String paramDoc = hasParam ? "@param <TDocument> document class\n" : "";
         MethodSpec.Builder toMongo = MethodSpec.methodBuilder("initializePublisher")
-                .addTypeVariable(TypeVariableName.get("TDocument"))
-                .addJavadoc("@hidden")
-                .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), TypeVariableName.get("TDocument")), "publisher").build())
+                .addJavadoc("@param publisher MongoDB driver publisher\n" + paramDoc + "@hidden")
+                .addParameter(ParameterSpec.builder(hasParam ? publisherTypeWithParam : publisherType, "publisher").build())
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeName.VOID);
+        if (hasParam)
+            toMongo.addTypeVariable(TypeVariableName.get("TDocument"));
         List<Option> requiredOptions = options.values().stream().filter(it -> it.inCtor).collect(Collectors.toList());
         if (!requiredOptions.isEmpty())
             throw new IllegalStateException("not supported");

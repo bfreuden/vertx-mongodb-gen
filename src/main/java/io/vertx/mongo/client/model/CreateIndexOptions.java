@@ -39,6 +39,7 @@ public class CreateIndexOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.CreateIndexOptions toDriverClass() {

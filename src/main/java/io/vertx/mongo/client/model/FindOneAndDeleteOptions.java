@@ -182,6 +182,7 @@ public class FindOneAndDeleteOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.FindOneAndDeleteOptions toDriverClass() {

@@ -174,6 +174,7 @@ public class CountOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.CountOptions toDriverClass() {

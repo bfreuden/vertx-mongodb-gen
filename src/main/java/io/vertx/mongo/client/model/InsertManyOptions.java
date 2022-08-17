@@ -68,6 +68,7 @@ public class InsertManyOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.InsertManyOptions toDriverClass() {

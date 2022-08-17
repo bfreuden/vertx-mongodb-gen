@@ -430,11 +430,28 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Finds all documents in the collection.
+   *  @param options options
+   *  @return the fluent find interface
+   *  @mongodb.driver.manual tutorial/query-documents/ Find
+   */
+  MongoResult<TDocument> find(FindOptions options);
+
+  /**
+   *  Finds all documents in the collection.
    *  @param filter the query filter
    *  @return the fluent find interface
    *  @mongodb.driver.manual tutorial/query-documents/ Find
    */
   MongoResult<TDocument> find(JsonObject filter);
+
+  /**
+   *  Finds all documents in the collection.
+   *  @param filter the query filter
+   *  @param options options
+   *  @return the fluent find interface
+   *  @mongodb.driver.manual tutorial/query-documents/ Find
+   */
+  MongoResult<TDocument> find(JsonObject filter, FindOptions options);
 
   /**
    *  Finds all documents in the collection.
@@ -449,6 +466,17 @@ public interface MongoCollection<TDocument> {
   /**
    *  Finds all documents in the collection.
    *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the fluent find interface
+   *  @mongodb.driver.manual tutorial/query-documents/ Find
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<TDocument> find(ClientSession clientSession, FindOptions options);
+
+  /**
+   *  Finds all documents in the collection.
+   *  @param clientSession the client session with which to associate this operation
    *  @param filter the query filter
    *  @return the fluent find interface
    *  @mongodb.driver.manual tutorial/query-documents/ Find
@@ -458,12 +486,33 @@ public interface MongoCollection<TDocument> {
   MongoResult<TDocument> find(ClientSession clientSession, JsonObject filter);
 
   /**
+   *  Finds all documents in the collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filter the query filter
+   *  @param options options
+   *  @return the fluent find interface
+   *  @mongodb.driver.manual tutorial/query-documents/ Find
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<TDocument> find(ClientSession clientSession, JsonObject filter, FindOptions options);
+
+  /**
    *  Aggregates documents according to the specified aggregation pipeline.
    *  @param pipeline the aggregate pipeline
    *  @return a result containing the result of the aggregation operation
    *  @mongodb.driver.manual aggregation/ Aggregation
    */
   MongoResult<TDocument> aggregate(List<JsonObject> pipeline);
+
+  /**
+   *  Aggregates documents according to the specified aggregation pipeline.
+   *  @param pipeline the aggregate pipeline
+   *  @param options options
+   *  @return a result containing the result of the aggregation operation
+   *  @mongodb.driver.manual aggregation/ Aggregation
+   */
+  MongoResult<TDocument> aggregate(List<JsonObject> pipeline, AggregateOptions options);
 
   /**
    *  Aggregates documents according to the specified aggregation pipeline.
@@ -477,8 +526,21 @@ public interface MongoCollection<TDocument> {
   MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline);
 
   /**
+   *  Aggregates documents according to the specified aggregation pipeline.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregate pipeline
+   *  @param options options
+   *  @return a result containing the result of the aggregation operation
+   *  @mongodb.driver.manual aggregation/ Aggregation
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
+      AggregateOptions options);
+
+  /**
    *  Creates a change stream for this collection.
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -487,8 +549,18 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Creates a change stream for this collection.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  ReadStream<JsonObject> watch(ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this collection.
    *  @param pipeline the aggregation pipeline to apply to the change stream
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
    *  @since 1.6
    */
@@ -496,8 +568,18 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Creates a change stream for this collection.
+   *  @param pipeline the aggregation pipeline to apply to the change stream
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @since 1.6
+   */
+  ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this collection.
    *  @param clientSession the client session with which to associate this operation
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -507,13 +589,37 @@ public interface MongoCollection<TDocument> {
   /**
    *  Creates a change stream for this collection.
    *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this collection.
+   *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline to apply to the change stream
-   *  @return the change stream iterable
+   *  @return the change stream read stream
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
   ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
+
+  /**
+   *  Creates a change stream for this collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream &#x24;changeStream
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+      ChangeStreamOptions options);
 
   /**
    *  Aggregates documents according to the specified map-reduce function.
@@ -523,6 +629,17 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
    */
   MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction);
+
+  /**
+   *  Aggregates documents according to the specified map-reduce function.
+   *  @param mapFunction    A JavaScript function that associates or "maps" a value with a key and emits the key and value pair.
+   *  @param reduceFunction A JavaScript function that "reduces" to a single object all the values associated with a particular key.
+   *  @param options options
+   *  @return an result containing the result of the map-reduce operation
+   *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
+   */
+  MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction,
+      MapReduceOptions options);
 
   /**
    *  Aggregates documents according to the specified map-reduce function.
@@ -536,6 +653,20 @@ public interface MongoCollection<TDocument> {
    */
   MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction);
+
+  /**
+   *  Aggregates documents according to the specified map-reduce function.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param mapFunction    A JavaScript function that associates or "maps" a value with a key and emits the key and value pair.
+   *  @param reduceFunction A JavaScript function that "reduces" to a single object all the values associated with a particular key.
+   *  @param options options
+   *  @return an result containing the result of the map-reduce operation
+   *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
+      String reduceFunction, MapReduceOptions options);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -2170,6 +2301,14 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Get all the indexes in this collection.
+   *  @param options options
+   *  @return the fluent list indexes interface
+   *  @mongodb.driver.manual reference/command/listIndexes/ listIndexes
+   */
+  MongoResult<JsonObject> listIndexes(ListIndexesOptions options);
+
+  /**
+   *  Get all the indexes in this collection.
    *  @param clientSession the client session with which to associate this operation
    *  @return the fluent list indexes interface
    *  @mongodb.driver.manual reference/command/listIndexes/ listIndexes
@@ -2177,6 +2316,17 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoResult<JsonObject> listIndexes(ClientSession clientSession);
+
+  /**
+   *  Get all the indexes in this collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the fluent list indexes interface
+   *  @mongodb.driver.manual reference/command/listIndexes/ listIndexes
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<JsonObject> listIndexes(ClientSession clientSession, ListIndexesOptions options);
 
   /**
    *  Drops the given index.

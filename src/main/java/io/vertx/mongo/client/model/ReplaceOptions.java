@@ -148,6 +148,7 @@ public class ReplaceOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.ReplaceOptions toDriverClass() {

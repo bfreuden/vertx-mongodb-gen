@@ -176,6 +176,8 @@ public class ChangeStreamOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
+   * @param <TDocument> document class
    * @hidden
    */
   public <TDocument> void initializePublisher(ChangeStreamPublisher<TDocument> publisher) {

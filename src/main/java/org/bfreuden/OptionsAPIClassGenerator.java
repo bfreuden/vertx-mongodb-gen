@@ -315,7 +315,7 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
 
     protected MethodSpec.Builder toMongoBuilder() {
         MethodSpec.Builder toMongo = MethodSpec.methodBuilder("toDriverClass")
-                .addJavadoc("@hidden")
+                .addJavadoc("@return MongoDB driver object\n@hidden")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
         List<Option> requiredOptions = options.values().stream().filter(it -> it.inCtor).collect(Collectors.toList());

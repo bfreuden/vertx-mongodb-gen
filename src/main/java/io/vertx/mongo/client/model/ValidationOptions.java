@@ -93,6 +93,7 @@ public class ValidationOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.ValidationOptions toDriverClass() {

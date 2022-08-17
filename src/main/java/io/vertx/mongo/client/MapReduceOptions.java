@@ -362,6 +362,8 @@ public class MapReduceOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
+   * @param <TDocument> document class
    * @hidden
    */
   public <TDocument> void initializePublisher(MapReducePublisher<TDocument> publisher) {

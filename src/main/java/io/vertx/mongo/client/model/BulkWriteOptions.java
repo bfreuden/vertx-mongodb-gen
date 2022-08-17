@@ -69,6 +69,7 @@ public class BulkWriteOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.BulkWriteOptions toDriverClass() {

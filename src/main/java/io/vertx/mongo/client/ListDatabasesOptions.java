@@ -128,6 +128,8 @@ public class ListDatabasesOptions {
   }
 
   /**
+   * @param publisher MongoDB driver publisher
+   * @param <TDocument> document class
    * @hidden
    */
   public <TDocument> void initializePublisher(ListDatabasesPublisher<TDocument> publisher) {

@@ -39,6 +39,7 @@ public class CreateViewOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.CreateViewOptions toDriverClass() {

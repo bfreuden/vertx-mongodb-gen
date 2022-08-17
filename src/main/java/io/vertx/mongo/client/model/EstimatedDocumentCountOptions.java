@@ -39,6 +39,7 @@ public class EstimatedDocumentCountOptions {
   }
 
   /**
+   * @return MongoDB driver object
    * @hidden
    */
   public com.mongodb.client.model.EstimatedDocumentCountOptions toDriverClass() {
