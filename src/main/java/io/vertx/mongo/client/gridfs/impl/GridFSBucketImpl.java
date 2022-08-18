@@ -25,7 +25,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.ReadConcern;
 import io.vertx.mongo.ReadPreference;
@@ -35,6 +34,7 @@ import io.vertx.mongo.client.MongoResult;
 import io.vertx.mongo.client.gridfs.GridFSFindOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Object;
 import java.lang.Override;
@@ -47,38 +47,43 @@ import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 public class GridFSBucketImpl extends GridFSBucketBase {
+  protected MongoClientContext clientContext;
+
   protected GridFSBucket wrapped;
 
-  protected Vertx vertx;
+  public GridFSBucketImpl(MongoClientContext clientContext, GridFSBucket wrapped) {
+    this.clientContext = clientContext;
+    this.wrapped = wrapped;
+  }
 
   @Override
   public String getBucketName() {
-    return null;
+    return wrapped.getBucketName();
   }
 
   @Override
   public int getChunkSizeBytes() {
-    return 0;
+    return wrapped.getChunkSizeBytes();
   }
 
   @Override
   public WriteConcern getWriteConcern() {
-    return null;
+    return wrapped.getWriteConcern();
   }
 
   @Override
   public ReadPreference getReadPreference() {
-    return null;
+    return wrapped.getReadPreference();
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    return null;
+    return wrapped.getReadConcern();
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withChunkSizeBytes(int chunkSizeBytes) {
-    return null;
+    return wrapped.withChunkSizeBytes(chunkSizeBytes);
   }
 
   @Override
@@ -86,21 +91,21 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference cannot be null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    return null;
+    return wrapped.withReadPreference(__readPreference);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withWriteConcern(WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern cannot be null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    return null;
+    return wrapped.withWriteConcern(__writeConcern);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern cannot be null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    return null;
+    return wrapped.withReadConcern(__readConcern);
   }
 
   @Override
@@ -221,6 +226,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public MongoResult<GridFSFile> find() {
+    //  TODO add implementation
     return null;
   }
 
@@ -233,6 +239,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public MongoResult<GridFSFile> find(JsonObject filter) {
     requireNonNull(filter, "filter cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    //  TODO add implementation
     return null;
   }
 
@@ -245,6 +252,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public MongoResult<GridFSFile> find(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -259,6 +267,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filter, "filter cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    //  TODO add implementation
     return null;
   }
 

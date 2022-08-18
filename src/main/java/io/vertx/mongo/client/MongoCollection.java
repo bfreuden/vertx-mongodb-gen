@@ -101,7 +101,7 @@ public interface MongoCollection<TDocument> {
    *  @param <NewTDocument> The type that the new collection will encode documents from and decode documents to
    *  @return a new MongoCollection instance with the different default class
    */
-  <NewTDocument> MongoCollection withDocumentClass(Class<NewTDocument> clazz);
+  <NewTDocument> MongoCollection<NewTDocument> withDocumentClass(Class<NewTDocument> clazz);
 
   /**
    *  Create a new MongoCollection instance with a different read preference.

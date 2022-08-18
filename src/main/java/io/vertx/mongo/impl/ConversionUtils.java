@@ -38,7 +38,7 @@ public abstract interface ConversionUtils {
 
   BsonDocument toBsonDocument(JsonObject from);
 
-  List<? extends Bson> toBsonList(List<JsonObject> from);
+  List<Bson> toBsonList(List<JsonObject> from);
 
   BsonTimestamp toBsonTimestamp(Long from);
 
@@ -49,6 +49,8 @@ public abstract interface ConversionUtils {
   ClientSession toClientSession(com.mongodb.reactivestreams.client.ClientSession from);
 
   Document toDocument(JsonObject from);
+
+  JsonObject toJsonObject(Document from);
 
   JsonObject toJsonObject(Document from);
 

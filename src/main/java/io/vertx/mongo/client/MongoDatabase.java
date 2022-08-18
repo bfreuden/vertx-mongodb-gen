@@ -26,6 +26,7 @@ import java.lang.Class;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
+import org.bson.Document;
 
 /**
  *  The MongoDatabase interface.
@@ -95,7 +96,7 @@ public interface MongoDatabase {
    *  @param collectionName the name of the collection to return
    *  @return the collection
    */
-  MongoCollection<JsonObject> getCollection(String collectionName);
+  MongoCollection<Document> getCollection(String collectionName);
 
   /**
    *  Gets a collection, with a specific default document class.

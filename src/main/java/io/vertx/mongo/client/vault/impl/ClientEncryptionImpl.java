@@ -23,10 +23,10 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.mongo.client.model.vault.DataKeyOptions;
 import io.vertx.mongo.client.model.vault.EncryptOptions;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.io.Closeable;
 import java.lang.Object;
@@ -37,16 +37,22 @@ import org.bson.BsonValue;
 import org.reactivestreams.Publisher;
 
 public class ClientEncryptionImpl extends ClientEncryptionBase implements Closeable {
+  protected MongoClientContext clientContext;
+
   protected ClientEncryption wrapped;
 
-  protected Vertx vertx;
+  public ClientEncryptionImpl(MongoClientContext clientContext, ClientEncryption wrapped) {
+    this.clientContext = clientContext;
+    this.wrapped = wrapped;
+  }
 
   @Override
   public Future<byte[]> createDataKey(String kmsProvider) {
     requireNonNull(kmsProvider, "kmsProvider cannot be null");
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider);
-    Promise<byte[]> promise = Promise.promise();
-    return null;
+    Promise<BsonBinary> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
   @Override
@@ -63,8 +69,9 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
     requireNonNull(dataKeyOptions, "dataKeyOptions cannot be null");
     com.mongodb.client.model.vault.DataKeyOptions __dataKeyOptions = dataKeyOptions.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider, __dataKeyOptions);
-    Promise<byte[]> promise = Promise.promise();
-    return null;
+    Promise<BsonBinary> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
   @Override
@@ -82,8 +89,9 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
     BsonValue __value = ConversionUtilsImpl.INSTANCE.toBsonValue(value);
     com.mongodb.client.model.vault.EncryptOptions __options = options.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.encrypt(__value, __options);
-    Promise<byte[]> promise = Promise.promise();
-    return null;
+    Promise<BsonBinary> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
   @Override
@@ -99,8 +107,9 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
     requireNonNull(value, "value cannot be null");
     BsonBinary __value = ConversionUtilsImpl.INSTANCE.toBsonBinary(value);
     Publisher<BsonValue> __publisher = wrapped.decrypt(__value);
-    Promise<Object> promise = Promise.promise();
-    return null;
+    Promise<BsonValue> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future().map(ConversionUtilsImpl.INSTANCE::toObject);
   }
 
   @Override
@@ -113,6 +122,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
 
   @Override
   public void close() {
+    wrapped.close();
   }
 
   public ClientEncryption toDriverClass() {

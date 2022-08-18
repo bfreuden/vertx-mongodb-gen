@@ -23,7 +23,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.ClientSessionOptions;
@@ -34,6 +33,7 @@ import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.MongoResult;
 import io.vertx.mongo.connection.ClusterDescription;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.io.Closeable;
 import java.lang.Override;
@@ -43,22 +43,30 @@ import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
 public class MongoClientImpl extends MongoClientBase implements Closeable {
+  protected MongoClientContext clientContext;
+
   protected MongoClient wrapped;
 
-  protected Vertx vertx;
+  public MongoClientImpl(MongoClientContext clientContext, MongoClient wrapped) {
+    this.clientContext = clientContext;
+    this.wrapped = wrapped;
+  }
 
   @Override
   public MongoDatabase getDatabase(String name) {
     requireNonNull(name, "name cannot be null");
-    return null;
+    com.mongodb.reactivestreams.client.MongoDatabase __wrapped = wrapped.getDatabase(name);
+    return new MongoDatabaseImpl(this.clientContext, __wrapped);
   }
 
   @Override
   public void close() {
+    wrapped.close();
   }
 
   @Override
   public MongoResult<String> listDatabaseNames() {
+    //  TODO add implementation
     return null;
   }
 
@@ -66,11 +74,13 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public MongoResult<String> listDatabaseNames(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
   @Override
   public MongoResult<JsonObject> listDatabases() {
+    //  TODO add implementation
     return null;
   }
 
@@ -83,6 +93,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public MongoResult<JsonObject> listDatabases(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -94,6 +105,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public ReadStream<JsonObject> watch() {
+    //  TODO add implementation
     return null;
   }
 
@@ -106,6 +118,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public ReadStream<JsonObject> watch(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline cannot be null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO add implementation
     return null;
   }
 
@@ -118,6 +131,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public ReadStream<JsonObject> watch(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -132,6 +146,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(pipeline, "pipeline cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO add implementation
     return null;
   }
 
@@ -144,8 +159,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public Future<ClientSession> startSession() {
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession();
-    Promise<ClientSession> promise = Promise.promise();
-    return null;
+    Promise<com.mongodb.reactivestreams.client.ClientSession> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future().map(ConversionUtilsImpl.INSTANCE::toClientSession);
   }
 
   @Override
@@ -161,8 +177,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(options, "options cannot be null");
     com.mongodb.ClientSessionOptions __options = options.toDriverClass();
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession(__options);
-    Promise<ClientSession> promise = Promise.promise();
-    return null;
+    Promise<com.mongodb.reactivestreams.client.ClientSession> promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(promise));
+    return promise.future().map(ConversionUtilsImpl.INSTANCE::toClientSession);
   }
 
   @Override
@@ -175,7 +192,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public ClusterDescription getClusterDescription() {
-    return null;
+    return ClusterDescription.fromDriverClass(wrapped.getClusterDescription());
   }
 
   public MongoClient toDriverClass() {

@@ -29,7 +29,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoNamespace;
@@ -59,6 +58,7 @@ import io.vertx.mongo.client.model.RenameCollectionOptions;
 import io.vertx.mongo.client.model.ReplaceOptions;
 import io.vertx.mongo.client.model.UpdateOptions;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Class;
 import java.lang.Long;
@@ -70,40 +70,46 @@ import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
 public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocument> {
+  protected MongoClientContext clientContext;
+
   protected MongoCollection<TDocument> wrapped;
 
-  protected Vertx vertx;
+  public MongoCollectionImpl(MongoClientContext clientContext, MongoCollection<TDocument> wrapped) {
+    this.clientContext = clientContext;
+    this.wrapped = wrapped;
+  }
 
   @Override
   public MongoNamespace getNamespace() {
-    return null;
+    return MongoNamespace.fromDriverClass(wrapped.getNamespace());
   }
 
   @Override
   public Class<TDocument> getDocumentClass() {
-    return null;
+    return wrapped.getDocumentClass();
   }
 
   @Override
   public ReadPreference getReadPreference() {
-    return null;
+    return ReadPreference.fromDriverClass(wrapped.getReadPreference());
   }
 
   @Override
   public WriteConcern getWriteConcern() {
-    return null;
+    return WriteConcern.fromDriverClass(wrapped.getWriteConcern());
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    return null;
+    return ReadConcern.fromDriverClass(wrapped.getReadConcern());
   }
 
   @Override
-  public <NewTDocument> io.vertx.mongo.client.MongoCollection withDocumentClass(
+  public <NewTDocument> io.vertx.mongo.client.MongoCollection<NewTDocument> withDocumentClass(
       Class<NewTDocument> clazz) {
     requireNonNull(clazz, "clazz cannot be null");
-    return null;
+    MongoCollection<NewTDocument> __wrapped = wrapped.withDocumentClass(clazz);
+    return new MongoCollectionImpl<NewTDocument>(this.clientContext, __wrapped);
   }
 
   @Override
@@ -111,7 +117,8 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference cannot be null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    return null;
+    MongoCollection<TDocument> __wrapped = wrapped.withReadPreference(__readPreference);
+    return new MongoCollectionImpl<TDocument>(this.clientContext, __wrapped);
   }
 
   @Override
@@ -119,14 +126,16 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern cannot be null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    return null;
+    MongoCollection<TDocument> __wrapped = wrapped.withWriteConcern(__writeConcern);
+    return new MongoCollectionImpl<TDocument>(this.clientContext, __wrapped);
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern cannot be null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    return null;
+    MongoCollection<TDocument> __wrapped = wrapped.withReadConcern(__readConcern);
+    return new MongoCollectionImpl<TDocument>(this.clientContext, __wrapped);
   }
 
   @Override
@@ -281,6 +290,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoResult<TDocument> find() {
+    //  TODO add implementation
     return null;
   }
 
@@ -293,6 +303,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> find(JsonObject filter) {
     requireNonNull(filter, "filter cannot be null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    //  TODO add implementation
     return null;
   }
 
@@ -305,6 +316,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> find(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -319,6 +331,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    //  TODO add implementation
     return null;
   }
 
@@ -332,6 +345,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> aggregate(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline cannot be null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO add implementation
     return null;
   }
 
@@ -346,6 +360,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(pipeline, "pipeline cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO add implementation
     return null;
   }
 
@@ -357,6 +372,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public ReadStream<JsonObject> watch() {
+    //  TODO add implementation
     return null;
   }
 
@@ -369,6 +385,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public ReadStream<JsonObject> watch(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline cannot be null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO add implementation
     return null;
   }
 
@@ -381,6 +398,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public ReadStream<JsonObject> watch(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -395,6 +413,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(pipeline, "pipeline cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO add implementation
     return null;
   }
 
@@ -408,6 +427,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction) {
     requireNonNull(mapFunction, "mapFunction cannot be null");
     requireNonNull(reduceFunction, "reduceFunction cannot be null");
+    //  TODO add implementation
     return null;
   }
 
@@ -424,6 +444,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(mapFunction, "mapFunction cannot be null");
     requireNonNull(reduceFunction, "reduceFunction cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -437,6 +458,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<BulkWriteResult> bulkWrite(List<JsonObject> requests) {
     requireNonNull(requests, "requests cannot be null");
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
+    //  TODO add implementation
     return null;
   }
 
@@ -454,6 +476,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options cannot be null");
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -471,6 +494,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(requests, "requests cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
+    //  TODO add implementation
     return null;
   }
 
@@ -491,6 +515,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 
@@ -1842,6 +1867,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoResult<JsonObject> listIndexes() {
+    //  TODO add implementation
     return null;
   }
 
@@ -1854,6 +1880,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<JsonObject> listIndexes(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession cannot be null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO add implementation
     return null;
   }
 

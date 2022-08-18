@@ -23,41 +23,48 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.mongo.TransactionOptions;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Override;
 import java.lang.Void;
 import org.reactivestreams.Publisher;
 
 public class ClientSessionImpl extends ClientSessionBase {
+  protected MongoClientContext clientContext;
+
   protected ClientSession wrapped;
 
-  protected Vertx vertx;
+  public ClientSessionImpl(MongoClientContext clientContext, ClientSession wrapped) {
+    this.clientContext = clientContext;
+    this.wrapped = wrapped;
+  }
 
   @Override
   public boolean hasActiveTransaction() {
-    return false;
+    return wrapped.hasActiveTransaction();
   }
 
   @Override
   public boolean notifyMessageSent() {
-    return false;
+    return wrapped.notifyMessageSent();
   }
 
   @Override
   public TransactionOptions getTransactionOptions() {
-    return null;
+    return TransactionOptions.fromDriverClass(wrapped.getTransactionOptions());
   }
 
   @Override
   public void startTransaction() {
+    wrapped.startTransaction();
   }
 
   @Override
   public void startTransaction(TransactionOptions transactionOptions) {
     requireNonNull(transactionOptions, "transactionOptions cannot be null");
     com.mongodb.TransactionOptions __transactionOptions = transactionOptions.toDriverClass();
+    wrapped.startTransaction(__transactionOptions);
   }
 
   @Override
