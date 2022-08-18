@@ -27,20 +27,38 @@ public class ListResultSubscriber<T> implements Subscriber<T> {
 
     private List<T> received = new ArrayList<>();
     private final Promise<List<T>> promise;
+    private final int maxItems;
+    private Subscription subscription;
+    private boolean completed;
 
     public ListResultSubscriber(Promise<List<T>> promise) {
         Objects.requireNonNull(promise, "promise is null");
         this.promise = promise;
+        this.maxItems = -1;
+    }
+
+    public ListResultSubscriber(Promise<List<T>> promise, int maxItems) {
+        Objects.requireNonNull(promise, "promise is null");
+        if (maxItems < 0)
+            throw new IllegalArgumentException("maxItems must be non-negative");
+        this.promise = promise;
+        this.maxItems = maxItems;
     }
 
     @Override
     public void onSubscribe(Subscription s) {
-        s.request(Long.MAX_VALUE);
+        s.request(maxItems != -1 ? maxItems : Long.MAX_VALUE);
+        this.subscription = s;
     }
 
     @Override
     public void onNext(T t) {
         received.add(t);
+        if (maxItems != -1 && received.size() >= maxItems) {
+            completed = true;
+            subscription.cancel();
+            promise.complete(received);
+        }
     }
 
     @Override
@@ -50,6 +68,7 @@ public class ListResultSubscriber<T> implements Subscriber<T> {
 
     @Override
     public void onComplete() {
-        promise.complete(received);
+        if (!completed)
+            promise.complete(received);
     }
 }

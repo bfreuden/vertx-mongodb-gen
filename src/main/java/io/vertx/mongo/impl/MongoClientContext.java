@@ -17,13 +17,14 @@ package io.vertx.mongo.impl;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.impl.ContextInternal;
 
 public class MongoClientContext {
 
     private final Vertx vertx;
-    private final Context context;
+    private final ContextInternal context;
 
-    public MongoClientContext(Vertx vertx, Context context) {
+    public MongoClientContext(Vertx vertx, ContextInternal context) {
         this.vertx = vertx;
         this.context = context;
     }
@@ -32,7 +33,7 @@ public class MongoClientContext {
         return vertx;
     }
 
-    public Context getContext() {
+    public ContextInternal getContext() {
         return context;
     }
 }

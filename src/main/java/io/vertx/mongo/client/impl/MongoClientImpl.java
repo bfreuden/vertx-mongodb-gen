@@ -18,6 +18,7 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.reactivestreams.client.ListDatabasesPublisher;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -32,13 +33,14 @@ import io.vertx.mongo.client.ListDatabasesOptions;
 import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.MongoResult;
 import io.vertx.mongo.connection.ClusterDescription;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
-import io.vertx.mongo.impl.MongoClientContext;
-import io.vertx.mongo.impl.SingleResultSubscriber;
+import io.vertx.mongo.impl.*;
+
 import java.io.Closeable;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
+
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
@@ -66,8 +68,8 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public MongoResult<String> listDatabaseNames() {
-    //  TODO add implementation
-    return null;
+    Publisher<String> __publisher = wrapped.listDatabaseNames();
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
@@ -80,7 +82,6 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public MongoResult<JsonObject> listDatabases() {
-    //  TODO add implementation
     return null;
   }
 

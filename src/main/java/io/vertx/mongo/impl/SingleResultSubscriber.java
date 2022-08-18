@@ -25,6 +25,8 @@ public class SingleResultSubscriber<T> implements Subscriber<T> {
 
     private T received;
     private final Promise<T> promise;
+    private Subscription subscription;
+    private boolean completed;
 
     public SingleResultSubscriber(Promise<T> promise) {
         Objects.requireNonNull(promise, "promise is null");
@@ -33,13 +35,17 @@ public class SingleResultSubscriber<T> implements Subscriber<T> {
 
     @Override
     public void onSubscribe(Subscription s) {
-        s.request(Long.MAX_VALUE);
+        this.subscription = s;
+        s.request(1);
     }
 
     @Override
     public void onNext(T t) {
         if (received == null) {
             received = t;
+            completed = true;
+            subscription.cancel();
+            promise.complete(received);
         }
     }
 
@@ -50,6 +56,7 @@ public class SingleResultSubscriber<T> implements Subscriber<T> {
 
     @Override
     public void onComplete() {
-        promise.complete(received);
+        if (!completed)
+            promise.complete(received);
     }
 }
