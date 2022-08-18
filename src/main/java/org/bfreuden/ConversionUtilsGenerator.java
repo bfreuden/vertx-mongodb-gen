@@ -38,21 +38,25 @@ public class ConversionUtilsGenerator {
         }
     }
 
-    private static final Pattern LIST_REGEX = Pattern.compile("java\\.util\\.List<(?:\\? (?:extends|super) )(?:([a-z]+\\.)+)([^.]+)>");
+    private static final Pattern LIST_REGEX = Pattern.compile("java\\.util\\.List<(?:\\? (?:extends|super) )((?:[a-z]+\\.)+)([^.]+)>");
     String addConversion(TypeName from, TypeName to) {
+        String fqName = to.toString();
+        Matcher matcher = LIST_REGEX.matcher(fqName);
+        String type = null;
+        if (matcher.matches()) {
+            to = ParameterizedTypeName.get(ClassName.get(List.class), ClassName.bestGuess(matcher.group(1) + matcher.group(2)));
+            type = matcher.group(2);
+        }
         Conversion conversion = new Conversion(from, to);
         String methodName = conversions.get(conversion);
         if (methodName == null) {
-            String fqName = to.toString();
-            Matcher matcher = LIST_REGEX.matcher(fqName);
             if (to instanceof ClassName) {
                 methodName = "to" + fqName.substring(fqName.lastIndexOf('.') + 1);
             } else if (fqName.endsWith("[]")) {
-                String type = fqName.substring(0, fqName.length() - 2);
+                type = fqName.substring(0, fqName.length() - 2);
                 type = Character.toUpperCase(type.charAt(0)) + type.substring(1);
                 methodName = "to" + type + "Array";
             } else if (matcher.matches()){
-                String type = matcher.group(2);
                 methodName = "to" + type + "List";
             } else  {
                 throw new IllegalArgumentException("can't generate method name from " + to);

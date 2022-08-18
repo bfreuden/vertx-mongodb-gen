@@ -180,9 +180,12 @@ public class SourceGenDoclet {
         System.out.println("other api classes (" + inspectionContext.otherApiClasses.size() + "): " + inspectionContext.otherApiClasses);
         File genSourceDir = new File("src/main/java");
 
+        // FIXME
+        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
+        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
+        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
+
         for (String options : inspectionContext.optionsApiClasses) {
-            if (options.equals("com.mongodb.TransactionOptions"))
-                continue;
             new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options)).generate(genSourceDir);
 
         }

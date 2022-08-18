@@ -90,6 +90,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                         throw new IllegalStateException("not implemented or not supported");
                 }
             } else {
+                returnType.mongoType = actualReturnType.mongoType;
                 returnType.vertxType = actualReturnType.vertxType;
             }
 
@@ -288,8 +289,17 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
         inflateType(typeBuilder, isImpl, this::implementMethod, this::implementHandlerMethod, this::implementWithOptionsMethod);
 
+        typeBuilder.addField(FieldSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").addModifiers(Modifier.PROTECTED).build());
         typeBuilder.addField(FieldSpec.builder(wrappedType, "wrapped").addModifiers(Modifier.PROTECTED).build());
-        typeBuilder.addField(FieldSpec.builder(ClassName.get(Vertx.class), "vertx").addModifiers(Modifier.PROTECTED).build());
+
+        typeBuilder.addMethod(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").build())
+                .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
+                .addStatement("this.clientContext = clientContext")
+                .addStatement("this.wrapped = wrapped")
+                .build()
+        );
 
         typeBuilder.addMethod(
                 MethodSpec.methodBuilder("toDriverClass")
@@ -331,41 +341,102 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 paramNames.add(param.name);
             }
         }
-        if (method.mongoName.contains("ulk")) { // FIXME
-            //methodBuilder.addStatement("wrapped." + method.mongoName +  "(" + paramNames + ")");
-            String returnType = method.returnType.vertxType.toString();
-            if (!returnType.equals("void") && !returnType.equals("java.lang.Void")) {
-                if (returnType.equals("int"))
-                    methodBuilder.addStatement("return 0");
-                else if (returnType.equals("boolean"))
-                    methodBuilder.addStatement("return false");
-                else if (returnType.equals("long"))
-                    methodBuilder.addStatement("return 0L");
-                else
-                    methodBuilder.addStatement("return null");
-            }
-        } else if (method.returnType.isSinglePublisher) {
-            methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", method.returnType.getFullMongoType());
-            methodBuilder.addStatement("$T promise = $T.promise()", ParameterizedTypeName.get(ClassName.get(Promise.class), method.returnType.vertxType), ClassName.get(Promise.class));
-            methodBuilder.addStatement("__publisher.subscribe(new $T<>(promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
-            if (method.resultConversionMethod == null) {
-                methodBuilder.addStatement("return promise.future()");
+        TypeName fullMongoType = method.returnType.getFullMongoType();
+        TypeName returnedVertxReactiveClass = null;
+        if (context.reactiveApiClasses.contains(fullMongoType.toString()))
+            returnedVertxReactiveClass = ClassName.bestGuess(mapPackageName(fullMongoType.toString(), true));
+        if (returnedVertxReactiveClass == null && fullMongoType instanceof ParameterizedTypeName) {
+            ParameterizedTypeName paramFullMongoType = (ParameterizedTypeName) fullMongoType;
+            if (paramFullMongoType.typeArguments.size() > 1)
+                throw new IllegalStateException("not implemented");
+            if (context.reactiveApiClasses.contains(paramFullMongoType.rawType.toString()))
+                returnedVertxReactiveClass = ParameterizedTypeName.get(
+                        ClassName.bestGuess(mapPackageName(paramFullMongoType.rawType.toString(), true)),
+                        paramFullMongoType.typeArguments.get(0)
+                );
+        }
+
+        if (method.returnType.isPublisher) {
+            if (method.mongoName.contains("ulk")) { // FIXME
+                //methodBuilder.addStatement("wrapped." + method.mongoName +  "(" + paramNames + ")");
+                String returnType = method.returnType.vertxType.toString();
+                methodBuilder.addComment(" TODO add implementation");
+                if (!returnType.equals("void") && !returnType.equals("java.lang.Void")) {
+                    if (returnType.equals("int"))
+                        methodBuilder.addStatement("return 0");
+                    else if (returnType.equals("boolean"))
+                        methodBuilder.addStatement("return false");
+                    else if (returnType.equals("long"))
+                        methodBuilder.addStatement("return 0L");
+                    else
+                        methodBuilder.addStatement("return null");
+                }
+            } else if (method.returnType.isSinglePublisher) {
+                methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);
+                methodBuilder.addStatement("$T promise = $T.promise()", ParameterizedTypeName.get(ClassName.get(Promise.class), method.returnType.mongoType), ClassName.get(Promise.class));
+                methodBuilder.addStatement("__publisher.subscribe(new $T<>(promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
+                if (returnedVertxReactiveClass != null) {
+//                    if (returnedVertxReactiveClass instanceof ParameterizedTypeName) {
+//                        ParameterizedTypeName paramReturnedVertxReactiveClass = (ParameterizedTypeName) returnedVertxReactiveClass;
+//                        methodBuilder.addStatement("return promise.future().map(_wrapped -> new $T(this.clientContext, _wrapped))",
+//                                returnedVertxReactiveClass
+//                        );
+//                    } else {
+                        methodBuilder.addStatement("return promise.future().map(__wrapped -> new $T(this.clientContext, __wrapped))",
+                                ClassName.bestGuess(getTargetQualifiedClassName() +".Impl")
+                        );
+//                    }
+                } else if (method.resultConversionMethod == null) {
+                    methodBuilder.addStatement("return promise.future()");
+                } else {
+                    methodBuilder.addStatement("return promise.future().map($T.INSTANCE::" + method.resultConversionMethod + ")", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+                }
             } else {
-                methodBuilder.addStatement("return promise.future().map(res -> $T.INSTANCE." + method.resultConversionMethod + "(res)"+  ")", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+                methodBuilder.addComment(" TODO add implementation");
+                String returnType = method.returnType.vertxType.toString();
+                if (method.returnType.isPublisher)
+                    methodBuilder.addStatement("return null");
+                else if (!returnType.equals("void") && !returnType.equals("java.lang.Void")) {
+                    if (returnType.equals("int"))
+                        methodBuilder.addStatement("return 0");
+                    else if (returnType.equals("boolean"))
+                        methodBuilder.addStatement("return false");
+                    else if (returnType.equals("long"))
+                        methodBuilder.addStatement("return 0L");
+                    else
+                        methodBuilder.addStatement("return null");
+                }
             }
         } else {
-            String returnType = method.returnType.vertxType.toString();
-            if (method.returnType.isPublisher)
-                methodBuilder.addStatement("return null");
-            else if (!returnType.equals("void") && !returnType.equals("java.lang.Void")) {
-                if (returnType.equals("int"))
-                    methodBuilder.addStatement("return 0");
-                else if (returnType.equals("boolean"))
-                    methodBuilder.addStatement("return false");
-                else if (returnType.equals("long"))
-                    methodBuilder.addStatement("return 0L");
-                else
-                    methodBuilder.addStatement("return null");
+            if (returnedVertxReactiveClass != null) {
+                methodBuilder.addStatement("$T __wrapped = wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);
+//                if (fullMongoType instanceof ParameterizedTypeName) {
+//                    ParameterizedTypeName fullMongoType1 = (ParameterizedTypeName) fullMongoType;
+//                    methodBuilder.addStatement("return new $T<$T>(this.clientContext, _wrapped)",
+//                            ClassName.bestGuess(getTargetQualifiedClassName() +".Impl"),
+//                            fullMongoType1.typeArguments.get(0)
+//                    );
+//                } else {
+                    methodBuilder.addStatement("return new $T(this.clientContext, __wrapped)",
+                            returnedVertxReactiveClass
+                    );
+//                }
+            } else {
+                String returnType = method.returnType.vertxType.toString();
+                String returnKeyword = "return ";
+                if (returnType.equals("void") || returnType.equals("java.lang.Void"))
+                    returnKeyword = "";
+                if (method.resultConversionMethod == null) {
+                    if (context.otherApiClasses.contains(method.returnType.mongoType.toString()) ||
+                            context.optionsApiClasses.contains(method.returnType.mongoType.toString()))
+                        methodBuilder.addStatement(returnKeyword + "$T.fromDriverClass(wrapped." + method.mongoName +  "(" + paramNames + "))", method.returnType.vertxType);
+                    else
+                        methodBuilder.addStatement(returnKeyword + "wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);
+                } else {
+                    methodBuilder.addStatement("$T __result = wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);
+                    methodBuilder.addStatement(returnKeyword + "T.INSTANCE." + method.resultConversionMethod + "(__result)", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+                }
+
             }
         }
 
@@ -509,34 +580,35 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
             }
         }
 
-        ParameterizedTypeName returnType = null;
-        if (classDoc.qualifiedTypeName().equals(MongoDatabase.class.getName()) &&
-                methodDoc.name().equals("getCollection")
-        ) {
-            TypeName paramTypeName;
-            if (Arrays.stream(methodDoc.typeParameters()).findFirst().isPresent()) {
-                paramTypeName = TypeVariableName.get("TDocument");
-            } else {
-                paramTypeName = ClassName.get(JsonObject.class);
-            }
-            returnType = ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(MongoCollection.class.getName())), paramTypeName);
-        } else if (classDoc.qualifiedTypeName().equals(MongoCollection.class.getName())) {
-            ParameterizedType parameterizedType = methodDoc.returnType().asParameterizedType();
-            if (parameterizedType != null && parameterizedType.toString().equals(MongoCollection.class.getName() + "<TDocument>")) {
-                returnType = ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(MongoCollection.class.getName())), TypeVariableName.get("TDocument"));
-            }
-        }
-        if (returnType == null) {
+        ActualType returnType = null;
+//        if (classDoc.qualifiedTypeName().equals(MongoDatabase.class.getName()) &&
+//                methodDoc.name().equals("getCollection")
+//        ) {
+//            TypeName paramTypeName;
+//            if (Arrays.stream(methodDoc.typeParameters()).findFirst().isPresent()) {
+//                returnType = ActualType.fromMappedTypeName(ClassName.bestGuess("io.vertx.mongo.client.MongoCollection"), TypeVariableName.get("TDocument"));
+//            } else {
+//                returnType = ActualType.fromMappedTypeName(ClassName.bestGuess("io.vertx.mongo.client.MongoCollection"), ClassName.get(JsonObject.class));
+//            }
+//        } else if (classDoc.qualifiedTypeName().equals(MongoCollection.class.getName())) {
+//            ParameterizedType parameterizedType = methodDoc.returnType().asParameterizedType();
+//            if (parameterizedType != null && parameterizedType.toString().equals(MongoCollection.class.getName() + "<TDocument>")) {
+//                returnType = ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(MongoCollection.class.getName())), TypeVariableName.get("TDocument"));
+//            }
+//        }
+//        if (returnType == null) {
             ActualType actualReturnType = getActualType(methodDoc, null, methodDoc.returnType(), TypeLocation.RETURN);
             if (actualReturnType == null) {
                 System.out.println("WARNING: return type of " + methodDoc + " is unknown so method has been ignored");
                 return null;
             }
             mongoMethod.computeActualReturnTypes(context, actualReturnType);
-        } else {
-            mongoMethod.returnType = new MongoMethodParameter();
-            mongoMethod.returnType.vertxType = returnType;
-        }
+            if (mongoMethod.returnType.mongoType != null && mongoMethod.returnType.mongoType.toString().equals(classDoc.qualifiedTypeName()))
+                mongoMethod.returnType.vertxType = this.fluentReturnType;
+//        } else {
+//            mongoMethod.returnType = new MongoMethodParameter();
+//            mongoMethod.returnType.vertxType = returnType;
+//        }
 
         if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                 methodDoc.name().equals("downloadToPublisher")

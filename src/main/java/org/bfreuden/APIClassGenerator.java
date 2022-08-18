@@ -38,7 +38,6 @@ public abstract class APIClassGenerator {
         if (!type.isPrimitive()) {
             String qualifiedTypeName = type.qualifiedTypeName();
             if (qualifiedTypeName.equals("TDocument")) {
-//                return ActualType.fromMappedTypeName(TypeVariableName.get("TDocument"), ClassName.get(JsonObject.class));
                 return ActualType.fromTypeName(TypeVariableName.get("TDocument"));
             } else if (Types.isIgnored(qualifiedTypeName)) {
                 System.out.println("WARNING: ignored method because return type is ignored: " + methodDoc);
@@ -73,7 +72,23 @@ public abstract class APIClassGenerator {
             } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
                 return ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));
             } else if (context.reactiveApiClasses.contains(qualifiedTypeName)) {
-                return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
+                ParameterizedType parameterizedType = type.asParameterizedType();
+                if (parameterizedType != null) {
+                    if (parameterizedType.typeArguments().length > 1)
+                        throw new IllegalStateException("unsupported number of parameters " + parameterizedType);
+                    Type type1 = parameterizedType.typeArguments()[0];
+                    TypeName elemType = TypeVariableName.get(type1.typeName());
+                    String elemQualifiedTypeName = type1.qualifiedTypeName();
+                    if (elemQualifiedTypeName.contains("."))
+                        elemType = ClassName.bestGuess(elemQualifiedTypeName);
+                    return ActualType.fromMappedTypeName(
+                            ParameterizedTypeName.get(ClassName.bestGuess(qualifiedTypeName), elemType),
+                            ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(qualifiedTypeName)), elemType)
+                    );
+
+                } else {
+                    return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
+                }
             } else if (context.builderClasses.contains(qualifiedTypeName)) {
                 return ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
             } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
@@ -96,10 +111,6 @@ public abstract class APIClassGenerator {
         }
     }
 
-    private boolean isSupportedReturnType(String qualifiedTypeName) {
-        return false;
-    }
-
     protected boolean isSupportedSuperClass(String superClassName) {
         if (Types.isSupportedSuperClass(superClassName))
             return true;
@@ -119,16 +130,24 @@ public abstract class APIClassGenerator {
         return mapPackageName(packageName);
     }
 
-    protected String mapPackageName(String packageNameOrClassName) {
+    protected String mapPackageName(String packageNameOrClassName, boolean... addImpl) {
         if (packageNameOrClassName.startsWith("com.mongodb.reactivestreams")) {
             packageNameOrClassName = packageNameOrClassName.replace("com.mongodb.reactivestreams", "io.vertx.mongo");
-            return packageNameOrClassName;
         } else if (packageNameOrClassName.startsWith("com.mongodb")) {
             packageNameOrClassName = packageNameOrClassName.replace("com.mongodb", "io.vertx.mongo");
-            return packageNameOrClassName;
         } else {
             throw new IllegalArgumentException();
         }
+        if (addImpl.length > 0 && addImpl[0]) {
+            int index = packageNameOrClassName.lastIndexOf('.');
+            String packageName = packageNameOrClassName.substring(0, index + 1);
+            String last = packageNameOrClassName.substring(index + 1);
+            if (Character.isUpperCase(last.charAt(0)))
+                packageNameOrClassName = packageName + "impl." + last + "Impl";
+            else
+                packageNameOrClassName = packageName + "impl";
+        }
+        return packageNameOrClassName;
     }
 
     enum TypeLocation {
@@ -139,7 +158,6 @@ public abstract class APIClassGenerator {
     static class ActualType {
         TypeName mongoType;
         TypeName vertxType;
-        java.lang.reflect.Type type;
         boolean isPublisher;
         boolean singlePublisher;
         boolean noArgPublisher;
@@ -214,18 +232,5 @@ public abstract class APIClassGenerator {
             return actualType;
         }
 
-        public void setAsReturnTypeOf(MethodSpec.Builder methodBuilder) {
-            if (type != null)
-                methodBuilder.returns(type);
-            else
-                methodBuilder.returns(vertxType);
-        }
-
-        public ParameterSpec.Builder paramSpecBuilder(String name) {
-            if (type != null)
-                return ParameterSpec.builder(type, name);
-            else
-                return ParameterSpec.builder(vertxType, name);
-        }
     }
 }

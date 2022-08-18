@@ -75,21 +75,24 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public io.vertx.mongo.client.MongoDatabase withReadPreference(ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference cannot be null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    return null;//wrapped.withReadPreference(__readPreference);
+    MongoDatabase __wrapped = wrapped.withReadPreference(__readPreference);
+    return new MongoDatabaseImpl(this.clientContext, __wrapped);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withWriteConcern(WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern cannot be null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    return null;// wrapped.withWriteConcern(__writeConcern);
+    MongoDatabase __wrapped = wrapped.withWriteConcern(__writeConcern);
+    return new MongoDatabaseImpl(this.clientContext, __wrapped);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern cannot be null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    return null;//wrapped.withReadConcern(__readConcern);
+    MongoDatabase __wrapped = wrapped.withReadConcern(__readConcern);
+    return new MongoDatabaseImpl(this.clientContext, __wrapped);
   }
 
   @Override
