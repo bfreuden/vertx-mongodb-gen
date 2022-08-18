@@ -46,8 +46,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
     requireNonNull(kmsProvider, "kmsProvider cannot be null");
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider);
     Promise<byte[]> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(res -> ConversionUtilsImpl.INSTANCE.toByteArray(res));
+    return null;
   }
 
   @Override
@@ -65,8 +64,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
     com.mongodb.client.model.vault.DataKeyOptions __dataKeyOptions = dataKeyOptions.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider, __dataKeyOptions);
     Promise<byte[]> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(res -> ConversionUtilsImpl.INSTANCE.toByteArray(res));
+    return null;
   }
 
   @Override
@@ -85,8 +83,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
     com.mongodb.client.model.vault.EncryptOptions __options = options.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.encrypt(__value, __options);
     Promise<byte[]> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(res -> ConversionUtilsImpl.INSTANCE.toByteArray(res));
+    return null;
   }
 
   @Override
@@ -103,8 +100,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
     BsonBinary __value = ConversionUtilsImpl.INSTANCE.toBsonBinary(value);
     Publisher<BsonValue> __publisher = wrapped.decrypt(__value);
     Promise<Object> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(res -> ConversionUtilsImpl.INSTANCE.toObject(res));
+    return null;
   }
 
   @Override
