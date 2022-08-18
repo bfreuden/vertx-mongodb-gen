@@ -24,6 +24,11 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
+import com.mongodb.reactivestreams.client.AggregatePublisher;
+import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
+import com.mongodb.reactivestreams.client.FindPublisher;
+import com.mongodb.reactivestreams.client.ListIndexesPublisher;
+import com.mongodb.reactivestreams.client.MapReducePublisher;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -66,13 +71,14 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
 public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocument> {
-  protected MongoClientContext clientContext;
+  protected final MongoClientContext clientContext;
 
-  protected MongoCollection<TDocument> wrapped;
+  protected final MongoCollection<TDocument> wrapped;
 
   public MongoCollectionImpl(MongoClientContext clientContext, MongoCollection<TDocument> wrapped) {
     this.clientContext = clientContext;
@@ -107,7 +113,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public <NewTDocument> io.vertx.mongo.client.MongoCollection<NewTDocument> withDocumentClass(
       Class<NewTDocument> clazz) {
-    requireNonNull(clazz, "clazz cannot be null");
+    requireNonNull(clazz, "clazz is null");
     MongoCollection<NewTDocument> __wrapped = wrapped.withDocumentClass(clazz);
     return new MongoCollectionImpl<NewTDocument>(this.clientContext, __wrapped);
   }
@@ -115,7 +121,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> withReadPreference(
       ReadPreference readPreference) {
-    requireNonNull(readPreference, "readPreference cannot be null");
+    requireNonNull(readPreference, "readPreference is null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     MongoCollection<TDocument> __wrapped = wrapped.withReadPreference(__readPreference);
     return new MongoCollectionImpl<TDocument>(this.clientContext, __wrapped);
@@ -124,7 +130,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> withWriteConcern(
       WriteConcern writeConcern) {
-    requireNonNull(writeConcern, "writeConcern cannot be null");
+    requireNonNull(writeConcern, "writeConcern is null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
     MongoCollection<TDocument> __wrapped = wrapped.withWriteConcern(__writeConcern);
     return new MongoCollectionImpl<TDocument>(this.clientContext, __wrapped);
@@ -132,7 +138,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> withReadConcern(ReadConcern readConcern) {
-    requireNonNull(readConcern, "readConcern cannot be null");
+    requireNonNull(readConcern, "readConcern is null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
     MongoCollection<TDocument> __wrapped = wrapped.withReadConcern(__readConcern);
     return new MongoCollectionImpl<TDocument>(this.clientContext, __wrapped);
@@ -141,322 +147,382 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Long> estimatedDocumentCount() {
     Publisher<Long> __publisher = wrapped.estimatedDocumentCount();
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> estimatedDocumentCount(
       Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.estimatedDocumentCount();
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.estimatedDocumentCount();
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Long> estimatedDocumentCount(EstimatedDocumentCountOptions options) {
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(options, "options is null");
     com.mongodb.client.model.EstimatedDocumentCountOptions __options = options.toDriverClass();
     Publisher<Long> __publisher = wrapped.estimatedDocumentCount(__options);
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> estimatedDocumentCount(
       EstimatedDocumentCountOptions options, Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.estimatedDocumentCount(options);
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.estimatedDocumentCount(options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Long> countDocuments() {
     Publisher<Long> __publisher = wrapped.countDocuments();
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
       Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.countDocuments();
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.countDocuments();
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Long> countDocuments(JsonObject filter) {
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<Long> __publisher = wrapped.countDocuments(__filter);
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(JsonObject filter,
       Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.countDocuments(filter);
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.countDocuments(filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Long> countDocuments(JsonObject filter, CountOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.CountOptions __options = options.toDriverClass();
     Publisher<Long> __publisher = wrapped.countDocuments(__filter, __options);
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(JsonObject filter,
       CountOptions options, Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.countDocuments(filter, options);
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.countDocuments(filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Long> countDocuments(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Long> __publisher = wrapped.countDocuments(__clientSession);
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
       ClientSession clientSession, Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.countDocuments(clientSession);
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.countDocuments(clientSession);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Long> countDocuments(ClientSession clientSession, JsonObject filter) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<Long> __publisher = wrapped.countDocuments(__clientSession, __filter);
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
       ClientSession clientSession, JsonObject filter, Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.countDocuments(clientSession, filter);
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.countDocuments(clientSession, filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Long> countDocuments(ClientSession clientSession, JsonObject filter,
       CountOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.CountOptions __options = options.toDriverClass();
     Publisher<Long> __publisher = wrapped.countDocuments(__clientSession, __filter, __options);
-    Promise<Long> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Long> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
       ClientSession clientSession, JsonObject filter, CountOptions options,
       Handler<AsyncResult<Long>> resultHandler) {
-    Future<Long> future = this.countDocuments(clientSession, filter, options);
-    setHandler(future, resultHandler);
+    Future<Long> __future = this.countDocuments(clientSession, filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public MongoResult<TDocument> find() {
-    //  TODO add implementation
-    return null;
+    FindPublisher<TDocument> __publisher = wrapped.find();
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> find(FindOptions options) {
-    return null;
+    FindPublisher<TDocument> __publisher = wrapped.find();
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> find(JsonObject filter) {
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    //  TODO add implementation
-    return null;
+    FindPublisher<TDocument> __publisher = wrapped.find(__filter);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> find(JsonObject filter, FindOptions options) {
-    return null;
+    requireNonNull(filter, "filter is null");
+    Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    FindPublisher<TDocument> __publisher = wrapped.find(__filter);
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> find(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
-    return null;
+    FindPublisher<TDocument> __publisher = wrapped.find(__clientSession);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> find(ClientSession clientSession, FindOptions options) {
-    return null;
+    requireNonNull(clientSession, "clientSession is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    FindPublisher<TDocument> __publisher = wrapped.find(__clientSession);
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> find(ClientSession clientSession, JsonObject filter) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    //  TODO add implementation
-    return null;
+    FindPublisher<TDocument> __publisher = wrapped.find(__clientSession, __filter);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> find(ClientSession clientSession, JsonObject filter,
       FindOptions options) {
-    return null;
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    FindPublisher<TDocument> __publisher = wrapped.find(__clientSession, __filter);
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> aggregate(List<JsonObject> pipeline) {
-    requireNonNull(pipeline, "pipeline cannot be null");
+    requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
-    return null;
+    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__pipeline);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> aggregate(List<JsonObject> pipeline, AggregateOptions options) {
-    return null;
+    requireNonNull(pipeline, "pipeline is null");
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__pipeline);
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(pipeline, "pipeline cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
-    return null;
+    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__clientSession, __pipeline);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
       AggregateOptions options) {
-    return null;
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__clientSession, __pipeline);
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public ReadStream<JsonObject> watch() {
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch();
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ChangeStreamOptions options) {
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch();
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(List<JsonObject> pipeline) {
-    requireNonNull(pipeline, "pipeline cannot be null");
+    requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__pipeline);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options) {
+    requireNonNull(pipeline, "pipeline is null");
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__pipeline);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(pipeline, "pipeline cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession, __pipeline);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
       ChangeStreamOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession, __pipeline);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction) {
-    requireNonNull(mapFunction, "mapFunction cannot be null");
-    requireNonNull(reduceFunction, "reduceFunction cannot be null");
-    //  TODO add implementation
-    return null;
+    requireNonNull(mapFunction, "mapFunction is null");
+    requireNonNull(reduceFunction, "reduceFunction is null");
+    MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(mapFunction, reduceFunction);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction,
       MapReduceOptions options) {
-    return null;
+    requireNonNull(mapFunction, "mapFunction is null");
+    requireNonNull(reduceFunction, "reduceFunction is null");
+    MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(mapFunction, reduceFunction);
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(mapFunction, "mapFunction cannot be null");
-    requireNonNull(reduceFunction, "reduceFunction cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(mapFunction, "mapFunction is null");
+    requireNonNull(reduceFunction, "reduceFunction is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
-    return null;
+    MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(__clientSession, mapFunction, reduceFunction);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction, MapReduceOptions options) {
-    return null;
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(mapFunction, "mapFunction is null");
+    requireNonNull(reduceFunction, "reduceFunction is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(__clientSession, mapFunction, reduceFunction);
+    options.initializePublisher(__publisher);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public Future<BulkWriteResult> bulkWrite(List<JsonObject> requests) {
-    requireNonNull(requests, "requests cannot be null");
+    requireNonNull(requests, "requests is null");
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
     //  TODO add implementation
     return null;
@@ -465,15 +531,15 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(List<JsonObject> requests,
       Handler<AsyncResult<BulkWriteResult>> resultHandler) {
-    Future<BulkWriteResult> future = this.bulkWrite(requests);
-    setHandler(future, resultHandler);
+    Future<BulkWriteResult> __future = this.bulkWrite(requests);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<BulkWriteResult> bulkWrite(List<JsonObject> requests, BulkWriteOptions options) {
-    requireNonNull(requests, "requests cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(requests, "requests is null");
+    requireNonNull(options, "options is null");
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass();
     //  TODO add implementation
@@ -483,15 +549,15 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(List<JsonObject> requests,
       BulkWriteOptions options, Handler<AsyncResult<BulkWriteResult>> resultHandler) {
-    Future<BulkWriteResult> future = this.bulkWrite(requests, options);
-    setHandler(future, resultHandler);
+    Future<BulkWriteResult> __future = this.bulkWrite(requests, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<JsonObject> requests) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(requests, "requests cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(requests, "requests is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
     //  TODO add implementation
@@ -501,17 +567,17 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(ClientSession clientSession,
       List<JsonObject> requests, Handler<AsyncResult<BulkWriteResult>> resultHandler) {
-    Future<BulkWriteResult> future = this.bulkWrite(clientSession, requests);
-    setHandler(future, resultHandler);
+    Future<BulkWriteResult> __future = this.bulkWrite(clientSession, requests);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<JsonObject> requests,
       BulkWriteOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(requests, "requests cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(requests, "requests is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __requests = ConversionUtilsImpl.INSTANCE.toBsonList(requests);
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass();
@@ -523,1688 +589,1698 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(ClientSession clientSession,
       List<JsonObject> requests, BulkWriteOptions options,
       Handler<AsyncResult<BulkWriteResult>> resultHandler) {
-    Future<BulkWriteResult> future = this.bulkWrite(clientSession, requests, options);
-    setHandler(future, resultHandler);
+    Future<BulkWriteResult> __future = this.bulkWrite(clientSession, requests, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertOneResult> insertOne(TDocument document) {
-    requireNonNull(document, "document cannot be null");
+    requireNonNull(document, "document is null");
     Publisher<InsertOneResult> __publisher = wrapped.insertOne(document);
-    Promise<InsertOneResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertOneResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(TDocument document,
       Handler<AsyncResult<InsertOneResult>> resultHandler) {
-    Future<InsertOneResult> future = this.insertOne(document);
-    setHandler(future, resultHandler);
+    Future<InsertOneResult> __future = this.insertOne(document);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertOneResult> insertOne(TDocument document, InsertOneOptions options) {
-    requireNonNull(document, "document cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(document, "document is null");
+    requireNonNull(options, "options is null");
     com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass();
     Publisher<InsertOneResult> __publisher = wrapped.insertOne(document, __options);
-    Promise<InsertOneResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertOneResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(TDocument document,
       InsertOneOptions options, Handler<AsyncResult<InsertOneResult>> resultHandler) {
-    Future<InsertOneResult> future = this.insertOne(document, options);
-    setHandler(future, resultHandler);
+    Future<InsertOneResult> __future = this.insertOne(document, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertOneResult> insertOne(ClientSession clientSession, TDocument document) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(document, "document cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(document, "document is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<InsertOneResult> __publisher = wrapped.insertOne(__clientSession, document);
-    Promise<InsertOneResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertOneResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(ClientSession clientSession,
       TDocument document, Handler<AsyncResult<InsertOneResult>> resultHandler) {
-    Future<InsertOneResult> future = this.insertOne(clientSession, document);
-    setHandler(future, resultHandler);
+    Future<InsertOneResult> __future = this.insertOne(clientSession, document);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertOneResult> insertOne(ClientSession clientSession, TDocument document,
       InsertOneOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(document, "document cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(document, "document is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass();
     Publisher<InsertOneResult> __publisher = wrapped.insertOne(__clientSession, document, __options);
-    Promise<InsertOneResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertOneResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(ClientSession clientSession,
       TDocument document, InsertOneOptions options,
       Handler<AsyncResult<InsertOneResult>> resultHandler) {
-    Future<InsertOneResult> future = this.insertOne(clientSession, document, options);
-    setHandler(future, resultHandler);
+    Future<InsertOneResult> __future = this.insertOne(clientSession, document, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertManyResult> insertMany(List<? extends TDocument> documents) {
-    requireNonNull(documents, "documents cannot be null");
+    requireNonNull(documents, "documents is null");
     Publisher<InsertManyResult> __publisher = wrapped.insertMany(documents);
-    Promise<InsertManyResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertManyResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(
       List<? extends TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler) {
-    Future<InsertManyResult> future = this.insertMany(documents);
-    setHandler(future, resultHandler);
+    Future<InsertManyResult> __future = this.insertMany(documents);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertManyResult> insertMany(List<? extends TDocument> documents,
       InsertManyOptions options) {
-    requireNonNull(documents, "documents cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(documents, "documents is null");
+    requireNonNull(options, "options is null");
     com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass();
     Publisher<InsertManyResult> __publisher = wrapped.insertMany(documents, __options);
-    Promise<InsertManyResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertManyResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(
       List<? extends TDocument> documents, InsertManyOptions options,
       Handler<AsyncResult<InsertManyResult>> resultHandler) {
-    Future<InsertManyResult> future = this.insertMany(documents, options);
-    setHandler(future, resultHandler);
+    Future<InsertManyResult> __future = this.insertMany(documents, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertManyResult> insertMany(ClientSession clientSession,
       List<? extends TDocument> documents) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(documents, "documents cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(documents, "documents is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<InsertManyResult> __publisher = wrapped.insertMany(__clientSession, documents);
-    Promise<InsertManyResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertManyResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(ClientSession clientSession,
       List<? extends TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler) {
-    Future<InsertManyResult> future = this.insertMany(clientSession, documents);
-    setHandler(future, resultHandler);
+    Future<InsertManyResult> __future = this.insertMany(clientSession, documents);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<InsertManyResult> insertMany(ClientSession clientSession,
       List<? extends TDocument> documents, InsertManyOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(documents, "documents cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(documents, "documents is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass();
     Publisher<InsertManyResult> __publisher = wrapped.insertMany(__clientSession, documents, __options);
-    Promise<InsertManyResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<InsertManyResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(ClientSession clientSession,
       List<? extends TDocument> documents, InsertManyOptions options,
       Handler<AsyncResult<InsertManyResult>> resultHandler) {
-    Future<InsertManyResult> future = this.insertMany(clientSession, documents, options);
-    setHandler(future, resultHandler);
+    Future<InsertManyResult> __future = this.insertMany(clientSession, documents, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteOne(JsonObject filter) {
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<DeleteResult> __publisher = wrapped.deleteOne(__filter);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(JsonObject filter,
       Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteOne(filter);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteOne(filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteOne(JsonObject filter, DeleteOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     Publisher<DeleteResult> __publisher = wrapped.deleteOne(__filter, __options);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(JsonObject filter,
       DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteOne(filter, options);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteOne(filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteOne(ClientSession clientSession, JsonObject filter) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<DeleteResult> __publisher = wrapped.deleteOne(__clientSession, __filter);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(ClientSession clientSession,
       JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteOne(clientSession, filter);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteOne(clientSession, filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteOne(ClientSession clientSession, JsonObject filter,
       DeleteOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     Publisher<DeleteResult> __publisher = wrapped.deleteOne(__clientSession, __filter, __options);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(ClientSession clientSession,
       JsonObject filter, DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteOne(clientSession, filter, options);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteOne(clientSession, filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteMany(JsonObject filter) {
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<DeleteResult> __publisher = wrapped.deleteMany(__filter);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(JsonObject filter,
       Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteMany(filter);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteMany(filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteMany(JsonObject filter, DeleteOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     Publisher<DeleteResult> __publisher = wrapped.deleteMany(__filter, __options);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(JsonObject filter,
       DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteMany(filter, options);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteMany(filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteMany(ClientSession clientSession, JsonObject filter) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<DeleteResult> __publisher = wrapped.deleteMany(__clientSession, __filter);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(ClientSession clientSession,
       JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteMany(clientSession, filter);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteMany(clientSession, filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<DeleteResult> deleteMany(ClientSession clientSession, JsonObject filter,
       DeleteOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.DeleteOptions __options = options.toDriverClass();
     Publisher<DeleteResult> __publisher = wrapped.deleteMany(__clientSession, __filter, __options);
-    Promise<DeleteResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<DeleteResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(ClientSession clientSession,
       JsonObject filter, DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
-    Future<DeleteResult> future = this.deleteMany(clientSession, filter, options);
-    setHandler(future, resultHandler);
+    Future<DeleteResult> __future = this.deleteMany(clientSession, filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> replaceOne(JsonObject filter, TDocument replacement) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(JsonObject filter,
       TDocument replacement, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.replaceOne(filter, replacement);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.replaceOne(filter, replacement);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> replaceOne(JsonObject filter, TDocument replacement,
       ReplaceOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(JsonObject filter,
       TDocument replacement, ReplaceOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.replaceOne(filter, replacement, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.replaceOne(filter, replacement, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> replaceOne(ClientSession clientSession, JsonObject filter,
       TDocument replacement) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(ClientSession clientSession,
       JsonObject filter, TDocument replacement, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.replaceOne(clientSession, filter, replacement);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.replaceOne(clientSession, filter, replacement);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> replaceOne(ClientSession clientSession, JsonObject filter,
       TDocument replacement, ReplaceOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(ClientSession clientSession,
       JsonObject filter, TDocument replacement, ReplaceOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.replaceOne(clientSession, filter, replacement, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.replaceOne(clientSession, filter, replacement, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(JsonObject filter, JsonObject update) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
       JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(JsonObject filter, JsonObject update,
       UpdateOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
       JsonObject update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
       JsonObject update) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
       JsonObject filter, JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(clientSession, filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(clientSession, filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
       JsonObject update, UpdateOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
       JsonObject filter, JsonObject update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(clientSession, filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(clientSession, filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(JsonObject filter, List<JsonObject> update) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
       List<JsonObject> update, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(JsonObject filter, List<JsonObject> update,
       UpdateOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
       List<JsonObject> update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
       JsonObject filter, List<JsonObject> update,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(clientSession, filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(clientSession, filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update, UpdateOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
       JsonObject filter, List<JsonObject> update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateOne(clientSession, filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateOne(clientSession, filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(JsonObject filter, JsonObject update) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
       JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(JsonObject filter, JsonObject update,
       UpdateOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
       JsonObject update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
       JsonObject update) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
       JsonObject filter, JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(clientSession, filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(clientSession, filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
       JsonObject update, UpdateOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
       JsonObject filter, JsonObject update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(clientSession, filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(clientSession, filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(JsonObject filter, List<JsonObject> update) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
       List<JsonObject> update, Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(JsonObject filter, List<JsonObject> update,
       UpdateOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
       List<JsonObject> update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
       JsonObject filter, List<JsonObject> update,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(clientSession, filter, update);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(clientSession, filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update, UpdateOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update, __options);
-    Promise<UpdateResult> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<UpdateResult> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
       JsonObject filter, List<JsonObject> update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
-    Future<UpdateResult> future = this.updateMany(clientSession, filter, update, options);
-    setHandler(future, resultHandler);
+    Future<UpdateResult> __future = this.updateMany(clientSession, filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndDelete(JsonObject filter) {
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__filter);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(JsonObject filter,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndDelete(filter);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndDelete(filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndDelete(JsonObject filter, FindOneAndDeleteOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndDeleteOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__filter, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(JsonObject filter,
       FindOneAndDeleteOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndDelete(filter, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndDelete(filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndDelete(ClientSession clientSession, JsonObject filter) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__clientSession, __filter);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(
       ClientSession clientSession, JsonObject filter,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndDelete(clientSession, filter);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndDelete(clientSession, filter);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndDelete(ClientSession clientSession, JsonObject filter,
       FindOneAndDeleteOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndDeleteOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__clientSession, __filter, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(
       ClientSession clientSession, JsonObject filter, FindOneAndDeleteOptions options,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndDelete(clientSession, filter, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndDelete(clientSession, filter, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndReplace(JsonObject filter, TDocument replacement) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(JsonObject filter,
       TDocument replacement, Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndReplace(filter, replacement);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndReplace(filter, replacement);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndReplace(JsonObject filter, TDocument replacement,
       FindOneAndReplaceOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(JsonObject filter,
       TDocument replacement, FindOneAndReplaceOptions options,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndReplace(filter, replacement, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndReplace(filter, replacement, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndReplace(ClientSession clientSession, JsonObject filter,
       TDocument replacement) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(
       ClientSession clientSession, JsonObject filter, TDocument replacement,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndReplace(clientSession, filter, replacement);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndReplace(clientSession, filter, replacement);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndReplace(ClientSession clientSession, JsonObject filter,
       TDocument replacement, FindOneAndReplaceOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(replacement, "replacement cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(replacement, "replacement is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(
       ClientSession clientSession, JsonObject filter, TDocument replacement,
       FindOneAndReplaceOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndReplace(clientSession, filter, replacement, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndReplace(clientSession, filter, replacement, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(JsonObject filter, JsonObject update) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
       JsonObject update, Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(filter, update);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(JsonObject filter, JsonObject update,
       FindOneAndUpdateOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
       JsonObject update, FindOneAndUpdateOptions options,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(filter, update, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
       JsonObject update) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
       ClientSession clientSession, JsonObject filter, JsonObject update,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(clientSession, filter, update);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
       JsonObject update, FindOneAndUpdateOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     Bson __update = ConversionUtilsImpl.INSTANCE.toBson(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
       ClientSession clientSession, JsonObject filter, JsonObject update,
       FindOneAndUpdateOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(clientSession, filter, update, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
       List<JsonObject> update, Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(filter, update);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update,
       FindOneAndUpdateOptions options) {
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
       List<JsonObject> update, FindOneAndUpdateOptions options,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(filter, update, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
       ClientSession clientSession, JsonObject filter, List<JsonObject> update,
       Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(clientSession, filter, update);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
       List<JsonObject> update, FindOneAndUpdateOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(filter, "filter cannot be null");
-    requireNonNull(update, "update cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filter, "filter is null");
+    requireNonNull(update, "update is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
-    Promise<TDocument> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<TDocument> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
       ClientSession clientSession, JsonObject filter, List<JsonObject> update,
       FindOneAndUpdateOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
-    Future<TDocument> future = this.findOneAndUpdate(clientSession, filter, update, options);
-    setHandler(future, resultHandler);
+    Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> drop() {
     Publisher<Void> __publisher = wrapped.drop();
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> drop(
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.drop();
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.drop();
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> drop(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.drop(__clientSession);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> drop(ClientSession clientSession,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.drop(clientSession);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.drop(clientSession);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndex(JsonObject key) {
-    requireNonNull(key, "key cannot be null");
+    requireNonNull(key, "key is null");
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
     Publisher<String> __publisher = wrapped.createIndex(__key);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(JsonObject key,
       Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndex(key);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndex(key);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndex(JsonObject key, IndexOptions options) {
-    requireNonNull(key, "key cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(key, "key is null");
+    requireNonNull(options, "options is null");
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
     com.mongodb.client.model.IndexOptions __options = options.toDriverClass();
     Publisher<String> __publisher = wrapped.createIndex(__key, __options);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(JsonObject key,
       IndexOptions options, Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndex(key, options);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndex(key, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndex(ClientSession clientSession, JsonObject key) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(key, "key cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(key, "key is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
     Publisher<String> __publisher = wrapped.createIndex(__clientSession, __key);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(ClientSession clientSession,
       JsonObject key, Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndex(clientSession, key);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndex(clientSession, key);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndex(ClientSession clientSession, JsonObject key,
       IndexOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(key, "key cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(key, "key is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __key = ConversionUtilsImpl.INSTANCE.toBson(key);
     com.mongodb.client.model.IndexOptions __options = options.toDriverClass();
     Publisher<String> __publisher = wrapped.createIndex(__clientSession, __key, __options);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(ClientSession clientSession,
       JsonObject key, IndexOptions options, Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndex(clientSession, key, options);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndex(clientSession, key, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndexes(List<IndexModel> indexes) {
-    requireNonNull(indexes, "indexes cannot be null");
+    requireNonNull(indexes, "indexes is null");
     Publisher<String> __publisher = wrapped.createIndexes(indexes);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(List<IndexModel> indexes,
       Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndexes(indexes);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndexes(indexes);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndexes(List<IndexModel> indexes,
       CreateIndexOptions createIndexOptions) {
-    requireNonNull(indexes, "indexes cannot be null");
-    requireNonNull(createIndexOptions, "createIndexOptions cannot be null");
+    requireNonNull(indexes, "indexes is null");
+    requireNonNull(createIndexOptions, "createIndexOptions is null");
     com.mongodb.client.model.CreateIndexOptions __createIndexOptions = createIndexOptions.toDriverClass();
     Publisher<String> __publisher = wrapped.createIndexes(indexes, __createIndexOptions);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(List<IndexModel> indexes,
       CreateIndexOptions createIndexOptions, Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndexes(indexes, createIndexOptions);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndexes(indexes, createIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndexes(ClientSession clientSession, List<IndexModel> indexes) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(indexes, "indexes cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(indexes, "indexes is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<String> __publisher = wrapped.createIndexes(__clientSession, indexes);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(ClientSession clientSession,
       List<IndexModel> indexes, Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndexes(clientSession, indexes);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndexes(clientSession, indexes);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<String> createIndexes(ClientSession clientSession, List<IndexModel> indexes,
       CreateIndexOptions createIndexOptions) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(indexes, "indexes cannot be null");
-    requireNonNull(createIndexOptions, "createIndexOptions cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(indexes, "indexes is null");
+    requireNonNull(createIndexOptions, "createIndexOptions is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.CreateIndexOptions __createIndexOptions = createIndexOptions.toDriverClass();
     Publisher<String> __publisher = wrapped.createIndexes(__clientSession, indexes, __createIndexOptions);
-    Promise<String> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<String> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(ClientSession clientSession,
       List<IndexModel> indexes, CreateIndexOptions createIndexOptions,
       Handler<AsyncResult<String>> resultHandler) {
-    Future<String> future = this.createIndexes(clientSession, indexes, createIndexOptions);
-    setHandler(future, resultHandler);
+    Future<String> __future = this.createIndexes(clientSession, indexes, createIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public MongoResult<JsonObject> listIndexes() {
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes();
     return null;
   }
 
   @Override
   public MongoResult<JsonObject> listIndexes(ListIndexesOptions options) {
+    //  TODO use mongo mapper result!
+    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes();
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public MongoResult<JsonObject> listIndexes(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes(__clientSession);
     return null;
   }
 
   @Override
   public MongoResult<JsonObject> listIndexes(ClientSession clientSession,
       ListIndexesOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO use mongo mapper result!
+    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes(__clientSession);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public Future<Void> dropIndex(String indexName) {
-    requireNonNull(indexName, "indexName cannot be null");
+    requireNonNull(indexName, "indexName is null");
     Publisher<Void> __publisher = wrapped.dropIndex(indexName);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(String indexName,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(indexName);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(indexName);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndex(JsonObject keys) {
-    requireNonNull(keys, "keys cannot be null");
+    requireNonNull(keys, "keys is null");
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
     Publisher<Void> __publisher = wrapped.dropIndex(__keys);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(JsonObject keys,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(keys);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(keys);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndex(String indexName, DropIndexOptions dropIndexOptions) {
-    requireNonNull(indexName, "indexName cannot be null");
-    requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
+    requireNonNull(indexName, "indexName is null");
+    requireNonNull(dropIndexOptions, "dropIndexOptions is null");
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndex(indexName, __dropIndexOptions);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(String indexName,
       DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(indexName, dropIndexOptions);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(indexName, dropIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndex(JsonObject keys, DropIndexOptions dropIndexOptions) {
-    requireNonNull(keys, "keys cannot be null");
-    requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
+    requireNonNull(keys, "keys is null");
+    requireNonNull(dropIndexOptions, "dropIndexOptions is null");
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndex(__keys, __dropIndexOptions);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(JsonObject keys,
       DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(keys, dropIndexOptions);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(keys, dropIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndex(ClientSession clientSession, String indexName) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(indexName, "indexName cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(indexName, "indexName is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, indexName);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
       String indexName, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(clientSession, indexName);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(clientSession, indexName);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndex(ClientSession clientSession, JsonObject keys) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(keys, "keys cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(keys, "keys is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
     Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, __keys);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
       JsonObject keys, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(clientSession, keys);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(clientSession, keys);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndex(ClientSession clientSession, String indexName,
       DropIndexOptions dropIndexOptions) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(indexName, "indexName cannot be null");
-    requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(indexName, "indexName is null");
+    requireNonNull(dropIndexOptions, "dropIndexOptions is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, indexName, __dropIndexOptions);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
       String indexName, DropIndexOptions dropIndexOptions,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(clientSession, indexName, dropIndexOptions);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(clientSession, indexName, dropIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndex(ClientSession clientSession, JsonObject keys,
       DropIndexOptions dropIndexOptions) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(keys, "keys cannot be null");
-    requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(keys, "keys is null");
+    requireNonNull(dropIndexOptions, "dropIndexOptions is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(keys);
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndex(__clientSession, __keys, __dropIndexOptions);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
       JsonObject keys, DropIndexOptions dropIndexOptions,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndex(clientSession, keys, dropIndexOptions);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndex(clientSession, keys, dropIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndexes() {
     Publisher<Void> __publisher = wrapped.dropIndexes();
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndexes();
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndexes();
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndexes(DropIndexOptions dropIndexOptions) {
-    requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
+    requireNonNull(dropIndexOptions, "dropIndexOptions is null");
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndexes(__dropIndexOptions);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(
       DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndexes(dropIndexOptions);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndexes(dropIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndexes(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndexes(__clientSession);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(ClientSession clientSession,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndexes(clientSession);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndexes(clientSession);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> dropIndexes(ClientSession clientSession, DropIndexOptions dropIndexOptions) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(dropIndexOptions, "dropIndexOptions cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(dropIndexOptions, "dropIndexOptions is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.DropIndexOptions __dropIndexOptions = dropIndexOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.dropIndexes(__clientSession, __dropIndexOptions);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(ClientSession clientSession,
       DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.dropIndexes(clientSession, dropIndexOptions);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.dropIndexes(clientSession, dropIndexOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> renameCollection(MongoNamespace newCollectionNamespace) {
-    requireNonNull(newCollectionNamespace, "newCollectionNamespace cannot be null");
+    requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     Publisher<Void> __publisher = wrapped.renameCollection(__newCollectionNamespace);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
       MongoNamespace newCollectionNamespace, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.renameCollection(newCollectionNamespace);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.renameCollection(newCollectionNamespace);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> renameCollection(MongoNamespace newCollectionNamespace,
       RenameCollectionOptions options) {
-    requireNonNull(newCollectionNamespace, "newCollectionNamespace cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
+    requireNonNull(options, "options is null");
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
     Publisher<Void> __publisher = wrapped.renameCollection(__newCollectionNamespace, __options);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
       MongoNamespace newCollectionNamespace, RenameCollectionOptions options,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.renameCollection(newCollectionNamespace, options);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.renameCollection(newCollectionNamespace, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> renameCollection(ClientSession clientSession,
       MongoNamespace newCollectionNamespace) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(newCollectionNamespace, "newCollectionNamespace cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, __newCollectionNamespace);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
       ClientSession clientSession, MongoNamespace newCollectionNamespace,
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.renameCollection(clientSession, newCollectionNamespace);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.renameCollection(clientSession, newCollectionNamespace);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> renameCollection(ClientSession clientSession,
       MongoNamespace newCollectionNamespace, RenameCollectionOptions options) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(newCollectionNamespace, "newCollectionNamespace cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
+    requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
     Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, __newCollectionNamespace, __options);
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
       ClientSession clientSession, MongoNamespace newCollectionNamespace,
       RenameCollectionOptions options, Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.renameCollection(clientSession, newCollectionNamespace, options);
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.renameCollection(clientSession, newCollectionNamespace, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 

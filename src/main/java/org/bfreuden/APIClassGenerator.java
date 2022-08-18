@@ -77,13 +77,18 @@ public abstract class APIClassGenerator {
                     if (parameterizedType.typeArguments().length > 1)
                         throw new IllegalStateException("unsupported number of parameters " + parameterizedType);
                     Type type1 = parameterizedType.typeArguments()[0];
-                    TypeName elemType = TypeVariableName.get(type1.typeName());
+                    TypeName mongoElemType = TypeVariableName.get(type1.typeName());
+                    TypeName vertxElemType = mongoElemType;
                     String elemQualifiedTypeName = type1.qualifiedTypeName();
-                    if (elemQualifiedTypeName.contains("."))
-                        elemType = ClassName.bestGuess(elemQualifiedTypeName);
+                    if (elemQualifiedTypeName.contains(".")) {
+                        if (Types.isKnown(elemQualifiedTypeName))
+                            vertxElemType = Types.getMapped(elemQualifiedTypeName);
+                        else
+                            vertxElemType = ClassName.bestGuess(elemQualifiedTypeName);
+                    }
                     return ActualType.fromMappedTypeName(
-                            ParameterizedTypeName.get(ClassName.bestGuess(qualifiedTypeName), elemType),
-                            ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(qualifiedTypeName)), elemType)
+                            ParameterizedTypeName.get(ClassName.bestGuess(qualifiedTypeName), mongoElemType),
+                            ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(qualifiedTypeName)), vertxElemType)
                     );
 
                 } else {
@@ -187,15 +192,17 @@ public abstract class APIClassGenerator {
             actualType.publisherClassName = ClassName.bestGuess(type.qualifiedTypeName());
             ParameterizedType parameterizedType = type.asParameterizedType();
             if (parameterizedType != null) {
-                String qualified = parameterizedType.toString();
+                if (parameterizedType.typeArguments().length > 1)
+                    throw new IllegalStateException("not implemented");
+                String qualified = parameterizedType.typeArguments()[0].toString();
                 if (qualified.contains(".")) {
-                    actualType.mongoType = ClassName.bestGuess(qualified.substring(qualified.indexOf('<') + 1, qualified.length() - 1));
+                    actualType.mongoType = ClassName.bestGuess(qualified);
                 } else {
                     actualType.mongoType = TypeVariableName.get(qualified);
                 }
                 actualType.vertxType = actualType.mongoType;
-                if (qualified.equals("com.mongodb.reactivestreams.client.Success") ||
-                        qualified.equals(Void.class.getName())
+                if (actualType.mongoType.toString().equals("com.mongodb.reactivestreams.client.Success") ||
+                        actualType.mongoType.toString().equals(Void.class.getName())
                 ) {
                     actualType.singlePublisher = true;
                     actualType.vertxType = ClassName.get(Void.class);

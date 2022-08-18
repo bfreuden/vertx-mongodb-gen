@@ -31,9 +31,9 @@ import java.lang.Void;
 import org.reactivestreams.Publisher;
 
 public class ClientSessionImpl extends ClientSessionBase {
-  protected MongoClientContext clientContext;
+  protected final MongoClientContext clientContext;
 
-  protected ClientSession wrapped;
+  protected final ClientSession wrapped;
 
   public ClientSessionImpl(MongoClientContext clientContext, ClientSession wrapped) {
     this.clientContext = clientContext;
@@ -62,7 +62,7 @@ public class ClientSessionImpl extends ClientSessionBase {
 
   @Override
   public void startTransaction(TransactionOptions transactionOptions) {
-    requireNonNull(transactionOptions, "transactionOptions cannot be null");
+    requireNonNull(transactionOptions, "transactionOptions is null");
     com.mongodb.TransactionOptions __transactionOptions = transactionOptions.toDriverClass();
     wrapped.startTransaction(__transactionOptions);
   }
@@ -70,32 +70,32 @@ public class ClientSessionImpl extends ClientSessionBase {
   @Override
   public Future<Void> commitTransaction() {
     Publisher<Void> __publisher = wrapped.commitTransaction();
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.ClientSession commitTransaction(
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.commitTransaction();
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.commitTransaction();
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Void> abortTransaction() {
     Publisher<Void> __publisher = wrapped.abortTransaction();
-    Promise<Void> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future();
+    Promise<Void> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future();
   }
 
   @Override
   public io.vertx.mongo.client.ClientSession abortTransaction(
       Handler<AsyncResult<Void>> resultHandler) {
-    Future<Void> future = this.abortTransaction();
-    setHandler(future, resultHandler);
+    Future<Void> __future = this.abortTransaction();
+    setHandler(__future, resultHandler);
     return this;
   }
 

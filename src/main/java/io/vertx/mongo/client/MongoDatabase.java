@@ -15,6 +15,9 @@
 //
 package io.vertx.mongo.client;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.ReadConcern;
@@ -26,7 +29,6 @@ import java.lang.Class;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
-import org.bson.Document;
 
 /**
  *  The MongoDatabase interface.
@@ -96,7 +98,7 @@ public interface MongoDatabase {
    *  @param collectionName the name of the collection to return
    *  @return the collection
    */
-  MongoCollection<Document> getCollection(String collectionName);
+  MongoCollection<JsonObject> getCollection(String collectionName);
 
   /**
    *  Gets a collection, with a specific default document class.
@@ -148,20 +150,39 @@ public interface MongoDatabase {
 
   /**
    *  Drops this database.
-   *  @return a result identifying when the database has been dropped
+   *  @return a future identifying when the database has been dropped
    *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
    */
-  MongoResult<Void> drop();
+  Future<Void> drop();
+
+  /**
+   *  Drops this database.
+   *  @param resultHandler an async result identifying when the database has been dropped
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
+   */
+  MongoDatabase drop(Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Drops this database.
    *  @param clientSession the client session with which to associate this operation
-   *  @return a result identifying when the database has been dropped
+   *  @return a future identifying when the database has been dropped
    *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<Void> drop(ClientSession clientSession);
+  Future<Void> drop(ClientSession clientSession);
+
+  /**
+   *  Drops this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param resultHandler an async result identifying when the database has been dropped
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoDatabase drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Gets the names of all the collections in this database.
@@ -218,55 +239,116 @@ public interface MongoDatabase {
   /**
    *  Create a new collection with the given name.
    *  @param collectionName the name for the new collection to create
-   *  @return a result identifying when the collection has been created
+   *  @return a future identifying when the collection has been created
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
-  MongoResult<Void> createCollection(String collectionName);
+  Future<Void> createCollection(String collectionName);
+
+  /**
+   *  Create a new collection with the given name.
+   *  @param collectionName the name for the new collection to create
+   *  @param resultHandler an async result identifying when the collection has been created
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/commands/create Create Command
+   */
+  MongoDatabase createCollection(String collectionName, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Create a new collection with the selected options
    *  @param collectionName the name for the new collection to create
    *  @param options        various options for creating the collection
-   *  @return a result identifying when the collection has been created
+   *  @return a future identifying when the collection has been created
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
-  MongoResult<Void> createCollection(String collectionName, CreateCollectionOptions options);
+  Future<Void> createCollection(String collectionName, CreateCollectionOptions options);
+
+  /**
+   *  Create a new collection with the selected options
+   *  @param collectionName the name for the new collection to create
+   *  @param options        various options for creating the collection
+   *  @param resultHandler an async result identifying when the collection has been created
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/commands/create Create Command
+   */
+  MongoDatabase createCollection(String collectionName, CreateCollectionOptions options,
+      Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Create a new collection with the given name.
    *  @param clientSession the client session with which to associate this operation
    *  @param collectionName the name for the new collection to create
-   *  @return a result identifying when the collection has been created
+   *  @return a future identifying when the collection has been created
    *  @mongodb.driver.manual reference/commands/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<Void> createCollection(ClientSession clientSession, String collectionName);
+  Future<Void> createCollection(ClientSession clientSession, String collectionName);
+
+  /**
+   *  Create a new collection with the given name.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param collectionName the name for the new collection to create
+   *  @param resultHandler an async result identifying when the collection has been created
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/commands/create Create Command
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoDatabase createCollection(ClientSession clientSession, String collectionName,
+      Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Create a new collection with the selected options
    *  @param clientSession the client session with which to associate this operation
    *  @param collectionName the name for the new collection to create
    *  @param options        various options for creating the collection
-   *  @return a result identifying when the collection has been created
+   *  @return a future identifying when the collection has been created
    *  @mongodb.driver.manual reference/commands/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<Void> createCollection(ClientSession clientSession, String collectionName,
+  Future<Void> createCollection(ClientSession clientSession, String collectionName,
       CreateCollectionOptions options);
 
   /**
+   *  Create a new collection with the selected options
+   *  @param clientSession the client session with which to associate this operation
+   *  @param collectionName the name for the new collection to create
+   *  @param options        various options for creating the collection
+   *  @param resultHandler an async result identifying when the collection has been created
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/commands/create Create Command
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoDatabase createCollection(ClientSession clientSession, String collectionName,
+      CreateCollectionOptions options, Handler<AsyncResult<Void>> resultHandler);
+
+  /**
    *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
    *  @param viewName the name of the view to create
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
-   *  @return an result identifying when the collection view has been created
+   *  @return an future identifying when the collection view has been created
    *  @since 1.3
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  MongoResult<Void> createView(String viewName, String viewOn, List<JsonObject> pipeline);
+  Future<Void> createView(String viewName, String viewOn, List<JsonObject> pipeline);
+
+  /**
+   *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
+   *  @param viewName the name of the view to create
+   *  @param viewOn   the backing collection/view for the view
+   *  @param pipeline the pipeline that defines the view
+   *  @param resultHandler an async result identifying when the collection view has been created
+   *  @return <code>this</code>
+   *  @since 1.3
+   *  @mongodb.server.release 3.4
+   *  @mongodb.driver.manual reference/command/create Create Command
+   */
+  MongoDatabase createView(String viewName, String viewOn, List<JsonObject> pipeline,
+      Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
@@ -274,27 +356,57 @@ public interface MongoDatabase {
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
    *  @param createViewOptions various options for creating the view
-   *  @return an result identifying when the collection view has been created
+   *  @return an future identifying when the collection view has been created
    *  @since 1.3
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  MongoResult<Void> createView(String viewName, String viewOn, List<JsonObject> pipeline,
+  Future<Void> createView(String viewName, String viewOn, List<JsonObject> pipeline,
       CreateViewOptions createViewOptions);
 
   /**
+   *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
+   *  @param viewName the name of the view to create
+   *  @param viewOn   the backing collection/view for the view
+   *  @param pipeline the pipeline that defines the view
+   *  @param createViewOptions various options for creating the view
+   *  @param resultHandler an async result identifying when the collection view has been created
+   *  @return <code>this</code>
+   *  @since 1.3
+   *  @mongodb.server.release 3.4
+   *  @mongodb.driver.manual reference/command/create Create Command
+   */
+  MongoDatabase createView(String viewName, String viewOn, List<JsonObject> pipeline,
+      CreateViewOptions createViewOptions, Handler<AsyncResult<Void>> resultHandler);
+
+  /**
    *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
    *  @param clientSession the client session with which to associate this operation
    *  @param viewName the name of the view to create
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
-   *  @return an result identifying when the collection view has been created
+   *  @return an future identifying when the collection view has been created
    *  @mongodb.driver.manual reference/command/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<Void> createView(ClientSession clientSession, String viewName, String viewOn,
+  Future<Void> createView(ClientSession clientSession, String viewName, String viewOn,
       List<JsonObject> pipeline);
+
+  /**
+   *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param viewName the name of the view to create
+   *  @param viewOn   the backing collection/view for the view
+   *  @param pipeline the pipeline that defines the view
+   *  @param resultHandler an async result identifying when the collection view has been created
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/command/create Create Command
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
+      List<JsonObject> pipeline, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
@@ -303,13 +415,30 @@ public interface MongoDatabase {
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
    *  @param createViewOptions various options for creating the view
-   *  @return an result identifying when the collection view has been created
+   *  @return an future identifying when the collection view has been created
    *  @mongodb.driver.manual reference/command/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<Void> createView(ClientSession clientSession, String viewName, String viewOn,
+  Future<Void> createView(ClientSession clientSession, String viewName, String viewOn,
       List<JsonObject> pipeline, CreateViewOptions createViewOptions);
+
+  /**
+   *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param viewName the name of the view to create
+   *  @param viewOn   the backing collection/view for the view
+   *  @param pipeline the pipeline that defines the view
+   *  @param createViewOptions various options for creating the view
+   *  @param resultHandler an async result identifying when the collection view has been created
+   *  @return <code>this</code>
+   *  @mongodb.driver.manual reference/command/create Create Command
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
+      List<JsonObject> pipeline, CreateViewOptions createViewOptions,
+      Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Creates a change stream for this database.

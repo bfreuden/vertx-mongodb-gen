@@ -18,6 +18,7 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.ListDatabasesPublisher;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.vertx.core.AsyncResult;
@@ -33,21 +34,21 @@ import io.vertx.mongo.client.ListDatabasesOptions;
 import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.MongoResult;
 import io.vertx.mongo.connection.ClusterDescription;
-import io.vertx.mongo.impl.*;
-
+import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
+import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.io.Closeable;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
-
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
 public class MongoClientImpl extends MongoClientBase implements Closeable {
-  protected MongoClientContext clientContext;
+  protected final MongoClientContext clientContext;
 
-  protected MongoClient wrapped;
+  protected final MongoClient wrapped;
 
   public MongoClientImpl(MongoClientContext clientContext, MongoClient wrapped) {
     this.clientContext = clientContext;
@@ -56,7 +57,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public MongoDatabase getDatabase(String name) {
-    requireNonNull(name, "name cannot be null");
+    requireNonNull(name, "name is null");
     com.mongodb.reactivestreams.client.MongoDatabase __wrapped = wrapped.getDatabase(name);
     return new MongoDatabaseImpl(this.clientContext, __wrapped);
   }
@@ -74,120 +75,155 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public MongoResult<String> listDatabaseNames(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
-    return null;
+    Publisher<String> __publisher = wrapped.listDatabaseNames(__clientSession);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<JsonObject> listDatabases() {
+    //  TODO use mongo mapper result!
+    ListDatabasesPublisher<Document> __publisher = wrapped.listDatabases();
     return null;
   }
 
   @Override
   public MongoResult<JsonObject> listDatabases(ListDatabasesOptions options) {
+    //  TODO use mongo mapper result!
+    ListDatabasesPublisher<Document> __publisher = wrapped.listDatabases();
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public MongoResult<JsonObject> listDatabases(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ListDatabasesPublisher<Document> __publisher = wrapped.listDatabases(__clientSession);
     return null;
   }
 
   @Override
   public MongoResult<JsonObject> listDatabases(ClientSession clientSession,
       ListDatabasesOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO use mongo mapper result!
+    ListDatabasesPublisher<Document> __publisher = wrapped.listDatabases(__clientSession);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch() {
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch();
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ChangeStreamOptions options) {
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch();
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(List<JsonObject> pipeline) {
-    requireNonNull(pipeline, "pipeline cannot be null");
+    requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__pipeline);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options) {
+    requireNonNull(pipeline, "pipeline is null");
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__pipeline);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession) {
-    requireNonNull(clientSession, "clientSession cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline) {
-    requireNonNull(clientSession, "clientSession cannot be null");
-    requireNonNull(pipeline, "pipeline cannot be null");
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession, __pipeline);
     return null;
   }
 
   @Override
   public ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
       ChangeStreamOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    //  TODO use mongo mapper result!
+    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession, __pipeline);
+    options.initializePublisher(__publisher);
     return null;
   }
 
   @Override
   public Future<ClientSession> startSession() {
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession();
-    Promise<com.mongodb.reactivestreams.client.ClientSession> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(ConversionUtilsImpl.INSTANCE::toClientSession);
+    Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toClientSession);
   }
 
   @Override
   public io.vertx.mongo.client.MongoClient startSession(
       Handler<AsyncResult<ClientSession>> resultHandler) {
-    Future<ClientSession> future = this.startSession();
-    setHandler(future, resultHandler);
+    Future<ClientSession> __future = this.startSession();
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<ClientSession> startSession(ClientSessionOptions options) {
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(options, "options is null");
     com.mongodb.ClientSessionOptions __options = options.toDriverClass();
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession(__options);
-    Promise<com.mongodb.reactivestreams.client.ClientSession> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(ConversionUtilsImpl.INSTANCE::toClientSession);
+    Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toClientSession);
   }
 
   @Override
   public io.vertx.mongo.client.MongoClient startSession(ClientSessionOptions options,
       Handler<AsyncResult<ClientSession>> resultHandler) {
-    Future<ClientSession> future = this.startSession(options);
-    setHandler(future, resultHandler);
+    Future<ClientSession> __future = this.startSession(options);
+    setHandler(__future, resultHandler);
     return this;
   }
 

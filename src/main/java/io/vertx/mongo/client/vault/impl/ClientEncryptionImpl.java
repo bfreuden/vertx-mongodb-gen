@@ -37,9 +37,9 @@ import org.bson.BsonValue;
 import org.reactivestreams.Publisher;
 
 public class ClientEncryptionImpl extends ClientEncryptionBase implements Closeable {
-  protected MongoClientContext clientContext;
+  protected final MongoClientContext clientContext;
 
-  protected ClientEncryption wrapped;
+  protected final ClientEncryption wrapped;
 
   public ClientEncryptionImpl(MongoClientContext clientContext, ClientEncryption wrapped) {
     this.clientContext = clientContext;
@@ -48,75 +48,75 @@ public class ClientEncryptionImpl extends ClientEncryptionBase implements Closea
 
   @Override
   public Future<byte[]> createDataKey(String kmsProvider) {
-    requireNonNull(kmsProvider, "kmsProvider cannot be null");
+    requireNonNull(kmsProvider, "kmsProvider is null");
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider);
-    Promise<BsonBinary> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
+    Promise<BsonBinary> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
   @Override
   public io.vertx.mongo.client.vault.ClientEncryption createDataKey(String kmsProvider,
       Handler<AsyncResult<byte[]>> resultHandler) {
-    Future<byte[]> future = this.createDataKey(kmsProvider);
-    setHandler(future, resultHandler);
+    Future<byte[]> __future = this.createDataKey(kmsProvider);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<byte[]> createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions) {
-    requireNonNull(kmsProvider, "kmsProvider cannot be null");
-    requireNonNull(dataKeyOptions, "dataKeyOptions cannot be null");
+    requireNonNull(kmsProvider, "kmsProvider is null");
+    requireNonNull(dataKeyOptions, "dataKeyOptions is null");
     com.mongodb.client.model.vault.DataKeyOptions __dataKeyOptions = dataKeyOptions.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider, __dataKeyOptions);
-    Promise<BsonBinary> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
+    Promise<BsonBinary> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
   @Override
   public io.vertx.mongo.client.vault.ClientEncryption createDataKey(String kmsProvider,
       DataKeyOptions dataKeyOptions, Handler<AsyncResult<byte[]>> resultHandler) {
-    Future<byte[]> future = this.createDataKey(kmsProvider, dataKeyOptions);
-    setHandler(future, resultHandler);
+    Future<byte[]> __future = this.createDataKey(kmsProvider, dataKeyOptions);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<byte[]> encrypt(Object value, EncryptOptions options) {
-    requireNonNull(value, "value cannot be null");
-    requireNonNull(options, "options cannot be null");
+    requireNonNull(value, "value is null");
+    requireNonNull(options, "options is null");
     BsonValue __value = ConversionUtilsImpl.INSTANCE.toBsonValue(value);
     com.mongodb.client.model.vault.EncryptOptions __options = options.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.encrypt(__value, __options);
-    Promise<BsonBinary> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
+    Promise<BsonBinary> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
   @Override
   public io.vertx.mongo.client.vault.ClientEncryption encrypt(Object value, EncryptOptions options,
       Handler<AsyncResult<byte[]>> resultHandler) {
-    Future<byte[]> future = this.encrypt(value, options);
-    setHandler(future, resultHandler);
+    Future<byte[]> __future = this.encrypt(value, options);
+    setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
   public Future<Object> decrypt(byte[] value) {
-    requireNonNull(value, "value cannot be null");
+    requireNonNull(value, "value is null");
     BsonBinary __value = ConversionUtilsImpl.INSTANCE.toBsonBinary(value);
     Publisher<BsonValue> __publisher = wrapped.decrypt(__value);
-    Promise<BsonValue> promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(promise));
-    return promise.future().map(ConversionUtilsImpl.INSTANCE::toObject);
+    Promise<BsonValue> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toObject);
   }
 
   @Override
   public io.vertx.mongo.client.vault.ClientEncryption decrypt(byte[] value,
       Handler<AsyncResult<Object>> resultHandler) {
-    Future<Object> future = this.decrypt(value);
-    setHandler(future, resultHandler);
+    Future<Object> __future = this.decrypt(value);
+    setHandler(__future, resultHandler);
     return this;
   }
 
