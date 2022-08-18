@@ -25,7 +25,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoNamespace;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.ReadConcern;
@@ -562,7 +561,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  ReadStream<JsonObject> watch();
+  MongoResult<JsonObject> watch();
 
   /**
    *  Creates a change stream for this collection.
@@ -572,7 +571,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  ReadStream<JsonObject> watch(ChangeStreamOptions options);
+  MongoResult<JsonObject> watch(ChangeStreamOptions options);
 
   /**
    *  Creates a change stream for this collection.
@@ -581,7 +580,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
-  ReadStream<JsonObject> watch(List<JsonObject> pipeline);
+  MongoResult<JsonObject> watch(List<JsonObject> pipeline);
 
   /**
    *  Creates a change stream for this collection.
@@ -591,7 +590,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
-  ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
+  MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
 
   /**
    *  Creates a change stream for this collection.
@@ -601,7 +600,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  ReadStream<JsonObject> watch(ClientSession clientSession);
+  MongoResult<JsonObject> watch(ClientSession clientSession);
 
   /**
    *  Creates a change stream for this collection.
@@ -612,7 +611,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
+  MongoResult<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
 
   /**
    *  Creates a change stream for this collection.
@@ -623,7 +622,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
+  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
 
   /**
    *  Creates a change stream for this collection.
@@ -635,7 +634,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
       ChangeStreamOptions options);
 
   /**

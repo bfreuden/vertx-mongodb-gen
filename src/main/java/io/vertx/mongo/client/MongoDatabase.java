@@ -19,7 +19,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.ReadConcern;
 import io.vertx.mongo.ReadPreference;
@@ -448,7 +447,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  ReadStream<JsonObject> watch();
+  MongoResult<JsonObject> watch();
 
   /**
    *  Creates a change stream for this database.
@@ -458,7 +457,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  ReadStream<JsonObject> watch(ChangeStreamOptions options);
+  MongoResult<JsonObject> watch(ChangeStreamOptions options);
 
   /**
    *  Creates a change stream for this database.
@@ -468,7 +467,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  ReadStream<JsonObject> watch(List<JsonObject> pipeline);
+  MongoResult<JsonObject> watch(List<JsonObject> pipeline);
 
   /**
    *  Creates a change stream for this database.
@@ -479,7 +478,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
+  MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
 
   /**
    *  Creates a change stream for this database.
@@ -489,41 +488,41 @@ public interface MongoDatabase {
    *  @mongodb.server.release 4.0
    *  @mongodb.driver.dochub core/changestreams Change Streams
    */
-  ReadStream<JsonObject> watch(ClientSession clientSession);
+  MongoResult<JsonObject> watch(ClientSession clientSession);
 
   /**
    *  Creates a change stream for this database.
    *  @param clientSession the client session with which to associate this operation
-   *  @param options options
-   *  @return the change stream read stream
-   *  @since 1.9
-   *  @mongodb.server.release 4.0
-   *  @mongodb.driver.dochub core/changestreams Change Streams
-   */
-  ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
-
-  /**
-   *  Creates a change stream for this database.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param pipeline the aggregation pipeline to apply to the change stream.
-   *  @return the change stream read stream
-   *  @since 1.9
-   *  @mongodb.server.release 4.0
-   *  @mongodb.driver.dochub core/changestreams Change Streams
-   */
-  ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
-
-  /**
-   *  Creates a change stream for this database.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param pipeline the aggregation pipeline to apply to the change stream.
    *  @param options options
    *  @return the change stream read stream
    *  @since 1.9
    *  @mongodb.server.release 4.0
    *  @mongodb.driver.dochub core/changestreams Change Streams
    */
-  ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+  MongoResult<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
+
+  /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
       ChangeStreamOptions options);
 
   /**

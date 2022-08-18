@@ -9,6 +9,7 @@ import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoResult;
+import org.bson.Document;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
@@ -74,7 +75,8 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                     handlerParam = ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), returnType.vertxType));
                 } else {
                     if (actualReturnType.mongoType != null) {
-                        returnType.vertxResultClassName = mongoName.equals("watch") ? ClassName.get(ReadStream.class) : ClassName.get(MongoResult.class);
+//                        returnType.vertxResultClassName = mongoName.equals("watch") ? ClassName.get(ReadStream.class) : ClassName.get(MongoResult.class);
+                        returnType.vertxResultClassName = ClassName.get(MongoResult.class);
                         if (actualReturnType.mongoType.toString().equals("TDocument")) {
                             returnType.vertxType = TypeVariableName.get("TDocument");
                         } else if (Types.isKnown(actualReturnType.mongoType.toString())) {
@@ -360,7 +362,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         }
 
         if (method.returnType.isPublisher) {
-            if (method.mongoName.contains("ulk")) { // FIXME
+            if (method.mongoName.contains("ulk") || method.mongoName.equals("watch")) { // FIXME
                 //methodBuilder.addStatement("wrapped." + method.mongoName +  "(" + paramNames + ")");
                 String returnType = method.returnType.vertxType.toString();
                 methodBuilder.addComment(" TODO add implementation");
@@ -393,12 +395,16 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                     methodBuilder.addStatement("options.initializePublisher(__publisher)");
                 methodBuilder.addStatement("return new $T<>(clientContext, __publisher)", ClassName.bestGuess("io.vertx.mongo.impl.MongoResultImpl"));
             } else {
-                methodBuilder.addComment(" TODO use mongo mapper result!");
-                methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);
+                if (!method.returnType.vertxType.toString().equals(JsonObject.class.getName())||
+                        !method.returnType.mongoType.toString().equals(Document.class.getName()))
+                    throw new IllegalStateException("not implemented: need a mapper?");
+                methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + (paramNames.length() == 0 ? "" : ", ") +"$T.class)",
+                        ParameterizedTypeName.get(method.returnType.publisherClassName, ClassName.get(JsonObject.class)),
+                        ClassName.get(JsonObject.class)
+                );
                 if (currentMethodHasPublisherOptions)
                     methodBuilder.addStatement("options.initializePublisher(__publisher)");
-                String returnType = method.returnType.vertxType.toString();
-                methodBuilder.addStatement("return null");
+                methodBuilder.addStatement("return new $T<>(clientContext, __publisher)", ClassName.bestGuess("io.vertx.mongo.impl.MongoResultImpl"));
             }
         } else {
             if (returnedVertxReactiveClass != null) {

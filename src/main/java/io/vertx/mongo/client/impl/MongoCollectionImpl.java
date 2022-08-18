@@ -25,7 +25,6 @@ import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
-import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.FindPublisher;
 import com.mongodb.reactivestreams.client.ListIndexesPublisher;
 import com.mongodb.reactivestreams.client.MapReducePublisher;
@@ -35,7 +34,6 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoNamespace;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.ReadConcern;
@@ -72,7 +70,6 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
-import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
@@ -404,79 +401,67 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public ReadStream<JsonObject> watch() {
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch();
+  public MongoResult<JsonObject> watch() {
+    //  TODO add implementation
     return null;
   }
 
   @Override
-  public ReadStream<JsonObject> watch(ChangeStreamOptions options) {
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch();
-    options.initializePublisher(__publisher);
+  public MongoResult<JsonObject> watch(ChangeStreamOptions options) {
+    //  TODO add implementation
     return null;
   }
 
   @Override
-  public ReadStream<JsonObject> watch(List<JsonObject> pipeline) {
+  public MongoResult<JsonObject> watch(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__pipeline);
+    //  TODO add implementation
     return null;
   }
 
   @Override
-  public ReadStream<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options) {
+  public MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__pipeline);
-    options.initializePublisher(__publisher);
+    //  TODO add implementation
     return null;
   }
 
   @Override
-  public ReadStream<JsonObject> watch(ClientSession clientSession) {
+  public MongoResult<JsonObject> watch(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession);
+    //  TODO add implementation
     return null;
   }
 
   @Override
-  public ReadStream<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options) {
+  public MongoResult<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession);
-    options.initializePublisher(__publisher);
+    //  TODO add implementation
     return null;
   }
 
   @Override
-  public ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline) {
+  public MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession, __pipeline);
+    //  TODO add implementation
     return null;
   }
 
   @Override
-  public ReadStream<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+  public MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
       ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO use mongo mapper result!
-    ChangeStreamPublisher<Document> __publisher = wrapped.watch(__clientSession, __pipeline);
-    options.initializePublisher(__publisher);
+    //  TODO add implementation
     return null;
   }
 
@@ -1934,26 +1919,23 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoResult<JsonObject> listIndexes() {
-    //  TODO use mongo mapper result!
-    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes();
-    return null;
+    ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(JsonObject.class);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<JsonObject> listIndexes(ListIndexesOptions options) {
-    //  TODO use mongo mapper result!
-    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes();
+    ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(JsonObject.class);
     options.initializePublisher(__publisher);
-    return null;
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<JsonObject> listIndexes(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO use mongo mapper result!
-    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes(__clientSession);
-    return null;
+    ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(__clientSession, JsonObject.class);
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
@@ -1961,10 +1943,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       ListIndexesOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO use mongo mapper result!
-    ListIndexesPublisher<Document> __publisher = wrapped.listIndexes(__clientSession);
+    ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(__clientSession, JsonObject.class);
     options.initializePublisher(__publisher);
-    return null;
+    return new MongoResultImpl<>(clientContext, __publisher);
   }
 
   @Override
