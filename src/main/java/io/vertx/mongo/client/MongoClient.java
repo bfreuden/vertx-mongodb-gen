@@ -21,6 +21,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.ClientSessionOptions;
+import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.connection.ClusterDescription;
 import java.io.Closeable;
 import java.lang.String;

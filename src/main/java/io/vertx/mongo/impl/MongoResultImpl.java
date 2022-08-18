@@ -1,13 +1,9 @@
-package io.vertx.mongo.client.impl;
+package io.vertx.mongo.impl;
 
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.streams.ReadStream;
-import io.vertx.mongo.client.MongoResult;
-import io.vertx.mongo.impl.ListResultSubscriber;
-import io.vertx.mongo.impl.MongoClientContext;
-import io.vertx.mongo.impl.PublisherAdapter;
-import io.vertx.mongo.impl.SingleResultSubscriber;
+import io.vertx.mongo.MongoResult;
 import org.reactivestreams.Publisher;
 
 import java.util.List;

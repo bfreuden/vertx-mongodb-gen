@@ -6,7 +6,7 @@ import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Type;
 import io.vertx.mongo.client.MongoCollectionResult;
-import io.vertx.mongo.client.MongoResult;
+import io.vertx.mongo.MongoResult;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;

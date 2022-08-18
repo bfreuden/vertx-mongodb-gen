@@ -2,14 +2,13 @@ package org.bfreuden;
 
 import com.google.common.collect.Lists;
 import com.mongodb.reactivestreams.client.MongoCollection;
-import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
-import io.vertx.mongo.client.MongoResult;
+import io.vertx.mongo.MongoResult;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
@@ -392,7 +391,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);
                 if (currentMethodHasPublisherOptions)
                     methodBuilder.addStatement("options.initializePublisher(__publisher)");
-                methodBuilder.addStatement("return new $T<>(clientContext, __publisher)", ClassName.bestGuess("io.vertx.mongo.client.impl.MongoResultImpl"));
+                methodBuilder.addStatement("return new $T<>(clientContext, __publisher)", ClassName.bestGuess("io.vertx.mongo.impl.MongoResultImpl"));
             } else {
                 methodBuilder.addComment(" TODO use mongo mapper result!");
                 methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);

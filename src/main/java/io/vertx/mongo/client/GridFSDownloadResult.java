@@ -4,6 +4,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.mongo.MongoResult;
 
 import java.nio.ByteBuffer;
 
