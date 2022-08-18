@@ -233,14 +233,19 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public MongoResult<GridFSFile> find() {
     GridFSFindPublisher __publisher = wrapped.find();
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
   public MongoResult<GridFSFile> find(GridFSFindOptions options) {
     GridFSFindPublisher __publisher = wrapped.find();
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -248,7 +253,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__filter);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -257,7 +262,12 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__filter);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -265,7 +275,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     GridFSFindPublisher __publisher = wrapped.find(__clientSession);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -274,7 +284,12 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     GridFSFindPublisher __publisher = wrapped.find(__clientSession);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -284,7 +299,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -296,7 +311,12 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override

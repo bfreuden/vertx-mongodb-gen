@@ -82,14 +82,19 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<JsonObject> listDatabases() {
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
   public MongoResult<JsonObject> listDatabases(ListDatabasesOptions options) {
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(JsonObject.class);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -97,7 +102,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(__clientSession, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -107,7 +112,12 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(__clientSession, JsonObject.class);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override

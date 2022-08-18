@@ -154,6 +154,16 @@ public abstract class APIClassGenerator {
         }
         return packageNameOrClassName;
     }
+    protected String mapToImpl(String packageNameOrClassName) {
+        int index = packageNameOrClassName.lastIndexOf('.');
+        String packageName = packageNameOrClassName.substring(0, index + 1);
+        String last = packageNameOrClassName.substring(index + 1);
+        if (Character.isUpperCase(last.charAt(0)))
+            packageNameOrClassName = packageName + "impl." + last + "Impl";
+        else
+            packageNameOrClassName = packageName + "impl";
+        return packageNameOrClassName;
+    }
 
     enum TypeLocation {
         PARAMETER,

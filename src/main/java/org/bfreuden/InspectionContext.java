@@ -1,6 +1,7 @@
 package org.bfreuden;
 
 import com.google.common.collect.HashMultimap;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 import com.sun.javadoc.*;
 import org.jgrapht.Graph;
@@ -14,6 +15,13 @@ import java.util.Set;
 
 public class InspectionContext {
 
+    public static class PublisherDesc {
+        ClassName resultClassName;
+        String firstMethodName;
+        String toCollectionMethodName;
+        String batchSizePropertyName;
+    }
+    public Map<String, PublisherDesc> publisherDescriptions = new HashMap<>();
     public Map<String, String> publisherOptionsClasses = new HashMap<>();
     ConversionUtilsGenerator conversionUtilsGenerator = new ConversionUtilsGenerator();
     public final Set<String> apiPackages = new HashSet<>();

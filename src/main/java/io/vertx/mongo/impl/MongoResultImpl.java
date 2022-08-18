@@ -8,17 +8,20 @@ import org.reactivestreams.Publisher;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
 
     private final Publisher<TDocument> publisher;
     private final MongoClientContext clientContext;
+    private final Supplier<Publisher<TDocument>> firstPublisher;
     private final int batchSize;
     public MongoResultImpl(MongoClientContext clientContext, Publisher<TDocument> publisher) {
         Objects.requireNonNull(clientContext, "clientContext is null");
         Objects.requireNonNull(publisher, "publisher is null");
         this.clientContext = clientContext;
         this.publisher = publisher;
+        this.firstPublisher = null;
         this.batchSize = -1;
     }
 
@@ -29,6 +32,29 @@ public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
             throw new IllegalArgumentException("batchSize must be non-negative");
         this.clientContext = clientContext;
         this.publisher = publisher;
+        this.firstPublisher = null;
+        this.batchSize = batchSize;
+    }
+
+    public MongoResultImpl(MongoClientContext clientContext, Publisher<TDocument> publisher, Supplier<Publisher<TDocument>> firstPublisher) {
+        Objects.requireNonNull(clientContext, "clientContext is null");
+        Objects.requireNonNull(publisher, "publisher is null");
+        Objects.requireNonNull(firstPublisher, "firstPublisher is null");
+        this.clientContext = clientContext;
+        this.publisher = publisher;
+        this.firstPublisher = firstPublisher;
+        this.batchSize = -1;
+    }
+
+    public MongoResultImpl(MongoClientContext clientContext, Publisher<TDocument> publisher, Supplier<Publisher<TDocument>> firstPublisher, int batchSize) {
+        Objects.requireNonNull(clientContext, "clientContext is null");
+        Objects.requireNonNull(publisher, "publisher is null");
+        Objects.requireNonNull(firstPublisher, "firstPublisher is null");
+        if (batchSize < 0)
+            throw new IllegalArgumentException("batchSize must be non-negative");
+        this.clientContext = clientContext;
+        this.publisher = publisher;
+        this.firstPublisher = firstPublisher;
         this.batchSize = batchSize;
     }
 
@@ -36,7 +62,10 @@ public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
     public Future<TDocument> first() {
         Promise<TDocument> promise = Promise.promise();
         SingleResultSubscriber<TDocument> __subscriber = new SingleResultSubscriber<>(promise);
-        publisher.subscribe(__subscriber);
+        if (firstPublisher == null)
+            publisher.subscribe(__subscriber);
+        else
+            firstPublisher.get().subscribe(__subscriber);
         return promise.future();
     }
 
@@ -69,6 +98,5 @@ public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
             throw new IllegalStateException("batchSize has already been set using options");
         return new PublisherAdapter<>(clientContext.getContext(), publisher, batchSize);
     }
-
 
 }

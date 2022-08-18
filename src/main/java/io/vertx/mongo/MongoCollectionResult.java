@@ -1,17 +1,21 @@
-package io.vertx.mongo.client;
+package io.vertx.mongo;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.mongo.MongoResult;
+
+import static io.vertx.mongo.impl.Utils.setHandler;
 
 public interface MongoCollectionResult<TDocument> extends MongoResult<TDocument> {
 
     /**
      * Handler called when the collection operation completes
-     * @param handler handler
+     * @param resultHandler handler
      */
-    void toCollection(Handler<AsyncResult<Void>> handler);
+    default void toCollection(Handler<AsyncResult<Void>> resultHandler) {
+        Future<Void> future = this.toCollection();
+        setHandler(future, resultHandler);
+    };
 
     /**
      * Returns a future of the collection operation completeness

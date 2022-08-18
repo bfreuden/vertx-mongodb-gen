@@ -19,6 +19,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.MongoCollectionResult;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.ReadConcern;
 import io.vertx.mongo.ReadPreference;
@@ -534,7 +535,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoResult<JsonObject> aggregate(List<JsonObject> pipeline);
+  MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
@@ -546,7 +547,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoResult<JsonObject> aggregate(List<JsonObject> pipeline, AggregateOptions options);
+  MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline, AggregateOptions options);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
@@ -558,7 +559,8 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoResult<JsonObject> aggregate(ClientSession clientSession, List<JsonObject> pipeline);
+  MongoCollectionResult<JsonObject> aggregate(ClientSession clientSession,
+      List<JsonObject> pipeline);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
@@ -571,8 +573,8 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoResult<JsonObject> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
-      AggregateOptions options);
+  MongoCollectionResult<JsonObject> aggregate(ClientSession clientSession,
+      List<JsonObject> pipeline, AggregateOptions options);
 
   /**
    * @return mongo object

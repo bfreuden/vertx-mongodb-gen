@@ -34,6 +34,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.MongoCollectionResult;
 import io.vertx.mongo.MongoNamespace;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.ReadConcern;
@@ -62,6 +63,7 @@ import io.vertx.mongo.client.model.ReplaceOptions;
 import io.vertx.mongo.client.model.UpdateOptions;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoClientContext;
+import io.vertx.mongo.impl.MongoCollectionResultImpl;
 import io.vertx.mongo.impl.MongoResultImpl;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Class;
@@ -295,14 +297,19 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public MongoResult<TDocument> find() {
     FindPublisher<TDocument> __publisher = wrapped.find();
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
   public MongoResult<TDocument> find(FindOptions options) {
     FindPublisher<TDocument> __publisher = wrapped.find();
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -310,7 +317,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     FindPublisher<TDocument> __publisher = wrapped.find(__filter);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -319,7 +326,12 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     FindPublisher<TDocument> __publisher = wrapped.find(__filter);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -327,7 +339,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     FindPublisher<TDocument> __publisher = wrapped.find(__clientSession);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -336,7 +348,12 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     FindPublisher<TDocument> __publisher = wrapped.find(__clientSession);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -346,7 +363,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     FindPublisher<TDocument> __publisher = wrapped.find(__clientSession, __filter);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -358,46 +375,63 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
     FindPublisher<TDocument> __publisher = wrapped.find(__clientSession, __filter);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
-  public MongoResult<TDocument> aggregate(List<JsonObject> pipeline) {
+  public MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__pipeline);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
 
   @Override
-  public MongoResult<TDocument> aggregate(List<JsonObject> pipeline, AggregateOptions options) {
-    requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__pipeline);
-    options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
-  }
-
-  @Override
-  public MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline) {
-    requireNonNull(clientSession, "clientSession is null");
-    requireNonNull(pipeline, "pipeline is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__clientSession, __pipeline);
-    return new MongoResultImpl<>(clientContext, __publisher);
-  }
-
-  @Override
-  public MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
+  public MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline,
       AggregateOptions options) {
+    requireNonNull(pipeline, "pipeline is null");
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__pipeline);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+    }
+  }
+
+  @Override
+  public MongoCollectionResult<TDocument> aggregate(ClientSession clientSession,
+      List<JsonObject> pipeline) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__clientSession, __pipeline);
+    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+  }
+
+  @Override
+  public MongoCollectionResult<TDocument> aggregate(ClientSession clientSession,
+      List<JsonObject> pipeline, AggregateOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__clientSession, __pipeline);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -466,36 +500,41 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction) {
+  public MongoCollectionResult<TDocument> mapReduce(String mapFunction, String reduceFunction) {
     requireNonNull(mapFunction, "mapFunction is null");
     requireNonNull(reduceFunction, "reduceFunction is null");
     MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(mapFunction, reduceFunction);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
 
   @Override
-  public MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction,
+  public MongoCollectionResult<TDocument> mapReduce(String mapFunction, String reduceFunction,
       MapReduceOptions options) {
     requireNonNull(mapFunction, "mapFunction is null");
     requireNonNull(reduceFunction, "reduceFunction is null");
     MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(mapFunction, reduceFunction);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
-  public MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
+  public MongoCollectionResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(mapFunction, "mapFunction is null");
     requireNonNull(reduceFunction, "reduceFunction is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(__clientSession, mapFunction, reduceFunction);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
 
   @Override
-  public MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
+  public MongoCollectionResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction, MapReduceOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(mapFunction, "mapFunction is null");
@@ -503,7 +542,12 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     MapReducePublisher<TDocument> __publisher = wrapped.mapReduce(__clientSession, mapFunction, reduceFunction);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -1920,14 +1964,19 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public MongoResult<JsonObject> listIndexes() {
     ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
   public MongoResult<JsonObject> listIndexes(ListIndexesOptions options) {
     ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(JsonObject.class);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override
@@ -1935,7 +1984,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(__clientSession, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
 
   @Override
@@ -1945,7 +1994,12 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     ListIndexesPublisher<JsonObject> __publisher = wrapped.listIndexes(__clientSession, JsonObject.class);
     options.initializePublisher(__publisher);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    }
   }
 
   @Override

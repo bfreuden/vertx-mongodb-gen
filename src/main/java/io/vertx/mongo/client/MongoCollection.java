@@ -25,6 +25,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.MongoCollectionResult;
 import io.vertx.mongo.MongoNamespace;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.ReadConcern;
@@ -519,7 +520,7 @@ public interface MongoCollection<TDocument> {
    *  @return a result containing the result of the aggregation operation
    *  @mongodb.driver.manual aggregation/ Aggregation
    */
-  MongoResult<TDocument> aggregate(List<JsonObject> pipeline);
+  MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline);
 
   /**
    *  Aggregates documents according to the specified aggregation pipeline.
@@ -528,7 +529,7 @@ public interface MongoCollection<TDocument> {
    *  @return a result containing the result of the aggregation operation
    *  @mongodb.driver.manual aggregation/ Aggregation
    */
-  MongoResult<TDocument> aggregate(List<JsonObject> pipeline, AggregateOptions options);
+  MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline, AggregateOptions options);
 
   /**
    *  Aggregates documents according to the specified aggregation pipeline.
@@ -539,7 +540,8 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline);
+  MongoCollectionResult<TDocument> aggregate(ClientSession clientSession,
+      List<JsonObject> pipeline);
 
   /**
    *  Aggregates documents according to the specified aggregation pipeline.
@@ -551,7 +553,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
+  MongoCollectionResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
       AggregateOptions options);
 
   /**
@@ -644,7 +646,7 @@ public interface MongoCollection<TDocument> {
    *  @return an result containing the result of the map-reduce operation
    *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
    */
-  MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction);
+  MongoCollectionResult<TDocument> mapReduce(String mapFunction, String reduceFunction);
 
   /**
    *  Aggregates documents according to the specified map-reduce function.
@@ -654,7 +656,7 @@ public interface MongoCollection<TDocument> {
    *  @return an result containing the result of the map-reduce operation
    *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
    */
-  MongoResult<TDocument> mapReduce(String mapFunction, String reduceFunction,
+  MongoCollectionResult<TDocument> mapReduce(String mapFunction, String reduceFunction,
       MapReduceOptions options);
 
   /**
@@ -667,7 +669,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
+  MongoCollectionResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction);
 
   /**
@@ -681,7 +683,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
+  MongoCollectionResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction, MapReduceOptions options);
 
   /**

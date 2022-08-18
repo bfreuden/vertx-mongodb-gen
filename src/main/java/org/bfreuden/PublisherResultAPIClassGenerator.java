@@ -1,12 +1,11 @@
 package org.bfreuden;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.Type;
-import io.vertx.mongo.client.MongoCollectionResult;
-import io.vertx.mongo.MongoResult;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
@@ -15,15 +14,14 @@ import java.util.stream.Collectors;
 
 public class PublisherResultAPIClassGenerator extends APIClassGenerator {
 
-    private final Map<String, String> publisherResultClasses;
     boolean hasFirst = false;
     boolean hasOtherReactive = false;
     boolean hasToCollection = false;
     boolean hasSpecial = false;
+    boolean hasBatchSize = false;
 
-    public PublisherResultAPIClassGenerator(InspectionContext context, ClassDoc classDoc, Map<String, String> publisherResultClasses) {
+    public PublisherResultAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         super(context, classDoc);
-        this.publisherResultClasses = publisherResultClasses;
     }
 
     @Override
@@ -41,6 +39,7 @@ public class PublisherResultAPIClassGenerator extends APIClassGenerator {
             if (!inter.qualifiedTypeName().equals(Publisher.class.getName()))
                 throw new IllegalStateException("unsupported interface: " + inter + " for " + classDoc.qualifiedTypeName());
         }
+        hasBatchSize = Arrays.stream(classDoc.methods()).anyMatch(m -> m.name().equals("batchSize"));
         List<MethodDoc> methods = new ArrayList<>(Arrays.stream(classDoc.methods())
                 .filter(m -> !m.name().equals("toString"))
                 .filter(m -> !m.name().equals("hashCode"))
@@ -51,7 +50,6 @@ public class PublisherResultAPIClassGenerator extends APIClassGenerator {
 
         ArrayList<MethodDoc> methods2 = new ArrayList<>(methods);
         for (MethodDoc method: methods2) {
-            Type type = method.returnType();
             if (method.returnType().qualifiedTypeName().equals(Publisher.class.getName())) {
                 if (method.name().equals("first")) {
                     methods.remove(method);
@@ -76,14 +74,26 @@ public class PublisherResultAPIClassGenerator extends APIClassGenerator {
         if (!hasFirst && !hasToCollection && !hasSpecial && !hasOtherReactive) {
             throw new IllegalStateException("pure vanilla result detected");
         } else if (hasFirst && !hasToCollection && !hasSpecial && !hasOtherReactive) {
-            publisherResultClasses.put(classDoc.qualifiedTypeName(), MongoResult.class.getName());
-//            System.out.println("---> vanilla with first " + classDoc.qualifiedTypeName());
+            InspectionContext.PublisherDesc publisherDesc = new InspectionContext.PublisherDesc();
+            publisherDesc.firstMethodName = "first";
+            publisherDesc.resultClassName = ClassName.bestGuess("io.vertx.mongo.MongoResult");
+            if (hasBatchSize)
+                publisherDesc.batchSizePropertyName = "batchSize";
+            context.publisherDescriptions.put(classDoc.qualifiedTypeName(),publisherDesc);
         } else if (hasFirst && hasToCollection && !hasSpecial && !hasOtherReactive) {
-            publisherResultClasses.put(classDoc.qualifiedTypeName(), MongoCollectionResult.class.getName());
-//            System.out.println("---> vanilla with first + toCollection " + classDoc.qualifiedTypeName());
+            InspectionContext.PublisherDesc publisherDesc = new InspectionContext.PublisherDesc();
+            publisherDesc.firstMethodName = "first";
+            publisherDesc.toCollectionMethodName = "toCollection";
+            publisherDesc.resultClassName = ClassName.bestGuess("io.vertx.mongo.MongoCollectionResult");
+            if (hasBatchSize)
+                publisherDesc.batchSizePropertyName = "batchSize";
+            context.publisherDescriptions.put(classDoc.qualifiedTypeName(),publisherDesc);
         } else if (!hasFirst && !hasToCollection) {
-            publisherResultClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
-//            System.out.println("---> hasSpecial=" + hasSpecial +" hasOtherReactive=" + hasOtherReactive +" "  + classDoc.qualifiedTypeName());
+            InspectionContext.PublisherDesc publisherDesc = new InspectionContext.PublisherDesc();
+            publisherDesc.resultClassName = ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName());
+            if (hasBatchSize)
+                publisherDesc.batchSizePropertyName = "batchSize";
+            context.publisherDescriptions.put(classDoc.qualifiedTypeName(),publisherDesc);
         } else {
             throw new IllegalStateException("mixed result detected");
         }
