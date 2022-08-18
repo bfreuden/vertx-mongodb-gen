@@ -5,17 +5,14 @@ import com.squareup.javapoet.*;
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ConversionUtilsGenerator {
     private Map<Conversion, String> conversions = new HashMap<>();
-    private static class Conversion {
+    private static class Conversion implements Comparable<Conversion> {
         TypeName from;
         TypeName to;
 
@@ -36,21 +33,27 @@ public class ConversionUtilsGenerator {
         public int hashCode() {
             return Objects.hash(from, to);
         }
+
+        @Override
+        public int compareTo(Conversion o) {
+            return from.toString().compareTo(to.toString());
+        }
     }
 
     private static final Pattern LIST_REGEX = Pattern.compile("java\\.util\\.List<(?:\\? (?:extends|super) )((?:[a-z]+\\.)+)([^.]+)>");
     String addConversion(TypeName from, TypeName to) {
-        String fqName = to.toString();
+        TypeName to2 = to;
+        String fqName = to2.toString();
         Matcher matcher = LIST_REGEX.matcher(fqName);
         String type = null;
         if (matcher.matches()) {
-            to = ParameterizedTypeName.get(ClassName.get(List.class), ClassName.bestGuess(matcher.group(1) + matcher.group(2)));
+            to2 = ParameterizedTypeName.get(ClassName.get(List.class), ClassName.bestGuess(matcher.group(1) + matcher.group(2)));
             type = matcher.group(2);
         }
-        Conversion conversion = new Conversion(from, to);
+        Conversion conversion = new Conversion(from, to2);
         String methodName = conversions.get(conversion);
         if (methodName == null) {
-            if (to instanceof ClassName) {
+            if (to2 instanceof ClassName) {
                 methodName = "to" + fqName.substring(fqName.lastIndexOf('.') + 1);
             } else if (fqName.endsWith("[]")) {
                 type = fqName.substring(0, fqName.length() - 2);
@@ -59,7 +62,7 @@ public class ConversionUtilsGenerator {
             } else if (matcher.matches()){
                 methodName = "to" + type + "List";
             } else  {
-                throw new IllegalArgumentException("can't generate method name from " + to);
+                throw new IllegalArgumentException("can't generate method name from " + to2);
             }
             conversions.put(conversion, methodName);
         }
@@ -72,14 +75,22 @@ public class ConversionUtilsGenerator {
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addJavadoc("@hidden");
         List<String> sorted = conversions.values().stream().sorted().collect(Collectors.toList());
-        for (String methodName : sorted) {
-            Map.Entry<Conversion, String> conversionStringEntry = conversions.entrySet().stream().filter(it -> it.getValue().equals(methodName)).findFirst().get();
-            MethodSpec method = MethodSpec.methodBuilder(methodName)
-                    .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                    .addParameter(conversionStringEntry.getKey().from, "from")
-                    .returns(conversionStringEntry.getKey().to)
-                    .build();
-            conversionUtils.addMethod(method);
+        TreeSet<String> methodNames = new TreeSet<>(sorted);
+        for (String methodName : methodNames) {
+            List<Conversion> conversionsOfName = conversions.entrySet()
+                    .stream()
+                    .filter(it -> it.getValue().equals(methodName))
+                    .map(Map.Entry::getKey)
+                    .sorted()
+                    .collect(Collectors.toList());
+            for (Conversion conversion: conversionsOfName) {
+                MethodSpec method = MethodSpec.methodBuilder(methodName)
+                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                        .addParameter(conversion.from, "from")
+                        .returns(conversion.to)
+                        .build();
+                conversionUtils.addMethod(method);
+            }
         }
         JavaFile javaFile = JavaFile.builder("io.vertx.mongo.impl", conversionUtils.build())
                 .addFileComment(Copyright.COPYRIGHT)

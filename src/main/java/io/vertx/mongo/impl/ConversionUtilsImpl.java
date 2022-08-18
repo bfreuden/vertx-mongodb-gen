@@ -64,6 +64,11 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
+    public JsonObject toJsonObject(ObjectId from) {
+        return null;
+    }
+
+    @Override
     public Object toObject(BsonValue from) {
         return null;
     }
