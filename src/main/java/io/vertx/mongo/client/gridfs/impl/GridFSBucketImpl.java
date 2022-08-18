@@ -68,22 +68,22 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public WriteConcern getWriteConcern() {
-    return wrapped.getWriteConcern();
+    return WriteConcern.fromDriverClass(wrapped.getWriteConcern());
   }
 
   @Override
   public ReadPreference getReadPreference() {
-    return wrapped.getReadPreference();
+    return ReadPreference.fromDriverClass(wrapped.getReadPreference());
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    return wrapped.getReadConcern();
+    return ReadConcern.fromDriverClass(wrapped.getReadConcern());
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withChunkSizeBytes(int chunkSizeBytes) {
-    return wrapped.withChunkSizeBytes(chunkSizeBytes);
+    return null;//wrapped.withChunkSizeBytes(chunkSizeBytes);
   }
 
   @Override
@@ -91,21 +91,21 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference cannot be null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    return wrapped.withReadPreference(__readPreference);
+    return null;//wrapped.withReadPreference(__readPreference);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withWriteConcern(WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern cannot be null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    return wrapped.withWriteConcern(__writeConcern);
+    return null;//wrapped.withWriteConcern(__writeConcern);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern cannot be null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    return wrapped.withReadConcern(__readConcern);
+    return null;// wrapped.withReadConcern(__readConcern);
   }
 
   @Override

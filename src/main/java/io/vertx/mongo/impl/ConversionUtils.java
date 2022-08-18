@@ -52,8 +52,6 @@ public abstract interface ConversionUtils {
 
   JsonObject toJsonObject(Document from);
 
-  JsonObject toJsonObject(Document from);
-
   Object toObject(BsonValue from);
 
   ObjectId toObjectId(JsonObject from);

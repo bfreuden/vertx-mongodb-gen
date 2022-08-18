@@ -29,7 +29,7 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
-    public List<? extends Bson> toBsonList(List<JsonObject> from) {
+    public List<Bson> toBsonList(List<JsonObject> from) {
         return null;
     }
 
