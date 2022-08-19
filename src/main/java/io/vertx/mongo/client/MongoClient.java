@@ -15,6 +15,8 @@
 //
 package io.vertx.mongo.client;
 
+import com.mongodb.connection.ClusterSettings;
+import com.mongodb.event.ClusterListener;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Closeable;
 import io.vertx.core.Future;
@@ -75,12 +77,13 @@ public interface MongoClient extends Closeable {
   }
 
   /**
-   * Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result
+   * Close the client and release its resources
    */
   Future<Void> close();
 
   /**
-   * Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result
+   * Close the client and release its resources
+   * @param handler handler
    */
   void close(Handler<AsyncResult<Void>> handler);
 

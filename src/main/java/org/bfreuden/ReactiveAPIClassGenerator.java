@@ -312,7 +312,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                     MethodSpec.methodBuilder("close")
                             .returns(ParameterizedTypeName.get(ClassName.get(Future.class), ClassName.get(Void.class)))
                             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                            .addJavadoc("Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result")
+                            .addJavadoc("Close the client and release its resources")
                             .build());
 
             typeBuilder.addMethod(
@@ -320,7 +320,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                             .returns(TypeName.VOID)
                             .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), ClassName.get(Void.class))), "handler").build())
                             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                            .addJavadoc("Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result")
+                            .addJavadoc("Close the client and release its resources\n@param handler handler")
                             .build());
         }
 
