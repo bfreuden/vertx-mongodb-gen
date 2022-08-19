@@ -49,11 +49,6 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
-    public ClientSession toClientSession(com.mongodb.reactivestreams.client.ClientSession from) {
-        return null;
-    }
-
-    @Override
     public Document toDocument(JsonObject from) {
         return null;
     }

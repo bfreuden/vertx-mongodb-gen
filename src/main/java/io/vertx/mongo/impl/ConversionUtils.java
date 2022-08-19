@@ -16,7 +16,6 @@
 package io.vertx.mongo.impl;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.client.ClientSession;
 import java.lang.Long;
 import java.lang.Object;
 import java.util.List;
@@ -45,8 +44,6 @@ public abstract interface ConversionUtils {
   BsonValue toBsonValue(Object from);
 
   byte[] toByteArray(BsonBinary from);
-
-  ClientSession toClientSession(com.mongodb.reactivestreams.client.ClientSession from);
 
   Document toDocument(JsonObject from);
 
