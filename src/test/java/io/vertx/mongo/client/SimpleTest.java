@@ -65,6 +65,8 @@ public class SimpleTest {
                     .compose(context -> context.withResult(collection.insertOne(context.session(), new JsonObject().put("foo", "bar"))))
                     .compose(ResultSessionContext::commitTransaction)
                     .onSuccess(res -> System.out.println("transaction committed"))
+                    .map(ResultSessionContext::result)
+                    .onSuccess(res -> System.out.println("result is:" + res))
                     .onFailure(Throwable::printStackTrace);
 
             // hang to wait for results
@@ -138,6 +140,10 @@ public class SimpleTest {
     public static class ResultSessionContext<T> extends SessionContext<ResultSessionContext<T>> {
 
         private T result;
+
+        public T result() {
+            return result;
+        }
         public ResultSessionContext(MongoClient mongoClient, ClientSession session, T result) {
             super(mongoClient, session);
             this.result = result;
