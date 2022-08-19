@@ -190,7 +190,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession();
     Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(__promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toClientSession);
+    return __promise.future().map(__session -> new ClientSessionImpl(clientContext, __session));
   }
 
   @Override
