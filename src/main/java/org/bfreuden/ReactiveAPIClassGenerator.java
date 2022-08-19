@@ -442,11 +442,20 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
             ParameterizedTypeName paramFullVertxType = (ParameterizedTypeName) method.returnType.getFullVertxType();
             if (paramFullVertxType.typeArguments.size() != 1)
                 throw new IllegalStateException("unexpected");
-            if (context.reactiveApiClasses.contains(paramFullMongoType.rawType.toString()))
-                returnedVertxReactiveClass = ParameterizedTypeName.get(
-                        ClassName.bestGuess(mapPackageName(paramFullMongoType.rawType.toString(), true)),
-                        paramFullVertxType.typeArguments.get(0)
-                );
+            if (context.reactiveApiClasses.contains(paramFullMongoType.rawType.toString())) {
+                    returnedVertxReactiveClass = ParameterizedTypeName.get(
+                            ClassName.bestGuess(mapPackageName(paramFullMongoType.rawType.toString(), true)),
+                            paramFullVertxType.typeArguments.get(0)
+                    );
+            }
+        }
+        if (method.returnType.isSinglePublisher && fullMongoType instanceof ParameterizedTypeName) {
+            ParameterizedTypeName paramFullMongoType = (ParameterizedTypeName) fullMongoType;
+            if (paramFullMongoType.typeArguments.size() > 1)
+                throw new IllegalStateException("not implemented");
+            if (context.reactiveApiClasses.contains(paramFullMongoType.typeArguments.get(0).toString()))
+                returnedVertxReactiveClass =
+                        ClassName.bestGuess(mapPackageName(paramFullMongoType.typeArguments.get(0).toString(), true));
         }
 
         if (method.returnType.isPublisher) {
@@ -471,7 +480,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 methodBuilder.addStatement("__publisher.subscribe(new $T<>(__promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
                 if (returnedVertxReactiveClass != null) {
                     methodBuilder.addStatement("return __promise.future().map(__wrapped -> new $T(this.clientContext, __wrapped))",
-                            ClassName.bestGuess(getTargetQualifiedClassName() +".Impl")
+                            returnedVertxReactiveClass
                     );
                 } else if (method.resultConversionMethod == null) {
                     methodBuilder.addStatement("return __promise.future()");
@@ -719,6 +728,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         }
         if (mongoMethod.returnType.isPublisher &&
                 mongoMethod.returnType.mongoType != null &&
+                !context.reactiveApiClasses.contains(mongoMethod.returnType.mongoType.toString()) &&
                 mongoMethod.returnType.mongoType.toString().contains(".") && // not a TDocument
                 !mongoMethod.returnType.mongoType.equals(mongoMethod.returnType.vertxType)
         ) {
