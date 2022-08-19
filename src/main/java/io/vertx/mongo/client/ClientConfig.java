@@ -28,8 +28,9 @@ public class ClientConfig {
         return useObjectIds;
     }
 
-    public void setUseObjectIds(boolean useObjectIds) {
+    public ClientConfig useObjectIds(boolean useObjectIds) {
         this.useObjectIds = useObjectIds;
+        return this;
     }
     @GenIgnore
     public MongoClientSettings getMongoSettings() {
