@@ -15,16 +15,16 @@
 //
 package io.vertx.mongo.client;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
+import io.vertx.mongo.client.impl.MongoClientImpl;
 import io.vertx.mongo.connection.ClusterDescription;
-import java.io.Closeable;
+
 import java.lang.String;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *  A client-side representation of a MongoDB cluster.  Instances can represent either a standalone MongoDB instance, a replica set,
@@ -36,6 +36,31 @@ import java.util.List;
  *  @since 1.0
  */
 public interface MongoClient extends Closeable {
+
+  /**
+   * Create a Mongo client which maintains its own data source.
+   *
+   * @param vertx  the Vert.x instance
+   * @param config the configuration
+   * @return the client
+   */
+  static MongoClient create(Vertx vertx, ClientConfig config) {
+    return new MongoClientImpl(vertx, config, UUID.randomUUID().toString());
+  }
+
+  /**
+   * Create a Mongo client which shares its data source with any other Mongo clients created with the same
+   * data source name
+   *
+   * @param vertx          the Vert.x instance
+   * @param config         the configuration
+   * @param dataSourceName the data source name
+   * @return the client
+   */
+  static MongoClient createShared(Vertx vertx, ClientConfig config, String dataSourceName) {
+    return new MongoClientImpl(vertx, config, dataSourceName);
+  }
+
   /**
    *  Gets the database with the given name.
    *
@@ -45,10 +70,14 @@ public interface MongoClient extends Closeable {
   MongoDatabase getDatabase(String name);
 
   /**
-   *  Close the client, which will close all underlying cached resources, including, for example,
-   *  sockets and background monitoring threads.
+   * Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result
    */
-  void close();
+  Future<Void> close();
+
+  /**
+   * Close the client and release its resources
+   */
+  void close(Handler<AsyncResult<Void>> handler);
 
   /**
    *  Get a list of the database names

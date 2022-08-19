@@ -1,23 +1,18 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.reactivestreams.client.MongoClients;
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.streams.WriteStream;
-import io.vertx.mongo.client.impl.MongoClientImpl;
-import io.vertx.mongo.impl.MongoClientContext;
 
 public class SimpleTest {
 
     public static void main(String[] args) {
         try {
             Vertx vertx = Vertx.vertx();
-            ContextInternal context = (ContextInternal) vertx.getOrCreateContext();
-            MongoClientImpl mongoClient = new MongoClientImpl(new MongoClientContext(vertx, context), MongoClients.create());
+            MongoClient mongoClient = MongoClient.create(vertx, new ClientConfig());
             // get first item
             mongoClient
                     .listDatabaseNames()
@@ -50,6 +45,15 @@ public class SimpleTest {
                     .map(res -> "count: " + res)
                     .onFailure(Throwable::printStackTrace)
                     .onSuccess(System.out::println);
+            // count documents of a collections
+            mongoClient
+                    .getDatabase("cinebio")
+                    .getCollection("documents")
+                    .find()
+                    .first()
+                    .map(res -> "find: " + res)
+                    .onFailure(Throwable::printStackTrace)
+                    .onSuccess(System.out::println);
             // hang to wait for results
             synchronized (vertx) {
                 vertx.wait();
@@ -58,8 +62,6 @@ public class SimpleTest {
             t.printStackTrace();
         }
     }
-
-
 }
 
 class PrintlnWriteStream<T> implements WriteStream<T> {

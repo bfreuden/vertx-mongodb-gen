@@ -20,17 +20,11 @@ import static java.util.Objects.requireNonNull;
 
 import com.mongodb.reactivestreams.client.ListDatabasesPublisher;
 import com.mongodb.reactivestreams.client.MongoClient;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
-import io.vertx.mongo.client.ChangeStreamOptions;
-import io.vertx.mongo.client.ClientSession;
-import io.vertx.mongo.client.ListDatabasesOptions;
-import io.vertx.mongo.client.MongoDatabase;
+import io.vertx.mongo.client.*;
 import io.vertx.mongo.connection.ClusterDescription;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoClientContext;
@@ -43,14 +37,10 @@ import java.util.List;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
-public class MongoClientImpl extends MongoClientBase implements Closeable {
-  protected final MongoClientContext clientContext;
+public class MongoClientImpl extends MongoClientBase {
 
-  protected final MongoClient wrapped;
-
-  public MongoClientImpl(MongoClientContext clientContext, MongoClient wrapped) {
-    this.clientContext = clientContext;
-    this.wrapped = wrapped;
+  public MongoClientImpl(Vertx vertx, ClientConfig config, String dataSourceName) {
+    super(vertx, config, dataSourceName);
   }
 
   @Override
@@ -60,10 +50,6 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     return new MongoDatabaseImpl(this.clientContext, __wrapped);
   }
 
-  @Override
-  public void close() {
-    wrapped.close();
-  }
 
   @Override
   public MongoResult<String> listDatabaseNames() {

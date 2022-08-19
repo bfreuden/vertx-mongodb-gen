@@ -15,8 +15,8 @@
  */
 package io.vertx.mongo.impl;
 
+import io.vertx.core.Context;
 import io.vertx.core.Handler;
-import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.impl.InboundBuffer;
 import org.reactivestreams.Publisher;
@@ -30,7 +30,7 @@ public class PublisherAdapter<T> implements ReadStream<T> {
         IDLE, STARTED, EXHAUSTED, STOPPED
     }
 
-    private final ContextInternal context;
+    private final Context context;
     private final Publisher<T> publisher;
     private final InboundBuffer<T> internalQueue;
     private final int batchSize;
@@ -42,7 +42,7 @@ public class PublisherAdapter<T> implements ReadStream<T> {
     private Handler<Void> endHandler;
     private Subscription subscription;
 
-    public PublisherAdapter(ContextInternal context, Publisher<T> publisher, int batchSize) {
+    public PublisherAdapter(Context context, Publisher<T> publisher, int batchSize) {
         Objects.requireNonNull(context, "context is null");
         Objects.requireNonNull(publisher, "publisher is null");
         this.context = context;

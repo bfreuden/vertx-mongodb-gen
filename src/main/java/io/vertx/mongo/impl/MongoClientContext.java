@@ -17,23 +17,31 @@ package io.vertx.mongo.impl;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.ContextInternal;
+import io.vertx.mongo.client.ClientConfig;
+import org.bson.codecs.*;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
 
 public class MongoClientContext {
 
     private final Vertx vertx;
-    private final ContextInternal context;
+    private final Context context;
+    private final ClientConfig config;
 
-    public MongoClientContext(Vertx vertx, ContextInternal context) {
+    public MongoClientContext(Vertx vertx, Context context, ClientConfig config) {
         this.vertx = vertx;
         this.context = context;
+        this.config = config;
     }
 
     public Vertx getVertx() {
         return vertx;
     }
 
-    public ContextInternal getContext() {
+    public Context getContext() {
         return context;
+    }
+    public ClientConfig getConfig() {
+        return config;
     }
 }
