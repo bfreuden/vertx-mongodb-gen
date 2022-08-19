@@ -24,12 +24,15 @@ import java.util.Objects;
 public class SingleResultSubscriber<T> implements Subscriber<T> {
 
     private T received;
+    protected final MongoClientContext clientContext;
     private final Promise<T> promise;
     private Subscription subscription;
     private boolean completed;
 
-    public SingleResultSubscriber(Promise<T> promise) {
+    public SingleResultSubscriber(MongoClientContext clientContext, Promise<T> promise) {
+        Objects.requireNonNull(clientContext, "clientContext is null");
         Objects.requireNonNull(promise, "promise is null");
+        this.clientContext = clientContext;
         this.promise = promise;
     }
 
@@ -45,18 +48,25 @@ public class SingleResultSubscriber<T> implements Subscriber<T> {
             received = t;
             completed = true;
             subscription.cancel();
-            promise.complete(received);
+            clientContext.getContext().runOnContext(ar -> {
+                promise.complete(received);
+            });
         }
     }
 
     @Override
     public void onError(Throwable t) {
-        promise.fail(t);
+        clientContext.getContext().runOnContext(ar -> {
+            promise.fail(t);
+        });
     }
 
     @Override
     public void onComplete() {
-        if (!completed)
-            promise.complete(received);
+        if (!completed) {
+            clientContext.getContext().runOnContext(ar -> {
+                promise.complete(received);
+            });
+        }
     }
 }

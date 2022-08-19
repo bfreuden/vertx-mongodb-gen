@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
 
     private final Publisher<TDocument> publisher;
-    private final MongoClientContext clientContext;
+    protected final MongoClientContext clientContext;
     private final Supplier<Publisher<TDocument>> firstPublisher;
     private final int batchSize;
     public MongoResultImpl(MongoClientContext clientContext, Publisher<TDocument> publisher) {
@@ -61,7 +61,7 @@ public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
     @Override
     public Future<TDocument> first() {
         Promise<TDocument> promise = Promise.promise();
-        SingleResultSubscriber<TDocument> __subscriber = new SingleResultSubscriber<>(promise);
+        SingleResultSubscriber<TDocument> __subscriber = new SingleResultSubscriber<>(clientContext, promise);
         if (firstPublisher == null)
             publisher.subscribe(__subscriber);
         else
@@ -72,7 +72,7 @@ public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
     @Override
     public Future<List<TDocument>> all() {
         Promise<List<TDocument>> promise = Promise.promise();
-        ListResultSubscriber<TDocument> __subscriber = new ListResultSubscriber<>(promise);
+        ListResultSubscriber<TDocument> __subscriber = new ListResultSubscriber<>(clientContext, promise);
         publisher.subscribe(__subscriber);
         return promise.future();
     }
@@ -82,7 +82,7 @@ public class MongoResultImpl<TDocument> implements MongoResult<TDocument> {
         if (maxItems < 0)
             throw new IllegalArgumentException("maxItems must be non-negative");
         Promise<List<TDocument>> promise = Promise.promise();
-        ListResultSubscriber<TDocument> __subscriber = new ListResultSubscriber<>(promise, maxItems);
+        ListResultSubscriber<TDocument> __subscriber = new ListResultSubscriber<>(clientContext, promise, maxItems);
         publisher.subscribe(__subscriber);
         return promise.future();
     }

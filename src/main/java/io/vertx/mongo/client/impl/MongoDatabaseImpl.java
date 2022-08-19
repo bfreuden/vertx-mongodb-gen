@@ -166,7 +166,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public Future<Void> drop() {
     Publisher<Void> __publisher = wrapped.drop();
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -183,7 +183,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.drop(__clientSession);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -255,7 +255,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(collectionName, "collectionName is null");
     Publisher<Void> __publisher = wrapped.createCollection(collectionName);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -274,7 +274,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.client.model.CreateCollectionOptions __options = options.toDriverClass();
     Publisher<Void> __publisher = wrapped.createCollection(collectionName, __options);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -293,7 +293,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.createCollection(__clientSession, collectionName);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -315,7 +315,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.client.model.CreateCollectionOptions __options = options.toDriverClass();
     Publisher<Void> __publisher = wrapped.createCollection(__clientSession, collectionName, __options);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -336,7 +336,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -359,7 +359,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline, __createViewOptions);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -383,7 +383,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -409,7 +409,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline, __createViewOptions);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 

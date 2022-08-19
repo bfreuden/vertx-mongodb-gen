@@ -71,7 +71,7 @@ public class ClientSessionImpl extends ClientSessionBase {
   public Future<Void> commitTransaction() {
     Publisher<Void> __publisher = wrapped.commitTransaction();
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -87,7 +87,7 @@ public class ClientSessionImpl extends ClientSessionBase {
   public Future<Void> abortTransaction() {
     Publisher<Void> __publisher = wrapped.abortTransaction();
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 

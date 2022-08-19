@@ -39,7 +39,7 @@ public class MongoCollectionResultImpl<TDocument> extends MongoResultImpl<TDocum
     @Override
     public Future<Void> toCollection() {
         Promise<Void> promise = Promise.promise();
-        SingleResultSubscriber<Void> __subscriber = new SingleResultSubscriber<>(promise);
+        SingleResultSubscriber<Void> __subscriber = new SingleResultSubscriber<>(clientContext, promise);
         toCollectionPublisher.get().subscribe(__subscriber);
         return promise.future();
     }

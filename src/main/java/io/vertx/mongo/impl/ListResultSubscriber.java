@@ -25,22 +25,27 @@ import java.util.Objects;
 
 public class ListResultSubscriber<T> implements Subscriber<T> {
 
-    private List<T> received = new ArrayList<>();
+    private final List<T> received = new ArrayList<>();
+    private final MongoClientContext clientContext;
     private final Promise<List<T>> promise;
     private final int maxItems;
     private Subscription subscription;
     private boolean completed;
 
-    public ListResultSubscriber(Promise<List<T>> promise) {
+    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise) {
+        Objects.requireNonNull(clientContext, "clientContext is null");
         Objects.requireNonNull(promise, "promise is null");
+        this.clientContext = clientContext;
         this.promise = promise;
         this.maxItems = -1;
     }
 
-    public ListResultSubscriber(Promise<List<T>> promise, int maxItems) {
+    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise, int maxItems) {
+        Objects.requireNonNull(clientContext, "clientContext is null");
         Objects.requireNonNull(promise, "promise is null");
         if (maxItems < 0)
             throw new IllegalArgumentException("maxItems must be non-negative");
+        this.clientContext = clientContext;
         this.promise = promise;
         this.maxItems = maxItems;
     }
@@ -57,18 +62,25 @@ public class ListResultSubscriber<T> implements Subscriber<T> {
         if (maxItems != -1 && received.size() >= maxItems) {
             completed = true;
             subscription.cancel();
-            promise.complete(received);
+            clientContext.getContext().runOnContext(ar -> {
+                promise.complete(received);
+            });
         }
     }
 
     @Override
     public void onError(Throwable t) {
-        promise.fail(t);
+        clientContext.getContext().runOnContext(ar -> {
+            promise.fail(t);
+        });
     }
 
     @Override
     public void onComplete() {
-        if (!completed)
-            promise.complete(received);
+        if (!completed) {
+            clientContext.getContext().runOnContext(ar -> {
+                promise.complete(received);
+            });
+        }
     }
 }

@@ -189,7 +189,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public Future<ClientSession> startSession() {
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession();
     Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(__wrapped -> new ClientSessionImpl(this.clientContext, __wrapped));
   }
 
@@ -206,7 +206,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     com.mongodb.ClientSessionOptions __options = options.toDriverClass();
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession(__options);
     Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(__wrapped -> new ClientSessionImpl(this.clientContext, __wrapped));
   }
 

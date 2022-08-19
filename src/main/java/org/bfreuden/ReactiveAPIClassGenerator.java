@@ -477,7 +477,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
             } else if (method.returnType.isSinglePublisher) {
                 methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", fullMongoType);
                 methodBuilder.addStatement("$T __promise = $T.promise()", ParameterizedTypeName.get(ClassName.get(Promise.class), method.returnType.mongoType), ClassName.get(Promise.class));
-                methodBuilder.addStatement("__publisher.subscribe(new $T<>(__promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
+                methodBuilder.addStatement("__publisher.subscribe(new $T<>(clientContext, __promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
                 if (returnedVertxReactiveClass != null) {
                     methodBuilder.addStatement("return __promise.future().map(__wrapped -> new $T(this.clientContext, __wrapped))",
                             returnedVertxReactiveClass

@@ -120,7 +120,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__id);
     Promise<ByteBuffer> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -137,7 +137,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filename, "filename is null");
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename);
     Promise<ByteBuffer> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -156,7 +156,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename, __options);
     Promise<ByteBuffer> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -176,7 +176,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, __id);
     Promise<ByteBuffer> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -195,7 +195,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename);
     Promise<ByteBuffer> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -217,7 +217,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename, __options);
     Promise<ByteBuffer> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -325,7 +325,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     Publisher<Void> __publisher = wrapped.delete(__id);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -343,7 +343,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
     Publisher<Void> __publisher = wrapped.delete(__id);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -363,7 +363,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     Publisher<Void> __publisher = wrapped.delete(__clientSession, __id);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -383,7 +383,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
     Publisher<Void> __publisher = wrapped.delete(__clientSession, __id);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -402,7 +402,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     Publisher<Void> __publisher = wrapped.rename(__id, newFilename);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -421,7 +421,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
     Publisher<Void> __publisher = wrapped.rename(__id, newFilename);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -442,7 +442,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     Publisher<Void> __publisher = wrapped.rename(__clientSession, __id, newFilename);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -463,7 +463,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
     Publisher<Void> __publisher = wrapped.rename(__clientSession, __id, newFilename);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -479,7 +479,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public Future<Void> drop() {
     Publisher<Void> __publisher = wrapped.drop();
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 
@@ -496,7 +496,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.drop(__clientSession);
     Promise<Void> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
 

@@ -50,7 +50,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
     requireNonNull(kmsProvider, "kmsProvider is null");
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider);
     Promise<BsonBinary> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
@@ -69,7 +69,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
     com.mongodb.client.model.vault.DataKeyOptions __dataKeyOptions = dataKeyOptions.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider, __dataKeyOptions);
     Promise<BsonBinary> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
@@ -89,7 +89,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
     com.mongodb.client.model.vault.EncryptOptions __options = options.toDriverClass();
     Publisher<BsonBinary> __publisher = wrapped.encrypt(__value, __options);
     Promise<BsonBinary> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
   }
 
@@ -107,7 +107,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
     BsonBinary __value = ConversionUtilsImpl.INSTANCE.toBsonBinary(value);
     Publisher<BsonValue> __publisher = wrapped.decrypt(__value);
     Promise<BsonValue> __promise = Promise.promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(__promise));
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(ConversionUtilsImpl.INSTANCE::toObject);
   }
 
