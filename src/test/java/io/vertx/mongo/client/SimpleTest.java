@@ -12,7 +12,7 @@ public class SimpleTest {
     public static void main(String[] args) {
         try {
             Vertx vertx = Vertx.vertx();
-            MongoClient mongoClient = MongoClient.create(vertx, new ClientConfig());
+            MongoClient mongoClient = MongoClient.create(vertx);
             // get first item
             mongoClient
                     .listDatabaseNames()

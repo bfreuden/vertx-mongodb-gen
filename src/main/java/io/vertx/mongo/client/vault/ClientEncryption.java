@@ -20,7 +20,6 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.mongo.client.model.vault.DataKeyOptions;
 import io.vertx.mongo.client.model.vault.EncryptOptions;
-import java.io.Closeable;
 import java.lang.Object;
 import java.lang.String;
 
@@ -35,7 +34,7 @@ import java.lang.String;
  *  </p>
  *  @since 1.12
  */
-public interface ClientEncryption extends Closeable {
+public interface ClientEncryption {
   /**
    *  Create a data key with the given KMS provider.
    *  <p>

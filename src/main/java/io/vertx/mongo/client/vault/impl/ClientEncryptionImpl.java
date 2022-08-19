@@ -28,7 +28,6 @@ import io.vertx.mongo.client.model.vault.EncryptOptions;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
-import java.io.Closeable;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -36,7 +35,7 @@ import org.bson.BsonBinary;
 import org.bson.BsonValue;
 import org.reactivestreams.Publisher;
 
-public class ClientEncryptionImpl extends ClientEncryptionBase implements Closeable {
+public class ClientEncryptionImpl extends ClientEncryptionBase {
   protected final MongoClientContext clientContext;
 
   protected final ClientEncryption wrapped;

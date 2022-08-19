@@ -119,7 +119,8 @@ public abstract class APIClassGenerator {
     protected boolean isSupportedSuperClass(String superClassName) {
         if (Types.isSupportedSuperClass(superClassName))
             return true;
-        return context.classDocs.containsKey(superClassName) && !context.otherApiClasses.contains(superClassName);
+        return false;
+//        return context.classDocs.containsKey(superClassName) && !context.otherApiClasses.contains(superClassName);
     }
 
     protected String getTargetQualifiedClassName() {

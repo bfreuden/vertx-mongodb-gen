@@ -19,26 +19,41 @@ import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
 import com.mongodb.reactivestreams.client.ListDatabasesPublisher;
-import com.mongodb.reactivestreams.client.MongoClient;
-import io.vertx.core.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Closeable;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
-import io.vertx.mongo.client.*;
+import io.vertx.mongo.client.ChangeStreamOptions;
+import io.vertx.mongo.client.ClientConfig;
+import io.vertx.mongo.client.ClientSession;
+import io.vertx.mongo.client.ListDatabasesOptions;
+import io.vertx.mongo.client.MongoClient;
+import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.connection.ClusterDescription;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
-import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.MongoResultImpl;
 import io.vertx.mongo.impl.SingleResultSubscriber;
-import java.io.Closeable;
 import java.lang.Override;
 import java.lang.String;
 import java.util.List;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
-public class MongoClientImpl extends MongoClientBase {
-
+public class MongoClientImpl extends MongoClientBase implements Closeable {
+  /**
+   * Create a Mongo client which shares its data source with any other Mongo clients created with the same
+   * data source name
+   *
+   * @param vertx          the Vert.x instance
+   * @param config         the configuration
+   * @param dataSourceName the data source name
+   * @return the client
+   */
   public MongoClientImpl(Vertx vertx, ClientConfig config, String dataSourceName) {
     super(vertx, config, dataSourceName);
   }
@@ -49,7 +64,6 @@ public class MongoClientImpl extends MongoClientBase {
     com.mongodb.reactivestreams.client.MongoDatabase __wrapped = wrapped.getDatabase(name);
     return new MongoDatabaseImpl(this.clientContext, __wrapped);
   }
-
 
   @Override
   public MongoResult<String> listDatabaseNames() {
@@ -180,8 +194,7 @@ public class MongoClientImpl extends MongoClientBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoClient startSession(
-      Handler<AsyncResult<ClientSession>> resultHandler) {
+  public MongoClient startSession(Handler<AsyncResult<ClientSession>> resultHandler) {
     Future<ClientSession> __future = this.startSession();
     setHandler(__future, resultHandler);
     return this;
@@ -198,7 +211,7 @@ public class MongoClientImpl extends MongoClientBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoClient startSession(ClientSessionOptions options,
+  public MongoClient startSession(ClientSessionOptions options,
       Handler<AsyncResult<ClientSession>> resultHandler) {
     Future<ClientSession> __future = this.startSession(options);
     setHandler(__future, resultHandler);
@@ -210,7 +223,7 @@ public class MongoClientImpl extends MongoClientBase {
     return ClusterDescription.fromDriverClass(wrapped.getClusterDescription());
   }
 
-  public MongoClient toDriverClass() {
+  public com.mongodb.reactivestreams.client.MongoClient toDriverClass() {
     return wrapped;
   }
 }

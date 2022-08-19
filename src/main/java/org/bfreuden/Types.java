@@ -14,8 +14,6 @@ public class Types {
 
     private static Set<String> SUPPORTED_SUPER_CLASSES = new HashSet<>();
     static {
-        SUPPORTED_SUPER_CLASSES.add("java.io.Closeable");
-        SUPPORTED_SUPER_CLASSES.add("java.lang.AutoCloseable");
     }
 
     private static Map<String, TypeName> MAPPING = new HashMap<>();

@@ -1,14 +1,12 @@
 package org.bfreuden;
 
 import com.google.common.collect.Lists;
+import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoResult;
 import org.bson.Document;
@@ -30,6 +28,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
     private List<MongoMethod> methods =  new ArrayList<>();
     private TypeName wrappedType;
     private boolean currentMethodHasPublisherOptions;
+    private boolean isMongoClient;
 
 
     protected class MongoMethod {
@@ -208,6 +207,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 this.typeVariables.add(TypeVariableName.get(typeVariable.toString()));
 
         this.superInterfaces = new ArrayList<TypeName>();
+        this.isMongoClient = classDoc.qualifiedTypeName().equals(MongoClient.class.getName());
         for (ClassDoc inter : classDoc.interfaces()) {
             String superClassName = inter.qualifiedTypeName();
             if (isSupportedSuperClass(superClassName)) {
@@ -216,6 +216,9 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
                 System.out.println("WARNING: interface of " + classDoc.qualifiedTypeName() + " has been ignored: " + superClassName);
             }
         }
+        if (isMongoClient)
+            superInterfaces.add(ClassName.get(Closeable.class));
+
         if (classDoc.isClass()) {
             Type superClass = classDoc.superclassType();
             if (superClass != null) {
@@ -233,6 +236,8 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         }
 
         for (MethodDoc methodDoc : classDoc.methods()) {
+            if (isMongoClient && methodDoc.name().equals("close"))
+                continue;
             if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                     methodDoc.name().equals("downloadToPublisher") &&
                     methodDoc.getRawCommentText().contains("custom id")
@@ -260,6 +265,64 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         staticImports.clear();
         for (TypeName inter : superInterfaces)
             typeBuilder.addSuperinterface(inter);
+
+        if (getTargetClassName().equals("MongoClient")) {
+            typeBuilder.addMethod(
+                    MethodSpec.methodBuilder("create")
+                            .returns(ClassName.bestGuess(getTargetQualifiedClassName()))
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                            .addParameter(ParameterSpec.builder(Vertx.class, "vertx").build())
+                            .addJavadoc("Create a Mongo client which maintains its own data source and connects to a default server.\n" +
+                                    "\n" +
+                                    "@param vertx  the Vert.x instance\n" +
+                                    "@return the client\n")
+                            .addStatement("return new $T(vertx, new $T(), $T.randomUUID().toString())", ClassName.bestGuess(mapToImpl(getTargetQualifiedClassName())), ClassName.bestGuess("io.vertx.mongo.client.ClientConfig"), ClassName.get(UUID.class))
+                            .build());
+            typeBuilder.addMethod(
+                    MethodSpec.methodBuilder("create")
+                            .returns(ClassName.bestGuess(getTargetQualifiedClassName()))
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                            .addParameter(ParameterSpec.builder(Vertx.class, "vertx").build())
+                            .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.client.ClientConfig"), "config").build())
+                            .addJavadoc("Create a Mongo client which maintains its own data source.\n" +
+                                    "\n" +
+                                    "@param vertx  the Vert.x instance\n" +
+                                    "@param config the configuration\n" +
+                                    "@return the client\n")
+                            .addStatement("return new $T(vertx, config, $T.randomUUID().toString())", ClassName.bestGuess(mapToImpl(getTargetQualifiedClassName())), ClassName.get(UUID.class))
+                            .build());
+            typeBuilder.addMethod(
+                    MethodSpec.methodBuilder("createShared")
+                            .returns(ClassName.bestGuess(getTargetQualifiedClassName()))
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                            .addParameter(ParameterSpec.builder(Vertx.class, "vertx").build())
+                            .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.client.ClientConfig"), "config").build())
+                            .addParameter(ParameterSpec.builder(ClassName.get(String.class), "dataSourceName").build())
+                            .addJavadoc("Create a Mongo client which shares its data source with any other Mongo clients created with the same\n" +
+                                    "data source name\n" +
+                                    "\n" +
+                                    "@param vertx          the Vert.x instance\n" +
+                                    "@param config         the configuration\n" +
+                                    "@param dataSourceName the data source name\n" +
+                                    "@return the client\n")
+                            .addStatement("return new $T(vertx, config, dataSourceName)", ClassName.bestGuess(mapToImpl(getTargetQualifiedClassName())))
+                            .build());
+
+            typeBuilder.addMethod(
+                    MethodSpec.methodBuilder("close")
+                            .returns(ParameterizedTypeName.get(ClassName.get(Future.class), ClassName.get(Void.class)))
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addJavadoc("Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result")
+                            .build());
+
+            typeBuilder.addMethod(
+                    MethodSpec.methodBuilder("close")
+                            .returns(TypeName.VOID)
+                            .addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), ClassName.get(Void.class))), "handler").build())
+                            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                            .addJavadoc("Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result")
+                            .build());
+        }
 
         inflateType(typeBuilder, isImpl, null, null);
 
@@ -299,17 +362,34 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
 
         inflateType(typeBuilder, isImpl, this::implementMethod, this::implementHandlerMethod);
 
-        typeBuilder.addField(FieldSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
-        typeBuilder.addField(FieldSpec.builder(wrappedType, "wrapped").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
-
-        typeBuilder.addMethod(MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").build())
-                .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
-                .addStatement("this.clientContext = clientContext")
-                .addStatement("this.wrapped = wrapped")
-                .build()
-        );
+        if (isMongoClient) {
+            typeBuilder.addMethod(MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ParameterSpec.builder(Vertx.class, "vertx").build())
+                    .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.client.ClientConfig"), "config").build())
+                    .addParameter(ParameterSpec.builder(ClassName.get(String.class), "dataSourceName").build())
+                    .addJavadoc("Create a Mongo client which shares its data source with any other Mongo clients created with the same\n" +
+                            "data source name\n" +
+                            "\n" +
+                            "@param vertx          the Vert.x instance\n" +
+                            "@param config         the configuration\n" +
+                            "@param dataSourceName the data source name\n" +
+                            "@return the client\n")
+                    .addStatement("super(vertx, config, dataSourceName)")
+                    .build()
+            );
+        } else {
+            typeBuilder.addField(FieldSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
+            typeBuilder.addField(FieldSpec.builder(wrappedType, "wrapped").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
+            typeBuilder.addMethod(MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").build())
+                    .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
+                    .addStatement("this.clientContext = clientContext")
+                    .addStatement("this.wrapped = wrapped")
+                    .build()
+            );
+        }
 
         typeBuilder.addMethod(
                 MethodSpec.methodBuilder("toDriverClass")

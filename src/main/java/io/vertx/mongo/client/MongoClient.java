@@ -15,14 +15,18 @@
 //
 package io.vertx.mongo.client;
 
-import io.vertx.core.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Closeable;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.impl.MongoClientImpl;
 import io.vertx.mongo.connection.ClusterDescription;
-
 import java.lang.String;
+import java.lang.Void;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,6 +40,15 @@ import java.util.UUID;
  *  @since 1.0
  */
 public interface MongoClient extends Closeable {
+  /**
+   * Create a Mongo client which maintains its own data source and connects to a default server.
+   *
+   * @param vertx  the Vert.x instance
+   * @return the client
+   */
+  static MongoClient create(Vertx vertx) {
+    return new MongoClientImpl(vertx, new ClientConfig(), UUID.randomUUID().toString());
+  }
 
   /**
    * Create a Mongo client which maintains its own data source.
@@ -62,22 +75,22 @@ public interface MongoClient extends Closeable {
   }
 
   /**
+   * Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<Void> close();
+
+  /**
+   * Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  void close(Handler<AsyncResult<Void>> handler);
+
+  /**
    *  Gets the database with the given name.
    *
    *  @param name the name of the database
    *  @return the database
    */
   MongoDatabase getDatabase(String name);
-
-  /**
-   * Like {@link #close(Handler)} but returns a {@code Future} of the asynchronous result
-   */
-  Future<Void> close();
-
-  /**
-   * Close the client and release its resources
-   */
-  void close(Handler<AsyncResult<Void>> handler);
 
   /**
    *  Get a list of the database names
