@@ -661,7 +661,7 @@ public class ReactiveAPIClassGenerator extends APIClassGenerator {
         Optional<TypeVariable> resultType = Arrays.stream(methodTypeVariables).filter(v -> v.qualifiedTypeName().equals("TResult")).findFirst();
         boolean resultParameter = resultType.isPresent();
         if (resultParameter) {
-            System.out.println("WARNING: return type of " + methodDoc + " has been ignored because it has a TResult type parameter");
+            System.out.println("INFO: return type of " + methodDoc + " has been ignored because it has a TResult type parameter");
             return null;
         }
 

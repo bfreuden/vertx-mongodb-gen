@@ -8,10 +8,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class InspectionContext {
 
@@ -35,7 +32,6 @@ public class InspectionContext {
     public final Set<String> publishersApiClasses = new HashSet<>();
     public final Set<String> nonApiParameterAndReturnClasses = new HashSet<>();
     public final Map<String, ClassDoc> classDocs = new HashMap<String, ClassDoc>();
-    public final Map<String, TypeSpec.Builder> typeBuilders = new HashMap<String, TypeSpec.Builder>();
     public final Set<String> optionsApiClasses = new HashSet<>();
     public final Set<String> reactiveClasses = new HashSet<>();
     public final Set<String> builderClasses = new HashSet<>();
@@ -89,15 +85,6 @@ public class InspectionContext {
             System.out.println("Processing " + qualifiedTypeName);
             graph.addVertex(qualifiedTypeName);
             classDocs.put(qualifiedTypeName, classDoc);
-            if (classDoc.isClass()) {
-                typeBuilders.put(qualifiedTypeName, TypeSpec.classBuilder(classDoc.typeName()));
-            } else if (classDoc.isInterface()) {
-                typeBuilders.put(qualifiedTypeName, TypeSpec.interfaceBuilder(classDoc.typeName()));
-            } else if (classDoc.isEnum()) {
-                typeBuilders.put(qualifiedTypeName, TypeSpec.enumBuilder(classDoc.typeName()));
-            } else {
-                throw new IllegalArgumentException();
-            }
             if (qualifiedTypeName.endsWith("Options"))
                 optionsApiClasses.add(qualifiedTypeName);
 
@@ -105,63 +92,47 @@ public class InspectionContext {
             FieldDoc[] fields = classDoc.fields(true);
             for (FieldDoc fieldDoc : fields) {
                 Type type = fieldDoc.type();
-                if (!type.isPrimitive()) {
-                    ClassDoc classDoc1 = type.asClassDoc();
-                    String typeQualifiedName = classDoc1.qualifiedTypeName();
-                    if (inspect(classDoc1))
-                        maybeAddEdge(qualifiedTypeName, typeQualifiedName, "field");
-                }
+                inspect(qualifiedTypeName, type, "field");
             }
 
             // process interfaces
             ClassDoc[] interfaces = classDoc.interfaces();
             for (ClassDoc interf : interfaces) {
-                String interfTypeName = interf.qualifiedTypeName();
-                if (inspect(interf))
-                    maybeAddEdge(qualifiedTypeName, interfTypeName, "implements");
-
+                inspect(qualifiedTypeName, interf, "implements");
             }
 
             // process super class
             ClassDoc superclass = classDoc.superclass();
             if (superclass != null) {
-                String superclassTypeName = superclass.qualifiedTypeName();
-                if (inspect(superclass))
-                    maybeAddEdge(qualifiedTypeName, superclassTypeName, "extends");
+                inspect(qualifiedTypeName, superclass, "extends");
             }
 
             // process methods
             MethodDoc[] methods = classDoc.methods(true);
             for (MethodDoc methodDoc : methods) {
-                boolean reactiveApiMethod = false;
                 // return type
                 Type type = methodDoc.returnType();
-                if (!type.isPrimitive()) {
-                    ClassDoc classDoc1 = type.asClassDoc();
-                    String typeQualifiedName = classDoc1.qualifiedTypeName();
+                ClassDoc first = inspect(qualifiedTypeName, type, "return:"+methodDoc.name());
+                if (first != null) {
+                    String typeQualifiedName = first.qualifiedTypeName();
                     nonApiParameterAndReturnClasses.add(typeQualifiedName);
                     if (typeQualifiedName.startsWith("org.bson"))
                         bsonBasedClasses.add(qualifiedTypeName);
                     if (typeQualifiedName.contains("Publisher") && !qualifiedTypeName.contains("Publisher")) {
-                        reactiveApiMethod = true;
                         reactiveApiClasses.add(qualifiedTypeName);
                         publishersApiClasses.add(typeQualifiedName);
                     }
-                    if (inspect(classDoc1))
-                        maybeAddEdge(qualifiedTypeName, typeQualifiedName, "return:"+methodDoc.name());
                 }
                 // parameters
                 Parameter[] parameters = methodDoc.parameters();
                 for (Parameter parameter: parameters) {
                     Type type1 = parameter.type();
-                    if (!type1.isPrimitive()) {
-                        ClassDoc classDoc1 = type1.asClassDoc();
-                        String typeQualifiedName = classDoc1.qualifiedTypeName();
+                    ClassDoc first2 = inspect(qualifiedTypeName, type1, "param:"+methodDoc.name());
+                    if (first2 != null) {
+                        String typeQualifiedName = first2.qualifiedTypeName();
                         nonApiParameterAndReturnClasses.add(typeQualifiedName);
                         if (typeQualifiedName.startsWith("org.bson"))
                             bsonBasedClasses.add(qualifiedTypeName);
-                        if (inspect(classDoc1))
-                            maybeAddEdge(qualifiedTypeName, typeQualifiedName, "param:"+methodDoc.name());
                     }
                 }
             }
@@ -173,20 +144,63 @@ public class InspectionContext {
                 Parameter[] parameters = constructorDoc.parameters();
                 for (Parameter parameter: parameters) {
                     Type type1 = parameter.type();
-                    if (!type1.isPrimitive()) {
-                        ClassDoc classDoc1 = type1.asClassDoc();
-                        String typeQualifiedName = classDoc1.qualifiedTypeName();
+                    ClassDoc first2 = inspect(qualifiedTypeName, type1, "ctor-param");
+                    if (first2 != null) {
+                        String typeQualifiedName = first2.qualifiedTypeName();
                         nonApiParameterAndReturnClasses.add(typeQualifiedName);
                         if (typeQualifiedName.startsWith("org.bson"))
                             bsonBasedClasses.add(qualifiedTypeName);
-                        if (inspect(classDoc1))
-                            maybeAddEdge(qualifiedTypeName, typeQualifiedName, "ctor-param");
-
                     }
                 }
             }
         }
         return true;
+    }
+
+    private ClassDoc inspect(String qualifiedTypeName, Type type, String linkName) {
+        Set<ClassDoc> classDocs = referencedTypes(type);
+        boolean first = true;
+        for (ClassDoc doc: classDocs) {
+            String typeQualifiedName = doc.qualifiedTypeName();
+            if (inspect(doc))
+                maybeAddEdge(qualifiedTypeName, typeQualifiedName, first ? linkName : "dep:"+ linkName);
+            first = false;
+        }
+        return classDocs.isEmpty() ? null : classDocs.iterator().next(); 
+    }
+
+    private Set<ClassDoc> referencedTypes(Type type) {
+        Set<ClassDoc> result = new LinkedHashSet<>();
+        referencedTypes(result, type);
+        return result;
+    }
+    private void referencedTypes(Set<ClassDoc> result, Type type) {
+        if (type.isPrimitive())
+            return;
+        if (type instanceof ParameterizedType) {
+            ParameterizedType ptype = (ParameterizedType)type;
+            result.add(ptype.asClassDoc());
+            for (Type arg : ptype.typeArguments())
+                referencedTypes(result, arg);
+        } else if (type instanceof ClassDoc) {
+            result.add((ClassDoc) type);
+        } else if (type.getClass().getName().contains("ArrayType")) {
+            result.add(type.asClassDoc());
+        } else if (type instanceof TypeVariable) {
+        } else if (type instanceof WildcardType) {
+            WildcardType wtype = (WildcardType) type;
+            Type[] types = wtype.extendsBounds();
+            if (types != null)
+                for (Type t: types)
+                    referencedTypes(result, t);
+            Type[] types2 = wtype.superBounds();
+            if (types2 != null)
+                for (Type t: types2)
+                    referencedTypes(result, t);
+        } else {
+            throw new IllegalStateException(type.getClass().getName());
+
+        }
     }
 
     private void maybeAddEdge(String sourceVertex, String targetVertex, String edgeLabel) {

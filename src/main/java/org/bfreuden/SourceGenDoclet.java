@@ -25,9 +25,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-/*
- FIXME: take into account class parameters of generic types to build the graph
- */
 public class SourceGenDoclet {
 
 
@@ -48,8 +45,10 @@ public class SourceGenDoclet {
         apiPackages.add("com.mongodb.client.model.vault");
         apiPackages.add("com.mongodb.connection");
         apiPackages.add("com.mongodb.selector");
+        apiPackages.add("com.mongodb.bulk");
         apiPackages.add("com.mongodb.event");
         apiPackages.add("com.mongodb.client.model");
+        apiPackages.add("com.mongodb.client.result");
         apiPackages.add("com.mongodb.session");
         apiPackages.add("com.mongodb.client.model.changestream");
 
