@@ -1,0 +1,10 @@
+com.mongodb.client.model.ValidationAction
+com.mongodb.client.model.MapReduceAction
+com.mongodb.client.model.ReturnDocument
+com.mongodb.client.model.CollationAlternate
+com.mongodb.client.model.CollationCaseFirst
+com.mongodb.client.model.changestream.FullDocument
+com.mongodb.client.model.ValidationLevel
+com.mongodb.client.model.CollationStrength
+com.mongodb.client.model.CollationMaxVariable
+com.mongodb.CursorType

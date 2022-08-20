@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
+import org.apache.commons.io.FileUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.event.ConnectedComponentTraversalEvent;
@@ -143,20 +144,28 @@ public class SourceGenDoclet {
         }
         System.out.println("isolated api classes: classes that have no \"link\" back to a reactive api class (could be used as-is in the vertx api)");
         System.out.println("isolated api classes (" + isolatedApiClasses.size() + "): " + isolatedApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/isolated.txt"), isolatedApiClasses);
         System.out.println("linked api classes: classes that have a \"link\" back to a reactive api class (could not be used as-is in the vertx api)");
         System.out.println("linked api classes (" + linkedApiClasses.size() + "): " + linkedApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/linked.txt"), linkedApiClasses);
         System.out.println("publishers api classes: classes extending rxjava publisher, that should lead to the creating of an options class");
         System.out.println("publishers api classes (" + inspectionContext.publishersApiClasses.size() + "): " + inspectionContext.publishersApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/publishers.txt"), linkedApiClasses);
         System.out.println("options api classes: classes seen as a parameter of a function returning a publisher");
         System.out.println("options api classes (" + inspectionContext.optionsApiClasses.size() + "): " + inspectionContext.optionsApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/options.txt"), inspectionContext.optionsApiClasses);
         System.out.println("enum api classes: enums");
         System.out.println("enum api classes (" + inspectionContext.enumApiClasses.size() + "): " + inspectionContext.enumApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/enum.txt"), inspectionContext.enumApiClasses);
         System.out.println("builder api classes: builders of read-only beans");
         System.out.println("builder api classes (" + inspectionContext.builderClasses.size() + "): " + inspectionContext.builderClasses);
+        FileUtils.writeLines(new File("src/main/resources/builder.txt"), inspectionContext.builderClasses);
         System.out.println("bson-based api classes: classes containing methods or constructors have bson parameters or return type");
         System.out.println("bson-based api classes (" + inspectionContext.bsonBasedClasses.size() + "): " + inspectionContext.bsonBasedClasses);
+        FileUtils.writeLines(new File("src/main/resources/bson.txt"), inspectionContext.bsonBasedClasses);
         System.out.println("non-api parameter and return classes: classes of method parameters and return values not belonging to the api");
         System.out.println("non-api parameter and return classes (" + inspectionContext.nonApiParameterAndReturnClasses.size() + "): " + inspectionContext.nonApiParameterAndReturnClasses);
+        FileUtils.writeLines(new File("src/main/resources/non-api.txt"), inspectionContext.nonApiParameterAndReturnClasses);
         inspectionContext.otherApiClasses = new HashSet<>();
         for (String isolatedApiClass : isolatedApiClasses) {
             if (!inspectionContext.reactiveApiClasses.contains(isolatedApiClass) &&
@@ -178,6 +187,8 @@ public class SourceGenDoclet {
 
         System.out.println("other api classes: ?");
         System.out.println("other api classes (" + inspectionContext.otherApiClasses.size() + "): " + inspectionContext.otherApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/other.txt"), inspectionContext.otherApiClasses);
+
         File genSourceDir = new File("src/main/java");
 
         // FIXME

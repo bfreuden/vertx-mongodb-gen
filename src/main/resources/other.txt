@@ -1,0 +1,9 @@
+com.mongodb.ReadPreference
+com.mongodb.client.model.Collation
+com.mongodb.MongoNamespace
+com.mongodb.connection.ClusterDescription
+com.mongodb.ReadConcern
+com.mongodb.CreateIndexCommitQuorum
+com.mongodb.WriteConcern
+com.mongodb.session.ClientSession
+com.mongodb.session.ServerSession
