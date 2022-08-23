@@ -29,8 +29,8 @@ public class Types {
         MAPPING.put("java.lang.Integer", ClassName.get(Integer.class));
         MAPPING.put("java.net.InetAddress", ClassName.get(InetAddress.class));
         MAPPING.put("java.lang.Long", ClassName.get(Long.class));
-        MAPPING.put("java.util.Map", ClassName.get(Map.class)); // analyze generics?
-        MAPPING.put("java.util.Set", ClassName.get(Set.class)); // analyze generics?
+//        MAPPING.put("java.util.Map", ClassName.get(Map.class)); // analyze generics?
+//        MAPPING.put("java.util.Set", ClassName.get(Set.class)); // analyze generics?
 //        mapping.put("org.bson.UuidRepresentation", ""); // https://mongodb.github.io/mongo-java-driver/3.5/javadoc/org/bson/UuidRepresentation.html
         MAPPING.put("java.lang.Throwable", ClassName.get(Throwable.class));
         MAPPING.put("java.lang.Double", ClassName.get(Double.class));
@@ -43,10 +43,10 @@ public class Types {
         MAPPING.put("org.bson.BsonValue", ClassName.get(Object.class)); // really?
         MAPPING.put("org.bson.BsonArray", ClassName.get(JsonArray.class));
         MAPPING.put("java.net.InetSocketAddress", ClassName.get(InetSocketAddress.class));
-        MAPPING.put("java.util.List", ClassName.get(List.class)); // analyze generics?
+//        MAPPING.put("java.util.List", ClassName.get(List.class)); // analyze generics?
         MAPPING.put("org.bson.BsonTimestamp", ClassName.get(Long.class));
         MAPPING.put("java.lang.Boolean", ClassName.get(Boolean.class));
-        MAPPING.put("java.util.Iterator", ClassName.get(Iterator.class)); // analyze generics?
+//        MAPPING.put("java.util.Iterator", ClassName.get(Iterator.class)); // analyze generics?
         MAPPING.put("java.util.concurrent.TimeUnit", ClassName.get(TimeUnit.class));
         MAPPING.put("java.lang.Object", ClassName.get(Object.class));
         MAPPING.put("java.lang.Class", ClassName.get(Class.class));

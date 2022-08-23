@@ -63,7 +63,7 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
         analyzeSetterOptions(methods, fluentSetters);
         if (!methods.isEmpty())
             throw new IllegalStateException("unknown method: " + methods);
-        if (!options.isEmpty())
+        if (!optionsByName.isEmpty())
             context.publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
     }
 
@@ -79,7 +79,7 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
                 .returns(TypeName.VOID);
         if (hasParam)
             toMongo.addTypeVariable(TypeVariableName.get("TDocument"));
-        List<Option> requiredOptions = options.values().stream().filter(it -> it.inCtor).collect(Collectors.toList());
+        List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
         if (!requiredOptions.isEmpty())
             throw new IllegalStateException("not supported");
         configurableName = "publisher";

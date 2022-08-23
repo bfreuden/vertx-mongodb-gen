@@ -2,7 +2,6 @@ package org.bfreuden;
 
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import org.bson.conversions.Bson;
 
@@ -11,27 +10,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class OptionsAPIClassGenerator extends APIClassGenerator {
+public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
 
-
-    protected LinkedHashMap<String, Option> options = new LinkedHashMap<>();
-    protected boolean hasBuilder;
-    protected String configurableName;
-
-    protected static class Option {
-        public boolean deprecated;
-        public String conversionMethod;
-        String name;
-        String setterParamName;
-        TypeName mongoType;
-        TypeName vertxType;
-        String mongoSetterName;
-        String mongoJavadoc;
-        String mongoGetterJavadoc;
-        boolean optionType = false;
-        boolean inCtor = false;
-        boolean withTimeUnit = false;
-    }
     public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         super(context, classDoc);
     }
@@ -128,18 +108,18 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
     }
 
     protected void createOption(List<MethodDoc> methods, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName, boolean deprecated) {
-        if (options.containsKey(optionName))
+        if (optionsByName.containsKey(optionName))
             throw new IllegalStateException("option already exists: " + optionName + " for " + classDoc.qualifiedTypeName());
         Option option = new Option();
         option.name = optionName;
         option.deprecated = deprecated;
         option.withTimeUnit = withTimeUnit;
-        options.put(option.name, option);
+        optionsByName.put(option.name, option);
         option.mongoJavadoc = mongoJavadoc;
         option.mongoSetterName = mongoSetterName;
         option.setterParamName = setterParamName;
         if (mongoCtorParamName != null)
-            option.inCtor = true;
+            option.mandatory = true;
         boolean needConversion = false;
         if (optionType.asParameterizedType() != null) {
             if (optionType.asParameterizedType().toString().equals("java.util.List<? extends org.bson.conversions.Bson>")) {
@@ -153,47 +133,54 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             } else {
                 throw new IllegalStateException("unsupported parametrized option: " + optionType.asParameterizedType() + " for " + classDoc.qualifiedTypeName());
             }
-        }
-        String qualifiedTypeName = optionType.qualifiedTypeName();
-        if (optionType.isPrimitive()) {
-            String typeName = optionType.typeName();
-            switch (typeName) {
-                case "boolean":
-                    option.mongoType = TypeName.BOOLEAN;
-                    break;
-                case "int":
-                    option.mongoType = TypeName.INT;
-                    break;
-                case "long":
-                    option.mongoType = TypeName.LONG;
-                    break;
-                default:
-                    throw new IllegalStateException("unsupported primitive option type: " + optionType.asParameterizedType() + " for " + classDoc.qualifiedTypeName());
-            }
-            option.vertxType = option.mongoType.box();
-        } else if (Types.isKnown(qualifiedTypeName)) {
-            needConversion = true;
-            option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-            option.vertxType = Types.getMapped(qualifiedTypeName);
-        } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
-            option.optionType = true;
-            option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-            option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
-        } else if (context.otherApiClasses.contains(qualifiedTypeName)) {
-            option.optionType = true;
-            option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-            option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
-        } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
-            option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-            option.vertxType = ClassName.bestGuess(qualifiedTypeName);
         } else {
-            String builderFullyQualifiedName = qualifiedTypeName + ".Builder";
-            if (context.builderClasses.contains(builderFullyQualifiedName)) {
+            String qualifiedTypeName = optionType.qualifiedTypeName();
+            if (optionType.isPrimitive()) {
+                String typeName = optionType.typeName();
+                switch (typeName) {
+                    case "boolean":
+                        option.mongoType = TypeName.BOOLEAN;
+                        break;
+                    case "int":
+                        option.mongoType = TypeName.INT;
+                        break;
+                    case "long":
+                        option.mongoType = TypeName.LONG;
+                        break;
+                    default:
+                        throw new IllegalStateException("unsupported primitive option type: " + optionType.asParameterizedType() + " for " + classDoc.qualifiedTypeName());
+                }
+                option.vertxType = option.mongoType.box();
+            } else if (Types.isKnown(qualifiedTypeName)) {
+                needConversion = true;
+                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                option.vertxType = Types.getMapped(qualifiedTypeName);
+            } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
+                option.optionType = true;
                 option.mongoType = ClassName.bestGuess(qualifiedTypeName);
                 option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
+            } else if (context.otherApiClasses.contains(qualifiedTypeName)) {
+                option.optionType = true;
+                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
+            } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
+                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
+            } else if (context.resultApiClasses.contains(qualifiedTypeName)) {
+                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
+            } else if (context.modelApiClasses.contains(qualifiedTypeName)) {
+                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
             } else {
-                if (!qualifiedTypeName.equals("com.mongodb.CreateIndexCommitQuorum"))
-                    throw new IllegalStateException("unsupported parameter type: " + qualifiedTypeName + " for " + classDoc.qualifiedTypeName());
+                String builderFullyQualifiedName = qualifiedTypeName + ".Builder";
+                if (context.builderClasses.contains(builderFullyQualifiedName)) {
+                    option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+                    option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
+                } else {
+                    if (!qualifiedTypeName.equals("com.mongodb.CreateIndexCommitQuorum"))
+                        throw new IllegalStateException("unsupported parameter type: " + qualifiedTypeName + " for " + classDoc.qualifiedTypeName());
+                }
             }
         }
         if (!option.optionType && !option.withTimeUnit && needConversion && !option.vertxType.toString().equals(option.mongoType.toString())) {
@@ -238,129 +225,8 @@ public class OptionsAPIClassGenerator extends APIClassGenerator {
             }
             type.addJavadoc(joiner.toString().replace("$", "$$"));
         }
-        type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
-        MethodSpec.Builder toMongoMethod = toMongoBuilder();
-        for (Option option: options.values()) {
-            if (option.name.equals("commitQuorum"))
-                continue;
-            addOptionToMongoBuilder(toMongoMethod, option);
-            FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.vertxType, option.name).addModifiers(Modifier.PRIVATE);
-            if (option.mongoJavadoc != null) {
-                option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "hint(JsonObject)");
-                Optional<String> firstParam = Arrays.stream(option.mongoJavadoc.split("\n+")).filter(it -> it.contains("@param")).findFirst();
-                if (firstParam.isPresent()) {
-                    String paramLine = firstParam.get();
-                    paramLine = paramLine.substring(paramLine.indexOf("@param") + 6).trim();
-                    paramLine = paramLine.substring(paramLine.indexOf(' ') + 1);
-                    fieldBuilder.addJavadoc(CodeBlock.of(paramLine));
-                }
-            }
-            type.addField(fieldBuilder.build());
-            MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder(option.name)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameter(option.vertxType, option.setterParamName)
-                    .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()))
-                    .addStatement("return this");
-            if (option.mongoJavadoc != null) {
-                if (option.withTimeUnit) {
-                    String[] split = option.mongoJavadoc.split("\n");
-                    boolean paramFound = false;
-                    StringJoiner joiner = new StringJoiner("\n");
-                    for (String line : split) {
-                        if (!paramFound) {
-                            paramFound = line.contains("@param");
-                            if (paramFound)
-                                line += " (in milliseconds)";
-                            joiner.add(line);
-                        } else if (!line.contains("@param")) {
-                            joiner.add(line);
-                        }
-                    }
-                    setterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
-                } else {
-                    setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "$$"));
-                }
-            }
-            if (option.deprecated)
-                setterBuilder.addAnnotation(Deprecated.class);
-            type.addMethod(setterBuilder.build());
-            boolean isBoolean = option.vertxType.toString().toLowerCase().contains("boolean");
-            MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder((isBoolean ? "is" : "get") + Character.toUpperCase(option.name.charAt(0)) + option.name.substring(1))
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(option.vertxType)
-                    .addStatement("return " + option.name);
-            if (option.deprecated)
-                getterBuilder.addAnnotation(Deprecated.class);
-            if (option.mongoGetterJavadoc != null) {
-                if (option.withTimeUnit) {
-                    String[] split = option.mongoGetterJavadoc.split("\n");
-                    StringJoiner joiner = new StringJoiner("\n");
-                    for (String line : split) {
-                        if (line.contains("@param"))
-                            continue;
-                        if (option.withTimeUnit && line.contains("@return") && line.contains("in the given time unit"))
-                            line = line.replace("in the given time unit", "(in milliseconds)");
-                        joiner.add(line);
-                    }
-                    getterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
-                } else {
-                    getterBuilder.addJavadoc(option.mongoGetterJavadoc.replace("$", "$$"));
-                }
-            }
-            type.addMethod(getterBuilder.build());
-        }
-        type.addMethod(toMongo(toMongoMethod));
+        inflateOptionType(type);
         return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()));
-    }
-
-    protected MethodSpec.Builder toMongoBuilder() {
-        MethodSpec.Builder toMongo = MethodSpec.methodBuilder("toDriverClass")
-                .addJavadoc("@return MongoDB driver object\n@hidden")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
-        List<Option> requiredOptions = options.values().stream().filter(it -> it.inCtor).collect(Collectors.toList());
-        StringJoiner ctorParams = new StringJoiner(", ");
-        for (Option option : requiredOptions) {
-            toMongo
-                    .beginControlFlow("if (this." + option.name + " == null)")
-                    .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
-                    .endControlFlow();
-            if (option.withTimeUnit || option.optionType)
-                throw new IllegalStateException("not implemented");
-            ctorParams.add("this." +option.name);
-        }
-        if (hasBuilder) {
-            configurableName = "builder";
-            toMongo.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
-        } else {
-            configurableName = "result";
-            toMongo.addStatement("$T result = new $T(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()), ClassName.bestGuess(classDoc.qualifiedTypeName()));
-        }
-        return toMongo;
-    }
-
-    private void addOptionToMongoBuilder(MethodSpec.Builder toMongoBuilder, Option option) {
-        if (option.inCtor)
-            return;
-        toMongoBuilder.beginControlFlow("if (this." + option.name + " != null)");
-        if (option.withTimeUnit) {
-            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ", $T.MILLISECONDS)", TimeUnit.class);
-        } else if (option.optionType) {
-            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".toDriverClass())");
-        } else if (option.conversionMethod != null) {
-            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "($T.INSTANCE." + option.conversionMethod + "(this." + option.name + "))", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
-        } else {
-            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ")");
-        }
-        toMongoBuilder.endControlFlow();
-
-    }
-    protected MethodSpec toMongo(MethodSpec.Builder toMongoBuilder) {
-        if (hasBuilder)
-            toMongoBuilder.addStatement("return builder.build()");
-        else
-            toMongoBuilder.addStatement("return result");
-        return toMongoBuilder.build();
     }
 
 }

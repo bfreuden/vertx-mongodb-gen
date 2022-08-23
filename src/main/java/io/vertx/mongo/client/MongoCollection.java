@@ -16,7 +16,6 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.bulk.BulkWriteResult;
-import com.mongodb.client.model.IndexModel;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
@@ -40,14 +39,17 @@ import io.vertx.mongo.client.model.EstimatedDocumentCountOptions;
 import io.vertx.mongo.client.model.FindOneAndDeleteOptions;
 import io.vertx.mongo.client.model.FindOneAndReplaceOptions;
 import io.vertx.mongo.client.model.FindOneAndUpdateOptions;
+import io.vertx.mongo.client.model.IndexModel;
 import io.vertx.mongo.client.model.IndexOptions;
 import io.vertx.mongo.client.model.InsertManyOptions;
 import io.vertx.mongo.client.model.InsertOneOptions;
 import io.vertx.mongo.client.model.RenameCollectionOptions;
 import io.vertx.mongo.client.model.ReplaceOptions;
 import io.vertx.mongo.client.model.UpdateOptions;
+import io.vertx.mongo.client.model.WriteModel;
 import java.lang.Class;
 import java.lang.Long;
+import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
@@ -691,7 +693,7 @@ public interface MongoCollection<TDocument> {
    *  @param requests the writes to execute
    *  @return a future with a single element the BulkWriteResult
    */
-  Future<BulkWriteResult> bulkWrite(List<JsonObject> requests);
+  Future<BulkWriteResult> bulkWrite(List<WriteModel<TDocument>> requests);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -699,7 +701,7 @@ public interface MongoCollection<TDocument> {
    *  @param resultHandler an async result with a single element the BulkWriteResult
    *  @return <code>this</code>
    */
-  MongoCollection<TDocument> bulkWrite(List<JsonObject> requests,
+  MongoCollection<TDocument> bulkWrite(List<WriteModel<TDocument>> requests,
       Handler<AsyncResult<BulkWriteResult>> resultHandler);
 
   /**
@@ -708,7 +710,7 @@ public interface MongoCollection<TDocument> {
    *  @param options  the options to apply to the bulk write operation
    *  @return a future with a single element the BulkWriteResult
    */
-  Future<BulkWriteResult> bulkWrite(List<JsonObject> requests, BulkWriteOptions options);
+  Future<BulkWriteResult> bulkWrite(List<WriteModel<TDocument>> requests, BulkWriteOptions options);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -717,7 +719,7 @@ public interface MongoCollection<TDocument> {
    *  @param resultHandler an async result with a single element the BulkWriteResult
    *  @return <code>this</code>
    */
-  MongoCollection<TDocument> bulkWrite(List<JsonObject> requests, BulkWriteOptions options,
+  MongoCollection<TDocument> bulkWrite(List<WriteModel<TDocument>> requests, BulkWriteOptions options,
       Handler<AsyncResult<BulkWriteResult>> resultHandler);
 
   /**
@@ -728,7 +730,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<JsonObject> requests);
+  Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -739,7 +741,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollection<TDocument> bulkWrite(ClientSession clientSession, List<JsonObject> requests,
+  MongoCollection<TDocument> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests,
       Handler<AsyncResult<BulkWriteResult>> resultHandler);
 
   /**
@@ -751,7 +753,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<JsonObject> requests,
+  Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests,
       BulkWriteOptions options);
 
   /**
@@ -764,7 +766,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollection<TDocument> bulkWrite(ClientSession clientSession, List<JsonObject> requests,
+  MongoCollection<TDocument> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests,
       BulkWriteOptions options, Handler<AsyncResult<BulkWriteResult>> resultHandler);
 
   /**
@@ -864,7 +866,7 @@ public interface MongoCollection<TDocument> {
    *  @return a future with a single element with the InsertManyResult or with either a
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  Future<InsertManyResult> insertMany(List<? extends TDocument> documents);
+  Future<InsertManyResult> insertMany(List<Object> documents);
 
   /**
    *  Inserts a batch of documents.
@@ -873,7 +875,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  MongoCollection<TDocument> insertMany(List<? extends TDocument> documents,
+  MongoCollection<TDocument> insertMany(List<Object> documents,
       Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
@@ -883,72 +885,69 @@ public interface MongoCollection<TDocument> {
    *  @return a future with a single element with the InsertManyResult or with either a
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  Future<InsertManyResult> insertMany(List<? extends TDocument> documents,
+  Future<InsertManyResult> insertMany(List<Object> documents, InsertManyOptions options);
+
+  /**
+   *  Inserts a batch of documents.
+   *  @param documents the documents to insert
+   *  @param options   the options to apply to the operation
+   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
+   *  @return <code>this</code>
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   */
+  MongoCollection<TDocument> insertMany(List<Object> documents, InsertManyOptions options,
+      Handler<AsyncResult<InsertManyResult>> resultHandler);
+
+  /**
+   *  Inserts a batch of documents.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param documents the documents to insert
+   *  @return a future with a single element with the InsertManyResult or with either a
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<InsertManyResult> insertMany(ClientSession clientSession, List<Object> documents);
+
+  /**
+   *  Inserts a batch of documents.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param documents the documents to insert
+   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
+   *  @return <code>this</code>
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoCollection<TDocument> insertMany(ClientSession clientSession, List<Object> documents,
+      Handler<AsyncResult<InsertManyResult>> resultHandler);
+
+  /**
+   *  Inserts a batch of documents.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param documents the documents to insert
+   *  @param options   the options to apply to the operation
+   *  @return a future with a single element with the InsertManyResult or with either a
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<InsertManyResult> insertMany(ClientSession clientSession, List<Object> documents,
       InsertManyOptions options);
 
   /**
    *  Inserts a batch of documents.
+   *  @param clientSession the client session with which to associate this operation
    *  @param documents the documents to insert
    *  @param options   the options to apply to the operation
    *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
    *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
    */
-  MongoCollection<TDocument> insertMany(List<? extends TDocument> documents,
+  MongoCollection<TDocument> insertMany(ClientSession clientSession, List<Object> documents,
       InsertManyOptions options, Handler<AsyncResult<InsertManyResult>> resultHandler);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param documents the documents to insert
-   *  @return a future with a single element with the InsertManyResult or with either a
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  Future<InsertManyResult> insertMany(ClientSession clientSession,
-      List<? extends TDocument> documents);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param documents the documents to insert
-   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
-   *  @return <code>this</code>
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoCollection<TDocument> insertMany(ClientSession clientSession,
-      List<? extends TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param documents the documents to insert
-   *  @param options   the options to apply to the operation
-   *  @return a future with a single element with the InsertManyResult or with either a
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  Future<InsertManyResult> insertMany(ClientSession clientSession,
-      List<? extends TDocument> documents, InsertManyOptions options);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param documents the documents to insert
-   *  @param options   the options to apply to the operation
-   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
-   *  @return <code>this</code>
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoCollection<TDocument> insertMany(ClientSession clientSession,
-      List<? extends TDocument> documents, InsertManyOptions options,
-      Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not

@@ -15,10 +15,20 @@
 //
 package io.vertx.mongo.impl;
 
+import com.mongodb.client.model.DeleteOptions;
+import com.mongodb.client.model.IndexModel;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.model.WriteModel;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.bulk.BulkWriteInsert;
+import io.vertx.mongo.bulk.BulkWriteUpsert;
+import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Object;
 import java.util.List;
+import java.util.Map;
 import org.bson.BsonBinary;
 import org.bson.BsonDocument;
 import org.bson.BsonTimestamp;
@@ -43,9 +53,21 @@ public abstract interface ConversionUtils {
 
   BsonValue toBsonValue(Object from);
 
+  List<BulkWriteInsert> toBulkWriteInsertList(List<com.mongodb.bulk.BulkWriteInsert> from);
+
+  List<BulkWriteUpsert> toBulkWriteUpsertList(List<com.mongodb.bulk.BulkWriteUpsert> from);
+
   byte[] toByteArray(BsonBinary from);
 
+  DeleteOptions toDeleteOptions(io.vertx.mongo.client.model.DeleteOptions from);
+
   Document toDocument(JsonObject from);
+
+  List<IndexModel> toIndexModelList(List<io.vertx.mongo.client.model.IndexModel> from);
+
+  IndexOptions toIndexOptions(io.vertx.mongo.client.model.IndexOptions from);
+
+  Map<Integer, Object> toIntegerObjectMap(Map<Integer, BsonValue> from);
 
   JsonObject toJsonObject(Document from);
 
@@ -54,4 +76,10 @@ public abstract interface ConversionUtils {
   Object toObject(BsonValue from);
 
   ObjectId toObjectId(JsonObject from);
+
+  ReplaceOptions toReplaceOptions(io.vertx.mongo.client.model.ReplaceOptions from);
+
+  UpdateOptions toUpdateOptions(io.vertx.mongo.client.model.UpdateOptions from);
+
+  <T> List<WriteModel<T>> toWriteModelList(List<io.vertx.mongo.client.model.WriteModel<T>> from);
 }

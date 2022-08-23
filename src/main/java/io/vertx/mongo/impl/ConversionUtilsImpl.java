@@ -1,12 +1,15 @@
 package io.vertx.mongo.impl;
 
+import com.mongodb.client.model.*;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.client.ClientSession;
+import io.vertx.mongo.bulk.BulkWriteInsert;
+import io.vertx.mongo.bulk.BulkWriteUpsert;
 import org.bson.*;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.List;
+import java.util.Map;
 
 public class ConversionUtilsImpl implements ConversionUtils {
 
@@ -44,12 +47,42 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
+    public List<BulkWriteInsert> toBulkWriteInsertList(List<com.mongodb.bulk.BulkWriteInsert> from) {
+        return null;
+    }
+
+    @Override
+    public List<BulkWriteUpsert> toBulkWriteUpsertList(List<com.mongodb.bulk.BulkWriteUpsert> from) {
+        return null;
+    }
+
+    @Override
     public byte[] toByteArray(BsonBinary from) {
         return new byte[0];
     }
 
     @Override
+    public DeleteOptions toDeleteOptions(io.vertx.mongo.client.model.DeleteOptions from) {
+        return null;
+    }
+
+    @Override
     public Document toDocument(JsonObject from) {
+        return null;
+    }
+
+    @Override
+    public List<IndexModel> toIndexModelList(List<io.vertx.mongo.client.model.IndexModel> from) {
+        return null;
+    }
+
+    @Override
+    public IndexOptions toIndexOptions(io.vertx.mongo.client.model.IndexOptions from) {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, Object> toIntegerObjectMap(Map<Integer, BsonValue> from) {
         return null;
     }
 
@@ -70,6 +103,21 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public ObjectId toObjectId(JsonObject from) {
+        return null;
+    }
+
+    @Override
+    public ReplaceOptions toReplaceOptions(io.vertx.mongo.client.model.ReplaceOptions from) {
+        return null;
+    }
+
+    @Override
+    public UpdateOptions toUpdateOptions(io.vertx.mongo.client.model.UpdateOptions from) {
+        return null;
+    }
+
+    @Override
+    public <T> List<WriteModel<T>> toWriteModelList(List<io.vertx.mongo.client.model.WriteModel<T>> from) {
         return null;
     }
 }

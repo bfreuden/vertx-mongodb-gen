@@ -333,7 +333,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(viewName, "viewName is null");
     requireNonNull(viewOn, "viewOn is null");
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline);
     Promise<Void> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -355,7 +355,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(viewOn, "viewOn is null");
     requireNonNull(pipeline, "pipeline is null");
     requireNonNull(createViewOptions, "createViewOptions is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline, __createViewOptions);
     Promise<Void> __promise = Promise.promise();
@@ -380,7 +380,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(viewOn, "viewOn is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline);
     Promise<Void> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -405,7 +405,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(pipeline, "pipeline is null");
     requireNonNull(createViewOptions, "createViewOptions is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline, __createViewOptions);
     Promise<Void> __promise = Promise.promise();
@@ -437,7 +437,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public MongoResult<JsonObject> watch(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }
@@ -445,7 +445,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }
@@ -471,7 +471,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }
@@ -482,7 +482,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }
@@ -490,7 +490,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__pipeline, JsonObject.class);
     return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
@@ -499,7 +499,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline,
       AggregateOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__pipeline, JsonObject.class);
     options.initializePublisher(__publisher);
     Integer __batchSize = options.getBatchSize();
@@ -516,7 +516,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__clientSession, __pipeline, JsonObject.class);
     return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
@@ -527,7 +527,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__clientSession, __pipeline, JsonObject.class);
     options.initializePublisher(__publisher);
     Integer __batchSize = options.getBatchSize();

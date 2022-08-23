@@ -7,6 +7,7 @@ import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import org.apache.commons.io.FileUtils;
 import org.jgrapht.Graph;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.event.ConnectedComponentTraversalEvent;
 import org.jgrapht.event.EdgeTraversalEvent;
@@ -57,6 +58,9 @@ public class SourceGenDoclet {
         dependenciesPackages.add("org.bson");
         dependenciesPackages.add("org.reactivestreams");
         dependenciesPackages.add("com.mongodb.internal");
+        dependenciesPackages.add("com.mongodb.management"); // really?
+        dependenciesPackages.add("com.mongodb.reactivestreams.client.internal");
+        dependenciesPackages.add("com.mongodb.connection.netty");
 
         Set<String> stopClasses = inspectionContext.stopClasses;
 //        stopClasses.add("com.mongodb.client.model.Collation");
@@ -69,11 +73,11 @@ public class SourceGenDoclet {
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.MongoClients"));
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.gridfs.GridFSBuckets"));
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.vault.ClientEncryption"));
-        inspectionContext.finalizeInspection();
+        inspectionContext.finalizeInspection(classes);
 
         Graph<String, DefaultEdge> graph = inspectionContext.graph;
-        exportToGephi(inspectionContext, sugGraphFrom(graph, "com.mongodb.CreateIndexCommitQuorum"), new File("CreateIndexCommitQuorum.gexf"));
-        Graph<String, DefaultEdge> initStuffGraph = sugGraphFrom(graph, "com.mongodb.MongoClientSettings", "com.mongodb.ConnectionString", "com.mongodb.MongoDriverInformation");
+        exportToGephi(inspectionContext, sugGraphFrom( graph, "com.mongodb.CreateIndexCommitQuorum"), new File("CreateIndexCommitQuorum.gexf"));
+        Graph<String, DefaultEdge> initStuffGraph = sugGraphFrom( graph, "com.mongodb.MongoClientSettings", "com.mongodb.ConnectionString", "com.mongodb.MongoDriverInformation");
         exportToGephi(inspectionContext, initStuffGraph, new File("InitStuff.gexf"));
 
         initStuffGraph.removeVertex("com.mongodb.ReadPreference");
@@ -114,9 +118,31 @@ public class SourceGenDoclet {
     }
 
     private static void generateSources(InspectionContext inspectionContext, Graph<String, DefaultEdge> graph) throws IOException {
+        // remove isolated nodes
+        ArrayList<String> vertices = new ArrayList<>(graph.vertexSet());
+        for (String vertex : vertices)
+            if (graph.inDegreeOf(vertex) == 0 && graph.outDegreeOf(vertex) == 0)
+                graph.removeVertex(vertex);
+
+        // remove isolated class + builder class couples
+        ConnectivityInspector<String, DefaultEdge> stringDefaultEdgeConnectivityInspector = new ConnectivityInspector<>(graph);
+        List<Set<String>> sets = stringDefaultEdgeConnectivityInspector.connectedSets();
+        for (Set<String> nodes : sets) {
+            if (nodes.size() == 2) {
+                Iterator<String> iterator = nodes.iterator();
+                String node1 = iterator.next();
+                String node2 = iterator.next();
+                if (node1.equals(node2+".Builder") || node2.equals(node1 + ".Builder")) {
+                    graph.removeVertex(node1);
+                    graph.removeVertex(node2);
+                }
+            }
+        }
         for (Set<String> classes: Lists.newArrayList(
                 inspectionContext.reactiveApiClasses, inspectionContext.enumApiClasses, inspectionContext.publishersApiClasses,
                 inspectionContext.nonApiParameterAndReturnClasses,
+                inspectionContext.modelApiClasses,
+                inspectionContext.resultApiClasses,
                 inspectionContext.optionsApiClasses, inspectionContext.reactiveClasses,
                 inspectionContext.builderClasses, inspectionContext.bsonBasedClasses) )
             classes.removeIf(it -> !graph.vertexSet().contains(it));
@@ -160,6 +186,12 @@ public class SourceGenDoclet {
         System.out.println("builder api classes: builders of read-only beans");
         System.out.println("builder api classes (" + inspectionContext.builderClasses.size() + "): " + inspectionContext.builderClasses);
         FileUtils.writeLines(new File("src/main/resources/builder.txt"), inspectionContext.builderClasses.stream().sorted().collect(Collectors.toList()));
+        System.out.println("result api classes: beans with hidden constructors and no setters");
+        System.out.println("result api classes (" + inspectionContext.resultApiClasses.size() + "): " + inspectionContext.resultApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/result.txt"), inspectionContext.resultApiClasses.stream().sorted().collect(Collectors.toList()));
+        System.out.println("model api classes: beans with constructors but no setters");
+        System.out.println("model api classes (" + inspectionContext.modelApiClasses.size() + "): " + inspectionContext.modelApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/model.txt"), inspectionContext.modelApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("bson-based api classes: classes containing methods or constructors have bson parameters or return type");
         System.out.println("bson-based api classes (" + inspectionContext.bsonBasedClasses.size() + "): " + inspectionContext.bsonBasedClasses);
         FileUtils.writeLines(new File("src/main/resources/bson.txt"), inspectionContext.bsonBasedClasses.stream().sorted().collect(Collectors.toList()));
@@ -172,6 +204,8 @@ public class SourceGenDoclet {
             !inspectionContext.publishersApiClasses.contains(isolatedApiClass) &&
             !inspectionContext.enumApiClasses.contains(isolatedApiClass) &&
             !inspectionContext.builderClasses.contains(isolatedApiClass) &&
+            !inspectionContext.modelApiClasses.contains(isolatedApiClass) &&
+            !inspectionContext.resultApiClasses.contains(isolatedApiClass) &&
             !inspectionContext.optionsApiClasses.contains(isolatedApiClass)
             )
                 inspectionContext.otherApiClasses.add(isolatedApiClass);
@@ -195,10 +229,18 @@ public class SourceGenDoclet {
         inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
         inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
         inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
+        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
+        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
+
+        for (String result : inspectionContext.resultApiClasses) {
+            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(result), true).generate(genSourceDir);
+        }
+        for (String model : inspectionContext.modelApiClasses) {
+            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(model), false).generate(genSourceDir);
+        }
 
         for (String options : inspectionContext.optionsApiClasses) {
             new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options)).generate(genSourceDir);
-
         }
         for (String reactive : inspectionContext.publishersApiClasses) {
             new PublisherOptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
@@ -249,7 +291,6 @@ public class SourceGenDoclet {
         return result;
 
     }
-
     private static void exportToGephi(InspectionContext inspectionContext, Graph<String, DefaultEdge> graph, File file) {
         GEXFExporter<String, DefaultEdge> exporter = new GEXFExporter<>(s-> s.substring("com.mongodb.".length()), s-> s.toString());
         exporter.setParameter(GEXFExporter.Parameter.EXPORT_EDGE_LABELS, true);

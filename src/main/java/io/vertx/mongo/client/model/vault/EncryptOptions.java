@@ -40,10 +40,6 @@ public class EncryptOptions {
    */
   private String keyAltName;
 
-  public EncryptOptions algorithm(String algorithm) {
-    return this;
-  }
-
   /**
    *  Gets the encryption algorithm, which must be either "AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic" or
    *  "AEAD_AES_256_CBC_HMAC_SHA_512-Random".

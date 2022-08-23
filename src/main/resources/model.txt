@@ -1,0 +1,8 @@
+com.mongodb.client.model.DeleteManyModel
+com.mongodb.client.model.DeleteOneModel
+com.mongodb.client.model.IndexModel
+com.mongodb.client.model.InsertOneModel
+com.mongodb.client.model.ReplaceOneModel
+com.mongodb.client.model.UpdateManyModel
+com.mongodb.client.model.UpdateOneModel
+com.mongodb.client.model.WriteModel

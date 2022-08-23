@@ -73,7 +73,7 @@ public class FindOneAndUpdateOptions {
   /**
    * the array filters, which may be null
    */
-  private List arrayFilters;
+  private List<JsonObject> arrayFilters;
 
   /**
    * the hint
@@ -241,7 +241,7 @@ public class FindOneAndUpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public FindOneAndUpdateOptions arrayFilters(List arrayFilters) {
+  public FindOneAndUpdateOptions arrayFilters(List<JsonObject> arrayFilters) {
     return this;
   }
 
@@ -252,7 +252,7 @@ public class FindOneAndUpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public List getArrayFilters() {
+  public List<JsonObject> getArrayFilters() {
     return arrayFilters;
   }
 
@@ -326,7 +326,7 @@ public class FindOneAndUpdateOptions {
       result.collation(this.collation.toDriverClass());
     }
     if (this.arrayFilters != null) {
-      result.arrayFilters(this.arrayFilters);
+      result.arrayFilters(ConversionUtilsImpl.INSTANCE.toBsonList(this.arrayFilters));
     }
     if (this.hint != null) {
       result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));

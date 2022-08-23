@@ -18,6 +18,7 @@ package io.vertx.mongo.client.model.vault;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.String;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class DataKeyOptions {
   /**
    * a list of alternate key names
    */
-  private List keyAltNames;
+  private List<String> keyAltNames;
 
   /**
    * the master key document
@@ -46,7 +47,7 @@ public class DataKeyOptions {
    *  @return this
    *  @see #getKeyAltNames()
    */
-  public DataKeyOptions keyAltNames(List keyAltNames) {
+  public DataKeyOptions keyAltNames(List<String> keyAltNames) {
     return this;
   }
 
@@ -60,7 +61,7 @@ public class DataKeyOptions {
    *
    *  @return the list of alternate key names
    */
-  public List getKeyAltNames() {
+  public List<String> getKeyAltNames() {
     return keyAltNames;
   }
 

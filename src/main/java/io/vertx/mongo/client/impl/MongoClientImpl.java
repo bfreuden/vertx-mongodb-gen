@@ -135,7 +135,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<JsonObject> watch(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }
@@ -143,7 +143,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }
@@ -169,7 +169,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }
@@ -180,7 +180,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO add implementation
     return null;
   }

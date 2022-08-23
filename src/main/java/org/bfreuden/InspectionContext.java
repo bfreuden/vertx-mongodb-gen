@@ -1,9 +1,10 @@
 package org.bfreuden;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeSpec;
 import com.sun.javadoc.*;
+import com.sun.tools.doclets.internal.toolkit.util.ClassDocCatalog;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -30,6 +31,8 @@ public class InspectionContext {
     public final Set<String> reactiveApiClasses = new HashSet<>();
     public final Set<String> enumApiClasses = new HashSet<>();
     public final Set<String> publishersApiClasses = new HashSet<>();
+    public final Set<String> modelApiClasses = new HashSet<>();
+    public final Set<String> resultApiClasses = new HashSet<>();
     public final Set<String> nonApiParameterAndReturnClasses = new HashSet<>();
     public final Map<String, ClassDoc> classDocs = new HashMap<String, ClassDoc>();
     public final Set<String> optionsApiClasses = new HashSet<>();
@@ -71,6 +74,8 @@ public class InspectionContext {
     }
 
     public boolean inspect(ClassDoc classDoc) {
+        if (classDoc.name().endsWith("Exception"))
+            return false;
         if (!isApiAuthorizedPackage(classDoc))
             return false;
         if (stopClasses.contains(classDoc.qualifiedTypeName()))
@@ -87,6 +92,10 @@ public class InspectionContext {
             classDocs.put(qualifiedTypeName, classDoc);
             if (qualifiedTypeName.endsWith("Options"))
                 optionsApiClasses.add(qualifiedTypeName);
+            if (qualifiedTypeName.endsWith("Model"))
+                modelApiClasses.add(qualifiedTypeName);
+            if (qualifiedTypeName.endsWith("Result"))
+                resultApiClasses.add(qualifiedTypeName);
 
             // process fields
             FieldDoc[] fields = classDoc.fields(true);
@@ -215,9 +224,44 @@ public class InspectionContext {
         }
     }
 
-    public void finalizeInspection() {
+    public void finalizeInspection(ClassDoc[] classes) {
+        addExtendsImplements(classes);
         for (String vertx : graph.vertexSet())
             nonApiParameterAndReturnClasses.remove(vertx);
+
     }
+
+    private void addExtendsImplements(ClassDoc[] classes) {
+        int nbVertices;
+        do {
+            nbVertices = graph.vertexSet().size();
+            for (ClassDoc classDoc: classes) {
+                // if not inspected already
+                if (!graph.vertexSet().contains(classDoc.qualifiedTypeName())) {
+                    ClassDoc[] interfaces = classDoc.interfaces();
+                    if (interfaces != null) {
+                        for (ClassDoc interf: interfaces) {
+                            // but if a super interface has been inspected
+                            if (graph.vertexSet().contains(interf.qualifiedTypeName())) {
+                                // inspect
+                                inspect(classDoc.qualifiedTypeName(), classDoc, "implements");
+                            }
+                        }
+                    }
+                    ClassDoc superclass = classDoc.superclass();
+                    if (superclass != null) {
+                        // but if a super class has been inspected
+                        if (graph.vertexSet().contains(superclass.qualifiedTypeName())) {
+                            // inspect
+                            inspect(classDoc.qualifiedTypeName(), classDoc, "extends");
+                        }
+                    }
+                }
+
+            }
+
+        } while (graph.vertexSet().size() != nbVertices);
+    }
+
 
 }

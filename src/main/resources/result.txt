@@ -1,0 +1,5 @@
+com.mongodb.bulk.BulkWriteResult
+com.mongodb.client.result.DeleteResult
+com.mongodb.client.result.InsertManyResult
+com.mongodb.client.result.InsertOneResult
+com.mongodb.client.result.UpdateResult

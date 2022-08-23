@@ -9,6 +9,8 @@ com.mongodb.client.gridfs.model.GridFSUploadOptions
 com.mongodb.client.model.Collation
 com.mongodb.client.model.CountOptions
 com.mongodb.client.model.CreateCollectionOptions
+com.mongodb.client.model.DeleteManyModel
+com.mongodb.client.model.DeleteOneModel
 com.mongodb.client.model.DeleteOptions
 com.mongodb.client.model.FindOneAndDeleteOptions
 com.mongodb.client.model.FindOneAndReplaceOptions
@@ -16,7 +18,10 @@ com.mongodb.client.model.FindOneAndUpdateOptions
 com.mongodb.client.model.IndexModel
 com.mongodb.client.model.IndexOptionDefaults
 com.mongodb.client.model.IndexOptions
+com.mongodb.client.model.ReplaceOneModel
 com.mongodb.client.model.ReplaceOptions
+com.mongodb.client.model.UpdateManyModel
+com.mongodb.client.model.UpdateOneModel
 com.mongodb.client.model.UpdateOptions
 com.mongodb.client.model.ValidationOptions
 com.mongodb.client.model.changestream.ChangeStreamDocument

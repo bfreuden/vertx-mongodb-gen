@@ -52,7 +52,7 @@ public class UpdateOptions {
   /**
    * the array filters, which may be null
    */
-  private List arrayFilters;
+  private List<JsonObject> arrayFilters;
 
   /**
    * the hint
@@ -138,7 +138,7 @@ public class UpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public UpdateOptions arrayFilters(List arrayFilters) {
+  public UpdateOptions arrayFilters(List<JsonObject> arrayFilters) {
     return this;
   }
 
@@ -149,7 +149,7 @@ public class UpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public List getArrayFilters() {
+  public List<JsonObject> getArrayFilters() {
     return arrayFilters;
   }
 
@@ -211,7 +211,7 @@ public class UpdateOptions {
       result.collation(this.collation.toDriverClass());
     }
     if (this.arrayFilters != null) {
-      result.arrayFilters(this.arrayFilters);
+      result.arrayFilters(ConversionUtilsImpl.INSTANCE.toBsonList(this.arrayFilters));
     }
     if (this.hint != null) {
       result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
