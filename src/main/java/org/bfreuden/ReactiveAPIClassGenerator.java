@@ -242,7 +242,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
 
     private void implementMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
         for (MongoMethodParameter param : method.params) {
-            if (!param.type.vertxType.isPrimitive()) {
+            if (!param.type.vertxType.isPrimitive() && !param.type.isNullable) {
                 staticImports.add("java.util.Objects.requireNonNull");
                 methodBuilder.addStatement("requireNonNull(" + param.name + ", $S)", param.name + " is null");
             }
@@ -255,7 +255,10 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                 String paramName = "__" + param.name;
                 //CodeBlock expression = mapper.asStatementFromExpression("$T " + paramName + " = %s", param.name, param.type.mongoType, null);
                 paramNames.add(paramName);
-                methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = %s", param.name, param.type.mongoType, null));
+                if (param.type.isNullable)
+                    methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = " + param.name +" == null ? null : %s", param.name, param.type.mongoType, null));
+                else
+                    methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = %s", param.name, param.type.mongoType, null));
 //                methodBuilder.addStatement("$T " + paramName + " = " + param.name + ".toDriverClass()", param.type.mongoType);
 //            } else if (param.conversionMethod != null) {
 //                String paramName = "__" + param.name;

@@ -284,6 +284,8 @@ public abstract class APIClassGenerator {
     protected ActualType getActualType(ExecutableMemberDoc methodDoc, String name, Type type, TypeLocation location) {
         try {
             ActualType result = getActualType2(methodDoc, name, type, location, null);
+//            result.isNullable = result.vertxType.toString().endsWith("Options");
+
 //            if (result.isApiType || "watch".equals(methodDoc.name())) // FIXME watch
 //                return result;
 //            if (result.isPublisher) {
@@ -484,6 +486,7 @@ public abstract class APIClassGenerator {
 
     static class ActualType {
         public MapperGenerator mapper;
+        public boolean isNullable;
         boolean toMongoEnabledType = false; // remove
         public ActualType publishedType;
         public boolean publishedByInterface; // remove

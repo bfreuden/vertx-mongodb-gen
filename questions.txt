@@ -1,0 +1,1 @@
+InsertOneResult has an insertedId with an Object type?

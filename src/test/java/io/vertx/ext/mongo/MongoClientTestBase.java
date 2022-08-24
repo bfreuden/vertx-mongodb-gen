@@ -2,6 +2,7 @@ package io.vertx.ext.mongo;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.client.MongoCollection;
 import io.vertx.mongo.client.MongoDatabase;
@@ -206,64 +207,68 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-//  @Test
-//  public void testInsertNoCollection() {
-//    String collection = randomCollection();
-//    String random = TestUtils.randomAlphaString(20);
-//    mongoDatabase.insert(collection, new JsonObject().put("foo", random), onSuccess(id -> {
-//      assertNotNull(id);
-//      mongoDatabase.find(collection, new JsonObject(), onSuccess(docs -> {
-//        assertNotNull(docs);
-//        assertEquals(1, docs.size());
-//        assertEquals(random, docs.get(0).getString("foo"));
-//        testComplete();
-//      }));
-//    }));
-//
-//    await();
-//  }
-//
-//  public void assertDocumentWithIdIsPresent(String collection, Object id) {
-//    mongoDatabase.find(collection,
-//      new JsonObject()
-//        .put("_id", id),
-//      onSuccess(result -> {
-//        assertEquals(1, result.size());
-//        testComplete();
-//      }));
-//  }
-//
-//  @Test
-//  public void testInsertNoPreexistingID() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testInsertPreexistingID() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      String genID = TestUtils.randomAlphaString(100);
-//      doc.put("_id", genID);
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertDocumentWithIdIsPresent(collection, genID);
-//      }));
-//    }));
-//    await();
-//  }
-//
+  @Test
+  public void testInsertNoCollection() {
+    String collection = randomCollection();
+    String random = TestUtils.randomAlphaString(20);
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(new JsonObject().put("foo", random), onSuccess(res -> {
+      assertNotNull(res.getInsertedId());
+      coll.find(new JsonObject()).all().onSuccess(docs -> {
+        assertNotNull(docs);
+        assertEquals(1, docs.size());
+        assertEquals(random, docs.get(0).getString("foo"));
+        testComplete();
+      });
+    }));
+
+    await();
+  }
+
+  public void assertDocumentWithIdIsPresent(String collection, Object id) {
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.find(new JsonObject()
+        .put("_id", id)).all().
+      onSuccess(result -> {
+        assertEquals(1, result.size());
+        testComplete();
+      });
+  }
+
+  @Test
+  public void testInsertNoPreexistingID() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(res2 -> {
+        assertNotNull(res2.getInsertedId());
+        testComplete();
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testInsertPreexistingID() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      String genID = TestUtils.randomAlphaString(100);
+      doc.put("_id", genID);
+      coll.insertOne(doc, onSuccess(id -> {
+        assertDocumentWithIdIsPresent(collection, genID);
+      }));
+    }));
+    await();
+  }
+// TODO
 //  @Test
 //  public void testInsertPreexistingLongID() throws Exception {
 //    String collection = randomCollection();
 //    mongoDatabase.createCollection(collection, onSuccess(res -> {
+//      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection).withWriteConcern(...);
 //      JsonObject doc = createDoc();
 //      Long genID = TestUtils.randomLong();
 //      doc.put("_id", genID);
@@ -274,14 +279,16 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
+  // WON'T DO: MongoDB throws a NPE
 //  @Test
 //  public void testSaveWithOptionCanTakeNullWriteOption() throws Exception {
 //    String collection = randomCollection();
 //    mongoDatabase.createCollection(collection, onSuccess(res -> {
+//      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
 //      JsonObject doc = createDoc();
 //      Long genID = TestUtils.randomLong();
 //      doc.put("_id", genID);
-//      mongoDatabase.saveWithOptions(collection, doc, null, onSuccess(id -> {
+//      coll.insertOne(doc, null, onSuccess(id -> {
 //        assertDocumentWithIdIsPresent(collection, genID);
 //      }));
 //    }));

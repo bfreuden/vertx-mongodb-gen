@@ -4,6 +4,7 @@ import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import org.reactivestreams.Publisher;
@@ -183,7 +184,10 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 for (TypeVariableName variable : method.typeVariables)
                     methodBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
-                    methodBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
+                    ParameterSpec.Builder builder = ParameterSpec.builder(param.type.vertxType, param.name);
+                    if (param.type.isNullable)
+                        builder.addAnnotation(Nullable.class);
+                    methodBuilder.addParameter(builder.build());
                 }
                 if (method.vertxResultOrFutureJavadoc != null && !isImpl)
                     methodBuilder.addJavadoc(method.vertxResultOrFutureJavadoc);
