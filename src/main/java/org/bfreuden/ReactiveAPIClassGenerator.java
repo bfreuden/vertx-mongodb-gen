@@ -318,12 +318,13 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     ParameterizedTypeName publisherType = ParameterizedTypeName.get(method.returnType.publisherClassName, method.returnType.publishedType.vertxType);
                     paramNames.add("$T.class");
                     methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", publisherType, method.returnType.publishedType.vertxType);
+                    methodBuilder.addStatement("$T __promise = $T.promise()", ParameterizedTypeName.get(ClassName.get(Promise.class), method.returnType.publishedType.vertxType), ClassName.get(Promise.class));
                     method.returnType.publishedType.mapper = null; // already mapped using mongo driver facility
                 } else {
                     methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", method.returnType.mongoType);
+                    methodBuilder.addStatement("$T __promise = $T.promise()", ParameterizedTypeName.get(ClassName.get(Promise.class), method.returnType.publishedType.mongoType), ClassName.get(Promise.class));
                 }
 
-                methodBuilder.addStatement("$T __promise = $T.promise()", ParameterizedTypeName.get(ClassName.get(Promise.class), method.returnType.publishedType.mongoType), ClassName.get(Promise.class));
                 methodBuilder.addStatement("__publisher.subscribe(new $T<>(clientContext, __promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
                 /*if (method.returnType.publishedType.isReactive) {
                     methodBuilder.addStatement("return __promise.future().map(__wrapped -> new $T(this.clientContext, __wrapped))",

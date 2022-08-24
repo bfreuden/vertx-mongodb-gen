@@ -18,81 +18,81 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public Bson toBson(JsonObject from) {
-        return null;
+        return new JsonObjectBsonAdapter(from);
     }
 
     @Override
     public BsonBinary toBsonBinary(byte[] from) {
-        return null;
+        return new BsonBinary(BsonBinarySubType.BINARY, from);
     }
 
     @Override
     public BsonDocument toBsonDocument(JsonObject from) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
     public BsonInt64 toBsonInt64(Long from) {
-        return null;
+        return new BsonInt64(from);
     }
 
     @Override
     public BsonTimestamp toBsonTimestamp(Long from) {
-        return null;
+        return new BsonTimestamp(from);
     }
 
     @Override
     public BsonValue toBsonValue(Object from) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
     public byte[] toByteArray(BsonBinary from) {
-        return new byte[0];
+        return from.getData();
     }
 
     @Override
     public Document toDocument(JsonObject from) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
     public JsonObject toJsonObject(Bson from) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
     public JsonObject toJsonObject(Document from) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
     public JsonObject toJsonObject(BsonDocument from) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
     public Long toLong(BsonTimestamp from) {
-        return null;
+        return from.getValue();
     }
 
     @Override
     public Long toLong(BsonInt64 from) {
-        return null;
+        return from.getValue();
     }
 
     @Override
     public Object toObject(BsonValue from) {
-        return null;
+        throw new IllegalStateException("not implemented");
     }
 
     @Override
     public ObjectId toObjectId(String from) {
-        return null;
+        return new ObjectId(from);
     }
 
     @Override
     public String toString(ObjectId from) {
-        return null;
+        return from.toHexString();
     }
 }

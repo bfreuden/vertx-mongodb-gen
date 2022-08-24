@@ -1,10 +1,15 @@
 package io.vertx.ext.mongo;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.MongoClient;
+import io.vertx.mongo.client.MongoCollection;
 import io.vertx.mongo.client.MongoDatabase;
+import io.vertx.mongo.client.model.IndexModel;
+import io.vertx.test.core.TestUtils;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,52 +70,53 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-//  @Test
-//  public void testCreateIndexes() {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
-//      List<IndexModel> indexes = new ArrayList<>();
-//      JsonObject key = new JsonObject().put("field", 1);
-//      IndexModel index = new IndexModel().setKey(key);
-//      indexes.add(index);
-//
-//      JsonObject key2 = new JsonObject().put("field1", 1);
-//      IndexModel index2 = new IndexModel().setKey(key2);
-//      indexes.add(index2);
-//
-//      coll.createIndexes(indexes, onSuccess(res2 -> {
-//        mongoDatabase.listIndexes(collection, onSuccess(res3 -> {
-//          long cnt = res3.stream()
-//            .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field") ||
-//              ((JsonObject) o).getJsonObject("key").containsKey("field1"))
-//            .count();
-//          assertEquals(2, cnt);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testCreateIndex() {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject key = new JsonObject().put("field", 1);
-//      mongoDatabase.createIndex(collection, key, onSuccess(res2 -> {
-//        mongoDatabase.listIndexes(collection, onSuccess(res3 -> {
-//          long cnt = res3.stream()
-//            .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field"))
-//            .count();
-//          assertEquals(1, cnt);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
+  @Test
+  public void testCreateIndexes() {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      List<IndexModel> indexes = new ArrayList<>();
+      JsonObject key = new JsonObject().put("field", 1);
+      IndexModel index = new IndexModel(key);
+      indexes.add(index);
+
+      JsonObject key2 = new JsonObject().put("field1", 1);
+      IndexModel index2 = new IndexModel(key2);
+      indexes.add(index2);
+
+      coll.createIndexes(indexes, onSuccess(res2 -> {
+        coll.listIndexes().all(onSuccess(res3 -> {
+          long cnt = res3.stream()
+            .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field") ||
+              ((JsonObject) o).getJsonObject("key").containsKey("field1"))
+            .count();
+          assertEquals(2, cnt);
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testCreateIndex() {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject key = new JsonObject().put("field", 1);
+      coll.createIndex(key, onSuccess(res2 -> {
+        coll.listIndexes().all().onSuccess(res3 -> {
+          long cnt = res3.stream()
+            .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field"))
+            .count();
+          assertEquals(1, cnt);
+          testComplete();
+        });
+      }));
+    }));
+    await();
+  }
+
 //  @Test
 //  public void testCreateIndexWithCollation() {
 //    testCreateIndexWithCollation(new CollationOptions().setLocale(Locale.ENGLISH.toString()), 1);
@@ -142,36 +148,38 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
-//  @Test
-//  public void testCreateAndDropIndex() {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject key = new JsonObject().put("field", 1);
-//      mongoDatabase.createIndex(collection, key, onSuccess(res2 -> {
-//        mongoDatabase.dropIndex(collection, "field_1", onSuccess(res3 -> {
-//          mongoDatabase.listIndexes(collection, onSuccess(res4 -> {
-//            long cnt = res4.stream()
-//              .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field"))
-//              .count();
-//            assertEquals(cnt, 0);
-//            testComplete();
-//          }));
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
+  @Test
+  public void testCreateAndDropIndex() {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject key = new JsonObject().put("field", 1);
+      coll.createIndex(key, onSuccess(res2 -> {
+        coll.dropIndex("field_1", onSuccess(res3 -> {
+          coll.listIndexes().all().onSuccess(res4 -> {
+            long cnt = res4.stream()
+              .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field"))
+              .count();
+            assertEquals(cnt, 0);
+            testComplete();
+          });
+        }));
+      }));
+    }));
+    await();
+  }
 
-//  @Test
-//  public void testRunCommand() throws Exception {
-//    JsonObject command = new JsonObject().put("isMaster", 1);
-//    mongoDatabase.runCommand(command).first().onSuccess(reply -> {
-//      assertTrue(reply.getBoolean("ismaster"));
-//      testComplete();
-//    });
-//    await();
-//  }
+  @Test
+  public void testRunCommand() throws Exception {
+    JsonObject command = new JsonObject().put("isMaster", 1);
+    mongoDatabase.runCommand(command).onSuccess(reply -> {
+      assertTrue(reply.getBoolean("ismaster"));
+      testComplete();
+    });
+    await();
+  }
 
+  // NOT PORTED!
 //  @Test
 //  public void testRunCommandWithBody() throws Exception {
 //
@@ -189,15 +197,15 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
-//  @Test
-//  public void testRunInvalidCommand() throws Exception {
-//    JsonObject command = new JsonObject().put("iuhioqwdqhwd", 1);
-//    mongoDatabase.runCommand("iuhioqwdqhwd", command, onFailure(ex -> {
-//      testComplete();
-//    }));
-//    await();
-//  }
-//
+  @Test
+  public void testRunInvalidCommand() throws Exception {
+    JsonObject command = new JsonObject().put("iuhioqwdqhwd", 1);
+    mongoDatabase.runCommand(command).onFailure(ex -> {
+      testComplete();
+    });
+    await();
+  }
+
 //  @Test
 //  public void testInsertNoCollection() {
 //    String collection = randomCollection();

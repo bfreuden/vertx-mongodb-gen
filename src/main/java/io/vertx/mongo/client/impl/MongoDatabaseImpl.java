@@ -127,35 +127,65 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public MongoResult<JsonObject> runCommand(JsonObject command) {
+  public Future<JsonObject> runCommand(JsonObject command) {
     requireNonNull(command, "command is null");
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     Publisher<JsonObject> __publisher = wrapped.runCommand(__command, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Promise<JsonObject> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future();
   }
 
   @Override
-  public MongoResult<JsonObject> runCommand(JsonObject command, ReadPreference readPreference) {
+  public io.vertx.mongo.client.MongoDatabase runCommand(JsonObject command,
+      Handler<AsyncResult<JsonObject>> resultHandler) {
+    Future<JsonObject> __future = this.runCommand(command);
+    setHandler(__future, resultHandler);
+    return this;
+  }
+
+  @Override
+  public Future<JsonObject> runCommand(JsonObject command, ReadPreference readPreference) {
     requireNonNull(command, "command is null");
     requireNonNull(readPreference, "readPreference is null");
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     Publisher<JsonObject> __publisher = wrapped.runCommand(__command, __readPreference, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Promise<JsonObject> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future();
   }
 
   @Override
-  public MongoResult<JsonObject> runCommand(ClientSession clientSession, JsonObject command) {
+  public io.vertx.mongo.client.MongoDatabase runCommand(JsonObject command,
+      ReadPreference readPreference, Handler<AsyncResult<JsonObject>> resultHandler) {
+    Future<JsonObject> __future = this.runCommand(command, readPreference);
+    setHandler(__future, resultHandler);
+    return this;
+  }
+
+  @Override
+  public Future<JsonObject> runCommand(ClientSession clientSession, JsonObject command) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(command, "command is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Promise<JsonObject> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future();
   }
 
   @Override
-  public MongoResult<JsonObject> runCommand(ClientSession clientSession, JsonObject command,
+  public io.vertx.mongo.client.MongoDatabase runCommand(ClientSession clientSession,
+      JsonObject command, Handler<AsyncResult<JsonObject>> resultHandler) {
+    Future<JsonObject> __future = this.runCommand(clientSession, command);
+    setHandler(__future, resultHandler);
+    return this;
+  }
+
+  @Override
+  public Future<JsonObject> runCommand(ClientSession clientSession, JsonObject command,
       ReadPreference readPreference) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(command, "command is null");
@@ -164,7 +194,18 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, __readPreference, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher);
+    Promise<JsonObject> __promise = Promise.promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future();
+  }
+
+  @Override
+  public io.vertx.mongo.client.MongoDatabase runCommand(ClientSession clientSession,
+      JsonObject command, ReadPreference readPreference,
+      Handler<AsyncResult<JsonObject>> resultHandler) {
+    Future<JsonObject> __future = this.runCommand(clientSession, command, readPreference);
+    setHandler(__future, resultHandler);
+    return this;
   }
 
   @Override

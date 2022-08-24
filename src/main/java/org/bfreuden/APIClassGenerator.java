@@ -246,6 +246,8 @@ public abstract class APIClassGenerator {
             containingType.singlePublisher = true;
             containingType.publishedType = ActualType.fromMappedTypeName(mongoPublishedType, ClassName.get(Void.class));
         }
+        if (methodDoc.name().equals("runCommand"))
+            containingType.singlePublisher = true;
         if (!containingType.singlePublisher) {
             String rawCommentText = methodDoc.getRawCommentText();
             Optional<String> first = Arrays.stream(rawCommentText.split("\\n+")).filter(it -> it.contains("@return")).findFirst();

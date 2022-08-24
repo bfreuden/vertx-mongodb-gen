@@ -116,39 +116,82 @@ public interface MongoDatabase {
   /**
    *  Executes command in the context of the current database.
    *  @param command the command to be run
-   *  @return a result containing the command result
+   *  @return a future containing the command result
    */
-  MongoResult<JsonObject> runCommand(JsonObject command);
+  Future<JsonObject> runCommand(JsonObject command);
+
+  /**
+   *  Executes command in the context of the current database.
+   *  @param command the command to be run
+   *  @param resultHandler an async result containing the command result
+   *  @return <code>this</code>
+   */
+  MongoDatabase runCommand(JsonObject command, Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
    *  Executes command in the context of the current database.
    *  @param command        the command to be run
    *  @param readPreference the {@link com.mongodb.ReadPreference} to be used when executing the command
-   *  @return a result containing the command result
+   *  @return a future containing the command result
    */
-  MongoResult<JsonObject> runCommand(JsonObject command, ReadPreference readPreference);
+  Future<JsonObject> runCommand(JsonObject command, ReadPreference readPreference);
+
+  /**
+   *  Executes command in the context of the current database.
+   *  @param command        the command to be run
+   *  @param readPreference the {@link com.mongodb.ReadPreference} to be used when executing the command
+   *  @param resultHandler an async result containing the command result
+   *  @return <code>this</code>
+   */
+  MongoDatabase runCommand(JsonObject command, ReadPreference readPreference,
+      Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
    *  Executes command in the context of the current database.
    *  @param clientSession the client session with which to associate this operation
    *  @param command the command to be run
-   *  @return a result containing the command result
+   *  @return a future containing the command result
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<JsonObject> runCommand(ClientSession clientSession, JsonObject command);
+  Future<JsonObject> runCommand(ClientSession clientSession, JsonObject command);
+
+  /**
+   *  Executes command in the context of the current database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param command the command to be run
+   *  @param resultHandler an async result containing the command result
+   *  @return <code>this</code>
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoDatabase runCommand(ClientSession clientSession, JsonObject command,
+      Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
    *  Executes command in the context of the current database.
    *  @param clientSession the client session with which to associate this operation
    *  @param command        the command to be run
    *  @param readPreference the {@link com.mongodb.ReadPreference} to be used when executing the command
-   *  @return a result containing the command result
+   *  @return a future containing the command result
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<JsonObject> runCommand(ClientSession clientSession, JsonObject command,
+  Future<JsonObject> runCommand(ClientSession clientSession, JsonObject command,
       ReadPreference readPreference);
+
+  /**
+   *  Executes command in the context of the current database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param command        the command to be run
+   *  @param readPreference the {@link com.mongodb.ReadPreference} to be used when executing the command
+   *  @param resultHandler an async result containing the command result
+   *  @return <code>this</code>
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoDatabase runCommand(ClientSession clientSession, JsonObject command,
+      ReadPreference readPreference, Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
    *  Drops this database.
