@@ -73,6 +73,7 @@ public class CreateCollectionOptions {
    *  @return this
    */
   public CreateCollectionOptions maxDocuments(Long maxDocuments) {
+    this.maxDocuments = maxDocuments;
     return this;
   }
 
@@ -92,6 +93,7 @@ public class CreateCollectionOptions {
    *  @return this
    */
   public CreateCollectionOptions capped(Boolean capped) {
+    this.capped = capped;
     return this;
   }
 
@@ -111,6 +113,7 @@ public class CreateCollectionOptions {
    *  @return this
    */
   public CreateCollectionOptions sizeInBytes(Long sizeInBytes) {
+    this.sizeInBytes = sizeInBytes;
     return this;
   }
 
@@ -131,6 +134,7 @@ public class CreateCollectionOptions {
    *  @mongodb.server.release 3.0
    */
   public CreateCollectionOptions storageEngineOptions(JsonObject storageEngineOptions) {
+    this.storageEngineOptions = storageEngineOptions;
     return this;
   }
 
@@ -153,6 +157,7 @@ public class CreateCollectionOptions {
    *  @mongodb.server.release 3.2
    */
   public CreateCollectionOptions indexOptionDefaults(IndexOptionDefaults indexOptionDefaults) {
+    this.indexOptionDefaults = indexOptionDefaults;
     return this;
   }
 
@@ -176,6 +181,7 @@ public class CreateCollectionOptions {
    *  @mongodb.server.release 3.2
    */
   public CreateCollectionOptions validationOptions(ValidationOptions validationOptions) {
+    this.validationOptions = validationOptions;
     return this;
   }
 
@@ -200,6 +206,7 @@ public class CreateCollectionOptions {
    *  @mongodb.server.release 3.4
    */
   public CreateCollectionOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 

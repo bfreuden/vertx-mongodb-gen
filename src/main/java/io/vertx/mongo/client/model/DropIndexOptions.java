@@ -41,6 +41,7 @@ public class DropIndexOptions {
    *  @return this
    */
   public DropIndexOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 

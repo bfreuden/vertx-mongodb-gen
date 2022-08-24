@@ -58,6 +58,7 @@ public class EncryptOptions {
    *  @see #getKeyId()
    */
   public EncryptOptions keyId(byte[] keyId) {
+    this.keyId = keyId;
     return this;
   }
 
@@ -82,6 +83,7 @@ public class EncryptOptions {
    *  @see #getKeyAltName()
    */
   public EncryptOptions keyAltName(String keyAltName) {
+    this.keyAltName = keyAltName;
     return this;
   }
 

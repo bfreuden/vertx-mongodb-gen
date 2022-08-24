@@ -323,6 +323,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(option.type.vertxType, option.setterParamName)
                         .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()))
+                        .addStatement("this." + option.name + " = " + option.name)
                         .addStatement("return this");
                 if (option.mongoJavadoc != null) {
                     if (option.withTimeUnit) {

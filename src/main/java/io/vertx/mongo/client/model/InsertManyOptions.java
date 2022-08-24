@@ -46,6 +46,7 @@ public class InsertManyOptions {
    *  @return this
    */
   public InsertManyOptions ordered(Boolean ordered) {
+    this.ordered = ordered;
     return this;
   }
 
@@ -68,6 +69,7 @@ public class InsertManyOptions {
    *  @mongodb.server.release 3.2
    */
   public InsertManyOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 

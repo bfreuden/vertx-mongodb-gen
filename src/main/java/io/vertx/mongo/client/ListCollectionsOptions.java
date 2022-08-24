@@ -55,6 +55,7 @@ public class ListCollectionsOptions {
    *  @mongodb.driver.manual reference/method/db.collection.find/ Filter
    */
   public ListCollectionsOptions filter(JsonObject filter) {
+    this.filter = filter;
     return this;
   }
 
@@ -70,6 +71,7 @@ public class ListCollectionsOptions {
    *  @mongodb.driver.manual reference/operator/meta/maxTimeMS/ Max Time
    */
   public ListCollectionsOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -89,6 +91,7 @@ public class ListCollectionsOptions {
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
   public ListCollectionsOptions batchSize(Integer batchSize) {
+    this.batchSize = batchSize;
     return this;
   }
 

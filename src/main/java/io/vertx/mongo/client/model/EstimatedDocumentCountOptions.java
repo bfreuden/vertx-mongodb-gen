@@ -41,6 +41,7 @@ public class EstimatedDocumentCountOptions {
    *  @return this
    */
   public EstimatedDocumentCountOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 

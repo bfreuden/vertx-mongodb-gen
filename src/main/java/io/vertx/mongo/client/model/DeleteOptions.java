@@ -55,6 +55,7 @@ public class DeleteOptions {
    *  @mongodb.server.release 3.4
    */
   public DeleteOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -77,6 +78,7 @@ public class DeleteOptions {
    *  @mongodb.server.release 4.4
    */
   public DeleteOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -102,6 +104,7 @@ public class DeleteOptions {
    *  @mongodb.server.release 4.4
    */
   public DeleteOptions hintString(String hint) {
+    this.hintString = hintString;
     return this;
   }
 

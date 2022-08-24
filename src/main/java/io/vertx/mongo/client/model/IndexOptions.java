@@ -142,6 +142,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions background(Boolean background) {
+    this.background = background;
     return this;
   }
 
@@ -161,6 +162,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions unique(Boolean unique) {
+    this.unique = unique;
     return this;
   }
 
@@ -180,6 +182,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions name(String name) {
+    this.name = name;
     return this;
   }
 
@@ -199,6 +202,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions sparse(Boolean sparse) {
+    this.sparse = sparse;
     return this;
   }
 
@@ -219,6 +223,7 @@ public class IndexOptions {
    *  @mongodb.driver.manual tutorial/expire-data TTL
    */
   public IndexOptions expireAfter(Long expireAfter) {
+    this.expireAfter = expireAfter;
     return this;
   }
 
@@ -239,6 +244,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions version(Integer version) {
+    this.version = version;
     return this;
   }
 
@@ -262,6 +268,7 @@ public class IndexOptions {
    *  @mongodb.driver.manual tutorial/control-results-of-text-search Control Search Results with Weights
    */
   public IndexOptions weights(JsonObject weights) {
+    this.weights = weights;
     return this;
   }
 
@@ -288,6 +295,7 @@ public class IndexOptions {
    *  @mongodb.driver.manual reference/text-search-languages Text Search languages
    */
   public IndexOptions defaultLanguage(String defaultLanguage) {
+    this.defaultLanguage = defaultLanguage;
     return this;
   }
 
@@ -313,6 +321,7 @@ public class IndexOptions {
    *  @mongodb.driver.manual tutorial/specify-language-for-text-index/#specify-language-field-text-index-example Language override
    */
   public IndexOptions languageOverride(String languageOverride) {
+    this.languageOverride = languageOverride;
     return this;
   }
 
@@ -335,6 +344,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions textVersion(Integer textVersion) {
+    this.textVersion = textVersion;
     return this;
   }
 
@@ -354,6 +364,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions sphereVersion(Integer sphereVersion) {
+    this.sphereVersion = sphereVersion;
     return this;
   }
 
@@ -373,6 +384,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions bits(Integer bits) {
+    this.bits = bits;
     return this;
   }
 
@@ -392,6 +404,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions min(Double min) {
+    this.min = min;
     return this;
   }
 
@@ -411,6 +424,7 @@ public class IndexOptions {
    *  @return this
    */
   public IndexOptions max(Double max) {
+    this.max = max;
     return this;
   }
 
@@ -431,6 +445,7 @@ public class IndexOptions {
    *  @mongodb.driver.manual core/geohaystack/ geoHaystack Indexes
    */
   public IndexOptions bucketSize(Double bucketSize) {
+    this.bucketSize = bucketSize;
     return this;
   }
 
@@ -452,6 +467,7 @@ public class IndexOptions {
    *  @mongodb.server.release 3.0
    */
   public IndexOptions storageEngine(JsonObject storageEngine) {
+    this.storageEngine = storageEngine;
     return this;
   }
 
@@ -474,6 +490,7 @@ public class IndexOptions {
    *  @since 3.2
    */
   public IndexOptions partialFilterExpression(JsonObject partialFilterExpression) {
+    this.partialFilterExpression = partialFilterExpression;
     return this;
   }
 
@@ -498,6 +515,7 @@ public class IndexOptions {
    *  @mongodb.server.release 3.4
    */
   public IndexOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -521,6 +539,7 @@ public class IndexOptions {
    *  @since 3.10
    */
   public IndexOptions wildcardProjection(JsonObject wildcardProjection) {
+    this.wildcardProjection = wildcardProjection;
     return this;
   }
 
@@ -544,6 +563,7 @@ public class IndexOptions {
    *  @since 4.1
    */
   public IndexOptions hidden(Boolean hidden) {
+    this.hidden = hidden;
     return this;
   }
 

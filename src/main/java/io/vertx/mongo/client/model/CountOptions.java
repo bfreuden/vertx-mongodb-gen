@@ -70,6 +70,7 @@ public class CountOptions {
    *  @return this
    */
   public CountOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -91,6 +92,7 @@ public class CountOptions {
    *  @return this
    */
   public CountOptions hintString(String hint) {
+    this.hintString = hintString;
     return this;
   }
 
@@ -111,6 +113,7 @@ public class CountOptions {
    *  @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
    */
   public CountOptions limit(Integer limit) {
+    this.limit = limit;
     return this;
   }
 
@@ -132,6 +135,7 @@ public class CountOptions {
    *  @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
    */
   public CountOptions skip(Integer skip) {
+    this.skip = skip;
     return this;
   }
 
@@ -152,6 +156,7 @@ public class CountOptions {
    *  @return this
    */
   public CountOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -174,6 +179,7 @@ public class CountOptions {
    *  @mongodb.server.release 3.4
    */
   public CountOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 

@@ -51,6 +51,7 @@ public class GridFSDownloadOptions {
    *  @return this
    */
   public GridFSDownloadOptions bufferSizeBytes(Integer bufferSizeBytes) {
+    this.bufferSizeBytes = bufferSizeBytes;
     return this;
   }
 

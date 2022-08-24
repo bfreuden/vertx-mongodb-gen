@@ -43,6 +43,7 @@ public class IndexOptionDefaults {
    *  @return this
    */
   public IndexOptionDefaults storageEngine(JsonObject storageEngine) {
+    this.storageEngine = storageEngine;
     return this;
   }
 

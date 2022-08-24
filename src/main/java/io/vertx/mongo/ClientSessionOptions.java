@@ -50,6 +50,7 @@ public class ClientSessionOptions {
    *  @mongodb.driver.dochub core/causal-consistency Causal Consistency
    */
   public ClientSessionOptions causallyConsistent(Boolean causallyConsistent) {
+    this.causallyConsistent = causallyConsistent;
     return this;
   }
 
@@ -74,6 +75,7 @@ public class ClientSessionOptions {
    */
   public ClientSessionOptions defaultTransactionOptions(
       TransactionOptions defaultTransactionOptions) {
+    this.defaultTransactionOptions = defaultTransactionOptions;
     return this;
   }
 

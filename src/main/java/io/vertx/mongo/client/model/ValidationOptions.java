@@ -54,6 +54,7 @@ public class ValidationOptions {
    *  @return this
    */
   public ValidationOptions validator(JsonObject validator) {
+    this.validator = validator;
     return this;
   }
 
@@ -74,6 +75,7 @@ public class ValidationOptions {
    *  @return this
    */
   public ValidationOptions validationLevel(ValidationLevel validationLevel) {
+    this.validationLevel = validationLevel;
     return this;
   }
 
@@ -95,6 +97,7 @@ public class ValidationOptions {
    *  @return this
    */
   public ValidationOptions validationAction(ValidationAction validationAction) {
+    this.validationAction = validationAction;
     return this;
   }
 

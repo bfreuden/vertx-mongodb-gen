@@ -42,6 +42,7 @@ public class InsertOneOptions {
    *  @return this
    */
   public InsertOneOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 

@@ -40,6 +40,7 @@ public class RenameCollectionOptions {
    *  @return this
    */
   public RenameCollectionOptions dropTarget(Boolean dropTarget) {
+    this.dropTarget = dropTarget;
     return this;
   }
 

@@ -41,6 +41,7 @@ public class CreateIndexOptions {
    *  @return this
    */
   public CreateIndexOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 

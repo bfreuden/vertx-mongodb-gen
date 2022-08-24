@@ -65,6 +65,7 @@ public class ReplaceOptions {
    *  @return this
    */
   public ReplaceOptions upsert(Boolean upsert) {
+    this.upsert = upsert;
     return this;
   }
 
@@ -85,6 +86,7 @@ public class ReplaceOptions {
    *  @mongodb.server.release 3.2
    */
   public ReplaceOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 
@@ -107,6 +109,7 @@ public class ReplaceOptions {
    *  @mongodb.server.release 3.4
    */
   public ReplaceOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -128,6 +131,7 @@ public class ReplaceOptions {
    *  @since 4.1
    */
   public ReplaceOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -149,6 +153,7 @@ public class ReplaceOptions {
    *  @since 4.1
    */
   public ReplaceOptions hintString(String hint) {
+    this.hintString = hintString;
     return this;
   }
 

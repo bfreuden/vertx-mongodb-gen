@@ -83,6 +83,7 @@ public class AggregateOptions {
    *  @mongodb.driver.manual reference/command/aggregate/ Aggregation
    */
   public AggregateOptions allowDiskUse(Boolean allowDiskUse) {
+    this.allowDiskUse = allowDiskUse;
     return this;
   }
 
@@ -98,6 +99,7 @@ public class AggregateOptions {
    *  @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
    */
   public AggregateOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -116,6 +118,7 @@ public class AggregateOptions {
    *  @since 1.6
    */
   public AggregateOptions maxAwaitTime(Long maxAwaitTime) {
+    this.maxAwaitTime = maxAwaitTime;
     return this;
   }
 
@@ -135,6 +138,7 @@ public class AggregateOptions {
    *  @mongodb.server.release 3.2
    */
   public AggregateOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 
@@ -152,6 +156,7 @@ public class AggregateOptions {
    *  @mongodb.server.release 3.4
    */
   public AggregateOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -168,6 +173,7 @@ public class AggregateOptions {
    *  @since 1.7
    */
   public AggregateOptions comment(String comment) {
+    this.comment = comment;
     return this;
   }
 
@@ -184,6 +190,7 @@ public class AggregateOptions {
    *  @since 1.7
    */
   public AggregateOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -203,6 +210,7 @@ public class AggregateOptions {
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
   public AggregateOptions batchSize(Integer batchSize) {
+    this.batchSize = batchSize;
     return this;
   }
 

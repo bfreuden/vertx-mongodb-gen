@@ -126,6 +126,7 @@ public class MapReduceOptions {
    *  @return this
    */
   public MapReduceOptions collectionName(String collectionName) {
+    this.collectionName = collectionName;
     return this;
   }
 
@@ -141,6 +142,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/command/mapReduce/#mapreduce-finalize-cmd Requirements for the finalize Function
    */
   public MapReduceOptions finalizeFunction(String finalizeFunction) {
+    this.finalizeFunction = finalizeFunction;
     return this;
   }
 
@@ -156,6 +158,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/command/mapReduce mapReduce
    */
   public MapReduceOptions scope(JsonObject scope) {
+    this.scope = scope;
     return this;
   }
 
@@ -171,6 +174,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
   public MapReduceOptions sort(JsonObject sort) {
+    this.sort = sort;
     return this;
   }
 
@@ -186,6 +190,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/method/db.collection.find/ Filter
    */
   public MapReduceOptions filter(JsonObject filter) {
+    this.filter = filter;
     return this;
   }
 
@@ -201,6 +206,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
    */
   public MapReduceOptions limit(Integer limit) {
+    this.limit = limit;
     return this;
   }
 
@@ -218,6 +224,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/command/mapReduce mapReduce
    */
   public MapReduceOptions jsMode(Boolean jsMode) {
+    this.jsMode = jsMode;
     return this;
   }
 
@@ -232,6 +239,7 @@ public class MapReduceOptions {
    *  @return this
    */
   public MapReduceOptions verbose(Boolean verbose) {
+    this.verbose = verbose;
     return this;
   }
 
@@ -247,6 +255,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
    */
   public MapReduceOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -261,6 +270,7 @@ public class MapReduceOptions {
    *  @return this
    */
   public MapReduceOptions action(MapReduceAction action) {
+    this.action = action;
     return this;
   }
 
@@ -276,6 +286,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/command/mapReduce/#output-to-a-collection-with-an-action output with an action
    */
   public MapReduceOptions databaseName(String databaseName) {
+    this.databaseName = databaseName;
     return this;
   }
 
@@ -293,6 +304,7 @@ public class MapReduceOptions {
    */
   @Deprecated
   public MapReduceOptions sharded(Boolean sharded) {
+    this.sharded = sharded;
     return this;
   }
 
@@ -313,6 +325,7 @@ public class MapReduceOptions {
    */
   @Deprecated
   public MapReduceOptions nonAtomic(Boolean nonAtomic) {
+    this.nonAtomic = nonAtomic;
     return this;
   }
 
@@ -333,6 +346,7 @@ public class MapReduceOptions {
    *  @mongodb.server.release 3.2
    */
   public MapReduceOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 
@@ -350,6 +364,7 @@ public class MapReduceOptions {
    *  @mongodb.server.release 3.4
    */
   public MapReduceOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -369,6 +384,7 @@ public class MapReduceOptions {
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
   public MapReduceOptions batchSize(Integer batchSize) {
+    this.batchSize = batchSize;
     return this;
   }
 

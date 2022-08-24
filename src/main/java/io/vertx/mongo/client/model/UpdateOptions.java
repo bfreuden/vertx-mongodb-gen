@@ -72,6 +72,7 @@ public class UpdateOptions {
    *  @return this
    */
   public UpdateOptions upsert(Boolean upsert) {
+    this.upsert = upsert;
     return this;
   }
 
@@ -93,6 +94,7 @@ public class UpdateOptions {
    *  @mongodb.server.release 3.2
    */
   public UpdateOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 
@@ -117,6 +119,7 @@ public class UpdateOptions {
    *  @mongodb.server.release 3.4
    */
   public UpdateOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -140,6 +143,7 @@ public class UpdateOptions {
    *  @mongodb.server.release 3.6
    */
   public UpdateOptions arrayFilters(List<JsonObject> arrayFilters) {
+    this.arrayFilters = arrayFilters;
     return this;
   }
 
@@ -162,6 +166,7 @@ public class UpdateOptions {
    *  @since 4.1
    */
   public UpdateOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -183,6 +188,7 @@ public class UpdateOptions {
    *  @since 4.1
    */
   public UpdateOptions hintString(String hint) {
+    this.hintString = hintString;
     return this;
   }
 

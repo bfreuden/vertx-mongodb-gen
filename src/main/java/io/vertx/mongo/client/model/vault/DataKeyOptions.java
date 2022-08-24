@@ -48,6 +48,7 @@ public class DataKeyOptions {
    *  @see #getKeyAltNames()
    */
   public DataKeyOptions keyAltNames(List<String> keyAltNames) {
+    this.keyAltNames = keyAltNames;
     return this;
   }
 
@@ -73,6 +74,7 @@ public class DataKeyOptions {
    *  @see #getMasterKey()
    */
   public DataKeyOptions masterKey(JsonObject masterKey) {
+    this.masterKey = masterKey;
     return this;
   }
 

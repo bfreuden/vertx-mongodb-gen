@@ -87,6 +87,7 @@ public class FindOneAndReplaceOptions {
    *  @mongodb.driver.manual tutorial/project-fields-from-query-results Projection
    */
   public FindOneAndReplaceOptions projection(JsonObject projection) {
+    this.projection = projection;
     return this;
   }
 
@@ -108,6 +109,7 @@ public class FindOneAndReplaceOptions {
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
   public FindOneAndReplaceOptions sort(JsonObject sort) {
+    this.sort = sort;
     return this;
   }
 
@@ -129,6 +131,7 @@ public class FindOneAndReplaceOptions {
    *  @return this
    */
   public FindOneAndReplaceOptions upsert(Boolean upsert) {
+    this.upsert = upsert;
     return this;
   }
 
@@ -148,6 +151,7 @@ public class FindOneAndReplaceOptions {
    *  @return this
    */
   public FindOneAndReplaceOptions returnDocument(ReturnDocument returnDocument) {
+    this.returnDocument = returnDocument;
     return this;
   }
 
@@ -167,6 +171,7 @@ public class FindOneAndReplaceOptions {
    *  @return this
    */
   public FindOneAndReplaceOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -188,6 +193,7 @@ public class FindOneAndReplaceOptions {
    *  @mongodb.server.release 3.2
    */
   public FindOneAndReplaceOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 
@@ -212,6 +218,7 @@ public class FindOneAndReplaceOptions {
    *  @mongodb.server.release 3.4
    */
   public FindOneAndReplaceOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -234,6 +241,7 @@ public class FindOneAndReplaceOptions {
    *  @since 4.1
    */
   public FindOneAndReplaceOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -255,6 +263,7 @@ public class FindOneAndReplaceOptions {
    *  @since 4.1
    */
   public FindOneAndReplaceOptions hintString(String hint) {
+    this.hintString = hintString;
     return this;
   }
 

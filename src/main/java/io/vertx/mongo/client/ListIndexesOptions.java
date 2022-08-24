@@ -48,6 +48,7 @@ public class ListIndexesOptions {
    *  @mongodb.driver.manual reference/operator/meta/maxTimeMS/ Max Time
    */
   public ListIndexesOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -67,6 +68,7 @@ public class ListIndexesOptions {
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
   public ListIndexesOptions batchSize(Integer batchSize) {
+    this.batchSize = batchSize;
     return this;
   }
 

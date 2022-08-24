@@ -41,6 +41,7 @@ public class CreateViewOptions {
    *  @return this
    */
   public CreateViewOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 

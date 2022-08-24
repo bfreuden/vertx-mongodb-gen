@@ -94,6 +94,7 @@ public class FindOneAndUpdateOptions {
    *  @mongodb.driver.manual tutorial/project-fields-from-query-results Projection
    */
   public FindOneAndUpdateOptions projection(JsonObject projection) {
+    this.projection = projection;
     return this;
   }
 
@@ -115,6 +116,7 @@ public class FindOneAndUpdateOptions {
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
   public FindOneAndUpdateOptions sort(JsonObject sort) {
+    this.sort = sort;
     return this;
   }
 
@@ -136,6 +138,7 @@ public class FindOneAndUpdateOptions {
    *  @return this
    */
   public FindOneAndUpdateOptions upsert(Boolean upsert) {
+    this.upsert = upsert;
     return this;
   }
 
@@ -155,6 +158,7 @@ public class FindOneAndUpdateOptions {
    *  @return this
    */
   public FindOneAndUpdateOptions returnDocument(ReturnDocument returnDocument) {
+    this.returnDocument = returnDocument;
     return this;
   }
 
@@ -175,6 +179,7 @@ public class FindOneAndUpdateOptions {
    *  @return this
    */
   public FindOneAndUpdateOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -196,6 +201,7 @@ public class FindOneAndUpdateOptions {
    *  @mongodb.server.release 3.2
    */
   public FindOneAndUpdateOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 
@@ -220,6 +226,7 @@ public class FindOneAndUpdateOptions {
    *  @mongodb.server.release 3.4
    */
   public FindOneAndUpdateOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -243,6 +250,7 @@ public class FindOneAndUpdateOptions {
    *  @mongodb.server.release 3.6
    */
   public FindOneAndUpdateOptions arrayFilters(List<JsonObject> arrayFilters) {
+    this.arrayFilters = arrayFilters;
     return this;
   }
 
@@ -265,6 +273,7 @@ public class FindOneAndUpdateOptions {
    *  @since 4.1
    */
   public FindOneAndUpdateOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -286,6 +295,7 @@ public class FindOneAndUpdateOptions {
    *  @since 4.1
    */
   public FindOneAndUpdateOptions hintString(String hint) {
+    this.hintString = hintString;
     return this;
   }
 

@@ -70,6 +70,7 @@ public class FindOneAndDeleteOptions {
    *  @mongodb.driver.manual tutorial/project-fields-from-query-results Projection
    */
   public FindOneAndDeleteOptions projection(JsonObject projection) {
+    this.projection = projection;
     return this;
   }
 
@@ -91,6 +92,7 @@ public class FindOneAndDeleteOptions {
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
   public FindOneAndDeleteOptions sort(JsonObject sort) {
+    this.sort = sort;
     return this;
   }
 
@@ -112,6 +114,7 @@ public class FindOneAndDeleteOptions {
    *  @return this
    */
   public FindOneAndDeleteOptions maxTime(Long maxTime) {
+    this.maxTime = maxTime;
     return this;
   }
 
@@ -134,6 +137,7 @@ public class FindOneAndDeleteOptions {
    *  @mongodb.server.release 3.4
    */
   public FindOneAndDeleteOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -157,6 +161,7 @@ public class FindOneAndDeleteOptions {
    *  @mongodb.server.release 4.4
    */
   public FindOneAndDeleteOptions hint(JsonObject hint) {
+    this.hint = hint;
     return this;
   }
 
@@ -182,6 +187,7 @@ public class FindOneAndDeleteOptions {
    *  @mongodb.server.release 4.4
    */
   public FindOneAndDeleteOptions hintString(String hint) {
+    this.hintString = hintString;
     return this;
   }
 

@@ -77,6 +77,7 @@ public class ChangeStreamOptions {
    *  @return this
    */
   public ChangeStreamOptions fullDocument(FullDocument fullDocument) {
+    this.fullDocument = fullDocument;
     return this;
   }
 
@@ -91,6 +92,7 @@ public class ChangeStreamOptions {
    *  @return this
    */
   public ChangeStreamOptions resumeAfter(JsonObject resumeToken) {
+    this.resumeAfter = resumeAfter;
     return this;
   }
 
@@ -111,6 +113,7 @@ public class ChangeStreamOptions {
    *  @mongodb.driver.manual reference/method/db.runCommand/
    */
   public ChangeStreamOptions startAtOperationTime(Long startAtOperationTime) {
+    this.startAtOperationTime = startAtOperationTime;
     return this;
   }
 
@@ -134,6 +137,7 @@ public class ChangeStreamOptions {
    *  @mongodb.driver.manual changeStreams/#change-stream-start-after
    */
   public ChangeStreamOptions startAfter(JsonObject startAfter) {
+    this.startAfter = startAfter;
     return this;
   }
 
@@ -149,6 +153,7 @@ public class ChangeStreamOptions {
    *  @return this
    */
   public ChangeStreamOptions maxAwaitTime(Long maxAwaitTime) {
+    this.maxAwaitTime = maxAwaitTime;
     return this;
   }
 
@@ -164,6 +169,7 @@ public class ChangeStreamOptions {
    *  @return this
    */
   public ChangeStreamOptions collation(Collation collation) {
+    this.collation = collation;
     return this;
   }
 
@@ -183,6 +189,7 @@ public class ChangeStreamOptions {
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
   public ChangeStreamOptions batchSize(Integer batchSize) {
+    this.batchSize = batchSize;
     return this;
   }
 

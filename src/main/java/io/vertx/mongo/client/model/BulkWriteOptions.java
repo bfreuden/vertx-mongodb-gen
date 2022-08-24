@@ -46,6 +46,7 @@ public class BulkWriteOptions {
    *  @return this
    */
   public BulkWriteOptions ordered(Boolean ordered) {
+    this.ordered = ordered;
     return this;
   }
 
@@ -69,6 +70,7 @@ public class BulkWriteOptions {
    *  @mongodb.server.release 3.2
    */
   public BulkWriteOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+    this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
 
