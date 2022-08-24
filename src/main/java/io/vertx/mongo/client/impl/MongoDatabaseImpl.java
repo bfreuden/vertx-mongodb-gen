@@ -38,6 +38,8 @@ import io.vertx.mongo.client.ListCollectionsOptions;
 import io.vertx.mongo.client.MongoCollection;
 import io.vertx.mongo.client.model.CreateCollectionOptions;
 import io.vertx.mongo.client.model.CreateViewOptions;
+import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
+import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.MongoCollectionResultImpl;
@@ -68,48 +70,51 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
 
   @Override
   public ReadPreference getReadPreference() {
-    return ReadPreference.fromDriverClass(wrapped.getReadPreference());
+    com.mongodb.ReadPreference __result = wrapped.getReadPreference();
+    return  ReadPreference.fromDriverClass(__result);
   }
 
   @Override
   public WriteConcern getWriteConcern() {
-    return WriteConcern.fromDriverClass(wrapped.getWriteConcern());
+    com.mongodb.WriteConcern __result = wrapped.getWriteConcern();
+    return  WriteConcern.fromDriverClass(__result);
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    return ReadConcern.fromDriverClass(wrapped.getReadConcern());
+    com.mongodb.ReadConcern __result = wrapped.getReadConcern();
+    return  ReadConcern.fromDriverClass(__result);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withReadPreference(ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference is null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    MongoDatabase __wrapped = wrapped.withReadPreference(__readPreference);
-    return new MongoDatabaseImpl(this.clientContext, __wrapped);
+    MongoDatabase __result = wrapped.withReadPreference(__readPreference);
+    return  new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withWriteConcern(WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern is null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    MongoDatabase __wrapped = wrapped.withWriteConcern(__writeConcern);
-    return new MongoDatabaseImpl(this.clientContext, __wrapped);
+    MongoDatabase __result = wrapped.withWriteConcern(__writeConcern);
+    return  new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern is null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    MongoDatabase __wrapped = wrapped.withReadConcern(__readConcern);
-    return new MongoDatabaseImpl(this.clientContext, __wrapped);
+    MongoDatabase __result = wrapped.withReadConcern(__readConcern);
+    return  new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
   public MongoCollection<JsonObject> getCollection(String collectionName) {
     requireNonNull(collectionName, "collectionName is null");
     com.mongodb.reactivestreams.client.MongoCollection<JsonObject> __wrapped = wrapped.getCollection(collectionName, JsonObject.class);
-    return new MongoCollectionImpl<JsonObject>(this.clientContext, __wrapped);
+    return  new MongoCollectionImpl<>(clientContext, __wrapped);
   }
 
   @Override
@@ -117,8 +122,8 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
       Class<TDocument> clazz) {
     requireNonNull(collectionName, "collectionName is null");
     requireNonNull(clazz, "clazz is null");
-    com.mongodb.reactivestreams.client.MongoCollection<TDocument> __wrapped = wrapped.getCollection(collectionName, clazz);
-    return new MongoCollectionImpl<TDocument>(this.clientContext, __wrapped);
+    com.mongodb.reactivestreams.client.MongoCollection<TDocument> __result = wrapped.getCollection(collectionName, clazz);
+    return  new MongoCollectionImpl<>(clientContext, __result);
   }
 
   @Override
@@ -333,7 +338,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(viewName, "viewName is null");
     requireNonNull(viewOn, "viewOn is null");
     requireNonNull(pipeline, "pipeline is null");
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline);
     Promise<Void> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -355,7 +360,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(viewOn, "viewOn is null");
     requireNonNull(pipeline, "pipeline is null");
     requireNonNull(createViewOptions, "createViewOptions is null");
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline, __createViewOptions);
     Promise<Void> __promise = Promise.promise();
@@ -380,7 +385,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(viewOn, "viewOn is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline);
     Promise<Void> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -405,7 +410,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(pipeline, "pipeline is null");
     requireNonNull(createViewOptions, "createViewOptions is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline, __createViewOptions);
     Promise<Void> __promise = Promise.promise();
@@ -423,74 +428,77 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public MongoResult<JsonObject> watch() {
-    //  TODO add implementation
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch() {
+    //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
-  public MongoResult<JsonObject> watch(ChangeStreamOptions options) {
-    //  TODO add implementation
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(ChangeStreamOptions options) {
+    //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
-  public MongoResult<JsonObject> watch(List<JsonObject> pipeline) {
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
-  public MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options) {
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
+      ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
-  public MongoResult<JsonObject> watch(ClientSession clientSession) {
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
+    //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
-  public MongoResult<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options) {
-    requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO add implementation
-    return null;
-  }
-
-  @Override
-  public MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline) {
-    requireNonNull(clientSession, "clientSession is null");
-    requireNonNull(pipeline, "pipeline is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
-    return null;
-  }
-
-  @Override
-  public MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
       ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    //  TODO implement mapped mongo results
+    return null;
+  }
+
+  @Override
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      List<JsonObject> pipeline) {
+    requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO add implementation
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    //  TODO implement mapped mongo results
+    return null;
+  }
+
+  @Override
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      List<JsonObject> pipeline, ChangeStreamOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(pipeline, "pipeline is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
   public MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__pipeline, JsonObject.class);
     return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
@@ -499,7 +507,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline,
       AggregateOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__pipeline, JsonObject.class);
     options.initializePublisher(__publisher);
     Integer __batchSize = options.getBatchSize();
@@ -516,7 +524,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__clientSession, __pipeline, JsonObject.class);
     return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
@@ -527,7 +535,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__clientSession, __pipeline, JsonObject.class);
     options.initializePublisher(__publisher);
     Integer __batchSize = options.getBatchSize();

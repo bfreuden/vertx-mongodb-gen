@@ -26,6 +26,7 @@ import io.vertx.mongo.ReadPreference;
 import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.model.CreateCollectionOptions;
 import io.vertx.mongo.client.model.CreateViewOptions;
+import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
 import java.lang.Class;
 import java.lang.String;
 import java.lang.Void;
@@ -448,7 +449,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  MongoResult<JsonObject> watch();
+  MongoResult<ChangeStreamDocument<JsonObject>> watch();
 
   /**
    *  Creates a change stream for this database.
@@ -458,7 +459,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  MongoResult<JsonObject> watch(ChangeStreamOptions options);
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ChangeStreamOptions options);
 
   /**
    *  Creates a change stream for this database.
@@ -468,63 +469,66 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  MongoResult<JsonObject> watch(List<JsonObject> pipeline);
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline);
 
   /**
    *  Creates a change stream for this database.
-   *  @param pipeline the aggregation pipeline to apply to the change stream.
-   *  @param options options
-   *  @return the change stream read stream
-   *  @mongodb.driver.dochub core/changestreams Change Streams
-   *  @since 1.9
-   *  @mongodb.server.release 4.0
-   */
-  MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
-
-  /**
-   *  Creates a change stream for this database.
-   *  @param clientSession the client session with which to associate this operation
-   *  @return the change stream read stream
-   *  @since 1.9
-   *  @mongodb.server.release 4.0
-   *  @mongodb.driver.dochub core/changestreams Change Streams
-   */
-  MongoResult<JsonObject> watch(ClientSession clientSession);
-
-  /**
-   *  Creates a change stream for this database.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param options options
-   *  @return the change stream read stream
-   *  @since 1.9
-   *  @mongodb.server.release 4.0
-   *  @mongodb.driver.dochub core/changestreams Change Streams
-   */
-  MongoResult<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
-
-  /**
-   *  Creates a change stream for this database.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param pipeline the aggregation pipeline to apply to the change stream.
-   *  @return the change stream read stream
-   *  @since 1.9
-   *  @mongodb.server.release 4.0
-   *  @mongodb.driver.dochub core/changestreams Change Streams
-   */
-  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
-
-  /**
-   *  Creates a change stream for this database.
-   *  @param clientSession the client session with which to associate this operation
    *  @param pipeline the aggregation pipeline to apply to the change stream.
    *  @param options options
    *  @return the change stream read stream
+   *  @mongodb.driver.dochub core/changestreams Change Streams
    *  @since 1.9
    *  @mongodb.server.release 4.0
-   *  @mongodb.driver.dochub core/changestreams Change Streams
    */
-  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
       ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession);
+
+  /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      List<JsonObject> pipeline);
+
+  /**
+   *  Creates a change stream for this database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream.
+   *  @param options options
+   *  @return the change stream read stream
+   *  @since 1.9
+   *  @mongodb.server.release 4.0
+   *  @mongodb.driver.dochub core/changestreams Change Streams
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      List<JsonObject> pipeline, ChangeStreamOptions options);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
