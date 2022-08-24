@@ -10,8 +10,7 @@ import io.vertx.mongo.client.model.IndexModel;
 import io.vertx.test.core.TestUtils;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -257,13 +256,13 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       JsonObject doc = createDoc();
       String genID = TestUtils.randomAlphaString(100);
       doc.put("_id", genID);
-      coll.insertOne(doc, onSuccess(id -> {
+      coll.insertOne(doc, onSuccess(res2 -> {
         assertDocumentWithIdIsPresent(collection, genID);
       }));
     }));
     await();
   }
-// TODO
+  // TODO implement WriteConcern and withWriteConcern
 //  @Test
 //  public void testInsertPreexistingLongID() throws Exception {
 //    String collection = randomCollection();
@@ -279,7 +278,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
-  // WON'T DO: MongoDB throws a NPE
+  //TODO WON'T DO? MongoDB throws a NPE
 //  @Test
 //  public void testSaveWithOptionCanTakeNullWriteOption() throws Exception {
 //    String collection = randomCollection();
@@ -288,108 +287,120 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //      JsonObject doc = createDoc();
 //      Long genID = TestUtils.randomLong();
 //      doc.put("_id", genID);
-//      coll.insertOne(doc, null, onSuccess(id -> {
+//      coll.replaceOne(doc, null, onSuccess(id -> {
 //        assertDocumentWithIdIsPresent(collection, genID);
 //      }));
 //    }));
 //    await();
 //  }
 //
-//  @Test
-//  public void testSavePreexistingLongID() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      Long genID = TestUtils.randomLong();
-//      doc.put("_id", genID);
-//      mongoDatabase.saveWithOptions(collection, doc, ACKNOWLEDGED, onSuccess(id -> {
-//        assertDocumentWithIdIsPresent(collection, genID);
-//      }));
-//    }));
-//    await();
-//  }
-//
+  @Test
+  public void testSavePreexistingLongID() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      Long genID = TestUtils.randomLong();
+      doc.put("_id", genID);
+      coll.insertOne(doc, onSuccess(res2 -> {
+        assertDocumentWithIdIsPresent(collection, genID);
+      }));
+    }));
+    await();
+  }
+
+  // TODO returned id is org.bson.RawBsonDocument
 //  @Test
 //  public void testInsertPreexistingObjectID() throws Exception {
 //    String collection = randomCollection();
 //    mongoDatabase.createCollection(collection, onSuccess(res -> {
+//      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
 //      JsonObject doc = createDoc();
 //      JsonObject genID = new JsonObject().put("id", TestUtils.randomAlphaString(100));
 //      doc.put("_id", genID);
-//      mongoDatabase.insertWithOptions(collection, doc, ACKNOWLEDGED, onSuccess(id -> {
+//      coll.insertOne(doc, onSuccess(id -> {
 //        assertDocumentWithIdIsPresent(collection, genID);
 //      }));
 //    }));
 //    await();
 //  }
 //
-//  @Test
-//  public void testInsertDoesntAlterObject() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//
-//      Map<String, Object> map = new LinkedHashMap<>();
-//      map.put("nestedMap", new HashMap<>());
-//      map.put("nestedList", new ArrayList<>());
-//      JsonObject doc = new JsonObject(map);
-//
-//      mongoDatabase.insertWithOptions(collection, doc, ACKNOWLEDGED, onSuccess(id -> {
-//        assertNotNull(id);
-//
-//        // Check the internal types haven't been converted
-//        assertTrue(map.get("nestedMap") instanceof HashMap);
-//        assertTrue(map.get("nestedList") instanceof ArrayList);
-//
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
+  @Test
+  public void testInsertDoesntAlterObject() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+
+      Map<String, Object> map = new LinkedHashMap<>();
+      map.put("nestedMap", new HashMap<>());
+      map.put("nestedList", new ArrayList<>());
+      JsonObject doc = new JsonObject(map);
+
+      coll.insertOne(doc, onSuccess(res2 -> {
+        assertNotNull(res2.getInsertedId());
+
+        // Check the internal types haven't been converted
+        assertTrue(map.get("nestedMap") instanceof HashMap);
+        assertTrue(map.get("nestedList") instanceof ArrayList);
+
+        testComplete();
+      }));
+    }));
+    await();
+  }
+
+  // TODO returned id is org.bson.RawBsonDocument
 //  @Test
 //  public void testSavePreexistingObjectID() throws Exception {
 //    String collection = randomCollection();
 //    mongoDatabase.createCollection(collection, onSuccess(res -> {
+//      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
 //      JsonObject doc = createDoc();
 //      JsonObject genID = new JsonObject().put("id", TestUtils.randomAlphaString(100));
 //      doc.put("_id", genID);
-//      mongoDatabase.saveWithOptions(collection, doc, ACKNOWLEDGED, onSuccess(id -> {
-//        assertNull(id);
+//      coll.insertOne(doc, onSuccess(id -> {
+//        assertNull(id.getInsertedId());
 //        testComplete();
 //      }));
 //    }));
 //    await();
 //  }
 //
-//  @Test
-//  public void testInsertAlreadyExists() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        doc.put("_id", id);
-//        mongoDatabase.insert(collection, doc, onFailure(t -> {
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
+
+  //TODO was better in previous mongo client? no need to create the object id by hand
+  @Test
+  public void testInsertAlreadyExists() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(res2 -> {
+        assertNotNull(res2.getInsertedId());
+        doc.put("_id", new JsonObject().put("$oid", res2.getInsertedId()));
+        coll.insertOne(doc, onFailure(t -> {
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  //TODO WON'T DO? MongoDB throws a NPE
 //  @Test
 //  public void testInsertWithOptionsCanTakeNullWriteOption() throws Exception {
 //    String collection = randomCollection();
 //    mongoDatabase.createCollection(collection, onSuccess(res -> {
+//      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
 //      JsonObject doc = createDoc();
-//      mongoDatabase.insertWithOptions(collection, doc, null, onSuccess(id -> {
-//        assertNotNull(id);
+//      coll.insertOne(doc, null, onSuccess(res -> {
+//        assertNotNull(res);
 //        testComplete();
 //      }));
 //    }));
 //    await();
 //  }
 //
+  //TODO implement WriteConcern and withWriteConcern
 //  @Test
 //  public void testInsertWithOptions() throws Exception {
 //    String collection = randomCollection();
@@ -403,6 +414,8 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
+
+  //FIXME first() hangs
 //  @Test
 //  public void testInsertWithNestedListMap() throws Exception {
 //    Map<String, Object> map = new HashMap<>();
@@ -413,9 +426,10 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //
 //    String collection = randomCollection();
 //    JsonObject doc = new JsonObject(map);
-//    mongoDatabase.insert(collection, doc, onSuccess(id -> {
+//    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+//    coll.insertOne(doc, onSuccess(id -> {
 //      assertNotNull(id);
-//      mongoDatabase.findOne(collection, new JsonObject().put("_id", id), null, onSuccess(result -> {
+//      coll.find(new JsonObject().put("_id", id)).first().onSuccess(result -> {
 //        assertNotNull(result);
 //        assertNotNull(result.getJsonObject("nestedMap"));
 //        assertEquals("bar", result.getJsonObject("nestedMap").getString("foo"));
@@ -424,50 +438,57 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //        assertEquals(2, (int) result.getJsonArray("nestedList").getInteger(1));
 //        assertEquals(3, (int) result.getJsonArray("nestedList").getInteger(2));
 //        testComplete();
-//      }));
+//      });
 //    }));
 //    await();
 //  }
 //
-//  @Test
-//  public void testInsertRetrieve() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      String genID = TestUtils.randomAlphaString(100);
-//      doc.put("_id", genID);
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNull(id);
-//        mongoDatabase.findOne(collection, new JsonObject(), null, onSuccess(retrieved -> {
-//          assertEquals(doc, retrieved);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testSave() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.save(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        doc.put("_id", id);
-//        doc.put("newField", "sheep");
-//        // Save again - it should update
-//        mongoDatabase.save(collection, doc, onSuccess(id2 -> {
-//          assertNull(id2);
-//          mongoDatabase.findOne(collection, new JsonObject(), null, onSuccess(res2 -> {
-//            assertEquals("sheep", res2.getString("newField"));
-//            testComplete();
-//          }));
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
+
+  //FIXME why is it expected? assertNull(id.getInsertedId());
+  @Test
+  public void testInsertRetrieve() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      String genID = TestUtils.randomAlphaString(100);
+      doc.put("_id", genID);
+      coll.insertOne(doc, onSuccess(id -> {
+//        assertNull(id.getInsertedId()); // was this before
+        assertNotNull(id.getInsertedId());
+        coll.find(new JsonObject()).first().onSuccess(retrieved -> {
+          assertEquals(doc, retrieved);
+          testComplete();
+        });
+      }));
+    }));
+    await();
+  }
+
+  //TODO was better in previous mongo client? no need to create the object id by hand
+  // now I understand the notion of save vs insert...
+  @Test
+  public void testSave() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(res2 -> {
+        assertNotNull(res2.getInsertedId());
+        doc.put("_id", new JsonObject().put("$oid", res2.getInsertedId()));
+        doc.put("newField", "sheep");
+        // Save again - it should update
+        coll.replaceOne(new JsonObject().put("_id", doc.getJsonObject("_id")), doc, onSuccess(res3 -> {
+          assertNull(res3.getUpsertedId());
+          coll.find(new JsonObject()).first().onSuccess(res4 -> {
+            assertEquals("sheep", res4.getString("newField"));
+            testComplete();
+          });
+        }));
+      }));
+    }));
+    await();
+  }
 //
 //  @Test
 //  public void testSaveWithNestedListMap() throws Exception {

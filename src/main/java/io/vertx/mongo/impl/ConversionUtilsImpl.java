@@ -83,12 +83,16 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public Object toObject(BsonValue from) {
+        if (from == null)
+            return null;
         if (from instanceof BsonObjectId) {
             return ((BsonObjectId)from).getValue().toHexString();
         } else if (from instanceof BsonString) {
             return ((BsonString)from).getValue();
+        } else if (from instanceof BsonInt64) {
+            return ((BsonInt64)from).getValue();
         }
-        throw new IllegalStateException("not implemented");
+        throw new IllegalStateException("not implemented: " + from.getClass());
     }
 
     @Override
