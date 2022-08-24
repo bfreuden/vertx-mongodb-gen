@@ -1,15 +1,20 @@
 package io.vertx.ext.mongo;
 
-import io.vertx.core.json.JsonArray;
+import com.mongodb.client.model.ReturnDocument;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.client.MongoCollection;
 import io.vertx.mongo.client.MongoDatabase;
+import io.vertx.mongo.client.model.FindOneAndReplaceOptions;
+import io.vertx.mongo.client.model.FindOneAndUpdateOptions;
 import io.vertx.mongo.client.model.IndexModel;
+import io.vertx.mongo.client.result.InsertOneResult;
 import io.vertx.test.core.TestUtils;
+import org.bson.types.ObjectId;
 import org.junit.Test;
 
+import java.io.*;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -376,7 +381,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       JsonObject doc = createDoc();
       coll.insertOne(doc, onSuccess(res2 -> {
         assertNotNull(res2.getInsertedId());
-        doc.put("_id", new JsonObject().put("$oid", res2.getInsertedId()));
+        doc.put("_id", resultToId(res2));
         coll.insertOne(doc, onFailure(t -> {
           testComplete();
         }));
@@ -415,34 +420,34 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //  }
 //
 
-  //FIXME first() hangs
-//  @Test
-//  public void testInsertWithNestedListMap() throws Exception {
-//    Map<String, Object> map = new HashMap<>();
-//    Map<String, Object> nestedMap = new HashMap<>();
-//    nestedMap.put("foo", "bar");
-//    map.put("nestedMap", nestedMap);
-//    map.put("nestedList", Arrays.asList(1, 2, 3));
-//
-//    String collection = randomCollection();
-//    JsonObject doc = new JsonObject(map);
-//    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
-//    coll.insertOne(doc, onSuccess(id -> {
-//      assertNotNull(id);
-//      coll.find(new JsonObject().put("_id", id)).first().onSuccess(result -> {
-//        assertNotNull(result);
-//        assertNotNull(result.getJsonObject("nestedMap"));
-//        assertEquals("bar", result.getJsonObject("nestedMap").getString("foo"));
-//        assertNotNull(result.getJsonArray("nestedList"));
-//        assertEquals(1, (int) result.getJsonArray("nestedList").getInteger(0));
-//        assertEquals(2, (int) result.getJsonArray("nestedList").getInteger(1));
-//        assertEquals(3, (int) result.getJsonArray("nestedList").getInteger(2));
-//        testComplete();
-//      });
-//    }));
-//    await();
-//  }
-//
+  //TODO was better in previous mongo client? no need to create the object id by hand
+  @Test
+  public void testInsertWithNestedListMap() throws Exception {
+    Map<String, Object> map = new HashMap<>();
+    Map<String, Object> nestedMap = new HashMap<>();
+    nestedMap.put("foo", "bar");
+    map.put("nestedMap", nestedMap);
+    map.put("nestedList", Arrays.asList(1, 2, 3));
+
+    String collection = randomCollection();
+    JsonObject doc = new JsonObject(map);
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(doc, onSuccess(res -> {
+      assertNotNull(res);
+      coll.find(resultToIdFilter(res)).first().onSuccess(result -> {
+        assertNotNull(result);
+        assertNotNull(result.getJsonObject("nestedMap"));
+        assertEquals("bar", result.getJsonObject("nestedMap").getString("foo"));
+        assertNotNull(result.getJsonArray("nestedList"));
+        assertEquals(1, (int) result.getJsonArray("nestedList").getInteger(0));
+        assertEquals(2, (int) result.getJsonArray("nestedList").getInteger(1));
+        assertEquals(3, (int) result.getJsonArray("nestedList").getInteger(2));
+        testComplete();
+      });
+    }));
+    await();
+  }
+
 
   //FIXME why is it expected? assertNull(id.getInsertedId());
   @Test
@@ -475,7 +480,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       JsonObject doc = createDoc();
       coll.insertOne(doc, onSuccess(res2 -> {
         assertNotNull(res2.getInsertedId());
-        doc.put("_id", new JsonObject().put("$oid", res2.getInsertedId()));
+        doc.put("_id", resultToId(res2));
         doc.put("newField", "sheep");
         // Save again - it should update
         coll.replaceOne(new JsonObject().put("_id", doc.getJsonObject("_id")), doc, onSuccess(res3 -> {
@@ -489,94 +494,105 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     }));
     await();
   }
-//
-//  @Test
-//  public void testSaveWithNestedListMap() throws Exception {
-//    Map<String, Object> map = new HashMap<>();
-//    Map<String, Object> nestedMap = new HashMap<>();
-//    nestedMap.put("foo", "bar");
-//    map.put("nestedMap", nestedMap);
-//    map.put("nestedList", Arrays.asList(1, 2, 3));
-//
-//    String collection = randomCollection();
-//    JsonObject doc = new JsonObject(map);
-//    mongoDatabase.save(collection, doc, onSuccess(id -> {
-//      assertNotNull(id);
-//      mongoDatabase.findOne(collection, new JsonObject().put("_id", id), null, onSuccess(result -> {
-//        assertNotNull(result);
-//        assertNotNull(result.getJsonObject("nestedMap"));
-//        assertEquals("bar", result.getJsonObject("nestedMap").getString("foo"));
-//        assertNotNull(result.getJsonArray("nestedList"));
-//        assertEquals(1, (int) result.getJsonArray("nestedList").getInteger(0));
-//        assertEquals(2, (int) result.getJsonArray("nestedList").getInteger(1));
-//        assertEquals(3, (int) result.getJsonArray("nestedList").getInteger(2));
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testSaveAndReadBinary() throws Exception {
-//
-//    String collection = randomCollection();
-//
-//    Instant now = Instant.now();
-//
-//    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//    ObjectOutputStream oos = new ObjectOutputStream(baos);
-//    oos.writeObject(now);
-//    oos.close();
-//
-//    JsonObject doc = new JsonObject();
-//    doc.put("now", new JsonObject().put("$binary", baos.toByteArray()));
-//
-//    mongoDatabase.save(collection, doc, onSuccess(id -> {
-//      assertNotNull(id);
-//      mongoDatabase.findOne(collection, new JsonObject().put("_id", id), null, onSuccess(result -> {
-//        assertNotNull(result);
-//        assertNotNull(result.getJsonObject("now"));
-//        assertNotNull(result.getJsonObject("now").getBinary("$binary"));
-//
-//        ByteArrayInputStream bais = new ByteArrayInputStream(result.getJsonObject("now").getBinary("$binary"));
-//        ObjectInputStream ois = null;
-//        try {
-//          ois = new ObjectInputStream(bais);
-//          Instant reconstitutedNow = (Instant) ois.readObject();
-//
-//          assertEquals(now, reconstitutedNow);
-//        } catch (IOException | ClassNotFoundException e) {
-//          e.printStackTrace();
-//          assertTrue(false);
-//        }
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testSaveAndReadObjectId() throws Exception {
-//
-//    String collection = randomCollection();
-//    ObjectId objectId = new ObjectId();
-//
-//    JsonObject doc = new JsonObject();
-//    doc.put("otherId", new JsonObject().put("$oid", objectId.toHexString()));
-//
-//    mongoDatabase.save(collection, doc, onSuccess(id -> {
-//      assertNotNull(id);
-//      mongoDatabase.findOne(collection, new JsonObject().put("_id", id), null, onSuccess(result -> {
-//        assertNotNull(result);
-//        assertNotNull(result.getJsonObject("otherId").getString("$oid"));
-//        assertEquals(objectId.toHexString(), result.getJsonObject("otherId").getString("$oid"));
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
+
+  private static JsonObject resultToId(InsertOneResult res2) {
+    return new JsonObject().put("$oid", res2.getInsertedId());
+  }
+
+  @Test
+  public void testSaveWithNestedListMap() throws Exception {
+    Map<String, Object> map = new HashMap<>();
+    Map<String, Object> nestedMap = new HashMap<>();
+    nestedMap.put("foo", "bar");
+    map.put("nestedMap", nestedMap);
+    map.put("nestedList", Arrays.asList(1, 2, 3));
+
+    String collection = randomCollection();
+    JsonObject doc = new JsonObject(map);
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(doc, onSuccess(res -> {
+      assertNotNull(res.getInsertedId());
+      coll.find(resultToIdFilter(res)).first().onSuccess(result -> {
+        assertNotNull(result);
+        assertNotNull(result.getJsonObject("nestedMap"));
+        assertEquals("bar", result.getJsonObject("nestedMap").getString("foo"));
+        assertNotNull(result.getJsonArray("nestedList"));
+        assertEquals(1, (int) result.getJsonArray("nestedList").getInteger(0));
+        assertEquals(2, (int) result.getJsonArray("nestedList").getInteger(1));
+        assertEquals(3, (int) result.getJsonArray("nestedList").getInteger(2));
+        testComplete();
+      });
+    }));
+    await();
+  }
+
+  private static JsonObject resultToIdFilter(InsertOneResult res) {
+    return new JsonObject().put("_id", resultToId(res));
+  }
+
+  @Test
+  public void testSaveAndReadBinary() throws Exception {
+
+    String collection = randomCollection();
+
+    Instant now = Instant.now();
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(now);
+    oos.close();
+
+    JsonObject doc = new JsonObject();
+    doc.put("now", new JsonObject().put("$binary", baos.toByteArray()));
+
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(doc, onSuccess(res -> {
+      assertNotNull(res.getInsertedId());
+      coll.find(resultToIdFilter(res)).first().onSuccess(result -> {
+        assertNotNull(result);
+        assertNotNull(result.getJsonObject("now"));
+        assertNotNull(result.getJsonObject("now").getBinary("$binary"));
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(result.getJsonObject("now").getBinary("$binary"));
+        ObjectInputStream ois = null;
+        try {
+          ois = new ObjectInputStream(bais);
+          Instant reconstitutedNow = (Instant) ois.readObject();
+
+          assertEquals(now, reconstitutedNow);
+        } catch (IOException | ClassNotFoundException e) {
+          e.printStackTrace();
+          assertTrue(false);
+        }
+        testComplete();
+      });
+    }));
+    await();
+  }
+
+  @Test
+  public void testSaveAndReadObjectId() throws Exception {
+
+    String collection = randomCollection();
+    ObjectId objectId = new ObjectId();
+
+    JsonObject doc = new JsonObject();
+    doc.put("otherId", new JsonObject().put("$oid", objectId.toHexString()));
+
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(doc, onSuccess(res -> {
+      assertNotNull(res.getInsertedId());
+      coll.find(resultToIdFilter(res)).first().onSuccess(result -> {
+        assertNotNull(result);
+        assertNotNull(result.getJsonObject("otherId").getString("$oid"));
+        assertEquals(objectId.toHexString(), result.getJsonObject("otherId").getString("$oid"));
+        testComplete();
+      });
+    }));
+    await();
+  }
+  //TODO implement WriteConcern and withWriteConcern
 //  @Test
 //  public void testSaveWithOptions() throws Exception {
 //    String collection = randomCollection();
@@ -599,121 +615,130 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
-//  @Test
-//  public void testFindOneAndUpdateDefault() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        mongoDatabase.findOneAndUpdate(collection, new JsonObject().put("num", 123), new JsonObject().put("$inc", new JsonObject().put("num", 7)), onSuccess(obj -> {
-//          assertEquals(123, (long) obj.getLong("num", -1L));
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOneAndUpdateNoRecord() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        mongoDatabase.findOneAndUpdate(collection, new JsonObject().put("num", 0), new JsonObject().put("$inc", new JsonObject().put("num", 7)), onSuccess(obj -> {
-//          assertNull(obj);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOneAndUpdateWithOptions() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        mongoDatabase.findOneAndUpdateWithOptions(collection,
-//          new JsonObject().put("num", 123),
-//          new JsonObject().put("$inc", new JsonObject().put("num", 7)),
-//          new FindOptions().setFields(new JsonObject().put("num", 1)),
-//          new UpdateOptions().setReturningNewDocument(true),
-//          onSuccess(obj -> {
+  @Test
+  public void testFindOneAndUpdateDefault() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(id -> {
+        assertNotNull(id);
+        coll.findOneAndUpdate(new JsonObject().put("num", 123), new JsonObject().put("$inc", new JsonObject().put("num", 7)), onSuccess(obj -> {
+          assertEquals(123, (long) obj.getLong("num", -1L));
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testFindOneAndUpdateNoRecord() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(res2 -> {
+        assertNotNull(res2.getInsertedId());
+        coll.findOneAndUpdate(new JsonObject().put("num", 0), new JsonObject().put("$inc", new JsonObject().put("num", 7)), onSuccess(obj -> {
+          assertNull(obj);
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  //FIXME $inc does not work
+  @Test
+  public void testFindOneAndUpdateWithOptions() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(id -> {
+        assertNotNull(id);
+        coll.findOneAndUpdate(
+          new JsonObject().put("num", 123),
+          new JsonObject().put("$inc", new JsonObject().put("num", 7)),
+          new FindOneAndUpdateOptions().projection(new JsonObject().put("num", 1))).
+          onSuccess(obj -> {
+            assertEquals(2, obj.size());
+            //FIXME uncomment!
 //            assertEquals(130, (long) obj.getLong("num", -1L));
-//            assertFalse(obj.containsKey("foo"));
-//            testComplete();
-//          }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOneAndReplaceDefault() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        doc.remove("_id");
-//        mongoDatabase.findOneAndReplace(collection, new JsonObject().put("num", 123), doc.put("num", 130), onSuccess(obj -> {
-//          assertEquals(123, (long) obj.getLong("num", -1L));
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOneAndReplaceWithOptions() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        doc.remove("_id");
-//        mongoDatabase.findOneAndReplaceWithOptions(collection,
-//          new JsonObject().put("num", 123),
-//          doc.put("num", 130),
-//          new FindOptions().setFields(new JsonObject().put("num", 1)),
-//          new UpdateOptions().setReturningNewDocument(true),
-//          onSuccess(obj -> {
-//            assertEquals(130, (long) obj.getLong("num", -1L));
-//            assertFalse(obj.containsKey("foo"));
-//            testComplete();
-//          }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOneAndDeleteDefault() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        mongoDatabase.findOneAndDelete(collection, new JsonObject().put("num", 123), onSuccess(obj -> {
-//          assertEquals(123, (long) obj.getLong("num", -1L));
-//
-//          mongoDatabase.count(collection, new JsonObject(), onSuccess(count -> {
-//            assertNotNull(count);
-//            assertEquals(0, count.intValue());
-//            testComplete();
-//          }));
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
+            assertFalse(obj.containsKey("foo"));
+            testComplete();
+          });
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testFindOneAndReplaceDefault() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(id -> {
+        assertNotNull(id.getInsertedId());
+        doc.remove("_id");
+        coll.findOneAndReplace(new JsonObject().put("num", 123), doc.put("num", 130), onSuccess(obj -> {
+          // by default it returns the doc before replace
+          assertEquals(123, (long) obj.getLong("num", -1L));
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testFindOneAndReplaceWithOptions() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(id -> {
+        assertNotNull(id);
+        doc.remove("_id");
+        coll.findOneAndReplace(
+          new JsonObject().put("num", 123),
+          doc.put("num", 130),
+          new FindOneAndReplaceOptions().projection(new JsonObject().put("num", 1)).returnDocument(ReturnDocument.AFTER)).
+          onSuccess(obj -> {
+            assertEquals(2, obj.size());
+            assertEquals(130, (long) obj.getLong("num", -1L));
+            assertFalse(obj.containsKey("foo"));
+            testComplete();
+          });
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testFindOneAndDeleteDefault() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(id -> {
+        assertNotNull(id);
+        coll.findOneAndDelete(new JsonObject().put("num", 123), onSuccess(obj -> {
+          assertEquals(123, (long) obj.getLong("num", -1L));
+          coll.countDocuments().onSuccess(count -> {
+            assertNotNull(count);
+            assertEquals(0, count.intValue());
+            testComplete();
+          });
+        }));
+      }));
+    }));
+    await();
+  }
+
+  //TODO implement Collation
 //  @Test
 //  public void testFindOneWithOptionsAndCollation() throws Exception {
 //    String collection = randomCollection();
