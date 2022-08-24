@@ -21,6 +21,7 @@ import com.mongodb.client.model.changestream.OperationType;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoNamespace;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Long;
 import java.lang.String;
 
@@ -53,6 +54,9 @@ public class ChangeStreamDocument<TDocument> {
   private Long txnNumber;
 
   private JsonObject lsid;
+
+  private ChangeStreamDocument() {
+  }
 
   /**
    *  Returns the resumeToken
@@ -213,6 +217,19 @@ public class ChangeStreamDocument<TDocument> {
       com.mongodb.client.model.changestream.ChangeStreamDocument<TDocument> from) {
     requireNonNull(from, "from is null");
     ChangeStreamDocument<TDocument> result = new ChangeStreamDocument<TDocument>();
+    result.resumeToken = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getResumeToken());
+    result.namespace = MongoNamespace.fromDriverClass(from.getNamespace());
+    result.namespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getNamespaceDocument());
+    result.destinationNamespace = MongoNamespace.fromDriverClass(from.getDestinationNamespace());
+    result.destinationNamespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDestinationNamespaceDocument());
+    result.databaseName = from.getDatabaseName();
+    result.fullDocument = from.getFullDocument();
+    result.documentKey = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDocumentKey());
+    result.clusterTime = ConversionUtilsImpl.INSTANCE.toLong(from.getClusterTime());
+    result.operationType = from.getOperationType();
+    result.updateDescription = UpdateDescription.fromDriverClass(from.getUpdateDescription());
+    result.txnNumber = ConversionUtilsImpl.INSTANCE.toLong(from.getTxnNumber());
+    result.lsid = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getLsid());
     return result;
   }
 }

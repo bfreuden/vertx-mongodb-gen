@@ -22,18 +22,12 @@ import io.vertx.codegen.annotations.DataObject;
 @DataObject(
     generateConverter = true
 )
-public abstract class DeleteResult {
+public class DeleteResult {
   private boolean acknowledged;
 
   private long deletedCount;
 
-  /**
-   * @hidden
-   */
-  public DeleteResult(com.mongodb.client.result.DeleteResult from) {
-    requireNonNull(from, "from is null");
-    this.acknowledged = from.wasAcknowledged();
-    this.deletedCount = from.getDeletedCount();
+  private DeleteResult() {
   }
 
   /**
@@ -52,5 +46,17 @@ public abstract class DeleteResult {
    */
   public long getDeletedCount() {
     return deletedCount;
+  }
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  public static DeleteResult fromDriverClass(com.mongodb.client.result.DeleteResult from) {
+    requireNonNull(from, "from is null");
+    DeleteResult result = new DeleteResult();
+    result.acknowledged = from.wasAcknowledged();
+    result.deletedCount = from.getDeletedCount();
+    return result;
   }
 }

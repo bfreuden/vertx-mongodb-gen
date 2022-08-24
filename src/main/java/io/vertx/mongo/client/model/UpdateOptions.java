@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
 import java.lang.String;
@@ -211,7 +212,7 @@ public class UpdateOptions {
       result.collation(this.collation.toDriverClass());
     }
     if (this.arrayFilters != null) {
-      result.arrayFilters(ConversionUtilsImpl.INSTANCE.toBsonList(this.arrayFilters));
+      result.arrayFilters(CollectionsConversionUtils.mapItems(this.arrayFilters, ConversionUtilsImpl.INSTANCE::toBson));
     }
     if (this.hint != null) {
       result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));

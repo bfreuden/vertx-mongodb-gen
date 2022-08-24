@@ -24,7 +24,7 @@ import java.lang.Object;
 @DataObject(
     generateConverter = true
 )
-public abstract class UpdateResult {
+public class UpdateResult {
   private boolean acknowledged;
 
   private long matchedCount;
@@ -33,15 +33,7 @@ public abstract class UpdateResult {
 
   private Object upsertedId;
 
-  /**
-   * @hidden
-   */
-  public UpdateResult(com.mongodb.client.result.UpdateResult from) {
-    requireNonNull(from, "from is null");
-    this.acknowledged = from.wasAcknowledged();
-    this.matchedCount = from.getMatchedCount();
-    this.modifiedCount = from.getModifiedCount();
-    this.upsertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getUpsertedId());
+  private UpdateResult() {
   }
 
   /**
@@ -78,5 +70,19 @@ public abstract class UpdateResult {
    */
   public Object getUpsertedId() {
     return upsertedId;
+  }
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  public static UpdateResult fromDriverClass(com.mongodb.client.result.UpdateResult from) {
+    requireNonNull(from, "from is null");
+    UpdateResult result = new UpdateResult();
+    result.acknowledged = from.wasAcknowledged();
+    result.matchedCount = from.getMatchedCount();
+    result.modifiedCount = from.getModifiedCount();
+    result.upsertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getUpsertedId());
+    return result;
   }
 }

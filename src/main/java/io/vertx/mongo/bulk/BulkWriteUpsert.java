@@ -29,13 +29,7 @@ public class BulkWriteUpsert {
 
   private Object id;
 
-  /**
-   * @hidden
-   */
-  public BulkWriteUpsert(com.mongodb.bulk.BulkWriteUpsert from) {
-    requireNonNull(from, "from is null");
-    this.index = from.getIndex();
-    this.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
+  private BulkWriteUpsert() {
   }
 
   /**
@@ -54,5 +48,17 @@ public class BulkWriteUpsert {
    */
   public Object getId() {
     return id;
+  }
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  public static BulkWriteUpsert fromDriverClass(com.mongodb.bulk.BulkWriteUpsert from) {
+    requireNonNull(from, "from is null");
+    BulkWriteUpsert result = new BulkWriteUpsert();
+    result.index = from.getIndex();
+    result.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
+    return result;
   }
 }

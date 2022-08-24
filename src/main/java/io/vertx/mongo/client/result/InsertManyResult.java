@@ -18,6 +18,7 @@ package io.vertx.mongo.client.result;
 import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Integer;
 import java.lang.Object;
@@ -26,18 +27,12 @@ import java.util.Map;
 @DataObject(
     generateConverter = true
 )
-public abstract class InsertManyResult {
+public class InsertManyResult {
   private boolean acknowledged;
 
   private Map<Integer, Object> insertedIds;
 
-  /**
-   * @hidden
-   */
-  public InsertManyResult(com.mongodb.client.result.InsertManyResult from) {
-    requireNonNull(from, "from is null");
-    this.acknowledged = from.wasAcknowledged();
-    this.insertedIds = ConversionUtilsImpl.INSTANCE.toIntegerObjectMap(from.getInsertedIds());
+  private InsertManyResult() {
   }
 
   /**
@@ -58,5 +53,17 @@ public abstract class InsertManyResult {
    */
   public Map<Integer, Object> getInsertedIds() {
     return insertedIds;
+  }
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  public static InsertManyResult fromDriverClass(com.mongodb.client.result.InsertManyResult from) {
+    requireNonNull(from, "from is null");
+    InsertManyResult result = new InsertManyResult();
+    result.acknowledged = from.wasAcknowledged();
+    result.insertedIds = CollectionsConversionUtils.mapValues(from.getInsertedIds(), ConversionUtilsImpl.INSTANCE::toObject);
+    return result;
   }
 }

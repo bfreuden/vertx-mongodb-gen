@@ -92,6 +92,11 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
+    public JsonObject toJsonObject(BsonDocument from) {
+        return null;
+    }
+
+    @Override
     public JsonObject toJsonObject(ObjectId from) {
         return null;
     }
@@ -118,6 +123,16 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public <T> List<WriteModel<T>> toWriteModelList(List<io.vertx.mongo.client.model.WriteModel<T>> from) {
+        return null;
+    }
+
+    @Override
+    public Long toLong(BsonTimestamp clusterTime) {
+        return null;
+    }
+
+    @Override
+    public Long toLong(BsonInt64 clusterTime) {
         return null;
     }
 }

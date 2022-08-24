@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.String;
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class UpdateDescription {
   private List<String> removedFields;
 
   private JsonObject updatedFields;
+
+  private UpdateDescription() {
+  }
 
   /**
    *  Returns the removedFields
@@ -56,6 +60,8 @@ public class UpdateDescription {
       com.mongodb.client.model.changestream.UpdateDescription from) {
     requireNonNull(from, "from is null");
     UpdateDescription result = new UpdateDescription();
+    result.removedFields = from.getRemovedFields();
+    result.updatedFields = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getUpdatedFields());
     return result;
   }
 }

@@ -29,11 +29,8 @@ import java.lang.Long;
 import java.lang.Object;
 import java.util.List;
 import java.util.Map;
-import org.bson.BsonBinary;
-import org.bson.BsonDocument;
-import org.bson.BsonTimestamp;
-import org.bson.BsonValue;
-import org.bson.Document;
+
+import org.bson.*;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
@@ -71,6 +68,8 @@ public abstract interface ConversionUtils {
 
   JsonObject toJsonObject(Document from);
 
+  JsonObject toJsonObject(BsonDocument from);
+
   JsonObject toJsonObject(ObjectId from);
 
   Object toObject(BsonValue from);
@@ -82,4 +81,7 @@ public abstract interface ConversionUtils {
   UpdateOptions toUpdateOptions(io.vertx.mongo.client.model.UpdateOptions from);
 
   <T> List<WriteModel<T>> toWriteModelList(List<io.vertx.mongo.client.model.WriteModel<T>> from);
+
+  Long toLong(BsonTimestamp clusterTime);
+  Long toLong(BsonInt64 clusterTime);
 }

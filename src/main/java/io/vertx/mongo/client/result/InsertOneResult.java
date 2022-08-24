@@ -24,18 +24,12 @@ import java.lang.Object;
 @DataObject(
     generateConverter = true
 )
-public abstract class InsertOneResult {
+public class InsertOneResult {
   private boolean acknowledged;
 
   private Object insertedId;
 
-  /**
-   * @hidden
-   */
-  public InsertOneResult(com.mongodb.client.result.InsertOneResult from) {
-    requireNonNull(from, "from is null");
-    this.acknowledged = from.wasAcknowledged();
-    this.insertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getInsertedId());
+  private InsertOneResult() {
   }
 
   /**
@@ -56,5 +50,17 @@ public abstract class InsertOneResult {
    */
   public Object getInsertedId() {
     return insertedId;
+  }
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  public static InsertOneResult fromDriverClass(com.mongodb.client.result.InsertOneResult from) {
+    requireNonNull(from, "from is null");
+    InsertOneResult result = new InsertOneResult();
+    result.acknowledged = from.wasAcknowledged();
+    result.insertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getInsertedId());
+    return result;
   }
 }

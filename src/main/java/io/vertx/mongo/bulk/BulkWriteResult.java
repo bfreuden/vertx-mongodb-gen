@@ -18,13 +18,13 @@ package io.vertx.mongo.bulk;
 import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.CollectionsConversionUtils;
 import java.util.List;
 
 @DataObject(
     generateConverter = true
 )
-public abstract class BulkWriteResult {
+public class BulkWriteResult {
   private boolean acknowledged;
 
   private int insertedCount;
@@ -39,18 +39,7 @@ public abstract class BulkWriteResult {
 
   private List<BulkWriteUpsert> upserts;
 
-  /**
-   * @hidden
-   */
-  public BulkWriteResult(com.mongodb.bulk.BulkWriteResult from) {
-    requireNonNull(from, "from is null");
-    this.acknowledged = from.wasAcknowledged();
-    this.insertedCount = from.getInsertedCount();
-    this.matchedCount = from.getMatchedCount();
-    this.deletedCount = from.getDeletedCount();
-    this.modifiedCount = from.getModifiedCount();
-    this.inserts = ConversionUtilsImpl.INSTANCE.toBulkWriteInsertList(from.getInserts());
-    this.upserts = ConversionUtilsImpl.INSTANCE.toBulkWriteUpsertList(from.getUpserts());
+  private BulkWriteResult() {
   }
 
   /**
@@ -131,5 +120,22 @@ public abstract class BulkWriteResult {
    */
   public List<BulkWriteUpsert> getUpserts() {
     return upserts;
+  }
+
+  /**
+   * @return mongo object
+   * @hidden
+   */
+  public static BulkWriteResult fromDriverClass(com.mongodb.bulk.BulkWriteResult from) {
+    requireNonNull(from, "from is null");
+    BulkWriteResult result = new BulkWriteResult();
+    result.acknowledged = from.wasAcknowledged();
+    result.insertedCount = from.getInsertedCount();
+    result.matchedCount = from.getMatchedCount();
+    result.deletedCount = from.getDeletedCount();
+    result.modifiedCount = from.getModifiedCount();
+    result.inserts = CollectionsConversionUtils.mapItems(from.getInserts(), _bean -> BulkWriteInsert.fromDriverClass(_bean));
+    result.upserts = CollectionsConversionUtils.mapItems(from.getUpserts(), _bean -> BulkWriteUpsert.fromDriverClass(_bean));
+    return result;
   }
 }

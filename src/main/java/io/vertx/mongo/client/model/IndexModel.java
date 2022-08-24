@@ -80,7 +80,7 @@ public class IndexModel {
       return new com.mongodb.client.model.IndexModel(__keys);
     } else if (__ctorIndex == 1) {
       Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(this.keys);
-      com.mongodb.client.model.IndexOptions __options = ConversionUtilsImpl.INSTANCE.toIndexOptions(this.options);
+      com.mongodb.client.model.IndexOptions __options = this.options.toDriverClass();
       return new com.mongodb.client.model.IndexModel(__keys, __options);
     } else {
       throw new IllegalArgumentException("unknown constructor");

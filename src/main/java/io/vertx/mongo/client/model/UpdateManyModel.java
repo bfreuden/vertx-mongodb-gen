@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.util.List;
 import org.bson.conversions.Bson;
@@ -145,16 +146,16 @@ public class UpdateManyModel<T> extends WriteModel<T> {
     } else if (__ctorIndex == 1) {
       Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
       Bson __update = ConversionUtilsImpl.INSTANCE.toBson(this.update);
-      com.mongodb.client.model.UpdateOptions __options = ConversionUtilsImpl.INSTANCE.toUpdateOptions(this.options);
+      com.mongodb.client.model.UpdateOptions __options = this.options.toDriverClass();
       return new com.mongodb.client.model.UpdateManyModel<T>(__filter, __update, __options);
     } else if (__ctorIndex == 2) {
       Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
-      List<Bson> __updatePipeline = ConversionUtilsImpl.INSTANCE.toBsonList(this.updatePipeline);
+      List<? extends Bson> __updatePipeline = CollectionsConversionUtils.mapItems(this.updatePipeline, ConversionUtilsImpl.INSTANCE::toBson);
       return new com.mongodb.client.model.UpdateManyModel<T>(__filter, __updatePipeline);
     } else if (__ctorIndex == 3) {
       Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
-      List<Bson> __updatePipeline = ConversionUtilsImpl.INSTANCE.toBsonList(this.updatePipeline);
-      com.mongodb.client.model.UpdateOptions __options = ConversionUtilsImpl.INSTANCE.toUpdateOptions(this.options);
+      List<? extends Bson> __updatePipeline = CollectionsConversionUtils.mapItems(this.updatePipeline, ConversionUtilsImpl.INSTANCE::toBson);
+      com.mongodb.client.model.UpdateOptions __options = this.options.toDriverClass();
       return new com.mongodb.client.model.UpdateManyModel<T>(__filter, __updatePipeline, __options);
     } else {
       throw new IllegalArgumentException("unknown constructor");

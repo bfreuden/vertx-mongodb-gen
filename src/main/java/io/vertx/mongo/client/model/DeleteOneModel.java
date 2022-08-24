@@ -83,7 +83,7 @@ public class DeleteOneModel<T> extends WriteModel<T> {
       return new com.mongodb.client.model.DeleteOneModel<T>(__filter);
     } else if (__ctorIndex == 1) {
       Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
-      com.mongodb.client.model.DeleteOptions __options = ConversionUtilsImpl.INSTANCE.toDeleteOptions(this.options);
+      com.mongodb.client.model.DeleteOptions __options = this.options.toDriverClass();
       return new com.mongodb.client.model.DeleteOneModel<T>(__filter, __options);
     } else {
       throw new IllegalArgumentException("unknown constructor");

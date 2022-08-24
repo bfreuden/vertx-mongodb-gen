@@ -26,5 +26,4 @@ public abstract class WriteModel<T> {
    * @hidden
    */
   public abstract com.mongodb.client.model.WriteModel<T> toDriverClass();
-
 }

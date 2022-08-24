@@ -97,7 +97,7 @@ public class ReplaceOneModel<T> extends WriteModel<T> {
       return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, this.replacement);
     } else if (__ctorIndex == 1) {
       Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
-      com.mongodb.client.model.ReplaceOptions __replaceOptions = ConversionUtilsImpl.INSTANCE.toReplaceOptions(this.replaceOptions);
+      com.mongodb.client.model.ReplaceOptions __replaceOptions = this.replaceOptions.toDriverClass();
       return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, this.replacement, __replaceOptions);
     } else {
       throw new IllegalArgumentException("unknown constructor");
