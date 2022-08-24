@@ -134,8 +134,8 @@ public class BulkWriteResult {
     result.matchedCount = from.getMatchedCount();
     result.deletedCount = from.getDeletedCount();
     result.modifiedCount = from.getModifiedCount();
-    result.inserts = CollectionsConversionUtils.mapItems(from.getInserts(), _bean -> BulkWriteInsert.fromDriverClass(_bean));
-    result.upserts = CollectionsConversionUtils.mapItems(from.getUpserts(), _bean -> BulkWriteUpsert.fromDriverClass(_bean));
+    result.inserts = CollectionsConversionUtils.mapItems(from.getInserts(), BulkWriteInsert::fromDriverClass);
+    result.upserts = CollectionsConversionUtils.mapItems(from.getUpserts(), BulkWriteUpsert::fromDriverClass);
     return result;
   }
 }

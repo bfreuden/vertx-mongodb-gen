@@ -15,11 +15,6 @@
 //
 package io.vertx.mongo.client;
 
-import com.mongodb.bulk.BulkWriteResult;
-import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.InsertManyResult;
-import com.mongodb.client.result.InsertOneResult;
-import com.mongodb.client.result.UpdateResult;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -30,6 +25,7 @@ import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.ReadConcern;
 import io.vertx.mongo.ReadPreference;
 import io.vertx.mongo.WriteConcern;
+import io.vertx.mongo.bulk.BulkWriteResult;
 import io.vertx.mongo.client.model.BulkWriteOptions;
 import io.vertx.mongo.client.model.CountOptions;
 import io.vertx.mongo.client.model.CreateIndexOptions;
@@ -47,9 +43,13 @@ import io.vertx.mongo.client.model.RenameCollectionOptions;
 import io.vertx.mongo.client.model.ReplaceOptions;
 import io.vertx.mongo.client.model.UpdateOptions;
 import io.vertx.mongo.client.model.WriteModel;
+import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
+import io.vertx.mongo.client.result.DeleteResult;
+import io.vertx.mongo.client.result.InsertManyResult;
+import io.vertx.mongo.client.result.InsertOneResult;
+import io.vertx.mongo.client.result.UpdateResult;
 import java.lang.Class;
 import java.lang.Long;
-import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
@@ -565,7 +565,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<JsonObject> watch();
+  MongoResult<ChangeStreamDocument<JsonObject>> watch();
 
   /**
    *  Creates a change stream for this collection.
@@ -575,7 +575,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoResult<JsonObject> watch(ChangeStreamOptions options);
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ChangeStreamOptions options);
 
   /**
    *  Creates a change stream for this collection.
@@ -584,7 +584,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
-  MongoResult<JsonObject> watch(List<JsonObject> pipeline);
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline);
 
   /**
    *  Creates a change stream for this collection.
@@ -594,52 +594,55 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
-  MongoResult<JsonObject> watch(List<JsonObject> pipeline, ChangeStreamOptions options);
-
-  /**
-   *  Creates a change stream for this collection.
-   *  @param clientSession the client session with which to associate this operation
-   *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoResult<JsonObject> watch(ClientSession clientSession);
-
-  /**
-   *  Creates a change stream for this collection.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param options options
-   *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoResult<JsonObject> watch(ClientSession clientSession, ChangeStreamOptions options);
-
-  /**
-   *  Creates a change stream for this collection.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param pipeline the aggregation pipeline to apply to the change stream
-   *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline);
-
-  /**
-   *  Creates a change stream for this collection.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param pipeline the aggregation pipeline to apply to the change stream
-   *  @param options options
-   *  @return the change stream read stream
-   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoResult<JsonObject> watch(ClientSession clientSession, List<JsonObject> pipeline,
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
       ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession);
+
+  /**
+   *  Creates a change stream for this collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      ChangeStreamOptions options);
+
+  /**
+   *  Creates a change stream for this collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      List<JsonObject> pipeline);
+
+  /**
+   *  Creates a change stream for this collection.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param pipeline the aggregation pipeline to apply to the change stream
+   *  @param options options
+   *  @return the change stream read stream
+   *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
+      List<JsonObject> pipeline, ChangeStreamOptions options);
 
   /**
    *  Aggregates documents according to the specified map-reduce function.
@@ -693,7 +696,7 @@ public interface MongoCollection<TDocument> {
    *  @param requests the writes to execute
    *  @return a future with a single element the BulkWriteResult
    */
-  Future<BulkWriteResult> bulkWrite(List<WriteModel<TDocument>> requests);
+  Future<BulkWriteResult> bulkWrite(List<? extends WriteModel<? extends TDocument>> requests);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
@@ -701,7 +704,7 @@ public interface MongoCollection<TDocument> {
    *  @param resultHandler an async result with a single element the BulkWriteResult
    *  @return <code>this</code>
    */
-  MongoCollection<TDocument> bulkWrite(List<WriteModel<TDocument>> requests,
+  MongoCollection<TDocument> bulkWrite(List<? extends WriteModel<? extends TDocument>> requests,
       Handler<AsyncResult<BulkWriteResult>> resultHandler);
 
   /**
@@ -710,54 +713,57 @@ public interface MongoCollection<TDocument> {
    *  @param options  the options to apply to the bulk write operation
    *  @return a future with a single element the BulkWriteResult
    */
-  Future<BulkWriteResult> bulkWrite(List<WriteModel<TDocument>> requests, BulkWriteOptions options);
-
-  /**
-   *  Executes a mix of inserts, updates, replaces, and deletes.
-   *  @param requests the writes to execute
-   *  @param options  the options to apply to the bulk write operation
-   *  @param resultHandler an async result with a single element the BulkWriteResult
-   *  @return <code>this</code>
-   */
-  MongoCollection<TDocument> bulkWrite(List<WriteModel<TDocument>> requests, BulkWriteOptions options,
-      Handler<AsyncResult<BulkWriteResult>> resultHandler);
-
-  /**
-   *  Executes a mix of inserts, updates, replaces, and deletes.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param requests the writes to execute
-   *  @return a future with a single element the BulkWriteResult
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests);
-
-  /**
-   *  Executes a mix of inserts, updates, replaces, and deletes.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param requests the writes to execute
-   *  @param resultHandler an async result with a single element the BulkWriteResult
-   *  @return <code>this</code>
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoCollection<TDocument> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests,
-      Handler<AsyncResult<BulkWriteResult>> resultHandler);
-
-  /**
-   *  Executes a mix of inserts, updates, replaces, and deletes.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param requests the writes to execute
-   *  @param options  the options to apply to the bulk write operation
-   *  @return a future with a single element the BulkWriteResult
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  Future<BulkWriteResult> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests,
+  Future<BulkWriteResult> bulkWrite(List<? extends WriteModel<? extends TDocument>> requests,
       BulkWriteOptions options);
 
   /**
    *  Executes a mix of inserts, updates, replaces, and deletes.
+   *  @param requests the writes to execute
+   *  @param options  the options to apply to the bulk write operation
+   *  @param resultHandler an async result with a single element the BulkWriteResult
+   *  @return <code>this</code>
+   */
+  MongoCollection<TDocument> bulkWrite(List<? extends WriteModel<? extends TDocument>> requests,
+      BulkWriteOptions options, Handler<AsyncResult<BulkWriteResult>> resultHandler);
+
+  /**
+   *  Executes a mix of inserts, updates, replaces, and deletes.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param requests the writes to execute
+   *  @return a future with a single element the BulkWriteResult
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<BulkWriteResult> bulkWrite(ClientSession clientSession,
+      List<? extends WriteModel<? extends TDocument>> requests);
+
+  /**
+   *  Executes a mix of inserts, updates, replaces, and deletes.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param requests the writes to execute
+   *  @param resultHandler an async result with a single element the BulkWriteResult
+   *  @return <code>this</code>
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoCollection<TDocument> bulkWrite(ClientSession clientSession,
+      List<? extends WriteModel<? extends TDocument>> requests,
+      Handler<AsyncResult<BulkWriteResult>> resultHandler);
+
+  /**
+   *  Executes a mix of inserts, updates, replaces, and deletes.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param requests the writes to execute
+   *  @param options  the options to apply to the bulk write operation
+   *  @return a future with a single element the BulkWriteResult
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<BulkWriteResult> bulkWrite(ClientSession clientSession,
+      List<? extends WriteModel<? extends TDocument>> requests, BulkWriteOptions options);
+
+  /**
+   *  Executes a mix of inserts, updates, replaces, and deletes.
    *  @param clientSession the client session with which to associate this operation
    *  @param requests the writes to execute
    *  @param options  the options to apply to the bulk write operation
@@ -766,8 +772,9 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollection<TDocument> bulkWrite(ClientSession clientSession, List<WriteModel<TDocument>> requests,
-      BulkWriteOptions options, Handler<AsyncResult<BulkWriteResult>> resultHandler);
+  MongoCollection<TDocument> bulkWrite(ClientSession clientSession,
+      List<? extends WriteModel<? extends TDocument>> requests, BulkWriteOptions options,
+      Handler<AsyncResult<BulkWriteResult>> resultHandler);
 
   /**
    *  Inserts the provided document. If the document is missing an identifier, the driver should generate one.
@@ -866,7 +873,7 @@ public interface MongoCollection<TDocument> {
    *  @return a future with a single element with the InsertManyResult or with either a
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  Future<InsertManyResult> insertMany(List<Object> documents);
+  Future<InsertManyResult> insertMany(List<? extends TDocument> documents);
 
   /**
    *  Inserts a batch of documents.
@@ -875,7 +882,7 @@ public interface MongoCollection<TDocument> {
    *  @return <code>this</code>
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  MongoCollection<TDocument> insertMany(List<Object> documents,
+  MongoCollection<TDocument> insertMany(List<? extends TDocument> documents,
       Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
@@ -885,58 +892,60 @@ public interface MongoCollection<TDocument> {
    *  @return a future with a single element with the InsertManyResult or with either a
    *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
    */
-  Future<InsertManyResult> insertMany(List<Object> documents, InsertManyOptions options);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param documents the documents to insert
-   *  @param options   the options to apply to the operation
-   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
-   *  @return <code>this</code>
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   */
-  MongoCollection<TDocument> insertMany(List<Object> documents, InsertManyOptions options,
-      Handler<AsyncResult<InsertManyResult>> resultHandler);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param documents the documents to insert
-   *  @return a future with a single element with the InsertManyResult or with either a
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  Future<InsertManyResult> insertMany(ClientSession clientSession, List<Object> documents);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param documents the documents to insert
-   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
-   *  @return <code>this</code>
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  MongoCollection<TDocument> insertMany(ClientSession clientSession, List<Object> documents,
-      Handler<AsyncResult<InsertManyResult>> resultHandler);
-
-  /**
-   *  Inserts a batch of documents.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param documents the documents to insert
-   *  @param options   the options to apply to the operation
-   *  @return a future with a single element with the InsertManyResult or with either a
-   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
-   *  @mongodb.server.release 3.6
-   *  @since 1.7
-   */
-  Future<InsertManyResult> insertMany(ClientSession clientSession, List<Object> documents,
+  Future<InsertManyResult> insertMany(List<? extends TDocument> documents,
       InsertManyOptions options);
 
   /**
    *  Inserts a batch of documents.
+   *  @param documents the documents to insert
+   *  @param options   the options to apply to the operation
+   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
+   *  @return <code>this</code>
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   */
+  MongoCollection<TDocument> insertMany(List<? extends TDocument> documents,
+      InsertManyOptions options, Handler<AsyncResult<InsertManyResult>> resultHandler);
+
+  /**
+   *  Inserts a batch of documents.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param documents the documents to insert
+   *  @return a future with a single element with the InsertManyResult or with either a
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<InsertManyResult> insertMany(ClientSession clientSession,
+      List<? extends TDocument> documents);
+
+  /**
+   *  Inserts a batch of documents.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param documents the documents to insert
+   *  @param resultHandler an async result with a single element with the InsertManyResult or with either a
+   *  @return <code>this</code>
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  MongoCollection<TDocument> insertMany(ClientSession clientSession,
+      List<? extends TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler);
+
+  /**
+   *  Inserts a batch of documents.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param documents the documents to insert
+   *  @param options   the options to apply to the operation
+   *  @return a future with a single element with the InsertManyResult or with either a
+   *  com.mongodb.DuplicateKeyException or com.mongodb.MongoException
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<InsertManyResult> insertMany(ClientSession clientSession,
+      List<? extends TDocument> documents, InsertManyOptions options);
+
+  /**
+   *  Inserts a batch of documents.
    *  @param clientSession the client session with which to associate this operation
    *  @param documents the documents to insert
    *  @param options   the options to apply to the operation
@@ -946,8 +955,9 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollection<TDocument> insertMany(ClientSession clientSession, List<Object> documents,
-      InsertManyOptions options, Handler<AsyncResult<InsertManyResult>> resultHandler);
+  MongoCollection<TDocument> insertMany(ClientSession clientSession,
+      List<? extends TDocument> documents, InsertManyOptions options,
+      Handler<AsyncResult<InsertManyResult>> resultHandler);
 
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
