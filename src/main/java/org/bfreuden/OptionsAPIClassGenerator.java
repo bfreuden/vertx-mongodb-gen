@@ -69,7 +69,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                     String mongoJavadoc = null;
                     AnnotationDesc[] annotations = parameter.annotations();
                     boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
-                    createOption(methods, optionType, optionName, optionName, mongoJavadoc, null, false, parameter.name(), deprecated);
+                    createOption(methods, constructor, optionType, optionName, optionName, mongoJavadoc, null, false, parameter.name(), deprecated);
                 }
 
             }
@@ -102,12 +102,12 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
             String mongoSetterName = setter.name();
             AnnotationDesc[] annotations = setter.annotations();
             boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
-            createOption(methods, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null, deprecated);
+            createOption(methods, setter, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null, deprecated);
 
         }
     }
 
-    protected void createOption(List<MethodDoc> methods, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName, boolean deprecated) {
+    protected void createOption(List<MethodDoc> methods, ExecutableMemberDoc methodDoc, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName, boolean deprecated) {
         if (optionsByName.containsKey(optionName))
             throw new IllegalStateException("option already exists: " + optionName + " for " + classDoc.qualifiedTypeName());
         Option option = new Option();
@@ -118,74 +118,77 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
         option.mongoJavadoc = mongoJavadoc;
         option.mongoSetterName = mongoSetterName;
         option.setterParamName = setterParamName;
+        option.type = getActualType(methodDoc, optionName, optionType, TypeLocation.PARAMETER);
+        if (option.type.vertxType.isPrimitive())
+            option.type.vertxType = option.type.vertxType.box();
         if (mongoCtorParamName != null)
             option.mandatory = true;
-        boolean needConversion = false;
-        if (optionType.asParameterizedType() != null) {
-            if (optionType.asParameterizedType().toString().equals("java.util.List<? extends org.bson.conversions.Bson>")) {
-                needConversion = true;
-                option.mongoType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), WildcardTypeName.subtypeOf(Bson.class));
-                option.vertxType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(JsonObject.class));
-            } else if (optionType.asParameterizedType().toString().equals("java.util.List<java.lang.String>")) {
-                needConversion = true;
-                option.mongoType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(String.class));
-                option.vertxType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(String.class));
-            } else {
-                throw new IllegalStateException("unsupported parametrized option: " + optionType.asParameterizedType() + " for " + classDoc.qualifiedTypeName());
-            }
-        } else {
-            String qualifiedTypeName = optionType.qualifiedTypeName();
-            if (optionType.isPrimitive()) {
-                String typeName = optionType.typeName();
-                switch (typeName) {
-                    case "boolean":
-                        option.mongoType = TypeName.BOOLEAN;
-                        break;
-                    case "int":
-                        option.mongoType = TypeName.INT;
-                        break;
-                    case "long":
-                        option.mongoType = TypeName.LONG;
-                        break;
-                    default:
-                        throw new IllegalStateException("unsupported primitive option type: " + optionType.asParameterizedType() + " for " + classDoc.qualifiedTypeName());
-                }
-                option.vertxType = option.mongoType.box();
-            } else if (Types.isKnown(qualifiedTypeName)) {
-                needConversion = true;
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                option.vertxType = Types.getMapped(qualifiedTypeName);
-            } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
-                option.optionType = true;
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
-            } else if (context.otherApiClasses.contains(qualifiedTypeName)) {
-                option.optionType = true;
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
-            } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
-            } else if (context.resultApiClasses.contains(qualifiedTypeName)) {
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
-            } else if (context.modelApiClasses.contains(qualifiedTypeName)) {
-                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
-            } else {
-                String builderFullyQualifiedName = qualifiedTypeName + ".Builder";
-                if (context.builderClasses.contains(builderFullyQualifiedName)) {
-                    option.mongoType = ClassName.bestGuess(qualifiedTypeName);
-                    option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
-                } else {
-                    if (!qualifiedTypeName.equals("com.mongodb.CreateIndexCommitQuorum"))
-                        throw new IllegalStateException("unsupported parameter type: " + qualifiedTypeName + " for " + classDoc.qualifiedTypeName());
-                }
-            }
-        }
-        if (!option.optionType && !option.withTimeUnit && needConversion && !option.vertxType.toString().equals(option.mongoType.toString())) {
-            option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.vertxType, option.mongoType);
-        }
+//        boolean needConversion = false;
+//        if (optionType.asParameterizedType() != null) {
+//            if (optionType.asParameterizedType().toString().equals("java.util.List<? extends org.bson.conversions.Bson>")) {
+//                needConversion = true;
+//                option.mongoType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), WildcardTypeName.subtypeOf(Bson.class));
+//                option.vertxType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(JsonObject.class));
+//            } else if (optionType.asParameterizedType().toString().equals("java.util.List<java.lang.String>")) {
+//                needConversion = true;
+//                option.mongoType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(String.class));
+//                option.vertxType = ParameterizedTypeName.get(ClassName.bestGuess(List.class.getName()), ClassName.get(String.class));
+//            } else {
+//                throw new IllegalStateException("unsupported parametrized option: " + optionType.asParameterizedType() + " for " + classDoc.qualifiedTypeName());
+//            }
+//        } else {
+//            String qualifiedTypeName = optionType.qualifiedTypeName();
+//            if (optionType.isPrimitive()) {
+//                String typeName = optionType.typeName();
+//                switch (typeName) {
+//                    case "boolean":
+//                        option.mongoType = TypeName.BOOLEAN;
+//                        break;
+//                    case "int":
+//                        option.mongoType = TypeName.INT;
+//                        break;
+//                    case "long":
+//                        option.mongoType = TypeName.LONG;
+//                        break;
+//                    default:
+//                        throw new IllegalStateException("unsupported primitive option type: " + optionType.asParameterizedType() + " for " + classDoc.qualifiedTypeName());
+//                }
+//                option.vertxType = option.mongoType.box();
+//            } else if (Types.isKnown(qualifiedTypeName)) {
+//                needConversion = true;
+//                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+//                option.vertxType = Types.getMapped(qualifiedTypeName);
+//            } else if (context.optionsApiClasses.contains(qualifiedTypeName)) {
+//                option.optionType = true;
+//                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+//                option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
+//            } else if (context.otherApiClasses.contains(qualifiedTypeName)) {
+//                option.optionType = true;
+//                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+//                option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
+//            } else if (context.enumApiClasses.contains(qualifiedTypeName)) {
+//                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+//                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
+//            } else if (context.resultApiClasses.contains(qualifiedTypeName)) {
+//                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+//                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
+//            } else if (context.modelApiClasses.contains(qualifiedTypeName)) {
+//                option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+//                option.vertxType = ClassName.bestGuess(qualifiedTypeName);
+//            } else {
+//                String builderFullyQualifiedName = qualifiedTypeName + ".Builder";
+//                if (context.builderClasses.contains(builderFullyQualifiedName)) {
+//                    option.mongoType = ClassName.bestGuess(qualifiedTypeName);
+//                    option.vertxType = ClassName.bestGuess(mapPackageName(qualifiedTypeName));
+//                } else {
+//                    if (!qualifiedTypeName.equals("com.mongodb.CreateIndexCommitQuorum"))
+//                        throw new IllegalStateException("unsupported parameter type: " + qualifiedTypeName + " for " + classDoc.qualifiedTypeName());
+//                }
+//            }
+//        }
+//        if (!option.optionType && !option.withTimeUnit && needConversion && !option.vertxType.toString().equals(option.mongoType.toString())) {
+//            option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.vertxType, option.mongoType);
+//        }
         Optional<MethodDoc> maybeGetter = methods.stream()
                 .filter(m -> m.parameters().length == 0 || option.withTimeUnit && m.parameters().length == 1 && m.parameters()[0].type().qualifiedTypeName().equals(TimeUnit.class.getName()))
                 .filter(m -> m.returnType().equals(optionType) || m.returnType().qualifiedTypeName().equals("java.lang.Boolean") && optionType.qualifiedTypeName().equals("boolean")|| option.name.equals("arrayFilters") && m.name().equals("getArrayFilters")|| option.name.equals("keyAltNames") && m.name().equals("getKeyAltNames"))

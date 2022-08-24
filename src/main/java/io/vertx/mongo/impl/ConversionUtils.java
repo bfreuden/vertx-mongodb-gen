@@ -15,22 +15,16 @@
 //
 package io.vertx.mongo.impl;
 
-import com.mongodb.client.model.DeleteOptions;
-import com.mongodb.client.model.IndexModel;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.WriteModel;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.bulk.BulkWriteInsert;
-import io.vertx.mongo.bulk.BulkWriteUpsert;
-import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Object;
-import java.util.List;
-import java.util.Map;
-
-import org.bson.*;
+import java.lang.String;
+import org.bson.BsonBinary;
+import org.bson.BsonDocument;
+import org.bson.BsonInt64;
+import org.bson.BsonTimestamp;
+import org.bson.BsonValue;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
@@ -44,44 +38,29 @@ public abstract interface ConversionUtils {
 
   BsonDocument toBsonDocument(JsonObject from);
 
-  List<Bson> toBsonList(List<JsonObject> from);
+  BsonInt64 toBsonInt64(Long from);
 
   BsonTimestamp toBsonTimestamp(Long from);
 
   BsonValue toBsonValue(Object from);
 
-  List<BulkWriteInsert> toBulkWriteInsertList(List<com.mongodb.bulk.BulkWriteInsert> from);
-
-  List<BulkWriteUpsert> toBulkWriteUpsertList(List<com.mongodb.bulk.BulkWriteUpsert> from);
-
   byte[] toByteArray(BsonBinary from);
-
-  DeleteOptions toDeleteOptions(io.vertx.mongo.client.model.DeleteOptions from);
 
   Document toDocument(JsonObject from);
 
-  List<IndexModel> toIndexModelList(List<io.vertx.mongo.client.model.IndexModel> from);
-
-  IndexOptions toIndexOptions(io.vertx.mongo.client.model.IndexOptions from);
-
-  Map<Integer, Object> toIntegerObjectMap(Map<Integer, BsonValue> from);
+  JsonObject toJsonObject(Bson from);
 
   JsonObject toJsonObject(Document from);
 
   JsonObject toJsonObject(BsonDocument from);
 
-  JsonObject toJsonObject(ObjectId from);
+  Long toLong(BsonTimestamp from);
+
+  Long toLong(BsonInt64 from);
 
   Object toObject(BsonValue from);
 
-  ObjectId toObjectId(JsonObject from);
+  ObjectId toObjectId(String from);
 
-  ReplaceOptions toReplaceOptions(io.vertx.mongo.client.model.ReplaceOptions from);
-
-  UpdateOptions toUpdateOptions(io.vertx.mongo.client.model.UpdateOptions from);
-
-  <T> List<WriteModel<T>> toWriteModelList(List<io.vertx.mongo.client.model.WriteModel<T>> from);
-
-  Long toLong(BsonTimestamp clusterTime);
-  Long toLong(BsonInt64 clusterTime);
+  String toString(ObjectId from);
 }

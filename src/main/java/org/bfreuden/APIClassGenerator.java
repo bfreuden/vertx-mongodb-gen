@@ -3,10 +3,10 @@ package org.bfreuden;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.mongo.MongoResult;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import org.bfreuden.mappers.*;
 import org.reactivestreams.Publisher;
 
 import java.io.File;
@@ -45,7 +45,264 @@ public abstract class APIClassGenerator {
 
     protected abstract void analyzeClass();
 
+    private ActualType getActualType2(ExecutableMemberDoc methodDoc, String name, Type type, TypeLocation location, List<ActualType> argumentOfParameterizedType) {
+        if (type.isPrimitive()) {
+            try {
+                Field field = TypeName.class.getField(type.toString().toUpperCase());
+                return ActualType.fromTypeName((TypeName) field.get(null));
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType ctype = (ParameterizedType) type;
+            Type[] typeArguments = ctype.typeArguments();
+            if (typeArguments == null || typeArguments.length == 0)
+                throw new IllegalStateException("parameterized type without argument");
+            List<TypeName> mongoTypeArguments = new ArrayList<>();
+            List<TypeName> vertxTypeArguments = new ArrayList<>();
+            List<ActualType> argumentTypes = new ArrayList<>();
+            for (Type typeArgument : typeArguments) {
+                ActualType argumentType = getActualType2(methodDoc, name, typeArgument, location, null);
+                argumentTypes.add(argumentType);
+                mongoTypeArguments.add(argumentType.mongoType);
+                vertxTypeArguments.add(argumentType.vertxType);
+            }
+            ActualType containingType = getActualType2(methodDoc, name, ctype.asClassDoc(), location, argumentTypes);
+            if (containingType.mapper instanceof ToReactiveImplMapperGenerator ||
+                    containingType.mapper instanceof ToDriverClassMapperGenerator ||
+                    containingType.mapper instanceof FromDriverClassMapperGenerator
+            ) {
+                containingType.mapper.setGeneric(true);
+            } else if (containingType.mapper instanceof CollectionMapperGenerator) {
+                MapperGenerator itemMapper = argumentTypes.get(0).mapper;
+                if (itemMapper == null)
+                    containingType.mapper = null;
+                else
+                    ((CollectionMapperGenerator) containingType.mapper).setItemMapper(itemMapper);
+            } else if (containingType.mapper instanceof MapMapperGenerator) {
+                MapperGenerator keyMapper = argumentTypes.get(0).mapper;
+                MapperGenerator valueMapper = argumentTypes.get(1).mapper;
+                if (keyMapper == null && valueMapper == null) {
+                    containingType.mapper = null;
+                } else {
+                    ((MapMapperGenerator)containingType.mapper).setKeyMapper(keyMapper);
+                    ((MapMapperGenerator)containingType.mapper).setValueMapper(valueMapper);
+                }
+            }
+            if (containingType.vertxImplType != null)
+                containingType.vertxImplType = ParameterizedTypeName.get((ClassName)containingType.vertxImplType, vertxTypeArguments.toArray(new TypeName[0]));
+            containingType.mongoType = ParameterizedTypeName.get((ClassName)containingType.mongoType, mongoTypeArguments.toArray(new TypeName[0]));
+            if (!containingType.isPublisher) {
+                containingType.vertxType = ParameterizedTypeName.get((ClassName)containingType.vertxType, vertxTypeArguments.toArray(new TypeName[0]));
+            } else {
+                // delayed initialization of the publisher
+                if (mongoTypeArguments.size() != 1 || vertxTypeArguments.size() != 1)
+                    throw new IllegalStateException("not the expected number of arguments for a publisher");
+                initializePublisherFields(methodDoc, mongoTypeArguments.get(0), argumentTypes.get(0), containingType);
+            }
+            return containingType;
+        } else if (type instanceof ClassDoc) {
+            ClassDoc ctype = (ClassDoc)type;
+            String qualifiedTypeName = ctype.qualifiedTypeName();
+
+            if (Types.isIgnored(qualifiedTypeName)) {
+                System.out.println("WARNING: ignored method because return type is ignored: " + methodDoc);
+                throw new RuntimeException("@ignored type@");
+            }
+            if (Types.isAcceptedAsIs(qualifiedTypeName)) {
+                ActualType result = ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));
+                if (qualifiedTypeName.equals(List.class.getName()) || qualifiedTypeName.equals(Set.class.getName()))
+                    result.mapper = new CollectionMapperGenerator();
+                else if (qualifiedTypeName.equals(Map.class.getName()))
+                    result.mapper = new MapMapperGenerator();
+                return result;
+            }
+
+            TypeName mapped2 = Types.getMapped2(qualifiedTypeName);
+            if (mapped2 != null) {
+                ActualType result = ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), mapped2);
+                String conversionMethod;
+                if (location == TypeLocation.PARAMETER)
+                    conversionMethod = context.conversionUtilsGenerator.addConversion(result.vertxType, result.mongoType);
+                else
+                    conversionMethod = context.conversionUtilsGenerator.addConversion(result.mongoType, result.vertxType);
+                result.mapper = new ConversionUtilsMapperGenerator(conversionMethod);
+                return result;
+            }
+
+            if (qualifiedTypeName.equals(Publisher.class.getName())) {
+                ActualType actualType = ActualType.fromTypeName(ClassName.get(Publisher.class));
+                actualType.isPublisher = true;
+                actualType.publisherClassName = ClassName.get(Publisher.class);
+                return actualType;
+            }
+            if (context.classDocs.containsKey(qualifiedTypeName)) {
+                if (context.enumApiClasses.contains(qualifiedTypeName)) {
+                    return ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));
+                } else {
+                    ActualType actualType = ActualType.fromMappedTypeName(ClassName.bestGuess(qualifiedTypeName), ClassName.bestGuess(mapPackageName(qualifiedTypeName)));
+                    actualType.isApiType = true;
+                    boolean isReactiveApiClass = context.reactiveApiClasses.contains(qualifiedTypeName);
+                    if (context.resultApiClasses.contains(qualifiedTypeName) || isReactiveApiClass)
+                        actualType.toMongoEnabledType = true;
+                    if (isReactiveApiClass)
+                        actualType.vertxImplType = ClassName.bestGuess(mapPackageName(qualifiedTypeName, true));
+                    // look for a publisher
+                    Type[] interfaces = ctype.interfaceTypes();
+                    if (interfaces != null) {
+                        for (Type interf : interfaces) {
+                            if (interf.qualifiedTypeName().equals(Publisher.class.getName())) {
+                                actualType.isPublisher = true;
+                                actualType.publisherClassName = ClassName.bestGuess(qualifiedTypeName);
+                                ParameterizedType parameterizedInterfaceType = interf.asParameterizedType();
+                                if (parameterizedInterfaceType == null)
+                                    throw new IllegalStateException("publisher interface not parametrized");
+                                Type[] publishedTypes = parameterizedInterfaceType.typeArguments();
+                                if (publishedTypes == null || publishedTypes.length != 1)
+                                    throw new IllegalStateException("publisher interface must have a single parameter");
+                                // HACK for ListDatabasePublisher (?)
+                                if ((publishedTypes[0] instanceof TypeVariable))
+                                    break;
+                                // HACK for ChangeStreamPublisher
+                                if (publishedTypes[0] instanceof ParameterizedType) {
+                                    if (((ParameterizedType)publishedTypes[0]).typeArguments()[0] instanceof TypeVariable && argumentOfParameterizedType.size() == 1) {
+                                        ActualType publishedType = getActualType2(methodDoc, name, publishedTypes[0].asClassDoc(), location, null);
+                                        publishedType.vertxType = ParameterizedTypeName.get((ClassName)publishedType.vertxType, argumentOfParameterizedType.get(0).vertxType);
+                                        publishedType.mongoType = ParameterizedTypeName.get((ClassName)publishedType.mongoType, argumentOfParameterizedType.get(0).mongoType);
+                                        actualType.publishedType = publishedType;
+                                        actualType.publishedByInterface = true;
+                                        break;
+                                    }
+                                }
+                                actualType.publishedType = getActualType2(methodDoc, name, publishedTypes[0], location, null);
+                                actualType.publishedByInterface = true;
+                                initializePublisherFields(methodDoc, actualType.publishedType.mongoType, null, actualType);
+                                return actualType;
+
+                            }
+                        }
+                    }
+                    if (location == TypeLocation.RETURN && context.reactiveApiClasses.contains(qualifiedTypeName))
+                        actualType.mapper = new ToReactiveImplMapperGenerator(ClassName.bestGuess(mapPackageName(qualifiedTypeName, true)));
+                    else if (location == TypeLocation.RETURN) {
+                        actualType.mapper = new FromDriverClassMapperGenerator(actualType.vertxType);
+                    } else {
+                        actualType.mapper = new ToDriverClassMapperGenerator();
+                    }
+                    return actualType;
+                }
+            } else {
+                throw new IllegalStateException("unsupported class: " + qualifiedTypeName);
+            }
+        } else if (type.getClass().getName().contains("ArrayType")) {
+            ActualType actualType2 = getActualType2(methodDoc, name, type.asClassDoc(), location, null);
+            actualType2.mongoType = ArrayTypeName.of(actualType2.mongoType);
+            actualType2.vertxType = ArrayTypeName.of(actualType2.vertxType);
+            return actualType2;
+        } else if (type instanceof TypeVariable) {
+            TypeVariable ctype = (TypeVariable)type;
+            return ActualType.fromTypeName(TypeVariableName.get(ctype.typeName()));
+        } else if (type instanceof WildcardType) {
+            WildcardType wtype = (WildcardType) type;
+            Type[] extendsTypes = wtype.extendsBounds();
+            Type[] superTypes = wtype.superBounds();
+            if (extendsTypes != null && extendsTypes.length > 0 && superTypes != null && superTypes.length > 0)
+                throw new IllegalStateException("wildcard with many extends and super type: " + wtype);
+            if (extendsTypes != null) {
+                if (extendsTypes.length > 1)
+                    throw new IllegalStateException("wildcard with many extends type: " + wtype);
+                for (Type extendsType: extendsTypes) {
+                    ActualType containingType = getActualType2(methodDoc, name, extendsType, location, null);
+                    containingType.mongoType = WildcardTypeName.subtypeOf(containingType.mongoType);
+                    if (!containingType.vertxType.toString().equals(JsonObject.class.getName()) &&
+                        !containingType.vertxType.toString().equals(JsonArray.class.getName())
+                    )
+                        containingType.vertxType = WildcardTypeName.subtypeOf(containingType.vertxType);
+                    return containingType;
+                }
+            }
+            if (superTypes != null) {
+                if (superTypes.length > 1)
+                    throw new IllegalStateException("wildcard with many super type: " + wtype);
+                for (Type superType: superTypes) {
+                    ActualType containingType = getActualType2(methodDoc, name, superType, location, null);
+                    containingType.mongoType = WildcardTypeName.supertypeOf(containingType.mongoType);
+                    if (!containingType.vertxType.toString().equals(JsonObject.class.getName()) &&
+                        !containingType.vertxType.toString().equals(JsonArray.class.getName())
+                    )
+                        containingType.vertxType = WildcardTypeName.supertypeOf(containingType.vertxType);
+                    return containingType;
+                }
+            }
+            throw new IllegalStateException("wildcard with no extends or super types: " + wtype);
+        } else {
+            throw new IllegalStateException("unsupported javadoc type: " + type.getClass().getName());
+        }
+    }
+
+    private void initializePublisherFields(ExecutableMemberDoc methodDoc, TypeName mongoPublishedType, ActualType publishedType, ActualType containingType) {
+        // check single publisher
+        if (mongoPublishedType.toString().equals("com.mongodb.reactivestreams.client.Success") || mongoPublishedType.toString().equals(Void.class.getName())) {
+            containingType.singlePublisher = true;
+            containingType.publishedType = ActualType.fromMappedTypeName(mongoPublishedType, ClassName.get(Void.class));
+        }
+        if (!containingType.singlePublisher) {
+            String rawCommentText = methodDoc.getRawCommentText();
+            Optional<String> first = Arrays.stream(rawCommentText.split("\\n+")).filter(it -> it.contains("@return")).findFirst();
+            if (first.isPresent()) {
+                String returnSpec = first.get();
+                containingType.singlePublisher = returnSpec.contains("empty publisher") ||  returnSpec.contains("single element") || returnSpec.contains("a publisher for the") || returnSpec.contains("a Publisher containing the");
+            } else {
+                throw new IllegalStateException("no @return: can't detect single publisher");
+            }
+        }
+        // check published type
+        if (containingType.publishedType == null)
+            containingType.publishedType = publishedType;
+        // initialize output vertxType
+        if (!containingType.singlePublisher) {
+            String publisherClassName = containingType.publisherClassName.toString();
+            if (publisherClassName.equals(Publisher.class.getName())) {
+                containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.MongoResult"), containingType.publishedType.vertxType);
+            } else {
+                InspectionContext.PublisherDesc publisherDesc = context.publisherDescriptions.get(publisherClassName);
+                if (publisherDesc == null)
+                    throw new IllegalStateException("no such publisher in context: " + publisherClassName);
+                if (publisherDesc.toCollectionMethodName != null)
+                    containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.MongoCollectionResult"), containingType.publishedType.vertxType);
+                else
+                    containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.MongoResult"), containingType.publishedType.vertxType);
+            }
+        } else {
+            containingType.vertxType = ParameterizedTypeName.get(ClassName.get(Future.class), containingType.publishedType.vertxType);
+        }
+    }
+
+
     protected ActualType getActualType(ExecutableMemberDoc methodDoc, String name, Type type, TypeLocation location) {
+        try {
+            ActualType result = getActualType2(methodDoc, name, type, location, null);
+//            if (result.isApiType || "watch".equals(methodDoc.name())) // FIXME watch
+//                return result;
+//            if (result.isPublisher) {
+//                if (!result.publishedType.vertxType.toString().equals(result.publishedType.mongoType.toString()) && !result.toMongoEnabledType)
+//                    result.conversionMethod = context.conversionUtilsGenerator.addConversion(result.publishedType.mongoType, result.publishedType.vertxType);
+//            } else {
+//                if (!result.vertxType.toString().equals(result.mongoType.toString()) && !result.toMongoEnabledType)
+//                    if (location == TypeLocation.RETURN)
+//                        result.conversionMethod = context.conversionUtilsGenerator.addConversion(result.mongoType, result.vertxType);
+//                    else
+//                        result.conversionMethod = context.conversionUtilsGenerator.addConversion(result.vertxType, result.mongoType);
+//            }
+            return result;
+        } catch (RuntimeException ex) {
+            if ("@ignored type@".equals(ex.getMessage()))
+                return null;
+            else
+                throw new RuntimeException(ex);
+        }
+    }
+    protected ActualType getActualType1(ExecutableMemberDoc methodDoc, String name, Type type, TypeLocation location) {
         try {
             if (!type.isPrimitive()) {
                 String qualifiedTypeName = type.qualifiedTypeName();
@@ -224,13 +481,20 @@ public abstract class APIClassGenerator {
     }
 
     static class ActualType {
+        public MapperGenerator mapper;
+        boolean toMongoEnabledType = false; // remove
+        public ActualType publishedType;
+        public boolean publishedByInterface; // remove
         TypeName mongoType;
         TypeName vertxType;
+        boolean isApiType; // remove
+        TypeName vertxImplType; // remove
         boolean isPublisher;
         boolean singlePublisher;
-        boolean noArgPublisher;
+        boolean noArgPublisher; // remove
         ClassName publisherClassName;
-
+        boolean isReactive;
+        String conversionMethod; // remove
         private ActualType() {
         }
 
@@ -305,30 +569,21 @@ public abstract class APIClassGenerator {
     }
 
     protected static class MongoMethodParameter {
-        boolean optionType = false;
         public String conversionMethod;
-        boolean reactiveType = false;
         String name;
-        ClassName publisherClassName;
-        boolean isPublisher;
-        boolean isSinglePublisher;
-        boolean noArgPublisher;
-        TypeName mongoType;
-        TypeName vertxType;
-        ClassName vertxResultClassName;
+        ActualType type;
 
         TypeName getFullVertxType() {
-            return isPublisher ? ParameterizedTypeName.get(vertxResultClassName, vertxType) : vertxType;
+            return type.vertxType;
         }
 
         TypeName getFullMongoType() {
-            return isPublisher ? (noArgPublisher ? publisherClassName : ParameterizedTypeName.get(publisherClassName, mongoType)) : mongoType;
+            return type.mongoType;
         }
     }
 
     protected class MongoMethod {
         String signature;
-        String resultConversionMethod;
         ArrayList<TypeVariableName> typeVariables = new ArrayList<>();
         String mongoName;
         String vertxName;
@@ -336,67 +591,62 @@ public abstract class APIClassGenerator {
         String vertxResultOrFutureJavadoc;
         String vertxAsyncJavadoc;
         String vertxWithOptionsJavadoc;
-        MongoMethodParameter returnType;
+        ActualType returnType;
         List<MongoMethodParameter> params = new ArrayList<>();
-        ParameterizedTypeName handlerParam;
 
         void computeActualReturnTypes(InspectionContext context, ActualType actualReturnType) {
-            returnType = new MongoMethodParameter();
+//            returnType = new MongoMethodParameter();
+            returnType = actualReturnType;
 
-            if (actualReturnType.isPublisher) {
-                returnType.isPublisher = true;
-                returnType.publisherClassName = actualReturnType.publisherClassName;
-                returnType.mongoType = actualReturnType.mongoType;
-                returnType.vertxType = actualReturnType.vertxType;
-                returnType.noArgPublisher = actualReturnType.noArgPublisher;
-                if (actualReturnType.singlePublisher) {
-                    returnType.isSinglePublisher = true;
-                    if (actualReturnType.mongoType != null) {
-                        if (actualReturnType.mongoType.toString().equals("TDocument")) {
-                            returnType.vertxResultClassName = ClassName.get(Future.class);
-                        } else {
-                            TypeName paramTypeName;
-                            if (context.reactiveApiClasses.contains(actualReturnType.mongoType.toString())) {
-                                paramTypeName = ClassName.bestGuess(mapPackageName(actualReturnType.mongoType.toString()));
-                            } else if (Types.isKnown(actualReturnType.mongoType.toString())) {
-                                paramTypeName = Types.getMapped(actualReturnType.mongoType.toString());
-                            } else
-                                paramTypeName = ClassName.bestGuess(actualReturnType.mongoType.toString());
-                            returnType.vertxType = paramTypeName;
-                            returnType.vertxResultClassName = ClassName.get(Future.class);
-                        }
-                    } else {
-                        returnType.vertxType = ClassName.get(Void.class);
-                        returnType.vertxResultClassName = ClassName.get(Future.class);
-                    }
-                    handlerParam = ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), returnType.vertxType));
-                } else {
-                    if (actualReturnType.mongoType != null) {
-//                        returnType.vertxResultClassName = mongoName.equals("watch") ? ClassName.get(ReadStream.class) : ClassName.get(MongoResult.class);
-                        InspectionContext.PublisherDesc publisherDesc = context.publisherDescriptions.get(actualReturnType.publisherClassName.toString());
-                        if (publisherDesc != null) {
-                            returnType.vertxResultClassName = publisherDesc.resultClassName;
-                        } else {
-                            returnType.vertxResultClassName = ClassName.get(MongoResult.class);
-                        }
-                        if (actualReturnType.mongoType.toString().equals("TDocument")) {
-                            returnType.vertxType = TypeVariableName.get("TDocument");
-                        } else if (Types.isKnown(actualReturnType.mongoType.toString())) {
-                            returnType.vertxType = Types.getMapped(actualReturnType.mongoType.toString());
-                        } else {
-                            returnType.vertxType = actualReturnType.vertxType;
-                        }
-
-                    } else if (actualReturnType.publisherClassName.toString().equals("com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher")) {
-                        returnType.vertxResultClassName = ClassName.get(MongoResult.class);
-                        returnType.vertxType = ClassName.bestGuess("com.mongodb.client.gridfs.model.GridFSFile");
-                    } else
-                        throw new IllegalStateException("not implemented or not supported");
-                }
-            } else {
-                returnType.mongoType = actualReturnType.mongoType;
-                returnType.vertxType = actualReturnType.vertxType;
-            }
+//            if (actualReturnType.isPublisher) {
+//                returnType.type = actualReturnType;
+//                if (actualReturnType.singlePublisher) {
+//                    if (actualReturnType.mongoType != null) {
+//                        if (actualReturnType.mongoType.toString().equals("TDocument")) {
+//                            returnType.vertxResultClassName = ClassName.get(Future.class);
+//                        } else {
+//                            TypeName paramTypeName;
+//                            if (context.reactiveApiClasses.contains(actualReturnType.mongoType.toString())) {
+//                                paramTypeName = ClassName.bestGuess(mapPackageName(actualReturnType.mongoType.toString()));
+//                            } else if (Types.isKnown(actualReturnType.mongoType.toString())) {
+//                                paramTypeName = Types.getMapped(actualReturnType.mongoType.toString());
+//                            } else
+//                                paramTypeName = ClassName.bestGuess(actualReturnType.mongoType.toString());
+//                            returnType.vertxType = paramTypeName;
+//                            returnType.vertxResultClassName = ClassName.get(Future.class);
+//                        }
+//                    } else {
+//                        returnType.vertxType = ClassName.get(Void.class);
+//                        returnType.vertxResultClassName = ClassName.get(Future.class);
+//                    }
+//                    handlerParam = ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), returnType.vertxType));
+//                } else {
+//                    if (actualReturnType.mongoType != null) {
+////                        returnType.vertxResultClassName = mongoName.equals("watch") ? ClassName.get(ReadStream.class) : ClassName.get(MongoResult.class);
+//                        InspectionContext.PublisherDesc publisherDesc = context.publisherDescriptions.get(actualReturnType.publisherClassName.toString());
+//                        if (publisherDesc != null) {
+//                            returnType.vertxResultClassName = publisherDesc.resultClassName;
+//                        } else {
+//                            returnType.vertxResultClassName = ClassName.get(MongoResult.class);
+//                        }
+//                        if (actualReturnType.mongoType.toString().equals("TDocument")) {
+//                            returnType.vertxType = TypeVariableName.get("TDocument");
+//                        } else if (Types.isKnown(actualReturnType.mongoType.toString())) {
+//                            returnType.vertxType = Types.getMapped(actualReturnType.mongoType.toString());
+//                        } else {
+//                            returnType.vertxType = actualReturnType.vertxType;
+//                        }
+//
+//                    } else if (actualReturnType.publisherClassName.toString().equals("com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher")) {
+//                        returnType.vertxResultClassName = ClassName.get(MongoResult.class);
+//                        returnType.vertxType = ClassName.bestGuess("com.mongodb.client.gridfs.model.GridFSFile");
+//                    } else
+//                        throw new IllegalStateException("not implemented or not supported");
+//                }
+//            } else {
+//                returnType.mongoType = actualReturnType.mongoType;
+//                returnType.vertxType = actualReturnType.vertxType;
+//            }
 
         }
         void computeJavadocs() {
@@ -407,7 +657,7 @@ public abstract class APIClassGenerator {
                     StringJoiner newRawCommentText = new StringJoiner("\n");
                     StringJoiner asyncNewRawCommentText = new StringJoiner("\n");
                     StringJoiner withOptionsNewRawCommentText = new StringJoiner("\n");
-                    String replacement = mongoName.equals("watch") ? "read stream" : (returnType.isSinglePublisher ? "future" : "result");
+                    String replacement = mongoName.equals("watch") ? "read stream" : (returnType.singlePublisher ? "future" : "result");
                     for (String docLine : Arrays.stream(mongoJavadoc.split("\\n+")).collect(Collectors.toList())) {
                         if (docLine.contains("@return")) {
                             withOptionsNewRawCommentText.add(docLine.replaceAll("@return.*", "@param options options"));
@@ -461,10 +711,9 @@ public abstract class APIClassGenerator {
         Optional<TypeVariable> resultType = Arrays.stream(methodTypeVariables).filter(v -> v.qualifiedTypeName().equals("TResult")).findFirst();
         boolean resultParameter = resultType.isPresent();
         if (resultParameter) {
-            System.out.println("INFO: return type of " + methodDoc + " has been ignored because it has a TResult type parameter");
+            System.out.println("INFO: method " + methodDoc + " has been ignored because it has a TResult type parameter");
             return null;
         }
-
 
         if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                 methodDoc.name().equals("downloadToPublisher") &&
@@ -492,11 +741,11 @@ public abstract class APIClassGenerator {
             System.out.println("WARNING: return type of " + methodDoc + " is unknown so method has been ignored");
             return null;
         }
-        if (actualReturnType != null) {
-            mongoMethod.computeActualReturnTypes(context, actualReturnType);
-            if (mongoMethod.returnType.mongoType != null && mongoMethod.returnType.mongoType.toString().equals(classDoc.qualifiedTypeName()))
-                mongoMethod.returnType.vertxType = this.fluentReturnType;
-        }
+//        if (actualReturnType != null) {
+//            mongoMethod.computeActualReturnTypes(context, actualReturnType);
+//            if (mongoMethod.returnType.type.mongoType != null && mongoMethod.returnType.type.mongoType.toString().equals(classDoc.qualifiedTypeName()))
+//                mongoMethod.returnType.type.vertxType = this.fluentReturnType;
+//        }
         if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                 methodDoc.name().equals("downloadToPublisher")
         ) {
@@ -504,16 +753,15 @@ public abstract class APIClassGenerator {
                 mongoMethod.vertxName = "downloadByObjectId";
             else
                 mongoMethod.vertxName = "downloadByFilename";
-
         }
-        if (mongoMethod.returnType.isPublisher &&
-                mongoMethod.returnType.mongoType != null &&
-                !context.reactiveApiClasses.contains(mongoMethod.returnType.mongoType.toString()) &&
-                mongoMethod.returnType.mongoType.toString().contains(".") && // not a TDocument
-                !mongoMethod.returnType.mongoType.equals(mongoMethod.returnType.vertxType)
-        ) {
-            mongoMethod.resultConversionMethod = context.conversionUtilsGenerator.addConversion(mongoMethod.returnType.mongoType, mongoMethod.returnType.vertxType);
-        }
+//        if (mongoMethod.returnType.type.isPublisher &&
+//                mongoMethod.returnType.type.mongoType != null &&
+//                !context.reactiveApiClasses.contains(mongoMethod.returnType.type.mongoType.toString()) &&
+//                mongoMethod.returnType.type.mongoType.toString().contains(".") && // not a TDocument
+//                !mongoMethod.returnType.type.mongoType.equals(mongoMethod.returnType.type.vertxType)
+//        ) {
+//            mongoMethod.resultConversionMethod = context.conversionUtilsGenerator.addConversion(mongoMethod.returnType.type.mongoType, mongoMethod.returnType.type.vertxType);
+//        }
         for (Parameter param : methodDoc.parameters()) {
             MongoMethodParameter methodParameter = new MongoMethodParameter();
             methodParameter.name = param.name();
@@ -526,29 +774,26 @@ public abstract class APIClassGenerator {
                 System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored");
                 return null;
             }
-            methodParameter.mongoType = actualParamType.mongoType;
-            methodParameter.vertxType = actualParamType.vertxType;
+            methodParameter.type = actualParamType;
             ClassName mongoRawType = null;
-            if (methodParameter.mongoType instanceof ParameterizedTypeName) {
-                ParameterizedTypeName pmongoType = (ParameterizedTypeName)methodParameter.mongoType;
-                mongoRawType = pmongoType.rawType;
-            } else if (methodParameter.mongoType instanceof ClassName) {
-                mongoRawType = (ClassName) methodParameter.mongoType;
-            }
-            if (context.optionsApiClasses.contains(methodParameter.mongoType.toString()) || context.otherApiClasses.contains(methodParameter.mongoType.toString())) {
-                methodParameter.optionType = true;
-            } else if (mongoRawType != null && context.reactiveApiClasses.contains(mongoRawType.toString())) {
-                methodParameter.reactiveType = true;
-            }
+//            if (methodParameter.mongoType instanceof ParameterizedTypeName) {
+//                ParameterizedTypeName pmongoType = (ParameterizedTypeName)methodParameter.mongoType;
+//                mongoRawType = pmongoType.rawType;
+//            } else if (methodParameter.mongoType instanceof ClassName) {
+//                mongoRawType = (ClassName) methodParameter.mongoType;
+//            }
+//            if (context.optionsApiClasses.contains(methodParameter.mongoType.toString()) || context.otherApiClasses.contains(methodParameter.mongoType.toString())) {
+//                methodParameter.toMongoEnabledType = true;
+//            }
 
-            if (!(methodParameter.vertxType instanceof TypeVariableName) &&
-                    !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString()) &&
-                    !context.otherApiClasses.contains(methodParameter.mongoType.toString()) &&
-                    !context.optionsApiClasses.contains(methodParameter.mongoType.toString()) &&
-                    !context.reactiveApiClasses.contains(methodParameter.mongoType.toString())
-            ) {
-                methodParameter.conversionMethod = context.conversionUtilsGenerator.addConversion(methodParameter.vertxType, methodParameter.mongoType);
-            }
+//            if (!(methodParameter.vertxType instanceof TypeVariableName) &&
+//                    !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString()) &&
+//                    !context.otherApiClasses.contains(methodParameter.mongoType.toString()) &&
+//                    !context.optionsApiClasses.contains(methodParameter.mongoType.toString()) &&
+//                    !context.reactiveApiClasses.contains(methodParameter.mongoType.toString())
+//            ) {
+//                methodParameter.conversionMethod = context.conversionUtilsGenerator.addConversion(methodParameter.vertxType, methodParameter.mongoType);
+//            }
             mongoMethod.params.add(methodParameter);
             // FIXME: for the moment publisher parameters are ignored
             if (actualParamType.isPublisher) {

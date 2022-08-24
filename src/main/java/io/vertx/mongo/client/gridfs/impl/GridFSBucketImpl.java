@@ -18,10 +18,8 @@ package io.vertx.mongo.client.gridfs.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
-import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
-import com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -34,9 +32,9 @@ import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.gridfs.GridFSFindOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
+import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoClientContext;
-import io.vertx.mongo.impl.MongoResultImpl;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Object;
 import java.lang.Override;
@@ -70,23 +68,26 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public WriteConcern getWriteConcern() {
-    return WriteConcern.fromDriverClass(wrapped.getWriteConcern());
+    com.mongodb.WriteConcern __result = wrapped.getWriteConcern();
+    return  WriteConcern.fromDriverClass(__result);
   }
 
   @Override
   public ReadPreference getReadPreference() {
-    return ReadPreference.fromDriverClass(wrapped.getReadPreference());
+    com.mongodb.ReadPreference __result = wrapped.getReadPreference();
+    return  ReadPreference.fromDriverClass(__result);
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    return ReadConcern.fromDriverClass(wrapped.getReadConcern());
+    com.mongodb.ReadConcern __result = wrapped.getReadConcern();
+    return  ReadConcern.fromDriverClass(__result);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withChunkSizeBytes(int chunkSizeBytes) {
-    GridFSBucket __wrapped = wrapped.withChunkSizeBytes(chunkSizeBytes);
-    return new GridFSBucketImpl(this.clientContext, __wrapped);
+    GridFSBucket __result = wrapped.withChunkSizeBytes(chunkSizeBytes);
+    return  new GridFSBucketImpl(clientContext, __result);
   }
 
   @Override
@@ -94,28 +95,28 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference is null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    GridFSBucket __wrapped = wrapped.withReadPreference(__readPreference);
-    return new GridFSBucketImpl(this.clientContext, __wrapped);
+    GridFSBucket __result = wrapped.withReadPreference(__readPreference);
+    return  new GridFSBucketImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withWriteConcern(WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern is null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    GridFSBucket __wrapped = wrapped.withWriteConcern(__writeConcern);
-    return new GridFSBucketImpl(this.clientContext, __wrapped);
+    GridFSBucket __result = wrapped.withWriteConcern(__writeConcern);
+    return  new GridFSBucketImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern is null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    GridFSBucket __wrapped = wrapped.withReadConcern(__readConcern);
-    return new GridFSBucketImpl(this.clientContext, __wrapped);
+    GridFSBucket __result = wrapped.withReadConcern(__readConcern);
+    return  new GridFSBucketImpl(clientContext, __result);
   }
 
   @Override
-  public Future<ByteBuffer> downloadByObjectId(JsonObject id) {
+  public Future<ByteBuffer> downloadByObjectId(String id) {
     requireNonNull(id, "id is null");
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__id);
@@ -125,7 +126,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByObjectId(JsonObject id,
+  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByObjectId(String id,
       Handler<AsyncResult<ByteBuffer>> resultHandler) {
     Future<ByteBuffer> __future = this.downloadByObjectId(id);
     setHandler(__future, resultHandler);
@@ -169,7 +170,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public Future<ByteBuffer> downloadByObjectId(ClientSession clientSession, JsonObject id) {
+  public Future<ByteBuffer> downloadByObjectId(ClientSession clientSession, String id) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
@@ -182,7 +183,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket downloadByObjectId(ClientSession clientSession,
-      JsonObject id, Handler<AsyncResult<ByteBuffer>> resultHandler) {
+      String id, Handler<AsyncResult<ByteBuffer>> resultHandler) {
     Future<ByteBuffer> __future = this.downloadByObjectId(clientSession, id);
     setHandler(__future, resultHandler);
     return this;
@@ -232,64 +233,46 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public MongoResult<GridFSFile> find() {
-    GridFSFindPublisher __publisher = wrapped.find();
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
   public MongoResult<GridFSFile> find(GridFSFindOptions options) {
-    GridFSFindPublisher __publisher = wrapped.find();
-    options.initializePublisher(__publisher);
-    Integer __batchSize = options.getBatchSize();
-    if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
-    } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
-    }
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
   public MongoResult<GridFSFile> find(JsonObject filter) {
     requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    GridFSFindPublisher __publisher = wrapped.find(__filter);
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
   public MongoResult<GridFSFile> find(JsonObject filter, GridFSFindOptions options) {
     requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    GridFSFindPublisher __publisher = wrapped.find(__filter);
-    options.initializePublisher(__publisher);
-    Integer __batchSize = options.getBatchSize();
-    if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
-    } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
-    }
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
   public MongoResult<GridFSFile> find(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    GridFSFindPublisher __publisher = wrapped.find(__clientSession);
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
   public MongoResult<GridFSFile> find(ClientSession clientSession, GridFSFindOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    GridFSFindPublisher __publisher = wrapped.find(__clientSession);
-    options.initializePublisher(__publisher);
-    Integer __batchSize = options.getBatchSize();
-    if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
-    } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
-    }
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
@@ -298,8 +281,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
@@ -309,18 +292,12 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
-    options.initializePublisher(__publisher);
-    Integer __batchSize = options.getBatchSize();
-    if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
-    } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
-    }
+    //  TODO implement mapped mongo results
+    return null;
   }
 
   @Override
-  public Future<Void> delete(JsonObject id) {
+  public Future<Void> delete(String id) {
     requireNonNull(id, "id is null");
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     Publisher<Void> __publisher = wrapped.delete(__id);
@@ -330,7 +307,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket delete(JsonObject id,
+  public io.vertx.mongo.client.gridfs.GridFSBucket delete(String id,
       Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.delete(id);
     setHandler(__future, resultHandler);
@@ -356,7 +333,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public Future<Void> delete(ClientSession clientSession, JsonObject id) {
+  public Future<Void> delete(ClientSession clientSession, String id) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
@@ -368,8 +345,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket delete(ClientSession clientSession,
-      JsonObject id, Handler<AsyncResult<Void>> resultHandler) {
+  public io.vertx.mongo.client.gridfs.GridFSBucket delete(ClientSession clientSession, String id,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.delete(clientSession, id);
     setHandler(__future, resultHandler);
     return this;
@@ -396,7 +373,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public Future<Void> rename(JsonObject id, String newFilename) {
+  public Future<Void> rename(String id, String newFilename) {
     requireNonNull(id, "id is null");
     requireNonNull(newFilename, "newFilename is null");
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
@@ -407,7 +384,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket rename(JsonObject id, String newFilename,
+  public io.vertx.mongo.client.gridfs.GridFSBucket rename(String id, String newFilename,
       Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.rename(id, newFilename);
     setHandler(__future, resultHandler);
@@ -434,7 +411,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public Future<Void> rename(ClientSession clientSession, JsonObject id, String newFilename) {
+  public Future<Void> rename(ClientSession clientSession, String id, String newFilename) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
     requireNonNull(newFilename, "newFilename is null");
@@ -447,8 +424,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket rename(ClientSession clientSession,
-      JsonObject id, String newFilename, Handler<AsyncResult<Void>> resultHandler) {
+  public io.vertx.mongo.client.gridfs.GridFSBucket rename(ClientSession clientSession, String id,
+      String newFilename, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.rename(clientSession, id, newFilename);
     setHandler(__future, resultHandler);
     return this;

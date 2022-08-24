@@ -4,6 +4,8 @@ import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
@@ -44,10 +46,9 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         Optional<TypeVariable> resultType = Arrays.stream(methodTypeVariables).filter(v -> v.qualifiedTypeName().equals("TResult")).findFirst();
         boolean resultParameter = resultType.isPresent();
         if (resultParameter) {
-            System.out.println("INFO: return type of " + methodDoc + " has been ignored because it has a TResult type parameter");
+            System.out.println("INFO: method " + methodDoc + " has been ignored because it has a TResult type parameter");
             return null;
         }
-
 
         if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                 methodDoc.name().equals("downloadToPublisher") &&
@@ -70,16 +71,17 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             }
         }
 
-        ActualType actualReturnType = methodReturnType == null ? null : getActualType(methodDoc, null, methodReturnType, TypeLocation.RETURN);
-        if (methodReturnType != null && actualReturnType == null) {
+        mongoMethod.returnType = methodReturnType == null ? null : getActualType(methodDoc, null, methodReturnType, TypeLocation.RETURN);
+        if (methodReturnType != null && mongoMethod.returnType == null) {
             System.out.println("WARNING: return type of " + methodDoc + " is unknown so method has been ignored");
             return null;
         }
-        if (actualReturnType != null) {
-            mongoMethod.computeActualReturnTypes(context, actualReturnType);
-            if (mongoMethod.returnType.mongoType != null && mongoMethod.returnType.mongoType.toString().equals(classDoc.qualifiedTypeName()))
-                mongoMethod.returnType.vertxType = this.fluentReturnType;
-        }
+
+//        if (actualReturnType != null) {
+//            mongoMethod.computeActualReturnTypes(context, actualReturnType);
+//            if (mongoMethod.returnType.mongoType != null && mongoMethod.returnType.mongoType.toString().equals(classDoc.qualifiedTypeName()))
+//                mongoMethod.returnType.vertxType = this.fluentReturnType;
+//        }
         if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                 methodDoc.name().equals("downloadToPublisher")
         ) {
@@ -89,52 +91,50 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 mongoMethod.vertxName = "downloadByFilename";
 
         }
-        if (methodReturnType != null && mongoMethod.returnType.isPublisher &&
-                mongoMethod.returnType.mongoType != null &&
-                !context.reactiveApiClasses.contains(mongoMethod.returnType.mongoType.toString()) &&
-                mongoMethod.returnType.mongoType.toString().contains(".") && // not a TDocument
-                !mongoMethod.returnType.mongoType.equals(mongoMethod.returnType.vertxType)
-        ) {
-            mongoMethod.resultConversionMethod = context.conversionUtilsGenerator.addConversion(mongoMethod.returnType.mongoType, mongoMethod.returnType.vertxType);
-        }
+//        if (methodReturnType != null && mongoMethod.returnType.isPublisher &&
+//                mongoMethod.returnType.mongoType != null &&
+//                !context.reactiveApiClasses.contains(mongoMethod.returnType.mongoType.toString()) &&
+//                mongoMethod.returnType.mongoType.toString().contains(".") && // not a TDocument
+//                !mongoMethod.returnType.mongoType.equals(mongoMethod.returnType.vertxType)
+//        ) {
+//            mongoMethod.resultConversionMethod = context.conversionUtilsGenerator.addConversion(mongoMethod.returnType.mongoType, mongoMethod.returnType.vertxType);
+//        }
         for (Parameter param : methodDoc.parameters()) {
             MongoMethodParameter methodParameter = new MongoMethodParameter();
             methodParameter.name = param.name();
-            ActualType actualParamType = getActualType(methodDoc, param.name(), param.type(), TypeLocation.PARAMETER);
-            if (actualParamType == null) {
+            methodParameter.type = getActualType(methodDoc, param.name(), param.type(), TypeLocation.PARAMETER);
+            if (methodParameter.type == null) {
                 System.out.println("WARNING: param type of " + methodDoc + " is unknown so method has been ignored");
                 return null;
             }
-            if (actualParamType.isPublisher) {
+            if (methodParameter.type.isPublisher) {
                 System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored");
                 return null;
             }
-            methodParameter.mongoType = actualParamType.mongoType;
-            methodParameter.vertxType = actualParamType.vertxType;
-            ClassName mongoRawType = null;
-            if (methodParameter.mongoType instanceof ParameterizedTypeName) {
-                ParameterizedTypeName pmongoType = (ParameterizedTypeName)methodParameter.mongoType;
-                mongoRawType = pmongoType.rawType;
-            } else if (methodParameter.mongoType instanceof ClassName) {
-                mongoRawType = (ClassName) methodParameter.mongoType;
-            }
-            if (context.optionsApiClasses.contains(methodParameter.mongoType.toString()) || context.otherApiClasses.contains(methodParameter.mongoType.toString())) {
-                methodParameter.optionType = true;
-            } else if (mongoRawType != null && context.reactiveApiClasses.contains(mongoRawType.toString())) {
-                methodParameter.reactiveType = true;
-            }
-
-            if (!(methodParameter.vertxType instanceof TypeVariableName) &&
-                    !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString()) &&
-                    !context.otherApiClasses.contains(methodParameter.mongoType.toString()) &&
-                    !context.optionsApiClasses.contains(methodParameter.mongoType.toString()) &&
-                    !context.reactiveApiClasses.contains(methodParameter.mongoType.toString())
-            ) {
-                methodParameter.conversionMethod = context.conversionUtilsGenerator.addConversion(methodParameter.vertxType, methodParameter.mongoType);
-            }
+//            methodParameter.mongoType = actualParamType.mongoType;
+//            methodParameter.vertxType = actualParamType.vertxType;
+//            ClassName mongoRawType = null;
+//            if (methodParameter.mongoType instanceof ParameterizedTypeName) {
+//                ParameterizedTypeName pmongoType = (ParameterizedTypeName)methodParameter.mongoType;
+//                mongoRawType = pmongoType.rawType;
+//            } else if (methodParameter.mongoType instanceof ClassName) {
+//                mongoRawType = (ClassName) methodParameter.mongoType;
+//            }
+//            if (context.optionsApiClasses.contains(methodParameter.mongoType.toString()) || context.otherApiClasses.contains(methodParameter.mongoType.toString())) {
+//                methodParameter.toMongoEnabledType = true;
+//            }
+//
+//            if (!(methodParameter.vertxType instanceof TypeVariableName) &&
+//                    !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString()) &&
+//                    !context.otherApiClasses.contains(methodParameter.mongoType.toString()) &&
+//                    !context.optionsApiClasses.contains(methodParameter.mongoType.toString()) &&
+//                    !context.reactiveApiClasses.contains(methodParameter.mongoType.toString())
+//            ) {
+//                methodParameter.conversionMethod = context.conversionUtilsGenerator.addConversion(methodParameter.vertxType, methodParameter.mongoType);
+//            }
             mongoMethod.params.add(methodParameter);
             // FIXME: for the moment publisher parameters are ignored
-            if (actualParamType.isPublisher) {
+            if (methodParameter.type.isPublisher) {
                 System.out.println("WARNING: param type of " + methodDoc + " is publisher so method has been ignored");
                 return null;
             }
@@ -162,7 +162,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             for (TypeVariableName variable : method.typeVariables)
                 methodBuilder.addTypeVariable(variable);
             for (MongoMethodParameter param : method.params) {
-                methodBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
+                methodBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
             }
             if (method.vertxResultOrFutureJavadoc != null && !isImpl)
                 methodBuilder.addJavadoc(method.vertxResultOrFutureJavadoc);
@@ -177,13 +177,13 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             {
                 MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.vertxName)
                         .addModifiers(Modifier.PUBLIC)
-                        .returns(method.returnType.getFullVertxType());
+                        .returns(method.returnType.vertxType);
                 if (!isImpl)
                     methodBuilder.addModifiers(Modifier.ABSTRACT);
                 for (TypeVariableName variable : method.typeVariables)
                     methodBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
-                    methodBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
+                    methodBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
                 }
                 if (method.vertxResultOrFutureJavadoc != null && !isImpl)
                     methodBuilder.addJavadoc(method.vertxResultOrFutureJavadoc);
@@ -194,7 +194,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 type.addMethod(methodBuilder.build());
             }
 
-            if (method.returnType.isSinglePublisher) {
+            if (method.returnType.singlePublisher) {
                 MethodSpec.Builder handlerMethodBuilder = MethodSpec.methodBuilder(method.vertxName)
                         .addModifiers(Modifier.PUBLIC)
                         .returns(fluentReturnType);
@@ -203,9 +203,9 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 for (TypeVariableName variable : method.typeVariables)
                     handlerMethodBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
-                    handlerMethodBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
+                    handlerMethodBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
                 }
-                handlerMethodBuilder.addParameter(ParameterSpec.builder(method.handlerParam, "resultHandler").build());
+                handlerMethodBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), method.returnType.publishedType.vertxType)), "resultHandler").build());
                 if (method.vertxAsyncJavadoc != null && !isImpl)
                     handlerMethodBuilder.addJavadoc(method.vertxAsyncJavadoc);
                 if (isImpl)
@@ -217,13 +217,13 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 this.currentMethodHasPublisherOptions = true;
                 MethodSpec.Builder methodWithOptionsBuilder = MethodSpec.methodBuilder(method.vertxName)
                         .addModifiers(Modifier.PUBLIC)
-                        .returns(method.returnType.getFullVertxType());
+                        .returns(method.returnType.vertxType);
                 if (!isImpl)
                     methodWithOptionsBuilder.addModifiers(Modifier.ABSTRACT);
                 for (TypeVariableName variable : method.typeVariables)
                     methodWithOptionsBuilder.addTypeVariable(variable);
                 for (MongoMethodParameter param : method.params) {
-                    methodWithOptionsBuilder.addParameter(ParameterSpec.builder(param.vertxType, param.name).build());
+                    methodWithOptionsBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
                 }
                 String optionsClass = context.publisherOptionsClasses.get(method.returnType.publisherClassName.toString());
                 methodWithOptionsBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(optionsClass), "options").build());
@@ -252,7 +252,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     .beginControlFlow("if (this." + option.name + " == null)")
                     .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
                     .endControlFlow();
-            if (option.withTimeUnit || option.optionType)
+            if (option.withTimeUnit || option.type.toMongoEnabledType)
                 throw new IllegalStateException("not implemented");
             ctorParams.add("this." +option.name);
         }
@@ -272,13 +272,14 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         toMongoBuilder.beginControlFlow("if (this." + option.name + " != null)");
         if (option.withTimeUnit) {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ", $T.MILLISECONDS)", TimeUnit.class);
-        } else if (option.optionType) {
+        } else if (option.type.toMongoEnabledType) {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".toDriverClass())");
-        } else if (option.conversionMethod != null) {
-            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "($T.INSTANCE." + option.conversionMethod + "(this." + option.name + "))", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+        } else if (option.type.mapper != null) {
+            toMongoBuilder.addStatement(option.type.mapper.asStatementFromExpression(configurableName + "." + option.mongoSetterName + "(%s)", "this." + option.name));
         } else {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ")");
         }
+
         toMongoBuilder.endControlFlow();
 
     }
@@ -301,7 +302,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             }
             if (!isResultOnlyOptions)
                 addOptionToMongoBuilder(toMongoMethod, option);
-            FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.vertxType, option.name).addModifiers(Modifier.PRIVATE);
+            FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.type.vertxType, option.name).addModifiers(Modifier.PRIVATE);
             if (option.mongoJavadoc != null) {
                 option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "hint(JsonObject)");
                 Optional<String> firstParam = Arrays.stream(option.mongoJavadoc.split("\n+")).filter(it -> it.contains("@param")).findFirst();
@@ -316,7 +317,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             if (option.mongoSetterName != null) {
                 MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder(option.name)
                         .addModifiers(Modifier.PUBLIC)
-                        .addParameter(option.vertxType, option.setterParamName)
+                        .addParameter(option.type.vertxType, option.setterParamName)
                         .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()))
                         .addStatement("return this");
                 if (option.mongoJavadoc != null) {
@@ -343,10 +344,10 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     setterBuilder.addAnnotation(Deprecated.class);
                 type.addMethod(setterBuilder.build());
             }
-            boolean isBoolean = option.vertxType.toString().toLowerCase().contains("boolean");
+            boolean isBoolean = option.type.vertxType.toString().toLowerCase().contains("boolean");
             MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder((isBoolean ? "is" : "get") + Character.toUpperCase(option.name.charAt(0)) + option.name.substring(1))
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(option.vertxType)
+                    .returns(option.type.vertxType)
                     .addStatement("return " + option.name);
             if (option.deprecated)
                 getterBuilder.addAnnotation(Deprecated.class);
@@ -374,16 +375,15 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
 
     protected static class Option {
         public boolean deprecated;
-        public String conversionMethod;
         public String mongoGetterName;
+        public ActualType type;
         String name;
         String setterParamName;
-        TypeName mongoType;
-        TypeName vertxType;
+//        TypeName mongoType;
+//        TypeName vertxType;
         String mongoSetterName;
         String mongoJavadoc;
         String mongoGetterJavadoc;
-        boolean optionType = false;
         boolean mandatory = false;
         boolean withTimeUnit = false;
     }

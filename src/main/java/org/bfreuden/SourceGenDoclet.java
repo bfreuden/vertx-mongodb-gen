@@ -231,16 +231,23 @@ public class SourceGenDoclet {
         inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.UpdateDescription");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.ChangeStreamDocument");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.gridfs.model.GridFSFile");
+
+
 
         for (String result : inspectionContext.resultApiClasses) {
-            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(result), true).generate(genSourceDir);
+            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(result), true)
+                    .generate(genSourceDir);
         }
         for (String model : inspectionContext.modelApiClasses) {
-            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(model), false).generate(genSourceDir);
+            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(model), false)
+                    .generate(genSourceDir);
         }
-
         for (String options : inspectionContext.optionsApiClasses) {
-            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options)).generate(genSourceDir);
+            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options))
+                    .generate(genSourceDir);
         }
         for (String reactive : inspectionContext.publishersApiClasses) {
             new PublisherOptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
@@ -250,8 +257,15 @@ public class SourceGenDoclet {
             new PublisherResultAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
                     .generate(genSourceDir);
         }
+//        int i = 0;
         for (String reactive : inspectionContext.reactiveApiClasses) {
-            new ReactiveAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive)).generate(genSourceDir);
+//            i++;
+//            if (i == 2)
+//                continue;
+            new ReactiveAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
+                    .generate(genSourceDir);
+//            if (i == 7)
+//                break;
         }
         inspectionContext.conversionUtilsGenerator.generateSource(genSourceDir);
     }

@@ -2,7 +2,6 @@ package org.bfreuden;
 
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
@@ -41,21 +40,20 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
             if (matcher.matches()) {
                 MongoMethod mongoMethod = analyzeMethod(methodDoc);
                 Option option = new Option();
-                option.mongoType = mongoMethod.returnType.mongoType;
-                option.deprecated = Arrays.stream(methodDoc.annotations()).anyMatch(it -> it.annotationType().toString().equals(Deprecated.class.getName()));
-                option.vertxType = mongoMethod.returnType.vertxType;
                 option.name = matcher.group(1).toLowerCase() + matcher.group(2);
+                option.type = getActualType(methodDoc, option.name, methodDoc.returnType(), resultBean ? TypeLocation.RETURN : TypeLocation.PARAMETER);
+                option.deprecated = Arrays.stream(methodDoc.annotations()).anyMatch(it -> it.annotationType().toString().equals(Deprecated.class.getName()));
                 option.mongoGetterJavadoc = methodDoc.getRawCommentText().replace("$", "$$");
                 option.mongoGetterName = methodDoc.name();
-                if (!option.vertxType.toString().equals(option.mongoType.toString())) {
-                    if (resultBean)
-                        option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.mongoType, option.vertxType);
-                    else
-                        option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.vertxType, option.mongoType);
-                }
-                if (context.modelApiClasses.contains(option.mongoType.toString()) || context.resultApiClasses.contains(option.mongoType.toString())) {
-                    option.optionType = true;
-                }
+//                if (!option.vertxType.toString().equals(option.mongoType.toString())) {
+//                    if (resultBean)
+//                        option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.mongoType, option.vertxType);
+//                    else
+//                        option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.vertxType, option.mongoType);
+//                }
+//                if (context.modelApiClasses.contains(option.mongoType.toString()) || context.resultApiClasses.contains(option.mongoType.toString())) {
+//                    option.optionType = true;
+//                }
                 optionsByName.put(option.name, option);
                 methods.add(mongoMethod);
             } else {
@@ -86,8 +84,8 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
     protected List<JavaFile.Builder> getJavaFiles() {
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(getTargetClassName());
         typeBuilder.addModifiers(Modifier.PUBLIC);
-        if (isAbstract)
-            typeBuilder.addModifiers(Modifier.ABSTRACT);
+//        if (isAbstract)
+//            typeBuilder.addModifiers(Modifier.ABSTRACT);
 
         for (TypeVariableName typeVariable : typeVariables)
             typeBuilder.addTypeVariable(typeVariable);
@@ -111,7 +109,7 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
                 MethodSpec.Builder ctorBuilder = MethodSpec.constructorBuilder()
                         .addModifiers(Modifier.PUBLIC);
                 for (MongoMethodParameter param: ctor.params)
-                    ctorBuilder.addParameter(ParameterSpec.builder(param.vertxType,  param.name).build());
+                    ctorBuilder.addParameter(ParameterSpec.builder(param.type.vertxType,  param.name).build());
                 if (ctor.mongoJavadoc != null)
                     ctorBuilder.addJavadoc(ctor.mongoJavadoc);
                 if (constructors.size() > 1)
@@ -127,23 +125,37 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
             addToMongoMethod(typeBuilder);
 
         } else {
-            // we just need a fromMongo method and a constructor
-            MethodSpec.Builder ctorBuilder = MethodSpec.constructorBuilder()
-                    .addModifiers(Modifier.PUBLIC);
-            ctorBuilder.addJavadoc("@hidden");
-            if (typeVariables.isEmpty())
-                ctorBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(classDoc.qualifiedTypeName()),  "from").build());
-            else
-                ctorBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), typeVariables.toArray(new TypeName[0])),  "from").build());
-            staticImports.add("java.util.Objects.requireNonNull");
-            ctorBuilder.addStatement("requireNonNull(from, $S)", "from is null");
-            for (Option option: optionsByName.values()) {
-                if (option.conversionMethod != null)
-                    ctorBuilder.addStatement("this." + option.name + " = $T.INSTANCE." + option.conversionMethod + "(from."  + option.mongoGetterName + "())", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
-                else
-                    ctorBuilder.addStatement("this." + option.name + " = from." + option.mongoGetterName + "()");
+            // private constructor
+            typeBuilder.addMethod(MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE).build());
+
+            // we just need a fromDriverClass method
+            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("fromDriverClass")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+
+            methodBuilder.addJavadoc("@return mongo object\n@hidden");
+            TypeName returnType;
+            for (TypeVariableName typeVariableName: typeVariables)
+                methodBuilder.addTypeVariable(typeVariableName);
+            if (typeVariables.isEmpty()) {
+                returnType = ClassName.bestGuess(mapPackageName(classDoc.qualifiedTypeName()));
+                methodBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(classDoc.qualifiedTypeName()), "from").build());
+            } else {
+                returnType = ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(classDoc.qualifiedTypeName())), typeVariables.toArray(new TypeName[0]));
+                methodBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), typeVariables.toArray(new TypeName[0])), "from").build());
             }
-            typeBuilder.addMethod(ctorBuilder.build());
+            methodBuilder.returns(returnType);
+            staticImports.add("java.util.Objects.requireNonNull");
+            methodBuilder.addStatement("requireNonNull(from, $S)", "from is null");
+            methodBuilder.addStatement("$T result = new $T()",returnType, returnType);
+            for (Option option: optionsByName.values()) {
+                if (option.type.mapper != null) {
+                    methodBuilder.addStatement(option.type.mapper.asStatementFromExpression("result." + option.name + " = %s", "from." + option.mongoGetterName + "()"));
+                } else {
+                    methodBuilder.addStatement("result." + option.name + " = from." + option.mongoGetterName + "()");
+                }
+            }
+            methodBuilder.addStatement("return result");
+            typeBuilder.addMethod(methodBuilder.build());
         }
         JavaFile.Builder builder = JavaFile.builder(getTargetPackage(), typeBuilder.build());
         addStaticImports(builder);
@@ -160,6 +172,12 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
         else
             returnType = ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), typeVariables.toArray(new TypeName[0]));
         toMongo.returns(returnType);
+        if (optionsByName.isEmpty()) {
+            typeBuilder.addModifiers(Modifier.ABSTRACT);
+            toMongo.addModifiers(Modifier.ABSTRACT);
+            typeBuilder.addMethod(toMongo.build());
+            return;
+        }
         int j = 0;
         for (MongoMethod constructor: constructors) {
             if (constructors.size() > 1) {
@@ -171,12 +189,19 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
             StringJoiner ctorParams = new StringJoiner(", ");
             for (MongoMethodParameter param : constructor.params) {
                 Option option = getOptionOfCtorParam(param, null);
-                if (option.conversionMethod != null) {
+                if (option.type.mapper != null) {
                     ctorParams.add("__" + option.name);
-                    toMongo.addStatement("$T __" + option.name + " = $T.INSTANCE." + option.conversionMethod + "(this." + option.name + ")", option.mongoType, ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+                    //toMongo.addStatement("$T __" + option.name + " = $T.INSTANCE." + option.type.conversionMethod + "(this." + option.name + ")", option.type.mongoType, ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+                    toMongo.addStatement(option.type.mapper.asStatementFromExpression("$T __" + option.name + " = %s", "this." + option.name, option.type.mongoType, null));
                 } else {
                     ctorParams.add("this." + option.name);
                 }
+//                if (option.type.conversionMethod != null) {
+//                    ctorParams.add("__" + option.name);
+//                    toMongo.addStatement("$T __" + option.name + " = $T.INSTANCE." + option.type.conversionMethod + "(this." + option.name + ")", option.type.mongoType, ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
+//                } else {
+//                    ctorParams.add("this." + option.name);
+//                }
             }
             toMongo.addStatement("return new $T(" + ctorParams + ")", returnType);
             j++;
@@ -187,26 +212,18 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
             toMongo.endControlFlow();
         }
 
-//        for (Option option : requiredOptions) {
-//            if (option.withTimeUnit || option.optionType)
-//                throw new IllegalStateException("not implemented");
-//            if (option.conversionMethod != null) {
-//                toMongo.addStatement("$T __" + option.name + " = $T.INSTANCE." + option.conversionMethod + "(this." + option.name + ")", ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
-//                ctorParams.add("__" +option.name);
-//            } else {
-//                ctorParams.add("this." +option.name);
-//            }
-//        }
-//        toMongo.addStatement("return new $T(" + ctorParams + ")", returnType);
         typeBuilder.addMethod(toMongo.build());
     }
 
     private Pattern GETTER_NAME = Pattern.compile("(?:is|was|get)([A-Z])(.*)");
 
     private Option getOptionOfCtorParam(MongoMethodParameter param, ConstructorDoc ctor) {
-        Optional<Option> matchingOption = optionsByName.values().stream().filter(it -> it.name.equals(param.name) && it.mongoType.toString().equals(param.mongoType.toString())).findFirst();
+        Optional<Option> matchingOption = optionsByName.values().stream().filter(it ->
+                it.name.equals(param.name) &&
+                        it.type.mongoType.toString().equals(
+                                param.type.mongoType.toString())).findFirst();
         if (matchingOption.isEmpty()) {
-            List<Option> possibleMatchingOptions = optionsByName.values().stream().filter(it -> it.mongoType.toString().equals(param.mongoType.toString())).collect(Collectors.toList());
+            List<Option> possibleMatchingOptions = optionsByName.values().stream().filter(it -> it.type.mongoType.toString().equals(param.type.mongoType.toString())).collect(Collectors.toList());
             if (possibleMatchingOptions.isEmpty())
                 throw new IllegalStateException("can't find matching option for ctor param " + param.name + " of "  + ctor);
             else if (possibleMatchingOptions.size() > 1)
