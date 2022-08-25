@@ -22,6 +22,7 @@ import io.vertx.core.Closeable;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
@@ -30,7 +31,6 @@ import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
 import io.vertx.mongo.connection.ClusterDescription;
 import java.lang.String;
 import java.lang.Void;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -172,7 +172,7 @@ public interface MongoClient extends Closeable {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline);
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline);
 
   /**
    *  Creates a change stream for this client.
@@ -183,7 +183,7 @@ public interface MongoClient extends Closeable {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline,
       ChangeStreamOptions options);
 
   /**
@@ -218,7 +218,7 @@ public interface MongoClient extends Closeable {
    *  @mongodb.driver.dochub core/changestreams Change Streams
    */
   MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline);
+      JsonArray pipeline);
 
   /**
    *  Creates a change stream for this client.
@@ -231,7 +231,7 @@ public interface MongoClient extends Closeable {
    *  @mongodb.driver.dochub core/changestreams Change Streams
    */
   MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline, ChangeStreamOptions options);
+      JsonArray pipeline, ChangeStreamOptions options);
 
   /**
    *  Creates a client session.

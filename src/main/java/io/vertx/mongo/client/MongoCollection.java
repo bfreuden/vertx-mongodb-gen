@@ -18,6 +18,7 @@ package io.vertx.mongo.client;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoCollectionResult;
 import io.vertx.mongo.MongoNamespace;
@@ -522,7 +523,7 @@ public interface MongoCollection<TDocument> {
    *  @return a result containing the result of the aggregation operation
    *  @mongodb.driver.manual aggregation/ Aggregation
    */
-  MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline);
+  MongoCollectionResult<TDocument> aggregate(JsonArray pipeline);
 
   /**
    *  Aggregates documents according to the specified aggregation pipeline.
@@ -531,7 +532,7 @@ public interface MongoCollection<TDocument> {
    *  @return a result containing the result of the aggregation operation
    *  @mongodb.driver.manual aggregation/ Aggregation
    */
-  MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline, AggregateOptions options);
+  MongoCollectionResult<TDocument> aggregate(JsonArray pipeline, AggregateOptions options);
 
   /**
    *  Aggregates documents according to the specified aggregation pipeline.
@@ -542,8 +543,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollectionResult<TDocument> aggregate(ClientSession clientSession,
-      List<JsonObject> pipeline);
+  MongoCollectionResult<TDocument> aggregate(ClientSession clientSession, JsonArray pipeline);
 
   /**
    *  Aggregates documents according to the specified aggregation pipeline.
@@ -555,7 +555,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoCollectionResult<TDocument> aggregate(ClientSession clientSession, List<JsonObject> pipeline,
+  MongoCollectionResult<TDocument> aggregate(ClientSession clientSession, JsonArray pipeline,
       AggregateOptions options);
 
   /**
@@ -584,7 +584,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
-  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline);
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline);
 
   /**
    *  Creates a change stream for this collection.
@@ -594,7 +594,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/aggregation/changeStream $changeStream
    *  @since 1.6
    */
-  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline,
       ChangeStreamOptions options);
 
   /**
@@ -629,7 +629,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline);
+      JsonArray pipeline);
 
   /**
    *  Creates a change stream for this collection.
@@ -642,7 +642,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline, ChangeStreamOptions options);
+      JsonArray pipeline, ChangeStreamOptions options);
 
   /**
    *  Aggregates documents according to the specified map-reduce function.
@@ -1350,7 +1350,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  Future<UpdateResult> updateOne(JsonObject filter, List<JsonObject> update);
+  Future<UpdateResult> updateOne(JsonObject filter, JsonArray update);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1364,7 +1364,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  MongoCollection<TDocument> updateOne(JsonObject filter, List<JsonObject> update,
+  MongoCollection<TDocument> updateOne(JsonObject filter, JsonArray update,
       Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
@@ -1379,7 +1379,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  Future<UpdateResult> updateOne(JsonObject filter, List<JsonObject> update, UpdateOptions options);
+  Future<UpdateResult> updateOne(JsonObject filter, JsonArray update, UpdateOptions options);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1394,8 +1394,8 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  MongoCollection<TDocument> updateOne(JsonObject filter, List<JsonObject> update,
-      UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler);
+  MongoCollection<TDocument> updateOne(JsonObject filter, JsonArray update, UpdateOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1409,8 +1409,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update);
+  Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter, JsonArray update);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1426,7 +1425,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection<TDocument> updateOne(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, Handler<AsyncResult<UpdateResult>> resultHandler);
+      JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1441,8 +1440,8 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, UpdateOptions options);
+  Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter, JsonArray update,
+      UpdateOptions options);
 
   /**
    *  Update a single document in the collection according to the specified arguments.
@@ -1459,8 +1458,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection<TDocument> updateOne(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler);
+      JsonArray update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1578,7 +1576,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  Future<UpdateResult> updateMany(JsonObject filter, List<JsonObject> update);
+  Future<UpdateResult> updateMany(JsonObject filter, JsonArray update);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
@@ -1591,7 +1589,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  MongoCollection<TDocument> updateMany(JsonObject filter, List<JsonObject> update,
+  MongoCollection<TDocument> updateMany(JsonObject filter, JsonArray update,
       Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
@@ -1605,70 +1603,68 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual tutorial/modify-documents/ Updates
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
-  Future<UpdateResult> updateMany(JsonObject filter, List<JsonObject> update,
+  Future<UpdateResult> updateMany(JsonObject filter, JsonArray update, UpdateOptions options);
+
+  /**
+   *  Update all documents in the collection according to the specified arguments.
+   *  @param filter        a document describing the query filter, which may not be null.
+   *  @param update        a pipeline describing the update, which may not be null.
+   *  @param options the options to apply to the update operation
+   *  @param resultHandler an async result with a single element the UpdateResult
+   *  @return <code>this</code>
+   *  @since 1.12
+   *  @mongodb.server.release 4.2
+   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
+   *  @mongodb.driver.manual reference/operator/update/ Update Operators
+   */
+  MongoCollection<TDocument> updateMany(JsonObject filter, JsonArray update, UpdateOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler);
+
+  /**
+   *  Update all documents in the collection according to the specified arguments.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filter a document describing the query filter, which may not be null.
+   *  @param update a pipeline describing the update, which may not be null.
+   *  @return a future with a single element the UpdateResult
+   *  @since 1.12
+   *  @mongodb.server.release 4.2
+   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
+   *  @mongodb.driver.manual reference/operator/update/ Update Operators
+   */
+  Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter, JsonArray update);
+
+  /**
+   *  Update all documents in the collection according to the specified arguments.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filter a document describing the query filter, which may not be null.
+   *  @param update a pipeline describing the update, which may not be null.
+   *  @param resultHandler an async result with a single element the UpdateResult
+   *  @return <code>this</code>
+   *  @since 1.12
+   *  @mongodb.server.release 4.2
+   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
+   *  @mongodb.driver.manual reference/operator/update/ Update Operators
+   */
+  MongoCollection<TDocument> updateMany(ClientSession clientSession, JsonObject filter,
+      JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler);
+
+  /**
+   *  Update all documents in the collection according to the specified arguments.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filter        a document describing the query filter, which may not be null.
+   *  @param update        a pipeline describing the update, which may not be null.
+   *  @param options the options to apply to the update operation
+   *  @return a future with a single element the UpdateResult
+   *  @since 1.12
+   *  @mongodb.server.release 4.2
+   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
+   *  @mongodb.driver.manual reference/operator/update/ Update Operators
+   */
+  Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter, JsonArray update,
       UpdateOptions options);
 
   /**
    *  Update all documents in the collection according to the specified arguments.
-   *  @param filter        a document describing the query filter, which may not be null.
-   *  @param update        a pipeline describing the update, which may not be null.
-   *  @param options the options to apply to the update operation
-   *  @param resultHandler an async result with a single element the UpdateResult
-   *  @return <code>this</code>
-   *  @since 1.12
-   *  @mongodb.server.release 4.2
-   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
-   *  @mongodb.driver.manual reference/operator/update/ Update Operators
-   */
-  MongoCollection<TDocument> updateMany(JsonObject filter, List<JsonObject> update,
-      UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler);
-
-  /**
-   *  Update all documents in the collection according to the specified arguments.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param filter a document describing the query filter, which may not be null.
-   *  @param update a pipeline describing the update, which may not be null.
-   *  @return a future with a single element the UpdateResult
-   *  @since 1.12
-   *  @mongodb.server.release 4.2
-   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
-   *  @mongodb.driver.manual reference/operator/update/ Update Operators
-   */
-  Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update);
-
-  /**
-   *  Update all documents in the collection according to the specified arguments.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param filter a document describing the query filter, which may not be null.
-   *  @param update a pipeline describing the update, which may not be null.
-   *  @param resultHandler an async result with a single element the UpdateResult
-   *  @return <code>this</code>
-   *  @since 1.12
-   *  @mongodb.server.release 4.2
-   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
-   *  @mongodb.driver.manual reference/operator/update/ Update Operators
-   */
-  MongoCollection<TDocument> updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, Handler<AsyncResult<UpdateResult>> resultHandler);
-
-  /**
-   *  Update all documents in the collection according to the specified arguments.
-   *  @param clientSession the client session with which to associate this operation
-   *  @param filter        a document describing the query filter, which may not be null.
-   *  @param update        a pipeline describing the update, which may not be null.
-   *  @param options the options to apply to the update operation
-   *  @return a future with a single element the UpdateResult
-   *  @since 1.12
-   *  @mongodb.server.release 4.2
-   *  @mongodb.driver.manual tutorial/modify-documents/ Updates
-   *  @mongodb.driver.manual reference/operator/update/ Update Operators
-   */
-  Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, UpdateOptions options);
-
-  /**
-   *  Update all documents in the collection according to the specified arguments.
    *  @param clientSession the client session with which to associate this operation
    *  @param filter        a document describing the query filter, which may not be null.
    *  @param update        a pipeline describing the update, which may not be null.
@@ -1681,8 +1677,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/operator/update/ Update Operators
    */
   MongoCollection<TDocument> updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler);
+      JsonArray update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
    *  Atomically find a document and remove it.
@@ -1996,7 +1991,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.12
    *  @mongodb.server.release 4.2
    */
-  Future<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update);
+  Future<TDocument> findOneAndUpdate(JsonObject filter, JsonArray update);
 
   /**
    *  Atomically find a document and update it.
@@ -2010,7 +2005,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.12
    *  @mongodb.server.release 4.2
    */
-  MongoCollection<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update,
+  MongoCollection<TDocument> findOneAndUpdate(JsonObject filter, JsonArray update,
       Handler<AsyncResult<TDocument>> resultHandler);
 
   /**
@@ -2025,7 +2020,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.12
    *  @mongodb.server.release 4.2
    */
-  Future<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update,
+  Future<TDocument> findOneAndUpdate(JsonObject filter, JsonArray update,
       FindOneAndUpdateOptions options);
 
   /**
@@ -2041,7 +2036,7 @@ public interface MongoCollection<TDocument> {
    *  @since 1.12
    *  @mongodb.server.release 4.2
    */
-  MongoCollection<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update,
+  MongoCollection<TDocument> findOneAndUpdate(JsonObject filter, JsonArray update,
       FindOneAndUpdateOptions options, Handler<AsyncResult<TDocument>> resultHandler);
 
   /**
@@ -2057,7 +2052,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 4.2
    */
   Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update);
+      JsonArray update);
 
   /**
    *  Atomically find a document and update it.
@@ -2073,7 +2068,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 4.2
    */
   MongoCollection<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, Handler<AsyncResult<TDocument>> resultHandler);
+      JsonArray update, Handler<AsyncResult<TDocument>> resultHandler);
 
   /**
    *  Atomically find a document and update it.
@@ -2089,7 +2084,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 4.2
    */
   Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, FindOneAndUpdateOptions options);
+      JsonArray update, FindOneAndUpdateOptions options);
 
   /**
    *  Atomically find a document and update it.
@@ -2106,7 +2101,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.server.release 4.2
    */
   MongoCollection<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, FindOneAndUpdateOptions options,
+      JsonArray update, FindOneAndUpdateOptions options,
       Handler<AsyncResult<TDocument>> resultHandler);
 
   /**

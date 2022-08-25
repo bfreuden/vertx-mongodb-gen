@@ -36,49 +36,49 @@ public class MongoClientAggregateUpdateTest extends MongoTestBase {
     super.tearDown();
   }
 
-//  @Test
-//  public void testAggregateUpdateCollection() {
-//
-//    String collection = randomCollection();
-//    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
-//    coll.insertOne(new JsonObject().put("price", 10).put("quantity", 1), onSuccess(id -> {
-//      coll.insertOne(new JsonObject().put("price", 20).put("quantity", 2), onSuccess(id2 -> {
-//        coll.insertOne(new JsonObject().put("price", 30).put("quantity", 10), onSuccess(id3 -> {
-//          coll.updateMany(
-//            // reduce price of low quantity items
-//            new JsonObject().put("quantity", new JsonObject().put("$lte", 2)),
-//            new JsonArray().add(new JsonObject().put("$set", new JsonObject().put("price", new JsonObject().put("$subtract", new JsonArray().add("$price").add(2))))),
-//            onSuccess(res -> {
-//              assertEquals(2, res.getDocModified());
-//              assertEquals(2, res.getDocMatched());
-//              testComplete();
-//            }));
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testAggregateUpdateCollectionWithOptions() {
-//    String collection = randomCollection();
-//    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
-//    coll.insertOne(new JsonObject().put("price", 10).put("quantity", 1), onSuccess(id -> {
-//      coll.insertOne(new JsonObject().put("price", 20).put("quantity", 2), onSuccess(id2 -> {
-//        coll.insertOne(new JsonObject().put("price", 30).put("quantity", 10), onSuccess(id3 -> {
-//          coll.updateMany(collection,
-//            // reduce price of low quantity items
-//            new JsonObject().put("quantity", new JsonObject().put("$lte", 2)),
-//            new JsonArray().add(new JsonObject().put("$set", new JsonObject().put("price", new JsonObject().put("$subtract", new JsonArray().add("$price").add(2))))),
-//            new UpdateOptions(),onSuccess(res -> {
-//              assertEquals(2, res.getDocModified());
-//              assertEquals(2, res.getDocMatched());
-//              testComplete();
-//            }));
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
+  @Test
+  public void testAggregateUpdateCollection() {
+
+    String collection = randomCollection();
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(new JsonObject().put("price", 10).put("quantity", 1), onSuccess(id -> {
+      coll.insertOne(new JsonObject().put("price", 20).put("quantity", 2), onSuccess(id2 -> {
+        coll.insertOne(new JsonObject().put("price", 30).put("quantity", 10), onSuccess(id3 -> {
+          coll.updateMany(
+            // reduce price of low quantity items
+            new JsonObject().put("quantity", new JsonObject().put("$lte", 2)),
+            new JsonArray().add(new JsonObject().put("$set", new JsonObject().put("price", new JsonObject().put("$subtract", new JsonArray().add("$price").add(2))))),
+            onSuccess(res -> {
+              assertEquals(2, res.getModifiedCount());
+              assertEquals(2, res.getMatchedCount());
+              testComplete();
+            }));
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testAggregateUpdateCollectionWithOptions() {
+    String collection = randomCollection();
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(new JsonObject().put("price", 10).put("quantity", 1), onSuccess(id -> {
+      coll.insertOne(new JsonObject().put("price", 20).put("quantity", 2), onSuccess(id2 -> {
+        coll.insertOne(new JsonObject().put("price", 30).put("quantity", 10), onSuccess(id3 -> {
+          coll.updateMany(
+            // reduce price of low quantity items
+            new JsonObject().put("quantity", new JsonObject().put("$lte", 2)),
+            new JsonArray().add(new JsonObject().put("$set", new JsonObject().put("price", new JsonObject().put("$subtract", new JsonArray().add("$price").add(2))))),
+            new UpdateOptions(), onSuccess(res -> {
+              assertEquals(2, res.getModifiedCount());
+              assertEquals(2, res.getMatchedCount());
+              testComplete();
+            }));
+        }));
+      }));
+    }));
+    await();
+  }
 
 }

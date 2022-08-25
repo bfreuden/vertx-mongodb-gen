@@ -1,6 +1,7 @@
 package io.vertx.mongo.impl;
 
 import com.mongodb.client.model.*;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.bulk.BulkWriteInsert;
 import io.vertx.mongo.bulk.BulkWriteUpsert;
@@ -8,6 +9,7 @@ import org.bson.*;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,16 @@ public class ConversionUtilsImpl implements ConversionUtils {
     @Override
     public BsonInt64 toBsonInt64(Long from) {
         return new BsonInt64(from);
+    }
+
+    @Override
+    public List<Bson> toBsonList(JsonArray from) {
+        ArrayList<Bson> result = new ArrayList<>();
+        for (int i=0 ; i<from.size() ; i++) {
+            JsonObject jsonObject = from.getJsonObject(i);
+            result.add(toBson(jsonObject));
+        }
+        return result;
     }
 
     @Override

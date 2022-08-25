@@ -15,10 +15,12 @@
 //
 package io.vertx.mongo.impl;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.lang.Long;
 import java.lang.Object;
 import java.lang.String;
+import java.util.List;
 import org.bson.BsonBinary;
 import org.bson.BsonDocument;
 import org.bson.BsonInt64;
@@ -39,6 +41,8 @@ public abstract interface ConversionUtils {
   BsonDocument toBsonDocument(JsonObject from);
 
   BsonInt64 toBsonInt64(Long from);
+
+  List<Bson> toBsonList(JsonArray from);
 
   BsonTimestamp toBsonTimestamp(Long from);
 

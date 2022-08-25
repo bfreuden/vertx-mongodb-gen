@@ -277,20 +277,11 @@ public abstract class APIClassGenerator {
     protected ActualType getActualType(ExecutableMemberDoc methodDoc, String name, Type type, TypeLocation location) {
         try {
             ActualType result = getActualType2(methodDoc, name, type, location, null);
-//            result.isNullable = result.vertxType.toString().endsWith("Options");
-
-//            if (result.isApiType || "watch".equals(methodDoc.name())) // FIXME watch
-//                return result;
-//            if (result.isPublisher) {
-//                if (!result.publishedType.vertxType.toString().equals(result.publishedType.mongoType.toString()) && !result.toMongoEnabledType)
-//                    result.conversionMethod = context.conversionUtilsGenerator.addConversion(result.publishedType.mongoType, result.publishedType.vertxType);
-//            } else {
-//                if (!result.vertxType.toString().equals(result.mongoType.toString()) && !result.toMongoEnabledType)
-//                    if (location == TypeLocation.RETURN)
-//                        result.conversionMethod = context.conversionUtilsGenerator.addConversion(result.mongoType, result.vertxType);
-//                    else
-//                        result.conversionMethod = context.conversionUtilsGenerator.addConversion(result.vertxType, result.mongoType);
-//            }
+            if (location == TypeLocation.PARAMETER && result.vertxType.toString().equals(ParameterizedTypeName.get(List.class, JsonObject.class).toString())) {
+                result.vertxType = ClassName.get(JsonArray.class);
+                String conversionMethod = context.conversionUtilsGenerator.addConversion(result.vertxType, result.mongoType);
+                result.mapper = new ConversionUtilsMapperGenerator(conversionMethod);
+            }
             return result;
         } catch (RuntimeException ex) {
             if ("@ignored type@".equals(ex.getMessage()))

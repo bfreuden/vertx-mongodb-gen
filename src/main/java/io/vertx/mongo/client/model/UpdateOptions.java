@@ -16,12 +16,11 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Boolean;
 import java.lang.String;
-import java.util.List;
 
 /**
  *  The options to apply when updating documents.
@@ -53,7 +52,7 @@ public class UpdateOptions {
   /**
    * the array filters, which may be null
    */
-  private List<JsonObject> arrayFilters;
+  private JsonArray arrayFilters;
 
   /**
    * the hint
@@ -142,7 +141,7 @@ public class UpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public UpdateOptions arrayFilters(List<JsonObject> arrayFilters) {
+  public UpdateOptions arrayFilters(JsonArray arrayFilters) {
     this.arrayFilters = arrayFilters;
     return this;
   }
@@ -154,7 +153,7 @@ public class UpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public List<JsonObject> getArrayFilters() {
+  public JsonArray getArrayFilters() {
     return arrayFilters;
   }
 
@@ -218,7 +217,7 @@ public class UpdateOptions {
       result.collation(this.collation.toDriverClass());
     }
     if (this.arrayFilters != null) {
-      result.arrayFilters(CollectionsConversionUtils.mapItems(this.arrayFilters, ConversionUtilsImpl.INSTANCE::toBson));
+      result.arrayFilters(ConversionUtilsImpl.INSTANCE.toBsonList(this.arrayFilters));
     }
     if (this.hint != null) {
       result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));

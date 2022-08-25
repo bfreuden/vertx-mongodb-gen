@@ -16,8 +16,8 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.util.List;
 import org.bson.conversions.Bson;
@@ -30,7 +30,7 @@ public class UpdateOneModel<T> extends WriteModel<T> {
 
   private JsonObject update;
 
-  private List<JsonObject> updatePipeline;
+  private JsonArray updatePipeline;
 
   private UpdateOptions options;
 
@@ -70,7 +70,7 @@ public class UpdateOneModel<T> extends WriteModel<T> {
    *  @since 3.11
    *  @mongodb.server.release 4.2
    */
-  public UpdateOneModel(JsonObject filter, List<JsonObject> update) {
+  public UpdateOneModel(JsonObject filter, JsonArray update) {
     __ctorIndex = 2;
     this.filter = filter;
     this.updatePipeline = update;
@@ -85,7 +85,7 @@ public class UpdateOneModel<T> extends WriteModel<T> {
    *  @since 3.11
    *  @mongodb.server.release 4.2
    */
-  public UpdateOneModel(JsonObject filter, List<JsonObject> update, UpdateOptions options) {
+  public UpdateOneModel(JsonObject filter, JsonArray update, UpdateOptions options) {
     __ctorIndex = 3;
     this.filter = filter;
     this.updatePipeline = update;
@@ -117,7 +117,7 @@ public class UpdateOneModel<T> extends WriteModel<T> {
    *  @since 3.11
    *  @mongodb.server.release 4.2
    */
-  public List<JsonObject> getUpdatePipeline() {
+  public JsonArray getUpdatePipeline() {
     return updatePipeline;
   }
 
@@ -146,11 +146,11 @@ public class UpdateOneModel<T> extends WriteModel<T> {
       return new com.mongodb.client.model.UpdateOneModel<T>(__filter, __update, __options);
     } else if (__ctorIndex == 2) {
       Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
-      List<? extends Bson> __updatePipeline = CollectionsConversionUtils.mapItems(this.updatePipeline, ConversionUtilsImpl.INSTANCE::toBson);
+      List<? extends Bson> __updatePipeline = ConversionUtilsImpl.INSTANCE.toBsonList(this.updatePipeline);
       return new com.mongodb.client.model.UpdateOneModel<T>(__filter, __updatePipeline);
     } else if (__ctorIndex == 3) {
       Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
-      List<? extends Bson> __updatePipeline = CollectionsConversionUtils.mapItems(this.updatePipeline, ConversionUtilsImpl.INSTANCE::toBson);
+      List<? extends Bson> __updatePipeline = ConversionUtilsImpl.INSTANCE.toBsonList(this.updatePipeline);
       com.mongodb.client.model.UpdateOptions __options = this.options.toDriverClass();
       return new com.mongodb.client.model.UpdateOneModel<T>(__filter, __updatePipeline, __options);
     } else {

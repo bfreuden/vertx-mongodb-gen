@@ -27,6 +27,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoCollectionResult;
 import io.vertx.mongo.MongoNamespace;
@@ -391,18 +392,17 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline) {
+  public MongoCollectionResult<TDocument> aggregate(JsonArray pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__pipeline);
     return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
 
   @Override
-  public MongoCollectionResult<TDocument> aggregate(List<JsonObject> pipeline,
-      AggregateOptions options) {
+  public MongoCollectionResult<TDocument> aggregate(JsonArray pipeline, AggregateOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__pipeline);
     options.initializePublisher(__publisher);
     Integer __batchSize = options.getBatchSize();
@@ -415,22 +415,22 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoCollectionResult<TDocument> aggregate(ClientSession clientSession,
-      List<JsonObject> pipeline) {
+      JsonArray pipeline) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__clientSession, __pipeline);
     return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
   }
 
   @Override
-  public MongoCollectionResult<TDocument> aggregate(ClientSession clientSession,
-      List<JsonObject> pipeline, AggregateOptions options) {
+  public MongoCollectionResult<TDocument> aggregate(ClientSession clientSession, JsonArray pipeline,
+      AggregateOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     AggregatePublisher<TDocument> __publisher = wrapped.aggregate(__clientSession, __pipeline);
     options.initializePublisher(__publisher);
     Integer __batchSize = options.getBatchSize();
@@ -454,18 +454,18 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline) {
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
-  public MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline,
       ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
@@ -489,22 +489,22 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline) {
+      JsonArray pipeline) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline, ChangeStreamOptions options) {
+      JsonArray pipeline, ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
@@ -1151,11 +1151,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public Future<UpdateResult> updateOne(JsonObject filter, List<JsonObject> update) {
+  public Future<UpdateResult> updateOne(JsonObject filter, JsonArray update) {
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateOne(__filter, __update);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1164,20 +1164,20 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
-      List<JsonObject> update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+      JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(filter, update);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<UpdateResult> updateOne(JsonObject filter, List<JsonObject> update,
+  public Future<UpdateResult> updateOne(JsonObject filter, JsonArray update,
       UpdateOptions options) {
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateOne(__filter, __update, __options);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
@@ -1187,8 +1187,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
-      List<JsonObject> update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+      JsonArray update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(filter, update, options);
     setHandler(__future, resultHandler);
     return this;
@@ -1196,13 +1195,13 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update) {
+      JsonArray update) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1211,8 +1210,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
-      JsonObject filter, List<JsonObject> update,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+      JsonObject filter, JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(clientSession, filter, update);
     setHandler(__future, resultHandler);
     return this;
@@ -1220,14 +1218,14 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<UpdateResult> updateOne(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, UpdateOptions options) {
+      JsonArray update, UpdateOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateOne(__clientSession, __filter, __update, __options);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
@@ -1237,7 +1235,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
-      JsonObject filter, List<JsonObject> update, UpdateOptions options,
+      JsonObject filter, JsonArray update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
@@ -1337,11 +1335,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public Future<UpdateResult> updateMany(JsonObject filter, List<JsonObject> update) {
+  public Future<UpdateResult> updateMany(JsonObject filter, JsonArray update) {
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateMany(__filter, __update);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1350,20 +1348,20 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
-      List<JsonObject> update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+      JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(filter, update);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<UpdateResult> updateMany(JsonObject filter, List<JsonObject> update,
+  public Future<UpdateResult> updateMany(JsonObject filter, JsonArray update,
       UpdateOptions options) {
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateMany(__filter, __update, __options);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
@@ -1373,8 +1371,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
-      List<JsonObject> update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+      JsonArray update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(filter, update, options);
     setHandler(__future, resultHandler);
     return this;
@@ -1382,13 +1379,13 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update) {
+      JsonArray update) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1397,8 +1394,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
-      JsonObject filter, List<JsonObject> update,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+      JsonObject filter, JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(clientSession, filter, update);
     setHandler(__future, resultHandler);
     return this;
@@ -1406,14 +1402,14 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<UpdateResult> updateMany(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, UpdateOptions options) {
+      JsonArray update, UpdateOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.UpdateOptions __options = options.toDriverClass();
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.updateMany(__clientSession, __filter, __update, __options);
     Promise<com.mongodb.client.result.UpdateResult> __promise = Promise.promise();
@@ -1423,7 +1419,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
-      JsonObject filter, List<JsonObject> update, UpdateOptions options,
+      JsonObject filter, JsonArray update, UpdateOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
@@ -1698,11 +1694,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public Future<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update) {
+  public Future<TDocument> findOneAndUpdate(JsonObject filter, JsonArray update) {
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update);
     Promise<TDocument> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1711,20 +1707,20 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
-      List<JsonObject> update, Handler<AsyncResult<TDocument>> resultHandler) {
+      JsonArray update, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(filter, update);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<TDocument> findOneAndUpdate(JsonObject filter, List<JsonObject> update,
+  public Future<TDocument> findOneAndUpdate(JsonObject filter, JsonArray update,
       FindOneAndUpdateOptions options) {
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     requireNonNull(options, "options is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update, __options);
     Promise<TDocument> __promise = Promise.promise();
@@ -1734,7 +1730,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
-      List<JsonObject> update, FindOneAndUpdateOptions options,
+      JsonArray update, FindOneAndUpdateOptions options,
       Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(filter, update, options);
     setHandler(__future, resultHandler);
@@ -1743,13 +1739,13 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update) {
+      JsonArray update) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update);
     Promise<TDocument> __promise = Promise.promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1758,7 +1754,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
-      ClientSession clientSession, JsonObject filter, List<JsonObject> update,
+      ClientSession clientSession, JsonObject filter, JsonArray update,
       Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update);
     setHandler(__future, resultHandler);
@@ -1767,14 +1763,14 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public Future<TDocument> findOneAndUpdate(ClientSession clientSession, JsonObject filter,
-      List<JsonObject> update, FindOneAndUpdateOptions options) {
+      JsonArray update, FindOneAndUpdateOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
     requireNonNull(update, "update is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    List<? extends Bson> __update = CollectionsConversionUtils.mapItems(update, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __update = ConversionUtilsImpl.INSTANCE.toBsonList(update);
     com.mongodb.client.model.FindOneAndUpdateOptions __options = options.toDriverClass();
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
     Promise<TDocument> __promise = Promise.promise();
@@ -1784,7 +1780,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
-      ClientSession clientSession, JsonObject filter, List<JsonObject> update,
+      ClientSession clientSession, JsonObject filter, JsonArray update,
       FindOneAndUpdateOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update, options);
     setHandler(__future, resultHandler);

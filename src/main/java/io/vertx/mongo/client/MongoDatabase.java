@@ -18,6 +18,7 @@ package io.vertx.mongo.client;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoCollectionResult;
 import io.vertx.mongo.MongoResult;
@@ -30,7 +31,6 @@ import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
 import java.lang.Class;
 import java.lang.String;
 import java.lang.Void;
-import java.util.List;
 
 /**
  *  The MongoDatabase interface.
@@ -379,7 +379,7 @@ public interface MongoDatabase {
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  Future<Void> createView(String viewName, String viewOn, List<JsonObject> pipeline);
+  Future<Void> createView(String viewName, String viewOn, JsonArray pipeline);
 
   /**
    *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
@@ -392,7 +392,7 @@ public interface MongoDatabase {
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  MongoDatabase createView(String viewName, String viewOn, List<JsonObject> pipeline,
+  MongoDatabase createView(String viewName, String viewOn, JsonArray pipeline,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -406,7 +406,7 @@ public interface MongoDatabase {
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  Future<Void> createView(String viewName, String viewOn, List<JsonObject> pipeline,
+  Future<Void> createView(String viewName, String viewOn, JsonArray pipeline,
       CreateViewOptions createViewOptions);
 
   /**
@@ -421,7 +421,7 @@ public interface MongoDatabase {
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  MongoDatabase createView(String viewName, String viewOn, List<JsonObject> pipeline,
+  MongoDatabase createView(String viewName, String viewOn, JsonArray pipeline,
       CreateViewOptions createViewOptions, Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -436,7 +436,7 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   Future<Void> createView(ClientSession clientSession, String viewName, String viewOn,
-      List<JsonObject> pipeline);
+      JsonArray pipeline);
 
   /**
    *  Creates a view with the given name, backing collection/view name, and aggregation pipeline that defines the view.
@@ -451,7 +451,7 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
-      List<JsonObject> pipeline, Handler<AsyncResult<Void>> resultHandler);
+      JsonArray pipeline, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
@@ -466,7 +466,7 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   Future<Void> createView(ClientSession clientSession, String viewName, String viewOn,
-      List<JsonObject> pipeline, CreateViewOptions createViewOptions);
+      JsonArray pipeline, CreateViewOptions createViewOptions);
 
   /**
    *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
@@ -482,7 +482,7 @@ public interface MongoDatabase {
    *  @since 1.7
    */
   MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
-      List<JsonObject> pipeline, CreateViewOptions createViewOptions,
+      JsonArray pipeline, CreateViewOptions createViewOptions,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -512,7 +512,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline);
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline);
 
   /**
    *  Creates a change stream for this database.
@@ -523,7 +523,7 @@ public interface MongoDatabase {
    *  @since 1.9
    *  @mongodb.server.release 4.0
    */
-  MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
+  MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline,
       ChangeStreamOptions options);
 
   /**
@@ -558,7 +558,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.dochub core/changestreams Change Streams
    */
   MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline);
+      JsonArray pipeline);
 
   /**
    *  Creates a change stream for this database.
@@ -571,7 +571,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.dochub core/changestreams Change Streams
    */
   MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline, ChangeStreamOptions options);
+      JsonArray pipeline, ChangeStreamOptions options);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
@@ -582,7 +582,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline);
+  MongoCollectionResult<JsonObject> aggregate(JsonArray pipeline);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
@@ -594,7 +594,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoCollectionResult<JsonObject> aggregate(List<JsonObject> pipeline, AggregateOptions options);
+  MongoCollectionResult<JsonObject> aggregate(JsonArray pipeline, AggregateOptions options);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
@@ -606,8 +606,7 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoCollectionResult<JsonObject> aggregate(ClientSession clientSession,
-      List<JsonObject> pipeline);
+  MongoCollectionResult<JsonObject> aggregate(ClientSession clientSession, JsonArray pipeline);
 
   /**
    *  Runs an aggregation framework pipeline on the database for pipeline stages
@@ -620,8 +619,8 @@ public interface MongoDatabase {
    *  @mongodb.driver.manual reference/command/aggregate/#dbcmd.aggregate Aggregate Command
    *  @mongodb.server.release 3.6
    */
-  MongoCollectionResult<JsonObject> aggregate(ClientSession clientSession,
-      List<JsonObject> pipeline, AggregateOptions options);
+  MongoCollectionResult<JsonObject> aggregate(ClientSession clientSession, JsonArray pipeline,
+      AggregateOptions options);
 
   /**
    * @return mongo object

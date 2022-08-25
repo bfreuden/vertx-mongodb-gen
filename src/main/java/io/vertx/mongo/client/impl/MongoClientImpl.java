@@ -25,6 +25,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
@@ -36,7 +37,6 @@ import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
 import io.vertx.mongo.connection.ClusterDescription;
-import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoResultImpl;
 import io.vertx.mongo.impl.SingleResultSubscriber;
@@ -135,18 +135,18 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   }
 
   @Override
-  public MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline) {
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
-  public MongoResult<ChangeStreamDocument<JsonObject>> watch(List<JsonObject> pipeline,
+  public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline,
       ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
@@ -170,22 +170,22 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline) {
+      JsonArray pipeline) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
-      List<JsonObject> pipeline, ChangeStreamOptions options) {
+      JsonArray pipeline, ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = CollectionsConversionUtils.mapItems(pipeline, ConversionUtilsImpl.INSTANCE::toBson);
+    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     //  TODO implement mapped mongo results
     return null;
   }
