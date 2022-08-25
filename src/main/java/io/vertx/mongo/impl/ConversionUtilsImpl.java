@@ -91,6 +91,8 @@ public class ConversionUtilsImpl implements ConversionUtils {
             return ((BsonString)from).getValue();
         } else if (from instanceof BsonInt64) {
             return ((BsonInt64)from).getValue();
+        } else if (from instanceof BsonInt32) {
+            return ((BsonInt32)from).getValue();
         }
         throw new IllegalStateException("not implemented: " + from.getClass());
     }
