@@ -18,11 +18,7 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
-import com.mongodb.reactivestreams.client.AggregatePublisher;
-import com.mongodb.reactivestreams.client.FindPublisher;
-import com.mongodb.reactivestreams.client.ListIndexesPublisher;
-import com.mongodb.reactivestreams.client.MapReducePublisher;
-import com.mongodb.reactivestreams.client.MongoCollection;
+import com.mongodb.reactivestreams.client.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -64,18 +60,16 @@ import io.vertx.mongo.client.result.DeleteResult;
 import io.vertx.mongo.client.result.InsertManyResult;
 import io.vertx.mongo.client.result.InsertOneResult;
 import io.vertx.mongo.client.result.UpdateResult;
-import io.vertx.mongo.impl.CollectionsConversionUtils;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
-import io.vertx.mongo.impl.MongoClientContext;
-import io.vertx.mongo.impl.MongoCollectionResultImpl;
-import io.vertx.mongo.impl.MongoResultImpl;
-import io.vertx.mongo.impl.SingleResultSubscriber;
+import io.vertx.mongo.impl.*;
+
 import java.lang.Class;
 import java.lang.Long;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
+
+import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
@@ -471,8 +465,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline) {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> watch = wrapped.watch(__pipeline, JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> mappingPublisher = new MappingPublisher<>(watch, ChangeStreamDocument::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, mappingPublisher);
   }
 
   @Override

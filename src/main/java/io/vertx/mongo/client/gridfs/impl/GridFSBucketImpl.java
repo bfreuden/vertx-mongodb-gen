@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
+import com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -33,9 +34,9 @@ import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.gridfs.GridFSFindOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
-import io.vertx.mongo.impl.MongoClientContext;
-import io.vertx.mongo.impl.SingleResultSubscriber;
+import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
+import io.vertx.mongo.impl.*;
+
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -292,8 +293,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __result = wrapped.find(__clientSession, __filter);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> mappingPublisher = new MappingPublisher<>(__result, GridFSFile::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, mappingPublisher);
   }
 
   @Override
