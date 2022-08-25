@@ -9,23 +9,12 @@ import io.vertx.mongo.client.MongoClient;
 import org.junit.Test;
 
 import java.util.concurrent.*;
-//FIXME some tests fail
+
 /**
  * @author <a href="mailto:kostya05983@mail.ru">Konstantin Volivach</a>
  */
-public class CloseTest extends MongoClientTestBase {
+public class CloseTest extends MongoTestBase {
   private static final ClientConfig theConfig = getConfig();
-
-  @Override
-  public void setUp() throws Exception{
-    super.setUp();
-    ClientConfig config = getConfig();
-    mongoClient = MongoClient.create(vertx, config);
-    CountDownLatch latch = new CountDownLatch(1);
-    mongoDatabase = mongoClient.getDatabase(getDatabaseName());
-    dropCollections(mongoDatabase, latch);
-    awaitLatch(latch);
-  }
 
   public static class SharedVerticle extends AbstractVerticle {
 
