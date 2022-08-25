@@ -4,6 +4,7 @@ import com.mongodb.client.model.ReturnDocument;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.bulk.BulkWriteUpsert;
 import io.vertx.mongo.client.FindOptions;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.client.MongoCollection;
@@ -1692,270 +1693,280 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     });
     await();
   }
-  //TODO HERE
-//  @Test
-//  public void testBulkOperation_insertDocument() {
-//    String collection = randomCollection();
-//    JsonObject doc = createDoc();
-//    mongoDatabase.bulkWrite(collection, Arrays.asList(BulkOperation.createInsert(doc)), onSuccess(bulkResult -> {
-//      assertEquals(1, bulkResult.getInsertedCount());
-//      assertEquals(0, bulkResult.getModifiedCount());
-//      assertEquals(0, bulkResult.getDeletedCount());
-//      assertEquals(0, bulkResult.getMatchedCount());
-//      mongoDatabase.find(collection, new JsonObject(), onSuccess(docs -> {
-//
-//        assertEquals(1, docs.size());
-//        JsonObject foundDoc = docs.get(0);
-//        doc.put("_id", foundDoc.getString("_id"));
-//        assertEquals(foundDoc, doc);
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_insertDocuments() {
-//    String collection = randomCollection();
-//    JsonObject doc1 = new JsonObject().put("foo", "bar");
-//    JsonObject doc2 = new JsonObject().put("foo", "foobar");
-//    mongoDatabase.bulkWrite(collection,
-//      Arrays.asList(BulkOperation.createInsert(doc1), BulkOperation.createInsert(doc2)),
-//      onSuccess(bulkResult -> {
-//        assertEquals(2, bulkResult.getInsertedCount());
-//        assertEquals(0, bulkResult.getModifiedCount());
-//        assertEquals(0, bulkResult.getDeletedCount());
-//        assertEquals(0, bulkResult.getMatchedCount());
-//        testComplete();
-//      }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_updateDocument() {
-//    String collection = randomCollection();
-//    JsonObject doc = new JsonObject().put("foo", "bar");
-//    coll.insertOne(doc, onSuccess(id -> {
-//      JsonObject update = new JsonObject().put("$set", new JsonObject().put("foo", "foobar"));
-//      JsonObject filter = new JsonObject();
-//      if (useObjectId)
-//        filter.put("_id", new JsonObject().put(JsonObjectCodec.OID_FIELD, id));
-//      else
-//        filter.put("_id", id);
-//      mongoDatabase.bulkWrite(collection, Arrays.asList(BulkOperation.createUpdate(filter, update)),
-//        onSuccess(bulkResult -> {
-//          assertEquals(1, bulkResult.getModifiedCount());
-//          assertEquals(0, bulkResult.getDeletedCount());
-//          assertEquals(0, bulkResult.getInsertedCount());
-//          assertEquals(1, bulkResult.getMatchedCount());
-//          mongoDatabase.find(collection, new JsonObject(), onSuccess(docs -> {
-//            assertEquals(1, docs.size());
-//            JsonObject foundDoc = docs.get(0);
-//            assertEquals("foobar", foundDoc.getString("foo"));
-//            testComplete();
-//          }));
-//        }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_updateMultipleDocuments() {
-//    String collection = randomCollection();
-//    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
-//      JsonObject update = new JsonObject().put("$set", new JsonObject().put("foo", "foobar-bulk"));
-//      JsonObject filter = new JsonObject();
-//      BulkOperation bulkUpdate = BulkOperation.createUpdate(filter, update).setMulti(true);
-//      mongoDatabase.bulkWrite(collection, Arrays.asList(bulkUpdate), onSuccess(bulkResult -> {
-//        assertEquals(5, bulkResult.getModifiedCount());
-//        assertEquals(5, bulkResult.getMatchedCount());
-//        assertEquals(0, bulkResult.getDeletedCount());
-//        assertEquals(0, bulkResult.getInsertedCount());
-//        mongoDatabase.find(collection, new JsonObject(), onSuccess(docs -> {
-//          assertEquals(5, docs.size());
-//          for (JsonObject foundDoc : docs) {
-//            assertEquals("foobar-bulk", foundDoc.getString("foo"));
-//          }
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_updateMultipleDocuments_multiFalse() {
-//    String collection = randomCollection();
-//    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
-//      JsonObject update = new JsonObject().put("$set", new JsonObject().put("foo", "foobar-bulk"));
-//      JsonObject filter = new JsonObject();
-//      BulkOperation bulkUpdate = BulkOperation.createUpdate(filter, update).setMulti(false);
-//      mongoDatabase.bulkWrite(collection, Arrays.asList(bulkUpdate), onSuccess(bulkResult -> {
-//        assertEquals(1, bulkResult.getModifiedCount());
-//        assertEquals(0, bulkResult.getDeletedCount());
-//        assertEquals(0, bulkResult.getInsertedCount());
-//        assertEquals(1, bulkResult.getMatchedCount());
-//        mongoDatabase.find(collection, new JsonObject().put("foo", "foobar-bulk"), onSuccess(docs -> {
-//          assertEquals(1, docs.size());
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_upsertDocument() {
-//    String collection = randomCollection();
-//    JsonObject doc = new JsonObject().put("$set", new JsonObject().put("foo", "bar"));
-//    BulkOperation bulkUpdate = BulkOperation.createUpdate(new JsonObject().put("foo", "bur"), doc)
-//      .setUpsert(true);
-//    mongoDatabase.bulkWrite(collection, Arrays.asList(bulkUpdate), onSuccess(bulkResult -> {
-//      // even though one document was created, the MongoDB client returns 0 for all counts
-//      assertEquals(0, bulkResult.getInsertedCount());
-//      assertEquals(0, bulkResult.getDeletedCount());
-//      assertEquals(0, bulkResult.getModifiedCount());
-//      assertEquals(0, bulkResult.getMatchedCount());
-//      List<JsonObject> upserts = bulkResult.getUpserts();
-//      assertNotNull(upserts);
-//      assertEquals(1, upserts.size());
-//      JsonObject upsert = upserts.get(0);
-//      assertEquals(0, upsert.getInteger(MongoClientBulkWriteResult.INDEX).intValue());
-//      testComplete();
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_upsertDocument_upsertDisabled() {
-//    String collection = randomCollection();
-//    JsonObject doc = new JsonObject().put("$set", new JsonObject().put("foo", "bar"));
-//    BulkOperation bulkUpdate = BulkOperation.createUpdate(new JsonObject().put("foo", "bur"), doc)
-//      .setUpsert(false);
-//    mongoDatabase.bulkWrite(collection, Arrays.asList(bulkUpdate), onSuccess(bulkResult -> {
-//      assertEquals(0, bulkResult.getInsertedCount());
-//      assertEquals(0, bulkResult.getModifiedCount());
-//      assertEquals(0, bulkResult.getDeletedCount());
-//      assertEquals(0, bulkResult.getMatchedCount());
-//      assertEquals(0, bulkResult.getUpserts().size());
-//      testComplete();
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_replace() {
-//    String collection = randomCollection();
-//    insertDocs(mongoClient, collection, 1, onSuccess(v -> {
-//      JsonObject filter = new JsonObject().put("num", 123);
-//      JsonObject replace = new JsonObject().put("foo", "replaced");
-//      BulkOperation bulkReplace = BulkOperation.createReplace(filter, replace);
-//      mongoDatabase.bulkWrite(collection, Arrays.asList(bulkReplace), onSuccess(bulkResult -> {
-//        assertEquals(0, bulkResult.getInsertedCount());
-//        assertEquals(1, bulkResult.getModifiedCount());
-//        assertEquals(0, bulkResult.getDeletedCount());
-//        assertEquals(1, bulkResult.getMatchedCount());
-//        assertEquals(0, bulkResult.getUpserts().size());
-//        mongoDatabase.find(collection, new JsonObject(), onSuccess(docs -> {
-//          assertEquals(1, docs.size());
-//          JsonObject foundDoc = docs.get(0);
-//          assertEquals("replaced", foundDoc.getString("foo"));
-//          assertNull(foundDoc.getInteger("num"));
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_replaceById() {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = new JsonObject();
-//      doc.put("foo", "bar");
-//      doc.put("num", 123);
-//      coll.insertOne(doc, onSuccess(id -> {
-//        JsonObject filter = new JsonObject().put("_id", id);
-//        JsonObject replace = new JsonObject().put("foo", "replaced");
-//        BulkOperation bulkReplace = BulkOperation.createReplace(filter, replace);
-//        mongoDatabase.bulkWrite(collection, Arrays.asList(bulkReplace), onSuccess(bulkResult -> {
-//          assertEquals(0, bulkResult.getInsertedCount());
-//          assertEquals(0, bulkResult.getDeletedCount());
-//          assertEquals(1, bulkResult.getMatchedCount());
-//          assertEquals(0, bulkResult.getUpserts().size());
-//          mongoDatabase.find(collection, new JsonObject(), onSuccess(docs -> {
-//            assertEquals(1, docs.size());
-//            JsonObject foundDoc = docs.get(0);
-//            assertEquals("replaced", foundDoc.getString("foo"));
-//            assertNull(foundDoc.getInteger("num"));
-//            testComplete();
-//          }));
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_replaceOne_upsert() {
-//    String collection = randomCollection();
-//    JsonObject filter = new JsonObject().put("foo", "bar");
-//    JsonObject replace = new JsonObject().put("foo", "upsert");
-//    BulkOperation bulkReplace = BulkOperation.createReplace(filter, replace, true);
-//    mongoDatabase.bulkWrite(collection, Arrays.asList(bulkReplace), onSuccess(bulkResult -> {
-//      assertEquals(0, bulkResult.getInsertedCount());
-//      assertEquals(0, bulkResult.getDeletedCount());
-//      assertEquals(0, bulkResult.getModifiedCount());
-//      assertEquals(0, bulkResult.getMatchedCount());
-//      assertEquals(1, bulkResult.getUpserts().size());
-//      assertEquals(0, (int) bulkResult.getUpserts().get(0).getInteger(MongoClientBulkWriteResult.INDEX));
-//      mongoDatabase.find(collection, new JsonObject(), onSuccess(docs -> {
-//        assertEquals(1, docs.size());
-//        JsonObject foundDoc = docs.get(0);
-//        assertEquals("upsert", foundDoc.getString("foo"));
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_delete_multiDisabled() {
-//    String collection = randomCollection();
-//    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
-//      JsonObject filter = new JsonObject().put("num", 123);
-//      BulkOperation bulkDelete = BulkOperation.createDelete(filter).setMulti(false);
-//      mongoDatabase.bulkWrite(collection, Arrays.asList(bulkDelete), onSuccess(bulkResult -> {
-//        assertEquals(0, bulkResult.getInsertedCount());
-//        assertEquals(1, bulkResult.getDeletedCount());
-//        assertEquals(0, bulkResult.getModifiedCount());
-//        assertEquals(0, bulkResult.getMatchedCount());
-//        assertEquals(0, bulkResult.getUpserts().size());
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testBulkOperation_delete_multiEnabled() {
-//    String collection = randomCollection();
-//    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
-//      JsonObject filter = new JsonObject().put("num", 123);
-//      BulkOperation bulkDelete = BulkOperation.createDelete(filter).setMulti(true);
-//      mongoDatabase.bulkWrite(collection, Arrays.asList(bulkDelete), onSuccess(bulkResult -> {
-//        assertEquals(0, bulkResult.getInsertedCount());
-//        assertEquals(5, bulkResult.getDeletedCount());
-//        assertEquals(0, bulkResult.getModifiedCount());
-//        assertEquals(0, bulkResult.getMatchedCount());
-//        assertEquals(0, bulkResult.getUpserts().size());
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
+
+  @Test
+  public void testBulkOperation_insertDocument() {
+    String collection = randomCollection();
+    JsonObject doc = createDoc();
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.bulkWrite(List.of(new InsertOneModel<>(doc)), onSuccess(bulkResult -> {
+      assertEquals(1, bulkResult.getInsertedCount());
+      assertEquals(0, bulkResult.getModifiedCount());
+      assertEquals(0, bulkResult.getDeletedCount());
+      assertEquals(0, bulkResult.getMatchedCount());
+      coll.find().all(onSuccess(docs -> {
+        assertEquals(1, docs.size());
+        JsonObject foundDoc = docs.get(0);
+        // FIXME id was a string, now an OID?
+        doc.put("_id", foundDoc.getValue("_id"));
+        assertEquals(foundDoc, doc);
+        testComplete();
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_insertDocuments() {
+    String collection = randomCollection();
+    JsonObject doc1 = new JsonObject().put("foo", "bar");
+    JsonObject doc2 = new JsonObject().put("foo", "foobar");
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.bulkWrite(
+      Arrays.asList(new InsertOneModel<>(doc1), new InsertOneModel<>(doc2)),
+      onSuccess(bulkResult -> {
+        assertEquals(2, bulkResult.getInsertedCount());
+        assertEquals(0, bulkResult.getModifiedCount());
+        assertEquals(0, bulkResult.getDeletedCount());
+        assertEquals(0, bulkResult.getMatchedCount());
+        testComplete();
+      }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_updateDocument() {
+    String collection = randomCollection();
+    JsonObject doc = new JsonObject().put("foo", "bar");
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(doc, onSuccess(res -> {
+      Object id = res.getInsertedId();
+      JsonObject update = new JsonObject().put("$set", new JsonObject().put("foo", "foobar"));
+      JsonObject filter = new JsonObject();
+      if (useObjectId)
+        filter.put("_id", new JsonObject().put(JsonObjectCodec.OID_FIELD, id));
+      else
+        filter.put("_id", id);
+      coll.bulkWrite(List.of(new UpdateOneModel<>(filter, update)),
+        onSuccess(bulkResult -> {
+          assertEquals(1, bulkResult.getModifiedCount());
+          assertEquals(0, bulkResult.getDeletedCount());
+          assertEquals(0, bulkResult.getInsertedCount());
+          assertEquals(1, bulkResult.getMatchedCount());
+          coll.find().all(onSuccess(docs -> {
+            assertEquals(1, docs.size());
+            JsonObject foundDoc = docs.get(0);
+            assertEquals("foobar", foundDoc.getString("foo"));
+            testComplete();
+          }));
+        }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_updateMultipleDocuments() {
+    String collection = randomCollection();
+    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
+      JsonObject update = new JsonObject().put("$set", new JsonObject().put("foo", "foobar-bulk"));
+      JsonObject filter = new JsonObject();
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      coll.bulkWrite(List.of(new UpdateManyModel<>(filter, update)), onSuccess(bulkResult -> {
+        assertEquals(5, bulkResult.getModifiedCount());
+        assertEquals(5, bulkResult.getMatchedCount());
+        assertEquals(0, bulkResult.getDeletedCount());
+        assertEquals(0, bulkResult.getInsertedCount());
+        coll.find().all(onSuccess(docs -> {
+          assertEquals(5, docs.size());
+          for (JsonObject foundDoc : docs) {
+            assertEquals("foobar-bulk", foundDoc.getString("foo"));
+          }
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_updateMultipleDocuments_multiFalse() {
+    String collection = randomCollection();
+    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
+      JsonObject update = new JsonObject().put("$set", new JsonObject().put("foo", "foobar-bulk"));
+      JsonObject filter = new JsonObject();
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      coll.bulkWrite(List.of(new UpdateOneModel<>(filter, update)), onSuccess(bulkResult -> {
+        assertEquals(1, bulkResult.getModifiedCount());
+        assertEquals(0, bulkResult.getDeletedCount());
+        assertEquals(0, bulkResult.getInsertedCount());
+        assertEquals(1, bulkResult.getMatchedCount());
+        coll.find(new JsonObject().put("foo", "foobar-bulk")).all(onSuccess(docs -> {
+          assertEquals(1, docs.size());
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_upsertDocument() {
+    String collection = randomCollection();
+    JsonObject doc = new JsonObject().put("$set", new JsonObject().put("foo", "bar"));
+    UpdateOneModel<JsonObject> bulkUpdate = new UpdateOneModel<>(new JsonObject().put("foo", "bur"), doc, new UpdateOptions().upsert(true));
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.bulkWrite(List.of(bulkUpdate), onSuccess(bulkResult -> {
+      // even though one document was created, the MongoDB client returns 0 for all counts
+      assertEquals(0, bulkResult.getInsertedCount());
+      assertEquals(0, bulkResult.getDeletedCount());
+      assertEquals(0, bulkResult.getModifiedCount());
+      assertEquals(0, bulkResult.getMatchedCount());
+      List<BulkWriteUpsert> upserts = bulkResult.getUpserts();
+      assertNotNull(upserts);
+      assertEquals(1, upserts.size());
+      BulkWriteUpsert upsert = upserts.get(0);
+      assertEquals(0, upsert.getIndex());
+      testComplete();
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_upsertDocument_upsertDisabled() {
+    String collection = randomCollection();
+    JsonObject doc = new JsonObject().put("$set", new JsonObject().put("foo", "bar"));
+    UpdateOneModel<JsonObject> bulkUpdate = new UpdateOneModel<>(new JsonObject().put("foo", "bur"), doc, new UpdateOptions().upsert(false));
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.bulkWrite(List.of(bulkUpdate), onSuccess(bulkResult -> {
+      assertEquals(0, bulkResult.getInsertedCount());
+      assertEquals(0, bulkResult.getModifiedCount());
+      assertEquals(0, bulkResult.getDeletedCount());
+      assertEquals(0, bulkResult.getMatchedCount());
+      assertEquals(0, bulkResult.getUpserts().size());
+      testComplete();
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_replace() {
+    String collection = randomCollection();
+    insertDocs(mongoClient, collection, 1, onSuccess(v -> {
+      JsonObject filter = new JsonObject().put("num", 123);
+      JsonObject replace = new JsonObject().put("foo", "replaced");
+      ReplaceOneModel<JsonObject> bulkReplace = new ReplaceOneModel<>(filter, replace);
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      coll.bulkWrite(List.of(bulkReplace), onSuccess(bulkResult -> {
+        assertEquals(0, bulkResult.getInsertedCount());
+        assertEquals(1, bulkResult.getModifiedCount());
+        assertEquals(0, bulkResult.getDeletedCount());
+        assertEquals(1, bulkResult.getMatchedCount());
+        assertEquals(0, bulkResult.getUpserts().size());
+        coll.find().all(onSuccess(docs -> {
+          assertEquals(1, docs.size());
+          JsonObject foundDoc = docs.get(0);
+          assertEquals("replaced", foundDoc.getString("foo"));
+          assertNull(foundDoc.getInteger("num"));
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_replaceById() {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res1 -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = new JsonObject();
+      doc.put("foo", "bar");
+      doc.put("num", 123);
+      coll.insertOne(doc, onSuccess(res -> {
+        JsonObject filter = resultToIdFilter(res);
+        JsonObject replace = new JsonObject().put("foo", "replaced");
+        ReplaceOneModel<JsonObject> bulkReplace = new ReplaceOneModel<>(filter, replace);
+        coll.bulkWrite(List.of(bulkReplace), onSuccess(bulkResult -> {
+          assertEquals(0, bulkResult.getInsertedCount());
+          assertEquals(0, bulkResult.getDeletedCount());
+          assertEquals(1, bulkResult.getMatchedCount());
+          assertEquals(0, bulkResult.getUpserts().size());
+          coll.find().all(onSuccess(docs -> {
+            assertEquals(1, docs.size());
+            JsonObject foundDoc = docs.get(0);
+            assertEquals("replaced", foundDoc.getString("foo"));
+            assertNull(foundDoc.getInteger("num"));
+            testComplete();
+          }));
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_replaceOne_upsert() {
+    String collection = randomCollection();
+    JsonObject filter = new JsonObject().put("foo", "bar");
+    JsonObject replace = new JsonObject().put("foo", "upsert");
+    ReplaceOneModel<JsonObject> bulkReplace = new ReplaceOneModel<>(filter, replace, new ReplaceOptions().upsert(true));
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.bulkWrite(List.of(bulkReplace), onSuccess(bulkResult -> {
+      assertEquals(0, bulkResult.getInsertedCount());
+      assertEquals(0, bulkResult.getDeletedCount());
+      assertEquals(0, bulkResult.getModifiedCount());
+      assertEquals(0, bulkResult.getMatchedCount());
+      assertEquals(1, bulkResult.getUpserts().size());
+      assertEquals(0, bulkResult.getUpserts().get(0).getIndex());
+      coll.find().all(onSuccess(docs -> {
+        assertEquals(1, docs.size());
+        JsonObject foundDoc = docs.get(0);
+        assertEquals("upsert", foundDoc.getString("foo"));
+        testComplete();
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_delete_multiDisabled() {
+    String collection = randomCollection();
+    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
+      JsonObject filter = new JsonObject().put("num", 123);
+      DeleteOneModel<JsonObject> bulkDelete = new DeleteOneModel<>(filter);
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      coll.bulkWrite(List.of(bulkDelete), onSuccess(bulkResult -> {
+        assertEquals(0, bulkResult.getInsertedCount());
+        assertEquals(1, bulkResult.getDeletedCount());
+        assertEquals(0, bulkResult.getModifiedCount());
+        assertEquals(0, bulkResult.getMatchedCount());
+        assertEquals(0, bulkResult.getUpserts().size());
+        testComplete();
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testBulkOperation_delete_multiEnabled() {
+    String collection = randomCollection();
+    insertDocs(mongoClient, collection, 5, onSuccess(v -> {
+      JsonObject filter = new JsonObject().put("num", 123);
+      DeleteManyModel<JsonObject> bulkDelete = new DeleteManyModel<>(filter);
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      coll.bulkWrite(List.of(bulkDelete), onSuccess(bulkResult -> {
+        assertEquals(0, bulkResult.getInsertedCount());
+        assertEquals(5, bulkResult.getDeletedCount());
+        assertEquals(0, bulkResult.getModifiedCount());
+        assertEquals(0, bulkResult.getMatchedCount());
+        assertEquals(0, bulkResult.getUpserts().size());
+        testComplete();
+      }));
+    }));
+    await();
+  }
+
+  //TODO implement UNACKNOWLEDGED
 //  @Test
 //  public void testBulkOperation_completeBulk() {
 //    testCompleteBulk(null);
