@@ -45,15 +45,6 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
                 option.deprecated = Arrays.stream(methodDoc.annotations()).anyMatch(it -> it.annotationType().toString().equals(Deprecated.class.getName()));
                 option.mongoGetterJavadoc = methodDoc.getRawCommentText().replace("$", "$$");
                 option.mongoGetterName = methodDoc.name();
-//                if (!option.vertxType.toString().equals(option.mongoType.toString())) {
-//                    if (resultBean)
-//                        option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.mongoType, option.vertxType);
-//                    else
-//                        option.conversionMethod = context.conversionUtilsGenerator.addConversion(option.vertxType, option.mongoType);
-//                }
-//                if (context.modelApiClasses.contains(option.mongoType.toString()) || context.resultApiClasses.contains(option.mongoType.toString())) {
-//                    option.optionType = true;
-//                }
                 optionsByName.put(option.name, option);
                 methods.add(mongoMethod);
             } else {
@@ -191,17 +182,10 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
                 Option option = getOptionOfCtorParam(param, null);
                 if (option.type.mapper != null) {
                     ctorParams.add("__" + option.name);
-                    //toMongo.addStatement("$T __" + option.name + " = $T.INSTANCE." + option.type.conversionMethod + "(this." + option.name + ")", option.type.mongoType, ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
                     toMongo.addStatement(option.type.mapper.asStatementFromExpression("$T __" + option.name + " = %s", "this." + option.name, option.type.mongoType, null));
                 } else {
                     ctorParams.add("this." + option.name);
                 }
-//                if (option.type.conversionMethod != null) {
-//                    ctorParams.add("__" + option.name);
-//                    toMongo.addStatement("$T __" + option.name + " = $T.INSTANCE." + option.type.conversionMethod + "(this." + option.name + ")", option.type.mongoType, ClassName.bestGuess("io.vertx.mongo.impl.ConversionUtilsImpl"));
-//                } else {
-//                    ctorParams.add("this." + option.name);
-//                }
             }
             toMongo.addStatement("return new $T(" + ctorParams + ")", returnType);
             j++;

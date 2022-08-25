@@ -78,11 +78,6 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             return null;
         }
 
-//        if (actualReturnType != null) {
-//            mongoMethod.computeActualReturnTypes(context, actualReturnType);
-//            if (mongoMethod.returnType.mongoType != null && mongoMethod.returnType.mongoType.toString().equals(classDoc.qualifiedTypeName()))
-//                mongoMethod.returnType.vertxType = this.fluentReturnType;
-//        }
         if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                 methodDoc.name().equals("downloadToPublisher")
         ) {
@@ -92,14 +87,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 mongoMethod.vertxName = "downloadByFilename";
 
         }
-//        if (methodReturnType != null && mongoMethod.returnType.isPublisher &&
-//                mongoMethod.returnType.mongoType != null &&
-//                !context.reactiveApiClasses.contains(mongoMethod.returnType.mongoType.toString()) &&
-//                mongoMethod.returnType.mongoType.toString().contains(".") && // not a TDocument
-//                !mongoMethod.returnType.mongoType.equals(mongoMethod.returnType.vertxType)
-//        ) {
-//            mongoMethod.resultConversionMethod = context.conversionUtilsGenerator.addConversion(mongoMethod.returnType.mongoType, mongoMethod.returnType.vertxType);
-//        }
+
         for (Parameter param : methodDoc.parameters()) {
             MongoMethodParameter methodParameter = new MongoMethodParameter();
             methodParameter.name = param.name();
@@ -112,27 +100,6 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored");
                 return null;
             }
-//            methodParameter.mongoType = actualParamType.mongoType;
-//            methodParameter.vertxType = actualParamType.vertxType;
-//            ClassName mongoRawType = null;
-//            if (methodParameter.mongoType instanceof ParameterizedTypeName) {
-//                ParameterizedTypeName pmongoType = (ParameterizedTypeName)methodParameter.mongoType;
-//                mongoRawType = pmongoType.rawType;
-//            } else if (methodParameter.mongoType instanceof ClassName) {
-//                mongoRawType = (ClassName) methodParameter.mongoType;
-//            }
-//            if (context.optionsApiClasses.contains(methodParameter.mongoType.toString()) || context.otherApiClasses.contains(methodParameter.mongoType.toString())) {
-//                methodParameter.toMongoEnabledType = true;
-//            }
-//
-//            if (!(methodParameter.vertxType instanceof TypeVariableName) &&
-//                    !methodParameter.vertxType.toString().equals(methodParameter.mongoType.toString()) &&
-//                    !context.otherApiClasses.contains(methodParameter.mongoType.toString()) &&
-//                    !context.optionsApiClasses.contains(methodParameter.mongoType.toString()) &&
-//                    !context.reactiveApiClasses.contains(methodParameter.mongoType.toString())
-//            ) {
-//                methodParameter.conversionMethod = context.conversionUtilsGenerator.addConversion(methodParameter.vertxType, methodParameter.mongoType);
-//            }
             mongoMethod.params.add(methodParameter);
             // FIXME: for the moment publisher parameters are ignored
             if (methodParameter.type.isPublisher) {
@@ -384,8 +351,6 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         public ActualType type;
         String name;
         String setterParamName;
-//        TypeName mongoType;
-//        TypeName vertxType;
         String mongoSetterName;
         String mongoJavadoc;
         String mongoGetterJavadoc;
