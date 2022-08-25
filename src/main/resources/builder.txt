@@ -1,3 +1,2 @@
 com.mongodb.ClientSessionOptions.Builder
-com.mongodb.TransactionOptions.Builder
 com.mongodb.client.model.Collation.Builder

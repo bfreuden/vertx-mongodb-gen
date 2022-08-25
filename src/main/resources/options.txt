@@ -1,5 +1,4 @@
 com.mongodb.ClientSessionOptions
-com.mongodb.TransactionOptions
 com.mongodb.client.gridfs.model.GridFSDownloadOptions
 com.mongodb.client.gridfs.model.GridFSUploadOptions
 com.mongodb.client.model.BulkWriteOptions
@@ -13,6 +12,7 @@ com.mongodb.client.model.EstimatedDocumentCountOptions
 com.mongodb.client.model.FindOneAndDeleteOptions
 com.mongodb.client.model.FindOneAndReplaceOptions
 com.mongodb.client.model.FindOneAndUpdateOptions
+com.mongodb.client.model.IndexOptionDefaults
 com.mongodb.client.model.IndexOptions
 com.mongodb.client.model.InsertManyOptions
 com.mongodb.client.model.InsertOneOptions

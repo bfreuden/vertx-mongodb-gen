@@ -2,13 +2,10 @@ com.mongodb.CreateIndexCommitQuorum
 com.mongodb.MongoNamespace
 com.mongodb.ReadConcern
 com.mongodb.ReadPreference
+com.mongodb.TransactionOptions
+com.mongodb.TransactionOptions.Builder
 com.mongodb.WriteConcern
-com.mongodb.bulk.BulkWriteInsert
-com.mongodb.bulk.BulkWriteUpsert
-com.mongodb.client.gridfs.model.GridFSFile
 com.mongodb.client.model.Collation
-com.mongodb.client.model.changestream.ChangeStreamDocument
-com.mongodb.client.model.changestream.UpdateDescription
 com.mongodb.connection.ClusterDescription
 com.mongodb.selector.CompositeServerSelector
 com.mongodb.session.ClientSession

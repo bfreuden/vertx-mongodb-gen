@@ -147,10 +147,6 @@ public class SourceGenDoclet {
                 inspectionContext.builderClasses, inspectionContext.bsonBasedClasses) )
             classes.removeIf(it -> !graph.vertexSet().contains(it));
 
-        System.out.println("reactive classes: rxjava classes used in mongodb api");
-        System.out.println("reactive classes: " + inspectionContext.reactiveClasses);
-        System.out.println("reactive api classes: api classes using rxjava, that must be rewritten using callbacks and futures");
-        System.out.println("reactive api classes (" + inspectionContext.reactiveApiClasses.size() + "): " + inspectionContext.reactiveApiClasses);
         DijkstraShortestPath<String, DefaultEdge> shortestPath = new DijkstraShortestPath<>(graph);
         HashSet<String> isolatedApiClasses = new HashSet<>();
         HashSet<String> linkedApiClasses = new HashSet<>();
@@ -168,6 +164,49 @@ public class SourceGenDoclet {
                 linkedApiClasses.add(vertex);
 
         }
+
+        // FIXME hardcoded?
+        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
+        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
+        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
+        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
+        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.UpdateDescription");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.ChangeStreamDocument");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.gridfs.model.GridFSFile");
+
+        inspectionContext.otherApiClasses = new HashSet<>();
+        for (String isolatedApiClass : isolatedApiClasses) {
+            if (!inspectionContext.reactiveApiClasses.contains(isolatedApiClass) &&
+            !inspectionContext.publishersApiClasses.contains(isolatedApiClass) &&
+            !inspectionContext.enumApiClasses.contains(isolatedApiClass) &&
+            !inspectionContext.builderClasses.contains(isolatedApiClass) &&
+            !inspectionContext.modelApiClasses.contains(isolatedApiClass) &&
+            !inspectionContext.resultApiClasses.contains(isolatedApiClass) &&
+            !inspectionContext.optionsApiClasses.contains(isolatedApiClass)
+            )
+                inspectionContext.otherApiClasses.add(isolatedApiClass);
+        }
+        ArrayList<String> objects = new ArrayList<>(inspectionContext.otherApiClasses);
+        for (String other: objects) {
+            ClassDoc classDoc = inspectionContext.classDocs.get(other);
+            if (classDoc.getRawCommentText().trim().startsWith("The default options")) {
+                inspectionContext.otherApiClasses.remove(other);
+                inspectionContext.optionsApiClasses.add(other);
+            }
+        }
+
+        System.out.println("other api classes: ?");
+        System.out.println("other api classes (" + inspectionContext.otherApiClasses.size() + "): " + inspectionContext.otherApiClasses);
+        FileUtils.writeLines(new File("src/main/resources/other.txt"), inspectionContext.otherApiClasses.stream().sorted().collect(Collectors.toList()));
+
+        File genSourceDir = new File("src/main/java");
+
+
+        System.out.println("reactive classes: rxjava classes used in mongodb api");
+        System.out.println("reactive classes: " + inspectionContext.reactiveClasses);
+        System.out.println("reactive api classes: api classes using rxjava, that must be rewritten using callbacks and futures");
+        System.out.println("reactive api classes (" + inspectionContext.reactiveApiClasses.size() + "): " + inspectionContext.reactiveApiClasses);
         System.out.println("isolated api classes: classes that have no \"link\" back to a reactive api class (could be used as-is in the vertx api)");
         System.out.println("isolated api classes (" + isolatedApiClasses.size() + "): " + isolatedApiClasses);
         FileUtils.writeLines(new File("src/main/resources/isolated.txt"), isolatedApiClasses.stream().sorted().collect(Collectors.toList()));
@@ -198,42 +237,6 @@ public class SourceGenDoclet {
         System.out.println("non-api parameter and return classes: classes of method parameters and return values not belonging to the api");
         System.out.println("non-api parameter and return classes (" + inspectionContext.nonApiParameterAndReturnClasses.size() + "): " + inspectionContext.nonApiParameterAndReturnClasses);
         FileUtils.writeLines(new File("src/main/resources/non-api.txt"), inspectionContext.nonApiParameterAndReturnClasses.stream().sorted().collect(Collectors.toList()));
-        inspectionContext.otherApiClasses = new HashSet<>();
-        for (String isolatedApiClass : isolatedApiClasses) {
-            if (!inspectionContext.reactiveApiClasses.contains(isolatedApiClass) &&
-            !inspectionContext.publishersApiClasses.contains(isolatedApiClass) &&
-            !inspectionContext.enumApiClasses.contains(isolatedApiClass) &&
-            !inspectionContext.builderClasses.contains(isolatedApiClass) &&
-            !inspectionContext.modelApiClasses.contains(isolatedApiClass) &&
-            !inspectionContext.resultApiClasses.contains(isolatedApiClass) &&
-            !inspectionContext.optionsApiClasses.contains(isolatedApiClass)
-            )
-                inspectionContext.otherApiClasses.add(isolatedApiClass);
-        }
-        ArrayList<String> objects = new ArrayList<>(inspectionContext.otherApiClasses);
-        for (String other: objects) {
-            ClassDoc classDoc = inspectionContext.classDocs.get(other);
-            if (classDoc.getRawCommentText().trim().startsWith("The default options")) {
-                inspectionContext.otherApiClasses.remove(other);
-                inspectionContext.optionsApiClasses.add(other);
-            }
-        }
-
-        System.out.println("other api classes: ?");
-        System.out.println("other api classes (" + inspectionContext.otherApiClasses.size() + "): " + inspectionContext.otherApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/other.txt"), inspectionContext.otherApiClasses.stream().sorted().collect(Collectors.toList()));
-
-        File genSourceDir = new File("src/main/java");
-
-        // FIXME
-        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
-        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
-        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
-        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
-        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
-        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.UpdateDescription");
-        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.ChangeStreamDocument");
-        inspectionContext.resultApiClasses.add("com.mongodb.client.gridfs.model.GridFSFile");
 
 
 

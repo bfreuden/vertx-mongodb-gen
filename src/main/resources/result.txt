@@ -1,4 +1,9 @@
+com.mongodb.bulk.BulkWriteInsert
 com.mongodb.bulk.BulkWriteResult
+com.mongodb.bulk.BulkWriteUpsert
+com.mongodb.client.gridfs.model.GridFSFile
+com.mongodb.client.model.changestream.ChangeStreamDocument
+com.mongodb.client.model.changestream.UpdateDescription
 com.mongodb.client.result.DeleteResult
 com.mongodb.client.result.InsertManyResult
 com.mongodb.client.result.InsertOneResult
