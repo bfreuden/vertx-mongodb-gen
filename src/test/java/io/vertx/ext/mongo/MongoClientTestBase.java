@@ -2,12 +2,11 @@ package io.vertx.ext.mongo;
 
 import com.mongodb.client.model.ReturnDocument;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.client.FindOptions;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.client.MongoCollection;
 import io.vertx.mongo.client.MongoDatabase;
-import io.vertx.mongo.client.model.FindOneAndReplaceOptions;
-import io.vertx.mongo.client.model.FindOneAndUpdateOptions;
-import io.vertx.mongo.client.model.IndexModel;
+import io.vertx.mongo.client.model.*;
 import io.vertx.mongo.client.result.InsertOneResult;
 import io.vertx.test.core.TestUtils;
 import org.bson.types.ObjectId;
@@ -16,6 +15,8 @@ import org.junit.Test;
 import java.io.*;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="http://tfox.org">Tim Fox</a>
@@ -760,149 +761,156 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
-//  @Test
-//  public void testFindOneAndDeleteWithOptions() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        mongoDatabase.findOneAndDeleteWithOptions(collection,
-//          new JsonObject().put("num", 123),
-//          new FindOptions().setFields(new JsonObject().put("num", 1)),
-//          onSuccess(obj -> {
-//            assertEquals(123, (long) obj.getLong("num", -1L));
-//            assertFalse(obj.containsKey("foo"));
-//
-//            mongoDatabase.count(collection, new JsonObject(), onSuccess(count -> {
-//              assertNotNull(count);
-//              assertEquals(0, count.intValue());
-//              testComplete();
-//            }));
-//          }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testCountNoCollection() {
-//    String collection = randomCollection();
-//    mongoDatabase.count(collection, new JsonObject(), onSuccess(count -> {
-//      assertEquals((long) 0, (long) count);
-//      testComplete();
-//    }));
-//
-//    await();
-//  }
-//
-//  @Test
-//  public void testCount() throws Exception {
-//    int num = 10;
-//    String collection = randomCollection();
-//    insertDocs(mongoDatabase, collection, num, onSuccess(res -> {
-//      mongoDatabase.count(collection, new JsonObject(), onSuccess(count -> {
-//        assertNotNull(count);
-//        assertEquals(num, count.intValue());
-//        testComplete();
-//      }));
-//    }));
-//
-//    await();
-//  }
-//
-//  @Test
-//  public void testCountWithQuery() throws Exception {
-//    int num = 10;
-//    String collection = randomCollection();
-//    CountDownLatch latch = new CountDownLatch(num);
-//    for (int i = 0; i < num; i++) {
-//      JsonObject doc = createDoc();
-//      if (i % 2 == 0) {
-//        doc.put("flag", true);
-//      }
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        latch.countDown();
-//      }));
-//    }
-//
-//    awaitLatch(latch);
-//
-//    JsonObject query = new JsonObject().put("flag", true);
-//    mongoDatabase.count(collection, query, onSuccess(count -> {
-//      assertNotNull(count);
-//      assertEquals(num / 2, count.intValue());
-//      testComplete();
-//    }));
-//
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOne() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject orig = createDoc();
-//      JsonObject doc = orig.copy();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        mongoDatabase.findOne(collection, new JsonObject().put("foo", "bar"), null, onSuccess(obj -> {
-//          assertTrue(obj.containsKey("_id"));
-//          obj.remove("_id");
-//          assertEquals(orig, obj);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOneWithKeys() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc = createDoc();
-//      mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//        assertNotNull(id);
-//        mongoDatabase.findOne(collection, new JsonObject().put("foo", "bar"), new JsonObject().put("num", true), onSuccess(obj -> {
-//          assertEquals(2, obj.size());
-//          assertEquals(123, obj.getInteger("num").intValue());
-//          assertTrue(obj.containsKey("_id"));
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFindOneNotFound() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      mongoDatabase.findOne(collection, new JsonObject().put("foo", "bar"), null, onSuccess(obj -> {
-//        assertNull(obj);
-//        testComplete();
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testFind() throws Exception {
-//    int num = 10;
-//    doTestFind(num, new JsonObject(), new FindOptions(), results -> {
-//      assertEquals(num, results.size());
-//      for (JsonObject doc : results) {
-//        assertEquals(12, doc.size()); // Contains _id too
-//      }
-//    });
-//  }
-//
+  @Test
+  public void testFindOneAndDeleteWithOptions() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(id -> {
+        assertNotNull(id.getInsertedId());
+        coll.findOneAndDelete(
+          new JsonObject().put("num", 123),
+          new FindOneAndDeleteOptions().projection(new JsonObject().put("num", 1)),
+          onSuccess(obj -> {
+            assertEquals(123, (long) obj.getLong("num", -1L));
+            assertFalse(obj.containsKey("foo"));
+            coll.countDocuments(onSuccess(count -> {
+              assertNotNull(count);
+              assertEquals(0, count.intValue());
+              testComplete();
+            }));
+          }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testCountNoCollection() {
+    String collection = randomCollection();
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.countDocuments(onSuccess(count -> {
+      assertEquals((long) 0, (long) count);
+      testComplete();
+    }));
+
+    await();
+  }
+
+  @Test
+  public void testCount() throws Exception {
+    int num = 10;
+    String collection = randomCollection();
+    insertDocs(mongoClient, collection, num, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      coll.countDocuments(onSuccess(count -> {
+        assertNotNull(count);
+        assertEquals(num, count.intValue());
+        testComplete();
+      }));
+    }));
+
+    await();
+  }
+
+  @Test
+  public void testCountWithQuery() throws Exception {
+    int num = 10;
+    String collection = randomCollection();
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    CountDownLatch latch = new CountDownLatch(num);
+    for (int i = 0; i < num; i++) {
+      JsonObject doc = createDoc();
+      if (i % 2 == 0) {
+        doc.put("flag", true);
+      }
+      coll.insertOne(doc, onSuccess(res -> {
+        assertNotNull(res.getInsertedId());
+        latch.countDown();
+      }));
+    }
+
+    awaitLatch(latch);
+
+    JsonObject query = new JsonObject().put("flag", true);
+    coll.countDocuments(query, onSuccess(count -> {
+      assertNotNull(count);
+      assertEquals(num / 2, count.intValue());
+      testComplete();
+    }));
+
+    await();
+  }
+
+  @Test
+  public void testFindOne() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject orig = createDoc();
+      JsonObject doc = orig.copy();
+      coll.insertOne(doc, onSuccess(id -> {
+        assertNotNull(id);
+        coll.find(new JsonObject().put("foo", "bar")).first().onSuccess(obj -> {
+          assertTrue(obj.containsKey("_id"));
+          obj.remove("_id");
+          assertEquals(orig, obj);
+          testComplete();
+        });
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testFindOneWithKeys() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc = createDoc();
+      coll.insertOne(doc, onSuccess(res2 -> {
+        assertNotNull(res2);
+        coll.find(new JsonObject().put("foo", "bar"), new FindOptions().projection(new JsonObject().put("num", true))).first(onSuccess(obj -> {
+          assertEquals(2, obj.size());
+          assertEquals(123, obj.getInteger("num").intValue());
+          assertTrue(obj.containsKey("_id"));
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testFindOneNotFound() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      coll.find(new JsonObject().put("foo", "bar")).first(onSuccess(obj -> {
+        assertNull(obj);
+        testComplete();
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testFind() throws Exception {
+    int num = 10;
+    doTestFind(num, new JsonObject(), new FindOptions(), results -> {
+      assertEquals(num, results.size());
+      for (JsonObject doc : results) {
+        assertEquals(12, doc.size()); // Contains _id too
+      }
+    });
+  }
+
+  //FIXME is it really a good idea to always map the id to a string?
 //  @Test
 //  public void testFindWithId() throws Exception {
 //    int num = 10;
-//    doTestFind(num, new JsonObject(), new FindOptions().setFields(new JsonObject().put("_id", 1)), results -> {
+//    doTestFind(num, new JsonObject(), new FindOptions().projection(new JsonObject().put("_id", 1)), results -> {
 //      assertEquals(num, results.size());
 //      for (JsonObject doc : results) {
 //        assertEquals(1, doc.size()); // _id field only
@@ -910,141 +918,147 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //      }
 //    });
 //  }
-//
-//  @Test
-//  public void testFindWithFields() throws Exception {
-//    int num = 10;
-//    doTestFind(num, new JsonObject(), new FindOptions().setFields(new JsonObject().put("num", true)), results -> {
-//      assertEquals(num, results.size());
-//      for (JsonObject doc : results) {
-//        assertEquals(2, doc.size()); // Contains _id too
-//      }
-//    });
-//  }
-//
-//  @Test
-//  public void testFindWithSort() throws Exception {
-//    int num = 11;
-//    doTestFind(num, new JsonObject(), new FindOptions().setSort(new JsonObject().put("foo", 1)), results -> {
-//      assertEquals(num, results.size());
-//      assertEquals("bar0", results.get(0).getString("foo"));
-//      assertEquals("bar1", results.get(1).getString("foo"));
-//      assertEquals("bar10", results.get(2).getString("foo"));
-//    });
-//  }
-//
-//  @Test
-//  public void testFindWithLimit() throws Exception {
-//    int num = 10;
-//    int limit = 3;
-//    doTestFind(num, new JsonObject(), new FindOptions().setLimit(limit), results -> {
-//      assertEquals(limit, results.size());
-//    });
-//  }
-//
-//  @Test
-//  public void testFindWithLimitLarger() throws Exception {
-//    int num = 10;
-//    int limit = 20;
-//    doTestFind(num, new JsonObject(), new FindOptions().setLimit(limit), results -> {
-//      assertEquals(num, results.size());
-//    });
-//  }
-//
-//  @Test
-//  public void testFindWithSkip() throws Exception {
-//    int num = 10;
-//    int skip = 3;
-//    doTestFind(num, new JsonObject(), new FindOptions().setSkip(skip), results -> {
-//      assertEquals(num - skip, results.size());
-//    });
-//  }
-//
-//  @Test
-//  public void testFindWithSkipLarger() throws Exception {
-//    int num = 10;
-//    int skip = 20;
-//    doTestFind(num, new JsonObject(), new FindOptions().setSkip(skip), results -> {
-//      assertEquals(0, results.size());
-//    });
-//  }
-//
-//  private void doTestFind(int numDocs, JsonObject query, FindOptions options, Consumer<List<JsonObject>> resultConsumer) throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      insertDocs(mongoDatabase, collection, numDocs, onSuccess(res2 -> {
-//        mongoDatabase.findWithOptions(collection, query, options, onSuccess(res3 -> {
-//          resultConsumer.accept(res3);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
-//  @Test
-//  public void testReplace() {
-//    String collection = randomCollection();
-//    JsonObject doc = createDoc();
-//    mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//      assertNotNull(id);
-//      JsonObject replacement = createDoc();
-//      replacement.put("replacement", true);
-//      mongoDatabase.replaceDocuments(collection, new JsonObject().put("_id", id), replacement, onSuccess(v -> {
-//        mongoDatabase.find(collection, new JsonObject(), onSuccess(list -> {
-//          assertNotNull(list);
-//          assertEquals(1, list.size());
-//          JsonObject result = list.get(0);
-//          Object id_value = result.getValue("_id");
-//          if (id_value instanceof JsonObject) {
-//            assertEquals(id, ((JsonObject) id_value).getString("$oid"));
-//          } else {
-//            assertEquals(id, id_value);
-//          }
-//          result.remove("_id");
-//          replacement.remove("_id"); // id won't be there for event bus
-//          assertEquals(replacement, result);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//
-//    await();
-//  }
-//
-//  @Test
-//  public void testReplaceWithMongoClientUpddateResult() {
-//    String collection = randomCollection();
-//    JsonObject doc = createDoc();
-//    mongoDatabase.insert(collection, doc, onSuccess(id -> {
-//      assertNotNull(id);
-//      JsonObject replacement = createDoc();
-//      replacement.put("replacement", true);
-//      mongoDatabase.replaceDocuments(collection, new JsonObject().put("_id", id), replacement, onSuccess(v -> {
-//        mongoDatabase.find(collection, new JsonObject(), onSuccess(list -> {
-//          assertNull(v.getDocUpsertedId());
-//          assertEquals(1, v.getDocMatched());
-//          assertEquals(1, v.getDocModified());
-//
-//          assertNotNull(list);
-//          assertEquals(1, list.size());
-//          JsonObject result = list.get(0);
-//          Object id_value = result.getValue("_id");
-//          if (id_value instanceof JsonObject) {
-//            assertEquals(id, ((JsonObject) id_value).getString("$oid"));
-//          } else {
-//            assertEquals(id, id_value);
-//          }
-//          result.remove("_id");
-//          replacement.remove("_id"); // id won't be there for event bus
-//          assertEquals(replacement, result);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//
-//    await();
-//  }
+
+  @Test
+  public void testFindWithFields() throws Exception {
+    int num = 10;
+    doTestFind(num, new JsonObject(), new FindOptions().projection(new JsonObject().put("num", true)), results -> {
+      assertEquals(num, results.size());
+      for (JsonObject doc : results) {
+        assertEquals(2, doc.size()); // Contains _id too
+      }
+    });
+  }
+
+  @Test
+  public void testFindWithSort() throws Exception {
+    int num = 11;
+    doTestFind(num, new JsonObject(), new FindOptions().sort(new JsonObject().put("foo", 1)), results -> {
+      assertEquals(num, results.size());
+      assertEquals("bar0", results.get(0).getString("foo"));
+      assertEquals("bar1", results.get(1).getString("foo"));
+      assertEquals("bar10", results.get(2).getString("foo"));
+    });
+  }
+
+  @Test
+  public void testFindWithLimit() throws Exception {
+    int num = 10;
+    int limit = 3;
+    doTestFind(num, new JsonObject(), new FindOptions().limit(limit), results -> {
+      assertEquals(limit, results.size());
+    });
+  }
+
+  @Test
+  public void testFindWithLimitLarger() throws Exception {
+    int num = 10;
+    int limit = 20;
+    doTestFind(num, new JsonObject(), new FindOptions().limit(limit), results -> {
+      assertEquals(num, results.size());
+    });
+  }
+
+  @Test
+  public void testFindWithSkip() throws Exception {
+    int num = 10;
+    int skip = 3;
+    doTestFind(num, new JsonObject(), new FindOptions().skip(skip), results -> {
+      assertEquals(num - skip, results.size());
+    });
+  }
+
+  @Test
+  public void testFindWithSkipLarger() throws Exception {
+    int num = 10;
+    int skip = 20;
+    doTestFind(num, new JsonObject(), new FindOptions().skip(skip), results -> {
+      assertEquals(0, results.size());
+    });
+  }
+
+  private void doTestFind(int numDocs, JsonObject query, FindOptions options, Consumer<List<JsonObject>> resultConsumer) throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      insertDocs(mongoClient, collection, numDocs, onSuccess(res2 -> {
+        MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+        coll.find(query, options).all(onSuccess(res3 -> {
+          resultConsumer.accept(res3);
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
+  @Test
+  public void testReplace() {
+    String collection = randomCollection();
+    JsonObject doc = createDoc();
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(doc, onSuccess(res -> {
+      Object id = res.getInsertedId();
+      assertNotNull(res);
+      JsonObject replacement = createDoc();
+      replacement.put("replacement", true);
+      coll.replaceOne(resultToIdFilter(res), replacement).onSuccess(v -> {
+        assertEquals(1, v.getMatchedCount());
+        assertEquals(1, v.getModifiedCount());
+        coll.find().all(onSuccess(list -> {
+          assertNotNull(list);
+          assertEquals(1, list.size());
+          JsonObject result = list.get(0);
+          Object id_value = result.getValue("_id");
+          if (id_value instanceof JsonObject) {
+            assertEquals(id, ((JsonObject) id_value).getString("$oid"));
+          } else {
+            assertEquals(id, id_value);
+          }
+          result.remove("_id");
+          replacement.remove("_id"); // id won't be there for event bus
+          assertEquals(replacement, result);
+          testComplete();
+        }));
+      });
+    }));
+
+    await();
+  }
+
+  @Test
+  public void testReplaceWithMongoClientUpddateResult() {
+    String collection = randomCollection();
+    JsonObject doc = createDoc();
+    MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+    coll.insertOne(doc, onSuccess(res -> {
+      Object id = res.getInsertedId();
+      assertNotNull(id);
+      JsonObject replacement = createDoc();
+      replacement.put("replacement", true);
+      coll.replaceOne(resultToIdFilter(res), replacement, onSuccess(v -> {
+        coll.find().all(onSuccess(list -> {
+          assertNull(v.getUpsertedId());
+          assertEquals(1, v.getMatchedCount());
+          assertEquals(1, v.getModifiedCount());
+          assertNotNull(list);
+          assertEquals(1, list.size());
+          JsonObject result = list.get(0);
+          Object id_value = result.getValue("_id");
+          if (id_value instanceof JsonObject) {
+            assertEquals(id, ((JsonObject) id_value).getString("$oid"));
+          } else {
+            assertEquals(id, id_value);
+          }
+          result.remove("_id");
+          replacement.remove("_id"); // id won't be there for event bus
+          assertEquals(replacement, result);
+          testComplete();
+        }));
+      }));
+    }));
+
+    await();
+  }
 //
 //  @Test
 //  public void testReplaceMongoClientUpdateResultUnacknowledge() throws Exception {
