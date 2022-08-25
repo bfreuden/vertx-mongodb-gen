@@ -90,7 +90,7 @@ public class InspectionContext {
             System.out.println("Processing " + qualifiedTypeName);
             graph.addVertex(qualifiedTypeName);
             classDocs.put(qualifiedTypeName, classDoc);
-            if (qualifiedTypeName.endsWith("Options"))
+            if (qualifiedTypeName.endsWith("Options") || qualifiedTypeName.endsWith("Settings"))
                 optionsApiClasses.add(qualifiedTypeName);
             if (qualifiedTypeName.endsWith("Model"))
                 modelApiClasses.add(qualifiedTypeName);

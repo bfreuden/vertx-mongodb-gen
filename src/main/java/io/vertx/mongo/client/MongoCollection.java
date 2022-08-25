@@ -54,6 +54,7 @@ import java.lang.Long;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
+import org.bson.codecs.configuration.CodecRegistry;
 
 /**
  *  The MongoCollection interface.
@@ -74,6 +75,13 @@ public interface MongoCollection<TDocument> {
    *  @return the class
    */
   Class<TDocument> getDocumentClass();
+
+  /**
+   *  Get the codec registry for the MongoCollection.
+   *
+   *  @return the {@link org.bson.codecs.configuration.CodecRegistry}
+   */
+  CodecRegistry getCodecRegistry();
 
   /**
    *  Get the read preference for the MongoCollection.
@@ -106,6 +114,14 @@ public interface MongoCollection<TDocument> {
    *  @return a new MongoCollection instance with the different default class
    */
   <NewTDocument> MongoCollection<NewTDocument> withDocumentClass(Class<NewTDocument> clazz);
+
+  /**
+   *  Create a new MongoCollection instance with a different codec registry.
+   *
+   *  @param codecRegistry the new {@link org.bson.codecs.configuration.CodecRegistry} for the collection
+   *  @return a new MongoCollection instance with the different codec registry
+   */
+  MongoCollection<TDocument> withCodecRegistry(CodecRegistry codecRegistry);
 
   /**
    *  Create a new MongoCollection instance with a different read preference.

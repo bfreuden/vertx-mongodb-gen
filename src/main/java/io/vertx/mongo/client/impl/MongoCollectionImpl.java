@@ -76,6 +76,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
@@ -101,6 +102,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
+  public CodecRegistry getCodecRegistry() {
+    return wrapped.getCodecRegistry();
+  }
+
+  @Override
   public ReadPreference getReadPreference() {
     com.mongodb.ReadPreference __result = wrapped.getReadPreference();
     return  ReadPreference.fromDriverClass(__result);
@@ -123,6 +129,14 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       Class<NewTDocument> clazz) {
     requireNonNull(clazz, "clazz is null");
     MongoCollection<NewTDocument> __result = wrapped.withDocumentClass(clazz);
+    return  new MongoCollectionImpl<>(clientContext, __result);
+  }
+
+  @Override
+  public io.vertx.mongo.client.MongoCollection<TDocument> withCodecRegistry(
+      CodecRegistry codecRegistry) {
+    requireNonNull(codecRegistry, "codecRegistry is null");
+    MongoCollection<TDocument> __result = wrapped.withCodecRegistry(codecRegistry);
     return  new MongoCollectionImpl<>(clientContext, __result);
   }
 

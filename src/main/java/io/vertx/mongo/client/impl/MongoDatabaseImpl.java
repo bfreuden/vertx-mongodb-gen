@@ -50,6 +50,7 @@ import java.lang.Override;
 import java.lang.String;
 import java.lang.Void;
 import java.util.List;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
 
@@ -69,6 +70,11 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
+  public CodecRegistry getCodecRegistry() {
+    return wrapped.getCodecRegistry();
+  }
+
+  @Override
   public ReadPreference getReadPreference() {
     com.mongodb.ReadPreference __result = wrapped.getReadPreference();
     return  ReadPreference.fromDriverClass(__result);
@@ -84,6 +90,13 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public ReadConcern getReadConcern() {
     com.mongodb.ReadConcern __result = wrapped.getReadConcern();
     return  ReadConcern.fromDriverClass(__result);
+  }
+
+  @Override
+  public io.vertx.mongo.client.MongoDatabase withCodecRegistry(CodecRegistry codecRegistry) {
+    requireNonNull(codecRegistry, "codecRegistry is null");
+    MongoDatabase __result = wrapped.withCodecRegistry(codecRegistry);
+    return  new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override

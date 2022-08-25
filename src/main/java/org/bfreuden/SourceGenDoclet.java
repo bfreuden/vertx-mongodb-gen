@@ -47,7 +47,6 @@ public class SourceGenDoclet {
         apiPackages.add("com.mongodb.connection");
         apiPackages.add("com.mongodb.selector");
         apiPackages.add("com.mongodb.bulk");
-        apiPackages.add("com.mongodb.event");
         apiPackages.add("com.mongodb.client.model");
         apiPackages.add("com.mongodb.client.result");
         apiPackages.add("com.mongodb.session");
@@ -61,6 +60,7 @@ public class SourceGenDoclet {
         dependenciesPackages.add("com.mongodb.management"); // really?
         dependenciesPackages.add("com.mongodb.reactivestreams.client.internal");
         dependenciesPackages.add("com.mongodb.connection.netty");
+        dependenciesPackages.add("com.mongodb.event"); // TODO not for the moment
 
         Set<String> stopClasses = inspectionContext.stopClasses;
 //        stopClasses.add("com.mongodb.client.model.Collation");

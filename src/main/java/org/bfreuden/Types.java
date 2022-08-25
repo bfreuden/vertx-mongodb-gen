@@ -20,8 +20,9 @@ public class Types {
     private static Set<String> IGNORED = new HashSet<>();
     private static Set<String> ACCEPTED = new HashSet<>();
 
+
     static {
-        IGNORED.add("org.bson.codecs.configuration.CodecRegistry");
+        ACCEPTED.add("org.bson.codecs.configuration.CodecRegistry");
         IGNORED.add("com.mongodb.internal.async.client.AsyncClientSession");
 
 

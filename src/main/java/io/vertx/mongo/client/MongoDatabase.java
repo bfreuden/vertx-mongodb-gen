@@ -31,6 +31,7 @@ import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
 import java.lang.Class;
 import java.lang.String;
 import java.lang.Void;
+import org.bson.codecs.configuration.CodecRegistry;
 
 /**
  *  The MongoDatabase interface.
@@ -44,6 +45,13 @@ public interface MongoDatabase {
    *  @return the database name
    */
   String getName();
+
+  /**
+   *  Get the codec registry for the MongoDatabase.
+   *
+   *  @return the {@link org.bson.codecs.configuration.CodecRegistry}
+   */
+  CodecRegistry getCodecRegistry();
 
   /**
    *  Get the read preference for the MongoDatabase.
@@ -67,6 +75,14 @@ public interface MongoDatabase {
    *  @mongodb.server.release 3.2
    */
   ReadConcern getReadConcern();
+
+  /**
+   *  Create a new MongoDatabase instance with a different codec registry.
+   *
+   *  @param codecRegistry the new {@link org.bson.codecs.configuration.CodecRegistry} for the collection
+   *  @return a new MongoDatabase instance with the different codec registry
+   */
+  MongoDatabase withCodecRegistry(CodecRegistry codecRegistry);
 
   /**
    *  Create a new MongoDatabase instance with a different read preference.

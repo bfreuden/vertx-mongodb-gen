@@ -28,6 +28,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 .filter(m -> !m.name().equals("toString"))
                 .filter(m -> !m.name().equals("hashCode"))
                 .filter(m -> !m.name().equals("equals"))
+                .filter(m -> !m.name().equals("toBsonDocument"))
                 .collect(Collectors.toList()));
         String builderFullyQualifiedName = classDoc.qualifiedTypeName() + ".Builder";
         if (context.builderClasses.contains(builderFullyQualifiedName)) {
