@@ -18,7 +18,6 @@ package io.vertx.mongo.client.gridfs;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
-import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -27,13 +26,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.ClientSession;
-import io.vertx.mongo.client.MongoDatabase;
-import io.vertx.mongo.client.gridfs.impl.GridFSBucketImpl;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.client.gridfs.model.GridFSUploadOptions;
-import io.vertx.mongo.client.impl.MongoDatabaseImpl;
-
 import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
@@ -43,15 +38,6 @@ import java.lang.Void;
  *  @since 1.3
  */
 public interface GridFSBucket {
-
-  static GridFSBucket create(MongoDatabase database) {
-    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass()));
-  }
-
-  static GridFSBucket create(MongoDatabase database, String bucketName) {
-    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass(), bucketName));
-  }
-
   /**
    *  The bucket name.
    *
@@ -130,13 +116,12 @@ public interface GridFSBucket {
    *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
    *  </p>
    *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param source   the stream providing the file data
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
-  Future<String> uploadFromPublisher(String filename, ReadStream<Buffer> source);
+  Future<String> uploadStream(String filename, ReadStream<Buffer> source);
 
-  /**
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
    *  <p>
@@ -144,6 +129,22 @@ public interface GridFSBucket {
    *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
    *  </p>
    *  @param filename the filename
+   *  @param source   the stream providing the file data
+   *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
+   *  @return <code>this</code>
+   *  @since 1.13
+   */
+  GridFSBucket uploadStream(String filename, ReadStream<Buffer> source,
+      Handler<AsyncResult<String>> resultHandler);
+
+  /**
+   *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
+   *  <p>
+   *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
+   *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
+   *  </p>
+   *  @param filename the filename providing the file data
+   *  
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
@@ -155,14 +156,13 @@ public interface GridFSBucket {
    *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
    *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
    *  </p>
-   *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param filename the filename providing the file data
+   *  
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
    *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket uploadFromPublisher(String filename, ReadStream<Buffer> source,
-      Handler<AsyncResult<String>> resultHandler);
+  GridFSBucket uploadFile(String filename, Handler<AsyncResult<String>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -171,12 +171,12 @@ public interface GridFSBucket {
    *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
    *  </p>
    *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param source   the stream providing the file data
    *  @param options  the GridFSUploadOptions
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
-  Future<String> uploadFromPublisher(String filename, ReadStream<Buffer> source,
+  Future<String> uploadStream(String filename, ReadStream<Buffer> source,
       GridFSUploadOptions options);
 
   /**
@@ -186,14 +186,44 @@ public interface GridFSBucket {
    *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
    *  </p>
    *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param source   the stream providing the file data
    *  @param options  the GridFSUploadOptions
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
    *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket uploadFromPublisher(String filename, ReadStream<Buffer> source,
-      GridFSUploadOptions options, Handler<AsyncResult<String>> resultHandler);
+  GridFSBucket uploadStream(String filename, ReadStream<Buffer> source, GridFSUploadOptions options,
+      Handler<AsyncResult<String>> resultHandler);
+
+  /**
+   *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
+   *  <p>
+   *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
+   *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
+   *  </p>
+   *  @param filename the filename providing the file data
+   *  
+   *  @param options  the GridFSUploadOptions
+   *  @return a future with a single element, the ObjectId of the uploaded file.
+   *  @since 1.13
+   */
+  Future<String> uploadFile(String filename, GridFSUploadOptions options);
+
+  /**
+   *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
+   *  <p>
+   *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
+   *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
+   *  </p>
+   *  @param filename the filename providing the file data
+   *  
+   *  @param options  the GridFSUploadOptions
+   *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
+   *  @return <code>this</code>
+   *  @since 1.13
+   */
+  GridFSBucket uploadFile(String filename, GridFSUploadOptions options,
+      Handler<AsyncResult<String>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -203,12 +233,12 @@ public interface GridFSBucket {
    *  </p>
    *  @param clientSession the client session with which to associate this operation
    *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param source   the stream providing the file data
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<String> uploadFromPublisher(ClientSession clientSession, String filename,
+  Future<String> uploadStream(ClientSession clientSession, String filename,
       ReadStream<Buffer> source);
 
   /**
@@ -219,14 +249,46 @@ public interface GridFSBucket {
    *  </p>
    *  @param clientSession the client session with which to associate this operation
    *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param source   the stream providing the file data
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
    *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSBucket uploadFromPublisher(ClientSession clientSession, String filename,
-      ReadStream<Buffer> source, Handler<AsyncResult<String>> resultHandler);
+  GridFSBucket uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
+      Handler<AsyncResult<String>> resultHandler);
+
+  /**
+   *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
+   *  <p>
+   *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
+   *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
+   *  </p>
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filename the filename providing the file data
+   *  
+   *  @return a future with a single element, the ObjectId of the uploaded file.
+   *  @mongodb.server.release 3.6
+   *  @since 1.13
+   */
+  Future<String> uploadFile(ClientSession clientSession, String filename);
+
+  /**
+   *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
+   *  <p>
+   *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
+   *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
+   *  </p>
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filename the filename providing the file data
+   *  
+   *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
+   *  @return <code>this</code>
+   *  @mongodb.server.release 3.6
+   *  @since 1.13
+   */
+  GridFSBucket uploadFile(ClientSession clientSession, String filename,
+      Handler<AsyncResult<String>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -236,13 +298,13 @@ public interface GridFSBucket {
    *  </p>
    *  @param clientSession the client session with which to associate this operation
    *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param source   the stream providing the file data
    *  @param options  the GridFSUploadOptions
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<String> uploadFromPublisher(ClientSession clientSession, String filename,
+  Future<String> uploadStream(ClientSession clientSession, String filename,
       ReadStream<Buffer> source, GridFSUploadOptions options);
 
   /**
@@ -253,15 +315,49 @@ public interface GridFSBucket {
    *  </p>
    *  @param clientSession the client session with which to associate this operation
    *  @param filename the filename
-   *  @param source   the Publisher providing the file data
+   *  @param source   the stream providing the file data
    *  @param options  the GridFSUploadOptions
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
    *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSBucket uploadFromPublisher(ClientSession clientSession, String filename,
-      ReadStream<Buffer> source, GridFSUploadOptions options,
+  GridFSBucket uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
+      GridFSUploadOptions options, Handler<AsyncResult<String>> resultHandler);
+
+  /**
+   *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
+   *  <p>
+   *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
+   *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
+   *  </p>
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filename the filename providing the file data
+   *  
+   *  @param options  the GridFSUploadOptions
+   *  @return a future with a single element, the ObjectId of the uploaded file.
+   *  @mongodb.server.release 3.6
+   *  @since 1.13
+   */
+  Future<String> uploadFile(ClientSession clientSession, String filename,
+      GridFSUploadOptions options);
+
+  /**
+   *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
+   *  <p>
+   *  Reads the contents of the user file from the {@code source} and uploads it as chunks in the chunks collection. After all the
+   *  chunks have been uploaded, it creates a files collection document for {@code filename} in the files collection.
+   *  </p>
+   *  @param clientSession the client session with which to associate this operation
+   *  @param filename the filename providing the file data
+   *  
+   *  @param options  the GridFSUploadOptions
+   *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
+   *  @return <code>this</code>
+   *  @mongodb.server.release 3.6
+   *  @since 1.13
+   */
+  GridFSBucket uploadFile(ClientSession clientSession, String filename, GridFSUploadOptions options,
       Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -279,8 +375,7 @@ public interface GridFSBucket {
    *  @return a result with a single element, representing the amount of data written
    *  @since 1.13
    */
-  GridFSDownloadResult downloadByObjectId(String id,
-      GridFSDownloadControlOptions controlOptions);
+  GridFSDownloadResult downloadByObjectId(String id, GridFSDownloadControlOptions controlOptions);
 
   /**
    *  Downloads the contents of the stored file specified by {@code filename} into the {@code Publisher}.

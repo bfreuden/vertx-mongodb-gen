@@ -124,6 +124,10 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
     wrapped.close();
   }
 
+  public MongoClientContext getClientContext() {
+    return clientContext;
+  }
+
   public ClientEncryption toDriverClass() {
     return wrapped;
   }

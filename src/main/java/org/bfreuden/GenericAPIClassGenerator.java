@@ -25,6 +25,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
     protected String classJavadoc;
     protected final ArrayList<TypeVariableName> typeVariables = new ArrayList<>();
     protected boolean currentMethodHasPublisherOptions;
+    protected boolean currentMethodIsNoStream;
     protected boolean hasBuilder;
     protected String configurableName;
     protected boolean isResultOnlyOptions;
@@ -92,6 +93,11 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 mongoMethod.vertxName = "downloadByFilename";
 
         }
+        if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
+                methodDoc.name().equals("uploadFromPublisher")
+        ) {
+            mongoMethod.vertxName = "uploadStream";
+        }
 
         for (Parameter param : methodDoc.parameters()) {
             MongoMethodParameter methodParameter = new MongoMethodParameter();
@@ -133,12 +139,40 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         return mongoMethod;
     }
 
+    private static class MethodWriteConfig {
+        final String vertxName;
+        final List<MongoMethodParameter> params;
+        final String vertxResultOrFutureJavadoc;
+        final String vertxAsyncJavadoc;
+        final String vertxWithOptionsJavadoc;
+        final BiConsumer<MongoMethod, MethodSpec.Builder> methodCustomizer;
+        final boolean isNoStream;
+        public MethodWriteConfig(
+                String vertxName,
+                List<MongoMethodParameter> params,
+                String vertxResultOrFutureJavadoc,
+                String vertxAsyncJavadoc,
+                String vertxWithOptionsJavadoc,
+                BiConsumer<MongoMethod, MethodSpec.Builder> methodCustomizer,
+                boolean isNoStream
+        ) {
+            this.vertxName = vertxName;
+            this.params = params;
+            this.vertxResultOrFutureJavadoc = vertxResultOrFutureJavadoc;
+            this.vertxAsyncJavadoc = vertxAsyncJavadoc;
+            this.vertxWithOptionsJavadoc = vertxWithOptionsJavadoc;
+            this.methodCustomizer = methodCustomizer;
+            this.isNoStream = isNoStream;
+        }
+    }
+
     public void inflateType(
         TypeSpec.Builder type,
         boolean isImpl,
         BiConsumer<MongoMethod, MethodSpec.Builder> ctorCustomizer,
         BiConsumer<MongoMethod, MethodSpec.Builder> methodCustomizer,
-        BiConsumer<MongoMethod, MethodSpec.Builder> handlerMethodCustomizer
+        BiConsumer<MongoMethod, MethodSpec.Builder> handlerMethodCustomizer,
+        BiConsumer<MongoMethod, MethodSpec.Builder> noStreamMethodCustomizer
     ) {
         if (!isImpl)
             type.addJavadoc(classJavadoc);
@@ -164,74 +198,99 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         }
         for (MongoMethod method : methods) {
             this.currentMethodHasPublisherOptions = false;
-            {
-                MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(method.vertxName)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(method.returnType.vertxType);
-                if (!isImpl)
-                    methodBuilder.addModifiers(Modifier.ABSTRACT);
-                for (TypeVariableName variable : method.typeVariables)
-                    methodBuilder.addTypeVariable(variable);
-                for (MongoMethodParameter param : method.params) {
-                    ParameterSpec.Builder builder = ParameterSpec.builder(param.type.vertxType, param.name);
-                    if (param.type.isNullable)
-                        builder.addAnnotation(Nullable.class);
-                    methodBuilder.addParameter(builder.build());
+            this.currentMethodIsNoStream = false;
+            boolean methodReturnsGridFSPublisher = method.returnType.publisherClassName != null && method.returnType.publisherClassName.toString().endsWith("GridFSDownloadPublisher");
+            boolean gridfsUploadMethod = method.mongoName.equals("uploadFromPublisher");
+            List<MethodWriteConfig> configs = new ArrayList<>();
+            configs.add(new MethodWriteConfig(
+                    method.vertxName,
+                    method.params,
+                    method.vertxResultOrFutureJavadoc,
+                    method.vertxAsyncJavadoc,
+                    method.vertxWithOptionsJavadoc,
+                    methodCustomizer,
+                    false)
+            );
+            if (gridfsUploadMethod)
+                configs.add(new MethodWriteConfig(
+                        method.vertxName.replace("Stream", "File"),
+                        method.params.stream().filter(it -> !it.type.vertxType.toString().contains("ReadStream")).collect(Collectors.toList()),
+                        method.vertxNoStreamJavadoc,
+                        method.vertxNoStreamAsyncJavadoc,
+                        method.vertxWithOptionsJavadoc,
+                        noStreamMethodCustomizer,
+                        true
+                ));
+            for (MethodWriteConfig methodWriteConfig : configs) {
+                {
+                    this.currentMethodIsNoStream = methodWriteConfig.isNoStream;
+                    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodWriteConfig.vertxName)
+                            .addModifiers(Modifier.PUBLIC)
+                            .returns(method.returnType.vertxType);
+                    if (!isImpl)
+                        methodBuilder.addModifiers(Modifier.ABSTRACT);
+                    for (TypeVariableName variable : method.typeVariables)
+                        methodBuilder.addTypeVariable(variable);
+                    for (MongoMethodParameter param : methodWriteConfig.params) {
+                        ParameterSpec.Builder builder = ParameterSpec.builder(param.type.vertxType, param.name);
+                        if (param.type.isNullable)
+                            builder.addAnnotation(Nullable.class);
+                        methodBuilder.addParameter(builder.build());
+                    }
+                    if (methodWriteConfig.vertxResultOrFutureJavadoc != null && !isImpl)
+                        methodBuilder.addJavadoc(methodWriteConfig.vertxResultOrFutureJavadoc);
+                    if (isImpl)
+                        methodBuilder.addAnnotation(Override.class);
+                    if (methodWriteConfig.methodCustomizer != null)
+                        methodWriteConfig.methodCustomizer.accept(method, methodBuilder);
+                    type.addMethod(methodBuilder.build());
                 }
-                if (method.vertxResultOrFutureJavadoc != null && !isImpl)
-                    methodBuilder.addJavadoc(method.vertxResultOrFutureJavadoc);
-                if (isImpl)
-                    methodBuilder.addAnnotation(Override.class);
-                if (methodCustomizer != null)
-                    methodCustomizer.accept(method, methodBuilder);
-                type.addMethod(methodBuilder.build());
+
+                if (method.returnType.singlePublisher) {
+                    MethodSpec.Builder handlerMethodBuilder = MethodSpec.methodBuilder(methodWriteConfig.vertxName)
+                            .addModifiers(Modifier.PUBLIC)
+                            .returns(fluentReturnType);
+                    if (!isImpl)
+                        handlerMethodBuilder.addModifiers(Modifier.ABSTRACT);
+                    for (TypeVariableName variable : method.typeVariables)
+                        handlerMethodBuilder.addTypeVariable(variable);
+                    for (MongoMethodParameter param : methodWriteConfig.params) {
+                        handlerMethodBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
+                    }
+                    handlerMethodBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), method.returnType.publishedType.vertxType)), "resultHandler").build());
+                    if (methodWriteConfig.vertxAsyncJavadoc != null && !isImpl)
+                        handlerMethodBuilder.addJavadoc(methodWriteConfig.vertxAsyncJavadoc);
+                    if (isImpl)
+                        handlerMethodBuilder.addAnnotation(Override.class);
+                    if (handlerMethodCustomizer != null)
+                        handlerMethodCustomizer.accept(method, handlerMethodBuilder);
+                    type.addMethod(handlerMethodBuilder.build());
+                } else if (method.returnType.isPublisher && !method.returnType.publisherClassName.toString().equals(Publisher.class.getName())) {
+                    this.currentMethodHasPublisherOptions = true;
+                    MethodSpec.Builder methodWithOptionsBuilder = MethodSpec.methodBuilder(methodWriteConfig.vertxName)
+                            .addModifiers(Modifier.PUBLIC)
+                            .returns(method.returnType.vertxType);
+                    if (!isImpl)
+                        methodWithOptionsBuilder.addModifiers(Modifier.ABSTRACT);
+                    for (TypeVariableName variable : method.typeVariables)
+                        methodWithOptionsBuilder.addTypeVariable(variable);
+                    for (MongoMethodParameter param : methodWriteConfig.params) {
+                        methodWithOptionsBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
+                    }
+                    String optionsClass = context.publisherOptionsClasses.get(method.returnType.publisherClassName.toString());
+                    //TODO hack!
+                    String optionsParamName = methodReturnsGridFSPublisher ? "controlOptions" : "options";
+                    methodWithOptionsBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(optionsClass), optionsParamName).build());
+                    if (methodWriteConfig.vertxWithOptionsJavadoc != null && !isImpl)
+                        methodWithOptionsBuilder.addJavadoc(methodWriteConfig.vertxWithOptionsJavadoc);
+                    if (isImpl)
+                        methodWithOptionsBuilder.addAnnotation(Override.class);
+                    if (methodWriteConfig.methodCustomizer != null)
+                        methodWriteConfig.methodCustomizer.accept(method, methodWithOptionsBuilder);
+                    type.addMethod(methodWithOptionsBuilder.build());
+
+                }
             }
-
-            if (method.returnType.singlePublisher) {
-                MethodSpec.Builder handlerMethodBuilder = MethodSpec.methodBuilder(method.vertxName)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(fluentReturnType);
-                if (!isImpl)
-                    handlerMethodBuilder.addModifiers(Modifier.ABSTRACT);
-                for (TypeVariableName variable : method.typeVariables)
-                    handlerMethodBuilder.addTypeVariable(variable);
-                for (MongoMethodParameter param : method.params) {
-                    handlerMethodBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
-                }
-                handlerMethodBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), method.returnType.publishedType.vertxType)), "resultHandler").build());
-                if (method.vertxAsyncJavadoc != null && !isImpl)
-                    handlerMethodBuilder.addJavadoc(method.vertxAsyncJavadoc);
-                if (isImpl)
-                    handlerMethodBuilder.addAnnotation(Override.class);
-                if (handlerMethodCustomizer != null)
-                    handlerMethodCustomizer.accept(method, handlerMethodBuilder);
-                type.addMethod(handlerMethodBuilder.build());
-            } else if (method.returnType.isPublisher && !method.returnType.publisherClassName.toString().equals(Publisher.class.getName())) {
-                this.currentMethodHasPublisherOptions = true;
-                MethodSpec.Builder methodWithOptionsBuilder = MethodSpec.methodBuilder(method.vertxName)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(method.returnType.vertxType);
-                if (!isImpl)
-                    methodWithOptionsBuilder.addModifiers(Modifier.ABSTRACT);
-                for (TypeVariableName variable : method.typeVariables)
-                    methodWithOptionsBuilder.addTypeVariable(variable);
-                for (MongoMethodParameter param : method.params) {
-                    methodWithOptionsBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
-                }
-                String optionsClass = context.publisherOptionsClasses.get(method.returnType.publisherClassName.toString());
-                //TODO hack!
-                String optionsParamName = method.returnType.publisherClassName.toString().endsWith("GridFSDownloadPublisher") ? "controlOptions" : "options";
-                methodWithOptionsBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(optionsClass), optionsParamName).build());
-                if (method.vertxWithOptionsJavadoc != null &&!isImpl)
-                    methodWithOptionsBuilder.addJavadoc(method.vertxWithOptionsJavadoc);
-                if (isImpl)
-                    methodWithOptionsBuilder.addAnnotation(Override.class);
-                if (methodCustomizer != null)
-                    methodCustomizer.accept(method, methodWithOptionsBuilder);
-                type.addMethod(methodWithOptionsBuilder.build());
-
-            }
-
         }
     }
 

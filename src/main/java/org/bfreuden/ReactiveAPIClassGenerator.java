@@ -173,7 +173,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                             .build());
         }
 
-        inflateType(typeBuilder, isImpl, null, null, null);
+        inflateType(typeBuilder, isImpl, null, null, null, null);
 
         typeBuilder.addMethod(
                 MethodSpec.methodBuilder("toDriverClass")
@@ -200,7 +200,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         for (TypeName inter : superInterfaces)
             typeBuilder.addSuperinterface(inter);
 
-        inflateType(typeBuilder, isImpl, null, this::implementMethod, this::implementHandlerMethod);
+        inflateType(typeBuilder, isImpl, null, this::implementMethod, this::implementHandlerMethod, this::implementNoStreamMethod);
 
         if (isMongoClient) {
             typeBuilder.addMethod(MethodSpec.constructorBuilder()
@@ -227,8 +227,12 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
                     .addStatement("this.clientContext = clientContext")
                     .addStatement("this.wrapped = wrapped")
-                    .build()
-            );
+                    .build());
+            typeBuilder.addMethod(MethodSpec.methodBuilder("getClientContext")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"))
+                    .addStatement("return clientContext")
+                    .build());
         }
 
         typeBuilder.addMethod(
@@ -379,27 +383,51 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         resultParamNames.add(publisherVarName);
         if (publisherDesc != null && publisherDesc.firstMethodName != null)
             resultParamNames.add(String.format("%s::%s", publisherVarName, publisherDesc.firstMethodName));
+        String publisherParamBracket = method.returnType.vertxType instanceof ParameterizedTypeName ? "<>" : "";
         if (publisherDesc != null && publisherDesc.batchSizePropertyName != null && currentMethodHasPublisherOptions) {
             methodBuilder.addStatement("Integer __batchSize = options.getBatchSize()");
             methodBuilder.beginControlFlow("if (__batchSize != null)");
-            methodBuilder.addStatement("return new $T<>("  + resultParamNames + ", __batchSize)", resultClassName);
+            methodBuilder.addStatement(String.format("return new $T%s("  + resultParamNames + ", __batchSize)", publisherParamBracket), resultClassName);
             methodBuilder.nextControlFlow("else");
-            methodBuilder.addStatement("return new $T<>("  + resultParamNames + ")", resultClassName);
+            methodBuilder.addStatement(String.format("return new $T%s("  + resultParamNames + ")", publisherParamBracket), resultClassName);
             methodBuilder.endControlFlow();
         } else {
-            methodBuilder.addStatement("return new $T<>("  + resultParamNames + ")", resultClassName);
+            methodBuilder.addStatement(String.format("return new $T%s("  + resultParamNames + ")", publisherParamBracket), resultClassName);
         }
     }
 
     private void implementHandlerMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
         StringJoiner paramNames = new StringJoiner(", ");
         for (MongoMethodParameter param : method.params)
-            paramNames.add(param.name);
+            if (!currentMethodIsNoStream || !param.type.vertxType.toString().contains("Stream"))
+                paramNames.add(param.name);
         staticImports.add("io.vertx.mongo.impl.Utils.setHandler");
+        String methodName = method.vertxName;
+        if (currentMethodIsNoStream)
+            methodName = methodName.replace("Stream", "File");
+
         methodBuilder
-                .addStatement("$T __future = this." + method.vertxName + "(" + paramNames + ")", method.returnType.vertxType)
+                .addStatement("$T __future = this." + methodName + "(" + paramNames + ")", method.returnType.vertxType)
                 .addStatement("setHandler(__future, resultHandler)")
                 .addStatement("return this");
+
+    }
+
+    private void implementNoStreamMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
+        if (method.params.stream().noneMatch(p -> p.name.equals("filename")))
+            throw new IllegalStateException("no filename param");
+        StringJoiner params = new StringJoiner(", ");
+        for (MongoMethodParameter param: method.params)
+            if (param.type.vertxType.toString().contains("Stream"))
+                params.add("_stream");
+            else
+                params.add(param.name);
+
+        if (currentMethodHasPublisherOptions)
+            params.add("controlOptions");
+        methodBuilder
+                .addStatement("requireNonNull(filename, $S)", "fileName cannot be null")
+                .addStatement(String.format("return openFile(clientContext.getVertx(), filename).compose(_stream -> uploadStream(%s))", params));
 
     }
 

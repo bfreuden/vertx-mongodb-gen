@@ -2381,6 +2381,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     return this;
   }
 
+  public MongoClientContext getClientContext() {
+    return clientContext;
+  }
+
   public MongoCollection<TDocument> toDriverClass() {
     return wrapped;
   }

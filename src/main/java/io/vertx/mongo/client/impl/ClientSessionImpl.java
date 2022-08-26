@@ -100,6 +100,10 @@ public class ClientSessionImpl extends ClientSessionBase {
     return this;
   }
 
+  public MongoClientContext getClientContext() {
+    return clientContext;
+  }
+
   public ClientSession toDriverClass() {
     return wrapped;
   }

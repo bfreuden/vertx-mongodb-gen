@@ -255,8 +255,10 @@ public abstract class APIClassGenerator {
         if (containingType.publishedType == null)
             containingType.publishedType = publishedType;
         // initialize output vertxType
-        if (isGridFSDownloadPublisher)
+        if (isGridFSDownloadPublisher) {
             containingType.singlePublisher = false;
+            containingType.publishedType.mapper = null;
+        }
         if (!containingType.singlePublisher) {
             String publisherClassName = containingType.publisherClassName.toString();
             if (publisherClassName.equals(Publisher.class.getName())) {
@@ -268,7 +270,7 @@ public abstract class APIClassGenerator {
                 if (publisherDesc.toCollectionMethodName != null)
                     containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.MongoCollectionResult"), containingType.publishedType.vertxType);
                 else if (isGridFSDownloadPublisher)
-                    containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.client.gridfs.GridFSDownloadResult"), containingType.publishedType.vertxType);
+                    containingType.vertxType = ClassName.bestGuess("io.vertx.mongo.client.gridfs.GridFSDownloadResult");
                 else
                     containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.MongoResult"), containingType.publishedType.vertxType);
             }
@@ -417,12 +419,15 @@ public abstract class APIClassGenerator {
         String vertxResultOrFutureJavadoc;
         String vertxAsyncJavadoc;
         String vertxWithOptionsJavadoc;
+        String vertxNoStreamJavadoc;
+        String vertxNoStreamAsyncJavadoc;
         ActualType returnType;
         List<MongoMethodParameter> params = new ArrayList<>();
 
         void computeJavadocs() {
             if (mongoJavadoc != null) {
                 mongoJavadoc = mongoJavadoc.replace("$", "$$");
+                mongoJavadoc = mongoJavadoc.replace("the Publisher providing the file data", "the stream providing the file data");
                 this.vertxResultOrFutureJavadoc = this.mongoJavadoc;
                 if (returnType != null && returnType.isPublisher) {
                     StringJoiner newRawCommentText = new StringJoiner("\n");
@@ -459,11 +464,18 @@ public abstract class APIClassGenerator {
                             newRawCommentText.add(docLine);
                             asyncNewRawCommentText.add(docLine);
                             withOptionsNewRawCommentText.add(docLine);
+
                         }
                     }
                     this.vertxResultOrFutureJavadoc = newRawCommentText.toString();
                     this.vertxAsyncJavadoc = asyncNewRawCommentText.toString();
                     this.vertxWithOptionsJavadoc = withOptionsNewRawCommentText.toString();
+                    this.vertxNoStreamJavadoc = vertxResultOrFutureJavadoc
+                            .replaceAll("@param source[^\n]+", "")
+                            .replace("@param filename the filename", "@param filename the filename providing the file data");
+                    this.vertxNoStreamAsyncJavadoc = vertxAsyncJavadoc
+                            .replaceAll("@param source[^\n]+", "")
+                            .replace("@param filename the filename", "@param filename the filename providing the file data");
                 }
             }
         }
