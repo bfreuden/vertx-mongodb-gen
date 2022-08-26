@@ -6,6 +6,7 @@ import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -46,7 +47,7 @@ public class Types {
 //        mapping.put("org.bson.UuidRepresentation", ""); // https://mongodb.github.io/mongo-java-driver/3.5/javadoc/org/bson/UuidRepresentation.html
         ACCEPTED.add("java.lang.Throwable");
         ACCEPTED.add("java.lang.Double");
-        ACCEPTED.add("java.nio.ByteBuffer");
+        MAPPING2.put("java.nio.ByteBuffer", ClassName.get(Buffer.class));
         MAPPING2.put("org.bson.BsonDocument", ClassName.get(JsonObject.class));
         MAPPING2.put("org.bson.conversions.Bson", ClassName.get(JsonObject.class));
         ACCEPTED.add("java.lang.String");

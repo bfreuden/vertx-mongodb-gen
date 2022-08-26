@@ -28,6 +28,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.ClientSession;
@@ -113,61 +114,61 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public Future<ByteBuffer> downloadByObjectId(String id) {
+  public Future<Buffer> downloadByObjectId(String id) {
     requireNonNull(id, "id is null");
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__id);
     Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket downloadByObjectId(String id,
-      Handler<AsyncResult<ByteBuffer>> resultHandler) {
-    Future<ByteBuffer> __future = this.downloadByObjectId(id);
+      Handler<AsyncResult<Buffer>> resultHandler) {
+    Future<Buffer> __future = this.downloadByObjectId(id);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<ByteBuffer> downloadByFilename(String filename) {
+  public Future<Buffer> downloadByFilename(String filename) {
     requireNonNull(filename, "filename is null");
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename);
     Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(String filename,
-      Handler<AsyncResult<ByteBuffer>> resultHandler) {
-    Future<ByteBuffer> __future = this.downloadByFilename(filename);
+      Handler<AsyncResult<Buffer>> resultHandler) {
+    Future<Buffer> __future = this.downloadByFilename(filename);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<ByteBuffer> downloadByFilename(String filename, GridFSDownloadOptions options) {
+  public Future<Buffer> downloadByFilename(String filename, GridFSDownloadOptions options) {
     requireNonNull(filename, "filename is null");
     requireNonNull(options, "options is null");
     com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename, __options);
     Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(String filename,
-      GridFSDownloadOptions options, Handler<AsyncResult<ByteBuffer>> resultHandler) {
-    Future<ByteBuffer> __future = this.downloadByFilename(filename, options);
+      GridFSDownloadOptions options, Handler<AsyncResult<Buffer>> resultHandler) {
+    Future<Buffer> __future = this.downloadByFilename(filename, options);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<ByteBuffer> downloadByObjectId(ClientSession clientSession, String id) {
+  public Future<Buffer> downloadByObjectId(ClientSession clientSession, String id) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
@@ -175,38 +176,38 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, __id);
     Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket downloadByObjectId(ClientSession clientSession,
-      String id, Handler<AsyncResult<ByteBuffer>> resultHandler) {
-    Future<ByteBuffer> __future = this.downloadByObjectId(clientSession, id);
+      String id, Handler<AsyncResult<Buffer>> resultHandler) {
+    Future<Buffer> __future = this.downloadByObjectId(clientSession, id);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<ByteBuffer> downloadByFilename(ClientSession clientSession, String filename) {
+  public Future<Buffer> downloadByFilename(ClientSession clientSession, String filename) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename);
     Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(ClientSession clientSession,
-      String filename, Handler<AsyncResult<ByteBuffer>> resultHandler) {
-    Future<ByteBuffer> __future = this.downloadByFilename(clientSession, filename);
+      String filename, Handler<AsyncResult<Buffer>> resultHandler) {
+    Future<Buffer> __future = this.downloadByFilename(clientSession, filename);
     setHandler(__future, resultHandler);
     return this;
   }
 
   @Override
-  public Future<ByteBuffer> downloadByFilename(ClientSession clientSession, String filename,
+  public Future<Buffer> downloadByFilename(ClientSession clientSession, String filename,
       GridFSDownloadOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
@@ -216,14 +217,13 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename, __options);
     Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(ClientSession clientSession,
-      String filename, GridFSDownloadOptions options,
-      Handler<AsyncResult<ByteBuffer>> resultHandler) {
-    Future<ByteBuffer> __future = this.downloadByFilename(clientSession, filename, options);
+      String filename, GridFSDownloadOptions options, Handler<AsyncResult<Buffer>> resultHandler) {
+    Future<Buffer> __future = this.downloadByFilename(clientSession, filename, options);
     setHandler(__future, resultHandler);
     return this;
   }

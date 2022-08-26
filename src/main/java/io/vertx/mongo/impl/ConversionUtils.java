@@ -15,11 +15,13 @@
 //
 package io.vertx.mongo.impl;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.lang.Long;
 import java.lang.Object;
 import java.lang.String;
+import java.nio.ByteBuffer;
 import java.util.List;
 import org.bson.BsonBinary;
 import org.bson.BsonDocument;
@@ -48,7 +50,11 @@ public abstract interface ConversionUtils {
 
   BsonValue toBsonValue(Object from);
 
+  Buffer toBuffer(ByteBuffer from);
+
   byte[] toByteArray(BsonBinary from);
+
+  ByteBuffer toByteBuffer(Buffer from);
 
   Document toDocument(JsonObject from);
 

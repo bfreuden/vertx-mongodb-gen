@@ -21,6 +21,7 @@ import com.mongodb.WriteConcern;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.ClientSession;
@@ -29,7 +30,6 @@ import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
-import java.nio.ByteBuffer;
 
 /**
  *  Represents a GridFS Bucket
@@ -113,7 +113,7 @@ public interface GridFSBucket {
    *  @return a future with a single element, representing the amount of data written
    *  @since 1.13
    */
-  Future<ByteBuffer> downloadByObjectId(String id);
+  Future<Buffer> downloadByObjectId(String id);
 
   /**
    *  Downloads the contents of the stored file specified by {@code id} into the {@code Publisher}.
@@ -122,7 +122,7 @@ public interface GridFSBucket {
    *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket downloadByObjectId(String id, Handler<AsyncResult<ByteBuffer>> resultHandler);
+  GridFSBucket downloadByObjectId(String id, Handler<AsyncResult<Buffer>> resultHandler);
 
   /**
    *  Downloads the contents of the stored file specified by {@code filename} into the {@code Publisher}.
@@ -130,7 +130,7 @@ public interface GridFSBucket {
    *  @return a future with a single element, representing the amount of data written
    *  @since 1.13
    */
-  Future<ByteBuffer> downloadByFilename(String filename);
+  Future<Buffer> downloadByFilename(String filename);
 
   /**
    *  Downloads the contents of the stored file specified by {@code filename} into the {@code Publisher}.
@@ -139,7 +139,7 @@ public interface GridFSBucket {
    *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket downloadByFilename(String filename, Handler<AsyncResult<ByteBuffer>> resultHandler);
+  GridFSBucket downloadByFilename(String filename, Handler<AsyncResult<Buffer>> resultHandler);
 
   /**
    *  Downloads the contents of the stored file specified by {@code filename} and by the revision in {@code options} into the
@@ -149,7 +149,7 @@ public interface GridFSBucket {
    *  @return a future with a single element, representing the amount of data written
    *  @since 1.13
    */
-  Future<ByteBuffer> downloadByFilename(String filename, GridFSDownloadOptions options);
+  Future<Buffer> downloadByFilename(String filename, GridFSDownloadOptions options);
 
   /**
    *  Downloads the contents of the stored file specified by {@code filename} and by the revision in {@code options} into the
@@ -161,7 +161,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   GridFSBucket downloadByFilename(String filename, GridFSDownloadOptions options,
-      Handler<AsyncResult<ByteBuffer>> resultHandler);
+      Handler<AsyncResult<Buffer>> resultHandler);
 
   /**
    *  Downloads the contents of the stored file specified by {@code id} into the {@code Publisher}.
@@ -171,7 +171,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<ByteBuffer> downloadByObjectId(ClientSession clientSession, String id);
+  Future<Buffer> downloadByObjectId(ClientSession clientSession, String id);
 
   /**
    *  Downloads the contents of the stored file specified by {@code id} into the {@code Publisher}.
@@ -183,7 +183,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   GridFSBucket downloadByObjectId(ClientSession clientSession, String id,
-      Handler<AsyncResult<ByteBuffer>> resultHandler);
+      Handler<AsyncResult<Buffer>> resultHandler);
 
   /**
    *  Downloads the contents of the latest version of the stored file specified by {@code filename} into the {@code Publisher}.
@@ -193,7 +193,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<ByteBuffer> downloadByFilename(ClientSession clientSession, String filename);
+  Future<Buffer> downloadByFilename(ClientSession clientSession, String filename);
 
   /**
    *  Downloads the contents of the latest version of the stored file specified by {@code filename} into the {@code Publisher}.
@@ -205,7 +205,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   GridFSBucket downloadByFilename(ClientSession clientSession, String filename,
-      Handler<AsyncResult<ByteBuffer>> resultHandler);
+      Handler<AsyncResult<Buffer>> resultHandler);
 
   /**
    *  Downloads the contents of the stored file specified by {@code filename} and by the revision in {@code options} into the
@@ -217,7 +217,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<ByteBuffer> downloadByFilename(ClientSession clientSession, String filename,
+  Future<Buffer> downloadByFilename(ClientSession clientSession, String filename,
       GridFSDownloadOptions options);
 
   /**
@@ -232,7 +232,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   GridFSBucket downloadByFilename(ClientSession clientSession, String filename,
-      GridFSDownloadOptions options, Handler<AsyncResult<ByteBuffer>> resultHandler);
+      GridFSDownloadOptions options, Handler<AsyncResult<Buffer>> resultHandler);
 
   /**
    *  Finds all documents in the files collection.

@@ -1,6 +1,7 @@
 package io.vertx.mongo.impl;
 
 import com.mongodb.client.model.*;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.bulk.BulkWriteInsert;
@@ -9,6 +10,7 @@ import org.bson.*;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +61,20 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
+    public Buffer toBuffer(ByteBuffer from) {
+        Buffer buffer = Buffer.buffer(from.remaining());
+        buffer.setBytes(0, from);
+        return buffer;
+    }
+
+    @Override
     public byte[] toByteArray(BsonBinary from) {
         return from.getData();
+    }
+
+    @Override
+    public ByteBuffer toByteBuffer(Buffer from) {
+        return ByteBuffer.wrap(from.getBytes());
     }
 
     @Override
