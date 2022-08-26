@@ -1,6 +1,5 @@
 package org.bfreuden;
 
-import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.core.Future;
@@ -234,6 +233,7 @@ public abstract class APIClassGenerator {
     }
 
     private void initializePublisherFields(ExecutableMemberDoc methodDoc, TypeName mongoPublishedType, ActualType publishedType, ActualType containingType) {
+        boolean isGridFSDownloadPublisher = methodDoc instanceof MethodDoc && ((MethodDoc)methodDoc).returnType().typeName().equals("GridFSDownloadPublisher");
         // check single publisher
         if (mongoPublishedType.toString().equals("com.mongodb.reactivestreams.client.Success") || mongoPublishedType.toString().equals(Void.class.getName())) {
             containingType.singlePublisher = true;
@@ -255,6 +255,8 @@ public abstract class APIClassGenerator {
         if (containingType.publishedType == null)
             containingType.publishedType = publishedType;
         // initialize output vertxType
+        if (isGridFSDownloadPublisher)
+            containingType.singlePublisher = false;
         if (!containingType.singlePublisher) {
             String publisherClassName = containingType.publisherClassName.toString();
             if (publisherClassName.equals(Publisher.class.getName())) {
@@ -265,6 +267,8 @@ public abstract class APIClassGenerator {
                     throw new IllegalStateException("no such publisher in context: " + publisherClassName);
                 if (publisherDesc.toCollectionMethodName != null)
                     containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.MongoCollectionResult"), containingType.publishedType.vertxType);
+                else if (isGridFSDownloadPublisher)
+                    containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.client.gridfs.GridFSDownloadResult"), containingType.publishedType.vertxType);
                 else
                     containingType.vertxType = ParameterizedTypeName.get(ClassName.bestGuess("io.vertx.mongo.MongoResult"), containingType.publishedType.vertxType);
             }
@@ -277,6 +281,7 @@ public abstract class APIClassGenerator {
     protected ActualType getActualType(ExecutableMemberDoc methodDoc, String name, Type type, TypeLocation location) {
         try {
             ActualType result = getActualType2(methodDoc, name, type, location, null);
+            // List of JsonObjects are converted to JsonArray when passed as a parameter
             if (location == TypeLocation.PARAMETER && result.vertxType.toString().equals(ParameterizedTypeName.get(List.class, JsonObject.class).toString())) {
                 result.vertxType = ClassName.get(JsonArray.class);
                 String conversionMethod = context.conversionUtilsGenerator.addConversion(result.vertxType, result.mongoType);
@@ -358,6 +363,8 @@ public abstract class APIClassGenerator {
     static class ActualType {
         public MapperGenerator mapper;
         public boolean isNullable;
+        public boolean isBinaryReadStream;
+        public boolean isBinaryWriteStream;
         boolean toMongoEnabledType = false;
         public ActualType publishedType;
         TypeName mongoType;
@@ -424,7 +431,8 @@ public abstract class APIClassGenerator {
                     String replacement = mongoName.equals("watch") ? "read stream" : (returnType.singlePublisher ? "future" : "result");
                     for (String docLine : Arrays.stream(mongoJavadoc.split("\\n+")).collect(Collectors.toList())) {
                         if (docLine.contains("@return")) {
-                            withOptionsNewRawCommentText.add(docLine.replaceAll("@return.*", "@param options options"));
+                            String optionsParamName = returnType.publisherClassName.toString().endsWith("GridFSDownloadPublisher") ? "controlOptions" : "options";
+                            withOptionsNewRawCommentText.add(docLine.replaceAll("@return.*", "@param " + optionsParamName + " options"));
                             String newDocLine = docLine
                                     .replace("Iterable", replacement)
                                     .replace("iterable", replacement)

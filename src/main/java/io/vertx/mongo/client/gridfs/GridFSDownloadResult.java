@@ -15,5 +15,17 @@
 //
 package io.vertx.mongo.client.gridfs;
 
-public class GridFSDownloadResult {
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.mongo.MongoResult;
+import io.vertx.mongo.client.gridfs.model.GridFSFile;
+
+public interface GridFSDownloadResult extends MongoResult<Buffer> {
+
+    void getGridFSFile(Handler<AsyncResult<GridFSFile>> handler);
+
+    Future<GridFSFile> getGridFSFile();
+
 }

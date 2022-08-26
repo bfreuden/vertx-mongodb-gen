@@ -7,9 +7,14 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.ReadStream;
+import io.vertx.core.streams.WriteStream;
+import org.bfreuden.mappers.ConversionUtilsMapperGenerator;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -53,7 +58,6 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         }
 
         if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
-                methodDoc.name().equals("downloadToPublisher") &&
                 methodDoc.getRawCommentText().contains("custom id")
         ) {
             // ignore for the moment because it conflicts
@@ -98,15 +102,32 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 return null;
             }
             if (methodParameter.type.isPublisher) {
-                System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored");
-                return null;
+                if (mongoMethod.mongoName.contains("upload")) {
+                    if (methodParameter.type.mongoType.toString().equals(ParameterizedTypeName.get(ClassName.get(Publisher.class), ClassName.get(ByteBuffer.class)).toString())) {
+                        methodParameter.type.vertxType = ParameterizedTypeName.get(ClassName.get(ReadStream.class), ClassName.get(Buffer.class));
+                        methodParameter.type.publishedType.vertxType = ClassName.get(Buffer.class);
+                        String conversionMethod = context.conversionUtilsGenerator.addConversion(ClassName.get(ByteBuffer.class), ClassName.get(Buffer.class));
+                        methodParameter.type.publishedType.mapper = new ConversionUtilsMapperGenerator(conversionMethod);
+                        methodParameter.type.isBinaryReadStream = true;
+                    } else {
+                        System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored because it does not publish " + ByteBuffer.class);
+                    }
+                } else if (mongoMethod.mongoName.contains("download")) {
+                    if (methodParameter.type.mongoType.toString().equals(ParameterizedTypeName.get(ClassName.get(Publisher.class), ClassName.get(ByteBuffer.class)).toString())) {
+                        methodParameter.type.vertxType = ParameterizedTypeName.get(ClassName.get(WriteStream.class), ClassName.get(Buffer.class));
+                        methodParameter.type.publishedType.vertxType = ClassName.get(Buffer.class);
+                        String conversionMethod = context.conversionUtilsGenerator.addConversion(ClassName.get(Buffer.class), ClassName.get(ByteBuffer.class));
+                        methodParameter.type.publishedType.mapper = new ConversionUtilsMapperGenerator(conversionMethod);
+                        methodParameter.type.isBinaryWriteStream = true;
+                    } else {
+                        System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored because it does not publish " + ByteBuffer.class);
+                    }
+                } else {
+                    System.out.println("WARNING: one param of " + methodDoc + " is a publisher so method has been ignored because we can't decide if it is an upload or a download");
+                    return null;
+                }
             }
             mongoMethod.params.add(methodParameter);
-            // FIXME: for the moment publisher parameters are ignored
-            if (methodParameter.type.isPublisher) {
-                System.out.println("WARNING: param type of " + methodDoc + " is publisher so method has been ignored");
-                return null;
-            }
         }
         mongoMethod.computeJavadocs();
         return mongoMethod;
@@ -198,7 +219,9 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     methodWithOptionsBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
                 }
                 String optionsClass = context.publisherOptionsClasses.get(method.returnType.publisherClassName.toString());
-                methodWithOptionsBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(optionsClass), "options").build());
+                //TODO hack!
+                String optionsParamName = method.returnType.publisherClassName.toString().endsWith("GridFSDownloadPublisher") ? "controlOptions" : "options";
+                methodWithOptionsBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(optionsClass), optionsParamName).build());
                 if (method.vertxWithOptionsJavadoc != null &&!isImpl)
                     methodWithOptionsBuilder.addJavadoc(method.vertxWithOptionsJavadoc);
                 if (isImpl)

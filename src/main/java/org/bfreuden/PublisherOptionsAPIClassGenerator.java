@@ -19,7 +19,10 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
 
     @Override
     protected String getTargetClassName() {
-        return super.getTargetClassName().replace("Publisher", "Options");
+        if (classDoc.name().equals("GridFSDownloadPublisher"))
+            return super.getTargetClassName().replace("Publisher", "ControlOptions");
+        else
+            return super.getTargetClassName().replace("Publisher", "Options");
     }
 
     @Override

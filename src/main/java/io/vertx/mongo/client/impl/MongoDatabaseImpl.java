@@ -628,4 +628,8 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public MongoDatabase toDriverClass() {
     return wrapped;
   }
+
+  public MongoClientContext getClientContext() {
+    return clientContext;
+  }
 }

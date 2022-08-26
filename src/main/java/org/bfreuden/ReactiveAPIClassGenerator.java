@@ -9,6 +9,7 @@ import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.client.gridfs.impl.GridFSReadStreamPublisher;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.impl.MappingPublisher;
 import org.bfreuden.mappers.MapperGenerator;
@@ -253,7 +254,13 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         StringJoiner paramNames = new StringJoiner(", ");
         for (MongoMethodParameter param : method.params) {
             MapperGenerator mapper = param.type.mapper;
-            if (mapper != null) {
+            if (param.type.isPublisher && param.type.isBinaryReadStream) {
+                String paramName = "__" + param.name;
+                paramNames.add(paramName);
+                methodBuilder.addStatement("$T " + paramName + " = new $T(" + param.name + ")", ClassName.get(GridFSReadStreamPublisher.class), ClassName.get(GridFSReadStreamPublisher.class));
+            } else if (param.type.isPublisher && param.type.isBinaryWriteStream) {
+                methodBuilder.addComment("// TODO implement write stream publisher");
+            } else if (mapper != null) {
                 String paramName = "__" + param.name;
                 paramNames.add(paramName);
                 if (param.type.isNullable)
@@ -356,8 +363,10 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         String publisherVarName = "__publisher";
         if (publisherVarNames.length > 0)
             publisherVarName = publisherVarNames[0];
-        if (currentMethodHasPublisherOptions)
-            methodBuilder.addStatement(String.format("options.initializePublisher(%s)", "__publisher"));
+        if (currentMethodHasPublisherOptions) {
+            String optionsParamName = method.returnType.publisherClassName.toString().endsWith("GridFSDownloadPublisher") ? "controlOptions" : "options";
+            methodBuilder.addStatement(String.format("%s.initializePublisher(%s)", optionsParamName, "__publisher"));
+        }
         InspectionContext.PublisherDesc publisherDesc = context.publisherDescriptions.get(method.returnType.publisherClassName.toString());
         ClassName resultClassName = ClassName.bestGuess("io.vertx.mongo.MongoResult");
         StringJoiner resultParamNames = new StringJoiner(", ");

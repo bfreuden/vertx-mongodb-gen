@@ -24,17 +24,20 @@ import com.mongodb.WriteConcern;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
 import com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
+import com.mongodb.reactivestreams.client.gridfs.GridFSUploadPublisher;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.OpenOptions;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.ClientSession;
+import io.vertx.mongo.client.gridfs.GridFSDownloadControlOptions;
+import io.vertx.mongo.client.gridfs.GridFSDownloadResult;
 import io.vertx.mongo.client.gridfs.GridFSFindOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
+import io.vertx.mongo.client.gridfs.model.GridFSUploadOptions;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MappingPublisher;
 import io.vertx.mongo.impl.MongoClientContext;
@@ -46,6 +49,7 @@ import java.lang.String;
 import java.lang.Void;
 import java.nio.ByteBuffer;
 import org.bson.BsonValue;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
@@ -114,118 +118,233 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public Future<Buffer> downloadByObjectId(String id) {
+  public Future<String> uploadFromPublisher(String filename, ReadStream<Buffer> source) {
+    requireNonNull(filename, "filename is null");
+    requireNonNull(source, "source is null");
+    GridFSReadStreamPublisher __source = new GridFSReadStreamPublisher(source);
+    GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(filename, __source);
+    Promise<ObjectId> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+  }
+
+  @Override
+  public Future<String> uploadFile(String filename) {
+    requireNonNull(filename, "fileName cannot be null");
+    return openFile(clientContext.getVertx(), filename).compose( stream -> uploadFromPublisher(filename, stream));
+  }
+
+  @Override
+  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFromPublisher(String filename,
+      ReadStream<Buffer> source, Handler<AsyncResult<String>> resultHandler) {
+    Future<String> __future = this.uploadFromPublisher(filename, source);
+    setHandler(__future, resultHandler);
+    return this;
+  }
+
+  @Override
+  public Future<String> uploadFromPublisher(String filename, ReadStream<Buffer> source,
+      GridFSUploadOptions options) {
+    requireNonNull(filename, "filename is null");
+    requireNonNull(source, "source is null");
+    requireNonNull(options, "options is null");
+    GridFSReadStreamPublisher __source = new GridFSReadStreamPublisher(source);
+    com.mongodb.client.gridfs.model.GridFSUploadOptions __options = options.toDriverClass();
+    GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(filename, __source, __options);
+    Promise<ObjectId> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+  }
+
+  @Override
+  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFromPublisher(String filename,
+      ReadStream<Buffer> source, GridFSUploadOptions options,
+      Handler<AsyncResult<String>> resultHandler) {
+    Future<String> __future = this.uploadFromPublisher(filename, source, options);
+    setHandler(__future, resultHandler);
+    return this;
+  }
+
+  @Override
+  public Future<String> uploadFromPublisher(ClientSession clientSession, String filename,
+      ReadStream<Buffer> source) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filename, "filename is null");
+    requireNonNull(source, "source is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    GridFSReadStreamPublisher __source = new GridFSReadStreamPublisher(source);
+    GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(__clientSession, filename, __source);
+    Promise<ObjectId> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+  }
+
+  @Override
+  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFromPublisher(ClientSession clientSession,
+      String filename, ReadStream<Buffer> source, Handler<AsyncResult<String>> resultHandler) {
+    Future<String> __future = this.uploadFromPublisher(clientSession, filename, source);
+    setHandler(__future, resultHandler);
+    return this;
+  }
+
+  @Override
+  public Future<String> uploadFromPublisher(ClientSession clientSession, String filename,
+      ReadStream<Buffer> source, GridFSUploadOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filename, "filename is null");
+    requireNonNull(source, "source is null");
+    requireNonNull(options, "options is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    GridFSReadStreamPublisher __source = new GridFSReadStreamPublisher(source);
+    com.mongodb.client.gridfs.model.GridFSUploadOptions __options = options.toDriverClass();
+    GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(__clientSession, filename, __source, __options);
+    Promise<ObjectId> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+  }
+
+  @Override
+  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFromPublisher(ClientSession clientSession,
+      String filename, ReadStream<Buffer> source, GridFSUploadOptions options,
+      Handler<AsyncResult<String>> resultHandler) {
+    Future<String> __future = this.uploadFromPublisher(clientSession, filename, source, options);
+    setHandler(__future, resultHandler);
+    return this;
+  }
+
+  @Override
+  public GridFSDownloadResult downloadByObjectId(String id) {
     requireNonNull(id, "id is null");
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__id);
-    Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
+    
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByObjectId(String id,
-      Handler<AsyncResult<Buffer>> resultHandler) {
-    Future<Buffer> __future = this.downloadByObjectId(id);
-    setHandler(__future, resultHandler);
-    return this;
+  public GridFSDownloadResult downloadByObjectId(String id,
+      GridFSDownloadControlOptions controlOptions) {
+    requireNonNull(id, "id is null");
+    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__id);
+    
+    controlOptions.initializePublisher(__publisher);
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public Future<Buffer> downloadByFilename(String filename) {
+  public GridFSDownloadResult downloadByFilename(String filename) {
     requireNonNull(filename, "filename is null");
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename);
-    Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
+    
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(String filename,
-      Handler<AsyncResult<Buffer>> resultHandler) {
-    Future<Buffer> __future = this.downloadByFilename(filename);
-    setHandler(__future, resultHandler);
-    return this;
+  public GridFSDownloadResult downloadByFilename(String filename,
+      GridFSDownloadControlOptions controlOptions) {
+    requireNonNull(filename, "filename is null");
+    GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename);
+    
+    controlOptions.initializePublisher(__publisher);
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public Future<Buffer> downloadByFilename(String filename, GridFSDownloadOptions options) {
+  public GridFSDownloadResult downloadByFilename(String filename,
+      GridFSDownloadOptions options) {
     requireNonNull(filename, "filename is null");
     requireNonNull(options, "options is null");
     com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename, __options);
-    Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
+    
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(String filename,
-      GridFSDownloadOptions options, Handler<AsyncResult<Buffer>> resultHandler) {
-    Future<Buffer> __future = this.downloadByFilename(filename, options);
-    setHandler(__future, resultHandler);
-    return this;
+  public GridFSDownloadResult downloadByFilename(String filename,
+      GridFSDownloadOptions options, GridFSDownloadControlOptions controlOptions) {
+    requireNonNull(filename, "filename is null");
+    requireNonNull(options, "options is null");
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
+    GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename, __options);
+    
+    controlOptions.initializePublisher(__publisher);
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public Future<Buffer> downloadByObjectId(ClientSession clientSession, String id) {
+  public GridFSDownloadResult downloadByObjectId(ClientSession clientSession, String id) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, __id);
-    Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
+    
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByObjectId(ClientSession clientSession,
-      String id, Handler<AsyncResult<Buffer>> resultHandler) {
-    Future<Buffer> __future = this.downloadByObjectId(clientSession, id);
-    setHandler(__future, resultHandler);
-    return this;
+  public GridFSDownloadResult downloadByObjectId(ClientSession clientSession, String id,
+      GridFSDownloadControlOptions controlOptions) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(id, "id is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, __id);
+    
+    controlOptions.initializePublisher(__publisher);
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public Future<Buffer> downloadByFilename(ClientSession clientSession, String filename) {
+  public GridFSDownloadResult downloadByFilename(ClientSession clientSession,
+      String filename) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename);
-    Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
+    
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(ClientSession clientSession,
-      String filename, Handler<AsyncResult<Buffer>> resultHandler) {
-    Future<Buffer> __future = this.downloadByFilename(clientSession, filename);
-    setHandler(__future, resultHandler);
-    return this;
+  public GridFSDownloadResult downloadByFilename(ClientSession clientSession,
+      String filename, GridFSDownloadControlOptions controlOptions) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filename, "filename is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename);
+    
+    controlOptions.initializePublisher(__publisher);
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public Future<Buffer> downloadByFilename(ClientSession clientSession, String filename,
-      GridFSDownloadOptions options) {
+  public GridFSDownloadResult downloadByFilename(ClientSession clientSession,
+      String filename, GridFSDownloadOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename, __options);
-    Promise<ByteBuffer> __promise = clientContext.getVertx().promise();
-    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toBuffer);
+    
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket downloadByFilename(ClientSession clientSession,
-      String filename, GridFSDownloadOptions options, Handler<AsyncResult<Buffer>> resultHandler) {
-    Future<Buffer> __future = this.downloadByFilename(clientSession, filename, options);
-    setHandler(__future, resultHandler);
-    return this;
+  public GridFSDownloadResult downloadByFilename(ClientSession clientSession,
+      String filename, GridFSDownloadOptions options, GridFSDownloadControlOptions controlOptions) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(filename, "filename is null");
+    requireNonNull(options, "options is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
+    GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename, __options);
+    
+    controlOptions.initializePublisher(__publisher);
+    return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override

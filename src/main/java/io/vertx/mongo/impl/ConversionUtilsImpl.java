@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static io.netty.buffer.Unpooled.copiedBuffer;
+
 public class ConversionUtilsImpl implements ConversionUtils {
 
 
@@ -62,9 +64,7 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public Buffer toBuffer(ByteBuffer from) {
-        Buffer buffer = Buffer.buffer(from.remaining());
-        buffer.setBytes(0, from);
-        return buffer;
+        return Buffer.buffer(copiedBuffer(from));
     }
 
     @Override
