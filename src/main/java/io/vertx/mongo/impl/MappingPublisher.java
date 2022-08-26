@@ -48,6 +48,7 @@ public class MappingPublisher<I, O> implements Publisher<O> {
     }
 
     public Publisher<O> first() {
+        // TODO: HACK!! do it better...
         try {
             Method first = this.mapped.getClass().getMethod("first");
             this.mapped = (Publisher<I>) first.invoke(this.mapped);
