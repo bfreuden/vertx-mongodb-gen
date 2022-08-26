@@ -81,14 +81,11 @@ public class GridFsTest extends MongoTestBase {
       .drop()
       .compose(dropped -> bucket.uploadFile(fileName))
       .compose(res -> bucket.downloadByFilename(fileName).saveToFile(downloadFileName))
-      .onComplete(event -> {
-        if (event.failed()) {
-          fail(event.cause());
-        } else {
+      .onSuccess(event -> {
           assertEquals(new File(fileName).length(), new File(downloadFileName).length());
           testComplete();
-        }
-      });
+      })
+      .onFailure(this::fail);
   }
 
 //
