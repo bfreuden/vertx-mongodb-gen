@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
+import com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -34,7 +35,9 @@ import io.vertx.mongo.client.gridfs.GridFSFindOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MappingPublisher;
 import io.vertx.mongo.impl.MongoClientContext;
+import io.vertx.mongo.impl.MongoResultImpl;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Object;
 import java.lang.Override;
@@ -233,46 +236,70 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public MongoResult<GridFSFile> find() {
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find();
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<GridFSFile> find(GridFSFindOptions options) {
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find();
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override
   public MongoResult<GridFSFile> find(JsonObject filter) {
     requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find(__filter);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<GridFSFile> find(JsonObject filter, GridFSFindOptions options) {
     requireNonNull(filter, "filter is null");
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find(__filter);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override
   public MongoResult<GridFSFile> find(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find(__clientSession);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<GridFSFile> find(ClientSession clientSession, GridFSFindOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find(__clientSession);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override
@@ -281,8 +308,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
@@ -292,8 +320,15 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filter, "filter is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
-    //  TODO implement mapped mongo results
-    return null;
+    GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override

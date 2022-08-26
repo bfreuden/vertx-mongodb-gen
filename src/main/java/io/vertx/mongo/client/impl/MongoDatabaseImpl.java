@@ -19,6 +19,7 @@ import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
 import com.mongodb.reactivestreams.client.AggregatePublisher;
+import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.ListCollectionsPublisher;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import io.vertx.core.AsyncResult;
@@ -41,6 +42,7 @@ import io.vertx.mongo.client.model.CreateCollectionOptions;
 import io.vertx.mongo.client.model.CreateViewOptions;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MappingPublisher;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.MongoCollectionResultImpl;
 import io.vertx.mongo.impl.MongoResultImpl;
@@ -483,22 +485,31 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch() {
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ChangeStreamOptions options) {
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline) {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__pipeline, JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
@@ -506,16 +517,24 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
       ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__pipeline, JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
@@ -523,8 +542,15 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
       ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override
@@ -534,8 +560,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, __pipeline, JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
@@ -545,8 +572,15 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
-    //  TODO implement mapped mongo results
-    return null;
+    ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, __pipeline, JsonObject.class);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    options.initializePublisher(__publisher);
+    Integer __batchSize = options.getBatchSize();
+    if (__batchSize != null) {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
+    } else {
+      return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
+    }
   }
 
   @Override
