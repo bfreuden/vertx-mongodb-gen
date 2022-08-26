@@ -35,11 +35,13 @@ public class GridFSDownloadResultImpl extends MongoResultImpl<Buffer> implements
         return __promise.future().map(GridFSFile::fromDriverClass);
     }
 
+    @Override
     public void saveToFile(String filename, Handler<AsyncResult<Void>> resultHandler) {
         Future<Void> __future = this.saveToFile(filename);
         setHandler(__future, resultHandler);
     }
 
+    @Override
     public Future<Void> saveToFile(String filename) {
         OpenOptions options = new OpenOptions().setWrite(true);
         return clientContext.getVertx().fileSystem()
@@ -48,11 +50,13 @@ public class GridFSDownloadResultImpl extends MongoResultImpl<Buffer> implements
     }
 
 
+    @Override
     public void saveToFile(String filename, int batchSize, Handler<AsyncResult<Void>> resultHandler) {
         Future<Void> __future = this.saveToFile(filename, batchSize);
         setHandler(__future, resultHandler);
     }
 
+    @Override
     public Future<Void> saveToFile(String filename, int batchSize) {
         OpenOptions options = new OpenOptions().setWrite(true);
         return clientContext.getVertx().fileSystem()

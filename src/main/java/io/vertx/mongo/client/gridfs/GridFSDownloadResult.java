@@ -19,13 +19,26 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.OpenOptions;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
+
+import static io.vertx.mongo.impl.Utils.setHandler;
 
 public interface GridFSDownloadResult extends MongoResult<Buffer> {
 
     void getGridFSFile(Handler<AsyncResult<GridFSFile>> handler);
 
     Future<GridFSFile> getGridFSFile();
+
+    void saveToFile(String filename, Handler<AsyncResult<Void>> resultHandler);
+
+    public Future<Void> saveToFile(String filename);
+
+
+    public void saveToFile(String filename, int batchSize, Handler<AsyncResult<Void>> resultHandler);
+
+    public Future<Void> saveToFile(String filename, int batchSize);
+
 
 }
