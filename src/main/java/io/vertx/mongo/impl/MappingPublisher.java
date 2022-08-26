@@ -4,6 +4,8 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.function.Function;
 
 public class MappingPublisher<I, O> implements Publisher<O> {
@@ -36,13 +38,23 @@ public class MappingPublisher<I, O> implements Publisher<O> {
             mapped.onComplete();
         }
     }
-    private final Publisher<I> mapped;
+    private Publisher<I> mapped;
     private final Function<I, O> mapper;
 
     public MappingPublisher(Publisher<I> mapped, Function<I, O> mapper) {
         this.mapped = mapped;
         this.mapper = mapper;
 
+    }
+
+    public Publisher<O> first() {
+        try {
+            Method first = this.mapped.getClass().getMethod("first");
+            this.mapped = (Publisher<I>) first.invoke(this.mapped);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return this;
     }
 
     @Override
