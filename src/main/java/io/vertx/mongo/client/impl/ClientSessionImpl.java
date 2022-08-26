@@ -53,7 +53,7 @@ public class ClientSessionImpl extends ClientSessionBase {
   @Override
   public TransactionOptions getTransactionOptions() {
     com.mongodb.TransactionOptions __result = wrapped.getTransactionOptions();
-    return  TransactionOptions.fromDriverClass(__result);
+    return TransactionOptions.fromDriverClass(__result);
   }
 
   @Override
@@ -71,7 +71,7 @@ public class ClientSessionImpl extends ClientSessionBase {
   @Override
   public Future<Void> commitTransaction() {
     Publisher<Void> __publisher = wrapped.commitTransaction();
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -87,7 +87,7 @@ public class ClientSessionImpl extends ClientSessionBase {
   @Override
   public Future<Void> abortTransaction() {
     Publisher<Void> __publisher = wrapped.abortTransaction();
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }

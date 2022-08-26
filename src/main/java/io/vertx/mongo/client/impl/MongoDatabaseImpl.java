@@ -77,26 +77,26 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public ReadPreference getReadPreference() {
     com.mongodb.ReadPreference __result = wrapped.getReadPreference();
-    return  ReadPreference.fromDriverClass(__result);
+    return ReadPreference.fromDriverClass(__result);
   }
 
   @Override
   public WriteConcern getWriteConcern() {
     com.mongodb.WriteConcern __result = wrapped.getWriteConcern();
-    return  WriteConcern.fromDriverClass(__result);
+    return WriteConcern.fromDriverClass(__result);
   }
 
   @Override
   public ReadConcern getReadConcern() {
     com.mongodb.ReadConcern __result = wrapped.getReadConcern();
-    return  ReadConcern.fromDriverClass(__result);
+    return ReadConcern.fromDriverClass(__result);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withCodecRegistry(CodecRegistry codecRegistry) {
     requireNonNull(codecRegistry, "codecRegistry is null");
     MongoDatabase __result = wrapped.withCodecRegistry(codecRegistry);
-    return  new MongoDatabaseImpl(clientContext, __result);
+    return new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
@@ -104,7 +104,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(readPreference, "readPreference is null");
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     MongoDatabase __result = wrapped.withReadPreference(__readPreference);
-    return  new MongoDatabaseImpl(clientContext, __result);
+    return new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
@@ -112,7 +112,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(writeConcern, "writeConcern is null");
     com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
     MongoDatabase __result = wrapped.withWriteConcern(__writeConcern);
-    return  new MongoDatabaseImpl(clientContext, __result);
+    return new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
@@ -120,7 +120,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(readConcern, "readConcern is null");
     com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
     MongoDatabase __result = wrapped.withReadConcern(__readConcern);
-    return  new MongoDatabaseImpl(clientContext, __result);
+    return new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
@@ -136,7 +136,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(collectionName, "collectionName is null");
     requireNonNull(clazz, "clazz is null");
     com.mongodb.reactivestreams.client.MongoCollection<TDocument> __result = wrapped.getCollection(collectionName, clazz);
-    return  new MongoCollectionImpl<>(clientContext, __result);
+    return new MongoCollectionImpl<>(clientContext, __result);
   }
 
   @Override
@@ -144,7 +144,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(command, "command is null");
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     Publisher<JsonObject> __publisher = wrapped.runCommand(__command, JsonObject.class);
-    Promise<JsonObject> __promise = Promise.promise();
+    Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -164,7 +164,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     Publisher<JsonObject> __publisher = wrapped.runCommand(__command, __readPreference, JsonObject.class);
-    Promise<JsonObject> __promise = Promise.promise();
+    Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -184,7 +184,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, JsonObject.class);
-    Promise<JsonObject> __promise = Promise.promise();
+    Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -207,7 +207,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
     com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
     Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, __readPreference, JsonObject.class);
-    Promise<JsonObject> __promise = Promise.promise();
+    Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -224,7 +224,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public Future<Void> drop() {
     Publisher<Void> __publisher = wrapped.drop();
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -241,7 +241,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.drop(__clientSession);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -313,7 +313,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public Future<Void> createCollection(String collectionName) {
     requireNonNull(collectionName, "collectionName is null");
     Publisher<Void> __publisher = wrapped.createCollection(collectionName);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -332,7 +332,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(options, "options is null");
     com.mongodb.client.model.CreateCollectionOptions __options = options.toDriverClass();
     Publisher<Void> __publisher = wrapped.createCollection(collectionName, __options);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -351,7 +351,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(collectionName, "collectionName is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Publisher<Void> __publisher = wrapped.createCollection(__clientSession, collectionName);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -373,7 +373,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     com.mongodb.client.model.CreateCollectionOptions __options = options.toDriverClass();
     Publisher<Void> __publisher = wrapped.createCollection(__clientSession, collectionName, __options);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -394,7 +394,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -417,7 +417,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(viewName, viewOn, __pipeline, __createViewOptions);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -441,7 +441,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }
@@ -467,7 +467,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
     com.mongodb.client.model.CreateViewOptions __createViewOptions = createViewOptions.toDriverClass();
     Publisher<Void> __publisher = wrapped.createView(__clientSession, viewName, viewOn, __pipeline, __createViewOptions);
-    Promise<Void> __promise = Promise.promise();
+    Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
   }

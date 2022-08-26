@@ -64,7 +64,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public MongoDatabase getDatabase(String name) {
     requireNonNull(name, "name is null");
     com.mongodb.reactivestreams.client.MongoDatabase __result = wrapped.getDatabase(name);
-    return  new MongoDatabaseImpl(clientContext, __result);
+    return new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
@@ -193,7 +193,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public Future<ClientSession> startSession() {
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession();
-    Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = Promise.promise();
+    Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(_reactive -> new ClientSessionImpl(clientContext, _reactive));
   }
@@ -210,7 +210,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(options, "options is null");
     com.mongodb.ClientSessionOptions __options = options.toDriverClass();
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession(__options);
-    Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = Promise.promise();
+    Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future().map(_reactive -> new ClientSessionImpl(clientContext, _reactive));
   }
@@ -226,7 +226,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public ClusterDescription getClusterDescription() {
     com.mongodb.connection.ClusterDescription __result = wrapped.getClusterDescription();
-    return  ClusterDescription.fromDriverClass(__result);
+    return ClusterDescription.fromDriverClass(__result);
   }
 
   public com.mongodb.reactivestreams.client.MongoClient toDriverClass() {

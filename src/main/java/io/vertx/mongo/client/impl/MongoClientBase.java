@@ -39,7 +39,7 @@ public abstract class MongoClientBase implements MongoClient {
         this.creatingContext = this.vertx.getOrCreateContext();
         this.holder = lookupHolder(dataSourceName);
         this.wrapped = holder.mongo(config);
-        this.clientContext = new MongoClientContext(vertx, creatingContext, config);
+        this.clientContext = new MongoClientContext(this.vertx, creatingContext, config);
         creatingContext.addCloseHook(this);
     }
 

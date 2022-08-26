@@ -1,2 +1,3 @@
 InsertOneResult has an insertedId with an Object type?
 FindOption setSort -> sort
+Promise.promise() vs vertx.promise() ?
