@@ -18,6 +18,7 @@ package io.vertx.mongo.client.gridfs;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
+import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -26,9 +27,12 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.ClientSession;
+import io.vertx.mongo.client.MongoDatabase;
+import io.vertx.mongo.client.gridfs.impl.GridFSBucketImpl;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.client.gridfs.model.GridFSUploadOptions;
+import io.vertx.mongo.client.impl.MongoDatabaseImpl;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
@@ -38,6 +42,14 @@ import java.lang.Void;
  *  @since 1.3
  */
 public interface GridFSBucket {
+  static GridFSBucket create(MongoDatabase database) {
+    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass()));
+  }
+
+  static GridFSBucket create(MongoDatabase database, String bucketName) {
+    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass(), bucketName));
+  }
+
   /**
    *  The bucket name.
    *

@@ -5,6 +5,7 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
+import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.core.*;
@@ -172,6 +173,29 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                             .addJavadoc("Close the client and release its resources\n@param handler handler")
                             .build());
         }
+        if (classDoc.name().equals("GridFSBucket")) {
+            typeBuilder.addMethod(MethodSpec.methodBuilder("create")
+                    .addParameter(ClassName.bestGuess("io.vertx.mongo.client.MongoDatabase"), "database")
+                    .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
+                    .returns(fluentReturnType)
+                    .addStatement("return new $T((($T)database).getClientContext(), $T.create(database.toDriverClass()))",
+                            ClassName.bestGuess("io.vertx.mongo.client.gridfs.impl.GridFSBucketImpl"),
+                            ClassName.bestGuess("io.vertx.mongo.client.impl.MongoDatabaseImpl"),
+                            ClassName.get(GridFSBuckets.class)
+                    )
+                    .build());
+            typeBuilder.addMethod(MethodSpec.methodBuilder("create")
+                    .addParameter(ClassName.bestGuess("io.vertx.mongo.client.MongoDatabase"), "database")
+                    .addParameter(ClassName.get(String.class), "bucketName")
+                    .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
+                    .returns(fluentReturnType)
+                    .addStatement("return new $T((($T)database).getClientContext(), $T.create(database.toDriverClass(), bucketName))",
+                            ClassName.bestGuess("io.vertx.mongo.client.gridfs.impl.GridFSBucketImpl"),
+                            ClassName.bestGuess("io.vertx.mongo.client.impl.MongoDatabaseImpl"),
+                            ClassName.get(GridFSBuckets.class)
+                    )
+                    .build());
+        }
 
         inflateType(typeBuilder, isImpl, null, null, null, null);
 
@@ -234,7 +258,6 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     .addStatement("return clientContext")
                     .build());
         }
-
         typeBuilder.addMethod(
                 MethodSpec.methodBuilder("toDriverClass")
                         .addModifiers(Modifier.PUBLIC)
