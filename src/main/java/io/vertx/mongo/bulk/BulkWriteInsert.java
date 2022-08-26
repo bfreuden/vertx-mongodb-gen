@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.Exception;
 import java.lang.Object;
 
 @DataObject(
@@ -29,6 +30,10 @@ public class BulkWriteInsert {
 
   private Object id;
 
+  private Exception indexException;
+
+  private Exception idException;
+
   private BulkWriteInsert() {
   }
 
@@ -38,6 +43,9 @@ public class BulkWriteInsert {
    *  @return the index
    */
   public int getIndex() {
+    if (indexException != null)  {
+      throw new RuntimeException(indexException);
+    }
     return index;
   }
 
@@ -47,6 +55,9 @@ public class BulkWriteInsert {
    *  @return the id
    */
   public Object getId() {
+    if (idException != null)  {
+      throw new RuntimeException(idException);
+    }
     return id;
   }
 
@@ -57,8 +68,16 @@ public class BulkWriteInsert {
   public static BulkWriteInsert fromDriverClass(com.mongodb.bulk.BulkWriteInsert from) {
     requireNonNull(from, "from is null");
     BulkWriteInsert result = new BulkWriteInsert();
-    result.index = from.getIndex();
-    result.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
+    try {
+      result.index = from.getIndex();
+    } catch (Exception ex) {
+      result.indexException = ex;
+    }
+    try {
+      result.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
+    } catch (Exception ex) {
+      result.idException = ex;
+    }
     return result;
   }
 }

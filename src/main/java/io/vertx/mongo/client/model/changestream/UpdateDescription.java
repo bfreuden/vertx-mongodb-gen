@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.Exception;
 import java.lang.String;
 import java.util.List;
 
@@ -31,6 +32,10 @@ public class UpdateDescription {
 
   private JsonObject updatedFields;
 
+  private Exception removedFieldsException;
+
+  private Exception updatedFieldsException;
+
   private UpdateDescription() {
   }
 
@@ -40,6 +45,9 @@ public class UpdateDescription {
    *  @return the removedFields
    */
   public List<String> getRemovedFields() {
+    if (removedFieldsException != null)  {
+      throw new RuntimeException(removedFieldsException);
+    }
     return removedFields;
   }
 
@@ -49,6 +57,9 @@ public class UpdateDescription {
    *  @return the updatedFields
    */
   public JsonObject getUpdatedFields() {
+    if (updatedFieldsException != null)  {
+      throw new RuntimeException(updatedFieldsException);
+    }
     return updatedFields;
   }
 
@@ -60,8 +71,16 @@ public class UpdateDescription {
       com.mongodb.client.model.changestream.UpdateDescription from) {
     requireNonNull(from, "from is null");
     UpdateDescription result = new UpdateDescription();
-    result.removedFields = from.getRemovedFields();
-    result.updatedFields = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getUpdatedFields());
+    try {
+      result.removedFields = from.getRemovedFields();
+    } catch (Exception ex) {
+      result.removedFieldsException = ex;
+    }
+    try {
+      result.updatedFields = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getUpdatedFields());
+    } catch (Exception ex) {
+      result.updatedFieldsException = ex;
+    }
     return result;
   }
 }

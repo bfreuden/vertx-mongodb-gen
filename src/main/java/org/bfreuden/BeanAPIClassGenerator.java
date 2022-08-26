@@ -11,13 +11,12 @@ import java.util.stream.Collectors;
 
 public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
 
-    private final boolean resultBean;
     private boolean isAbstract;
 
     public BeanAPIClassGenerator(InspectionContext context, ClassDoc classDoc, boolean resultBean) {
         super(context, classDoc);
-        this.resultBean = resultBean;
         this.isResultOnlyOptions = true; // don't write toMongoMethod or setters
+        this.resultBean = resultBean;
     }
 
     @Override
@@ -116,6 +115,10 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
             addToMongoMethod(typeBuilder);
 
         } else {
+            // write exception fields
+            for (Option option: optionsByName.values())
+                typeBuilder.addField(FieldSpec.builder(Exception.class, option.name + "Exception").addModifiers(Modifier.PRIVATE).build());
+
             // private constructor
             typeBuilder.addMethod(MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE).build());
 
@@ -139,11 +142,15 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
             methodBuilder.addStatement("requireNonNull(from, $S)", "from is null");
             methodBuilder.addStatement("$T result = new $T()",returnType, returnType);
             for (Option option: optionsByName.values()) {
+                methodBuilder.beginControlFlow("try");
                 if (option.type.mapper != null) {
                     methodBuilder.addStatement(option.type.mapper.asStatementFromExpression("result." + option.name + " = %s", "from." + option.mongoGetterName + "()"));
                 } else {
                     methodBuilder.addStatement("result." + option.name + " = from." + option.mongoGetterName + "()");
                 }
+                methodBuilder.nextControlFlow("catch (Exception ex)");
+                methodBuilder.addStatement("result." + option.name +"Exception = ex");
+                methodBuilder.endControlFlow();
             }
             methodBuilder.addStatement("return result");
             typeBuilder.addMethod(methodBuilder.build());

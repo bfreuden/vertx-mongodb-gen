@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
 import java.util.Date;
@@ -42,6 +43,20 @@ public class GridFSFile {
 
   private JsonObject metadata;
 
+  private Exception objectIdException;
+
+  private Exception idException;
+
+  private Exception filenameException;
+
+  private Exception lengthException;
+
+  private Exception chunkSizeException;
+
+  private Exception uploadDateException;
+
+  private Exception metadataException;
+
   private GridFSFile() {
   }
 
@@ -53,6 +68,9 @@ public class GridFSFile {
    *  @return the id for this file.
    */
   public String getObjectId() {
+    if (objectIdException != null)  {
+      throw new RuntimeException(objectIdException);
+    }
     return objectId;
   }
 
@@ -62,6 +80,9 @@ public class GridFSFile {
    *  @return the id for this file
    */
   public Object getId() {
+    if (idException != null)  {
+      throw new RuntimeException(idException);
+    }
     return id;
   }
 
@@ -71,6 +92,9 @@ public class GridFSFile {
    *  @return the filename
    */
   public String getFilename() {
+    if (filenameException != null)  {
+      throw new RuntimeException(filenameException);
+    }
     return filename;
   }
 
@@ -80,6 +104,9 @@ public class GridFSFile {
    *  @return the length, in bytes of this file
    */
   public long getLength() {
+    if (lengthException != null)  {
+      throw new RuntimeException(lengthException);
+    }
     return length;
   }
 
@@ -89,6 +116,9 @@ public class GridFSFile {
    *  @return the size, in bytes, of each data chunk of this file
    */
   public int getChunkSize() {
+    if (chunkSizeException != null)  {
+      throw new RuntimeException(chunkSizeException);
+    }
     return chunkSize;
   }
 
@@ -98,6 +128,9 @@ public class GridFSFile {
    *  @return the date and time this file was added to GridFS
    */
   public Date getUploadDate() {
+    if (uploadDateException != null)  {
+      throw new RuntimeException(uploadDateException);
+    }
     return uploadDate;
   }
 
@@ -107,6 +140,9 @@ public class GridFSFile {
    *  @return the metadata document or null
    */
   public JsonObject getMetadata() {
+    if (metadataException != null)  {
+      throw new RuntimeException(metadataException);
+    }
     return metadata;
   }
 
@@ -117,13 +153,41 @@ public class GridFSFile {
   public static GridFSFile fromDriverClass(com.mongodb.client.gridfs.model.GridFSFile from) {
     requireNonNull(from, "from is null");
     GridFSFile result = new GridFSFile();
-    result.objectId = ConversionUtilsImpl.INSTANCE.toString(from.getObjectId());
-    result.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
-    result.filename = from.getFilename();
-    result.length = from.getLength();
-    result.chunkSize = from.getChunkSize();
-    result.uploadDate = from.getUploadDate();
-    result.metadata = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getMetadata());
+    try {
+      result.objectId = ConversionUtilsImpl.INSTANCE.toString(from.getObjectId());
+    } catch (Exception ex) {
+      result.objectIdException = ex;
+    }
+    try {
+      result.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
+    } catch (Exception ex) {
+      result.idException = ex;
+    }
+    try {
+      result.filename = from.getFilename();
+    } catch (Exception ex) {
+      result.filenameException = ex;
+    }
+    try {
+      result.length = from.getLength();
+    } catch (Exception ex) {
+      result.lengthException = ex;
+    }
+    try {
+      result.chunkSize = from.getChunkSize();
+    } catch (Exception ex) {
+      result.chunkSizeException = ex;
+    }
+    try {
+      result.uploadDate = from.getUploadDate();
+    } catch (Exception ex) {
+      result.uploadDateException = ex;
+    }
+    try {
+      result.metadata = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getMetadata());
+    } catch (Exception ex) {
+      result.metadataException = ex;
+    }
     return result;
   }
 }

@@ -1,9 +1,14 @@
 package org.bfreuden;
 
+import com.mongodb.MongoNamespace;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import org.bson.codecs.configuration.CodecRegistry;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -22,7 +27,11 @@ public class Types {
 
 
     static {
-        ACCEPTED.add("org.bson.codecs.configuration.CodecRegistry");
+        ACCEPTED.add(CodecRegistry.class.getName());
+        ACCEPTED.add(MongoNamespace.class.getName());
+        ACCEPTED.add(ReadConcern.class.getName());
+        ACCEPTED.add(WriteConcern.class.getName());
+        ACCEPTED.add(ReadPreference.class.getName());
         IGNORED.add("com.mongodb.internal.async.client.AsyncClientSession");
 
 

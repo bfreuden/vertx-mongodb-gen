@@ -23,6 +23,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
     protected boolean hasBuilder;
     protected String configurableName;
     protected boolean isResultOnlyOptions;
+    protected boolean resultBean;
 
     public GenericAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         super(context, classDoc);
@@ -319,8 +320,13 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             boolean isBoolean = option.type.vertxType.toString().toLowerCase().contains("boolean");
             MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder((isBoolean ? "is" : "get") + Character.toUpperCase(option.name.charAt(0)) + option.name.substring(1))
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(option.type.vertxType)
-                    .addStatement("return " + option.name);
+                    .returns(option.type.vertxType);
+            if (resultBean) {
+                getterBuilder.beginControlFlow("if (" + option.name + "Exception != null) ");
+                getterBuilder.addStatement("throw new RuntimeException(" + option.name + "Exception)");
+                getterBuilder.endControlFlow();
+            }
+            getterBuilder.addStatement("return " + option.name);
             if (option.deprecated)
                 getterBuilder.addAnnotation(Deprecated.class);
             if (option.mongoGetterJavadoc != null) {

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.CollectionsConversionUtils;
+import java.lang.Exception;
 import java.util.List;
 
 @DataObject(
@@ -39,6 +40,20 @@ public class BulkWriteResult {
 
   private List<BulkWriteUpsert> upserts;
 
+  private Exception acknowledgedException;
+
+  private Exception insertedCountException;
+
+  private Exception matchedCountException;
+
+  private Exception deletedCountException;
+
+  private Exception modifiedCountException;
+
+  private Exception insertsException;
+
+  private Exception upsertsException;
+
   private BulkWriteResult() {
   }
 
@@ -49,6 +64,9 @@ public class BulkWriteResult {
    *  @see com.mongodb.WriteConcern#UNACKNOWLEDGED
    */
   public boolean isAcknowledged() {
+    if (acknowledgedException != null)  {
+      throw new RuntimeException(acknowledgedException);
+    }
     return acknowledged;
   }
 
@@ -60,6 +78,9 @@ public class BulkWriteResult {
    *  @see com.mongodb.WriteConcern#UNACKNOWLEDGED
    */
   public int getInsertedCount() {
+    if (insertedCountException != null)  {
+      throw new RuntimeException(insertedCountException);
+    }
     return insertedCount;
   }
 
@@ -73,6 +94,9 @@ public class BulkWriteResult {
    *  @see com.mongodb.WriteConcern#UNACKNOWLEDGED
    */
   public int getMatchedCount() {
+    if (matchedCountException != null)  {
+      throw new RuntimeException(matchedCountException);
+    }
     return matchedCount;
   }
 
@@ -84,6 +108,9 @@ public class BulkWriteResult {
    *  @see com.mongodb.WriteConcern#UNACKNOWLEDGED
    */
   public int getDeletedCount() {
+    if (deletedCountException != null)  {
+      throw new RuntimeException(deletedCountException);
+    }
     return deletedCount;
   }
 
@@ -96,6 +123,9 @@ public class BulkWriteResult {
    *  @see com.mongodb.WriteConcern#UNACKNOWLEDGED
    */
   public int getModifiedCount() {
+    if (modifiedCountException != null)  {
+      throw new RuntimeException(modifiedCountException);
+    }
     return modifiedCount;
   }
 
@@ -108,6 +138,9 @@ public class BulkWriteResult {
    *  @since 4.0
    */
   public List<BulkWriteInsert> getInserts() {
+    if (insertsException != null)  {
+      throw new RuntimeException(insertsException);
+    }
     return inserts;
   }
 
@@ -119,6 +152,9 @@ public class BulkWriteResult {
    *  @see com.mongodb.WriteConcern#UNACKNOWLEDGED
    */
   public List<BulkWriteUpsert> getUpserts() {
+    if (upsertsException != null)  {
+      throw new RuntimeException(upsertsException);
+    }
     return upserts;
   }
 
@@ -129,13 +165,41 @@ public class BulkWriteResult {
   public static BulkWriteResult fromDriverClass(com.mongodb.bulk.BulkWriteResult from) {
     requireNonNull(from, "from is null");
     BulkWriteResult result = new BulkWriteResult();
-    result.acknowledged = from.wasAcknowledged();
-    result.insertedCount = from.getInsertedCount();
-    result.matchedCount = from.getMatchedCount();
-    result.deletedCount = from.getDeletedCount();
-    result.modifiedCount = from.getModifiedCount();
-    result.inserts = CollectionsConversionUtils.mapItems(from.getInserts(), BulkWriteInsert::fromDriverClass);
-    result.upserts = CollectionsConversionUtils.mapItems(from.getUpserts(), BulkWriteUpsert::fromDriverClass);
+    try {
+      result.acknowledged = from.wasAcknowledged();
+    } catch (Exception ex) {
+      result.acknowledgedException = ex;
+    }
+    try {
+      result.insertedCount = from.getInsertedCount();
+    } catch (Exception ex) {
+      result.insertedCountException = ex;
+    }
+    try {
+      result.matchedCount = from.getMatchedCount();
+    } catch (Exception ex) {
+      result.matchedCountException = ex;
+    }
+    try {
+      result.deletedCount = from.getDeletedCount();
+    } catch (Exception ex) {
+      result.deletedCountException = ex;
+    }
+    try {
+      result.modifiedCount = from.getModifiedCount();
+    } catch (Exception ex) {
+      result.modifiedCountException = ex;
+    }
+    try {
+      result.inserts = CollectionsConversionUtils.mapItems(from.getInserts(), BulkWriteInsert::fromDriverClass);
+    } catch (Exception ex) {
+      result.insertsException = ex;
+    }
+    try {
+      result.upserts = CollectionsConversionUtils.mapItems(from.getUpserts(), BulkWriteUpsert::fromDriverClass);
+    } catch (Exception ex) {
+      result.upsertsException = ex;
+    }
     return result;
   }
 }

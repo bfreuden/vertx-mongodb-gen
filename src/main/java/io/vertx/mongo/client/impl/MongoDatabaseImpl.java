@@ -18,6 +18,9 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.ListCollectionsPublisher;
@@ -30,9 +33,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoCollectionResult;
 import io.vertx.mongo.MongoResult;
-import io.vertx.mongo.ReadConcern;
-import io.vertx.mongo.ReadPreference;
-import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.AggregateOptions;
 import io.vertx.mongo.client.ChangeStreamOptions;
 import io.vertx.mongo.client.ClientSession;
@@ -78,20 +78,17 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
 
   @Override
   public ReadPreference getReadPreference() {
-    com.mongodb.ReadPreference __result = wrapped.getReadPreference();
-    return ReadPreference.fromDriverClass(__result);
+    return wrapped.getReadPreference();
   }
 
   @Override
   public WriteConcern getWriteConcern() {
-    com.mongodb.WriteConcern __result = wrapped.getWriteConcern();
-    return WriteConcern.fromDriverClass(__result);
+    return wrapped.getWriteConcern();
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    com.mongodb.ReadConcern __result = wrapped.getReadConcern();
-    return ReadConcern.fromDriverClass(__result);
+    return wrapped.getReadConcern();
   }
 
   @Override
@@ -104,24 +101,21 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public io.vertx.mongo.client.MongoDatabase withReadPreference(ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference is null");
-    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    MongoDatabase __result = wrapped.withReadPreference(__readPreference);
+    MongoDatabase __result = wrapped.withReadPreference(readPreference);
     return new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withWriteConcern(WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern is null");
-    com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    MongoDatabase __result = wrapped.withWriteConcern(__writeConcern);
+    MongoDatabase __result = wrapped.withWriteConcern(writeConcern);
     return new MongoDatabaseImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.MongoDatabase withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern is null");
-    com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    MongoDatabase __result = wrapped.withReadConcern(__readConcern);
+    MongoDatabase __result = wrapped.withReadConcern(readConcern);
     return new MongoDatabaseImpl(clientContext, __result);
   }
 
@@ -164,8 +158,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(command, "command is null");
     requireNonNull(readPreference, "readPreference is null");
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
-    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    Publisher<JsonObject> __publisher = wrapped.runCommand(__command, __readPreference, JsonObject.class);
+    Publisher<JsonObject> __publisher = wrapped.runCommand(__command, readPreference, JsonObject.class);
     Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
@@ -207,8 +200,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(readPreference, "readPreference is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
     Bson __command = ConversionUtilsImpl.INSTANCE.toBson(command);
-    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, __readPreference, JsonObject.class);
+    Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, readPreference, JsonObject.class);
     Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();

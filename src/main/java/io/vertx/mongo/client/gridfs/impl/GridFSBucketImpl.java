@@ -18,6 +18,9 @@ package io.vertx.mongo.client.gridfs.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
 import com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher;
@@ -27,9 +30,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoResult;
-import io.vertx.mongo.ReadConcern;
-import io.vertx.mongo.ReadPreference;
-import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.gridfs.GridFSFindOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
@@ -71,20 +71,17 @@ public class GridFSBucketImpl extends GridFSBucketBase {
 
   @Override
   public WriteConcern getWriteConcern() {
-    com.mongodb.WriteConcern __result = wrapped.getWriteConcern();
-    return WriteConcern.fromDriverClass(__result);
+    return wrapped.getWriteConcern();
   }
 
   @Override
   public ReadPreference getReadPreference() {
-    com.mongodb.ReadPreference __result = wrapped.getReadPreference();
-    return ReadPreference.fromDriverClass(__result);
+    return wrapped.getReadPreference();
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    com.mongodb.ReadConcern __result = wrapped.getReadConcern();
-    return ReadConcern.fromDriverClass(__result);
+    return wrapped.getReadConcern();
   }
 
   @Override
@@ -97,24 +94,21 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public io.vertx.mongo.client.gridfs.GridFSBucket withReadPreference(
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference is null");
-    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    GridFSBucket __result = wrapped.withReadPreference(__readPreference);
+    GridFSBucket __result = wrapped.withReadPreference(readPreference);
     return new GridFSBucketImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withWriteConcern(WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern is null");
-    com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    GridFSBucket __result = wrapped.withWriteConcern(__writeConcern);
+    GridFSBucket __result = wrapped.withWriteConcern(writeConcern);
     return new GridFSBucketImpl(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.gridfs.GridFSBucket withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern is null");
-    com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    GridFSBucket __result = wrapped.withReadConcern(__readConcern);
+    GridFSBucket __result = wrapped.withReadConcern(readConcern);
     return new GridFSBucketImpl(clientContext, __result);
   }
 

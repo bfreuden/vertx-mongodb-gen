@@ -17,11 +17,12 @@ package io.vertx.mongo.client.model.changestream;
 
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.MongoNamespace;
 import com.mongodb.client.model.changestream.OperationType;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.MongoNamespace;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.Exception;
 import java.lang.Long;
 import java.lang.String;
 
@@ -55,6 +56,32 @@ public class ChangeStreamDocument<TDocument> {
 
   private JsonObject lsid;
 
+  private Exception resumeTokenException;
+
+  private Exception namespaceException;
+
+  private Exception namespaceDocumentException;
+
+  private Exception destinationNamespaceException;
+
+  private Exception destinationNamespaceDocumentException;
+
+  private Exception databaseNameException;
+
+  private Exception fullDocumentException;
+
+  private Exception documentKeyException;
+
+  private Exception clusterTimeException;
+
+  private Exception operationTypeException;
+
+  private Exception updateDescriptionException;
+
+  private Exception txnNumberException;
+
+  private Exception lsidException;
+
   private ChangeStreamDocument() {
   }
 
@@ -64,6 +91,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @return the resumeToken
    */
   public JsonObject getResumeToken() {
+    if (resumeTokenException != null)  {
+      throw new RuntimeException(resumeTokenException);
+    }
     return resumeToken;
   }
 
@@ -78,6 +108,9 @@ public class ChangeStreamDocument<TDocument> {
    *  then this will return null.
    */
   public MongoNamespace getNamespace() {
+    if (namespaceException != null)  {
+      throw new RuntimeException(namespaceException);
+    }
     return namespace;
   }
 
@@ -91,6 +124,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @since 3.8
    */
   public JsonObject getNamespaceDocument() {
+    if (namespaceDocumentException != null)  {
+      throw new RuntimeException(namespaceDocumentException);
+    }
     return namespaceDocument;
   }
 
@@ -106,6 +142,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @since 3.11
    */
   public MongoNamespace getDestinationNamespace() {
+    if (destinationNamespaceException != null)  {
+      throw new RuntimeException(destinationNamespaceException);
+    }
     return destinationNamespace;
   }
 
@@ -120,6 +159,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @since 3.11
    */
   public JsonObject getDestinationNamespaceDocument() {
+    if (destinationNamespaceDocumentException != null)  {
+      throw new RuntimeException(destinationNamespaceDocumentException);
+    }
     return destinationNamespaceDocument;
   }
 
@@ -131,6 +173,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @since 3.8
    */
   public String getDatabaseName() {
+    if (databaseNameException != null)  {
+      throw new RuntimeException(databaseNameException);
+    }
     return databaseName;
   }
 
@@ -140,6 +185,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @return the fullDocument
    */
   public TDocument getFullDocument() {
+    if (fullDocumentException != null)  {
+      throw new RuntimeException(fullDocumentException);
+    }
     return fullDocument;
   }
 
@@ -155,6 +203,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @return the document key, or null if the event is not associated with a single document (e.g. a collection rename event)
    */
   public JsonObject getDocumentKey() {
+    if (documentKeyException != null)  {
+      throw new RuntimeException(documentKeyException);
+    }
     return documentKey;
   }
 
@@ -166,6 +217,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @mongodb.server.release 4.0
    */
   public Long getClusterTime() {
+    if (clusterTimeException != null)  {
+      throw new RuntimeException(clusterTimeException);
+    }
     return clusterTime;
   }
 
@@ -175,6 +229,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @return the operationType
    */
   public OperationType getOperationType() {
+    if (operationTypeException != null)  {
+      throw new RuntimeException(operationTypeException);
+    }
     return operationType;
   }
 
@@ -184,6 +241,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @return the updateDescription, or null if the event is not associated with a single document (e.g. a collection rename event)
    */
   public UpdateDescription getUpdateDescription() {
+    if (updateDescriptionException != null)  {
+      throw new RuntimeException(updateDescriptionException);
+    }
     return updateDescription;
   }
 
@@ -195,6 +255,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @mongodb.server.release 4.0
    */
   public Long getTxnNumber() {
+    if (txnNumberException != null)  {
+      throw new RuntimeException(txnNumberException);
+    }
     return txnNumber;
   }
 
@@ -206,6 +269,9 @@ public class ChangeStreamDocument<TDocument> {
    *  @mongodb.server.release 4.0
    */
   public JsonObject getLsid() {
+    if (lsidException != null)  {
+      throw new RuntimeException(lsidException);
+    }
     return lsid;
   }
 
@@ -217,19 +283,71 @@ public class ChangeStreamDocument<TDocument> {
       com.mongodb.client.model.changestream.ChangeStreamDocument<TDocument> from) {
     requireNonNull(from, "from is null");
     ChangeStreamDocument<TDocument> result = new ChangeStreamDocument<TDocument>();
-    result.resumeToken = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getResumeToken());
-    result.namespace = MongoNamespace.fromDriverClass(from.getNamespace());
-    result.namespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getNamespaceDocument());
-    result.destinationNamespace = MongoNamespace.fromDriverClass(from.getDestinationNamespace());
-    result.destinationNamespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDestinationNamespaceDocument());
-    result.databaseName = from.getDatabaseName();
-    result.fullDocument = from.getFullDocument();
-    result.documentKey = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDocumentKey());
-    result.clusterTime = ConversionUtilsImpl.INSTANCE.toLong(from.getClusterTime());
-    result.operationType = from.getOperationType();
-    result.updateDescription = UpdateDescription.fromDriverClass(from.getUpdateDescription());
-    result.txnNumber = ConversionUtilsImpl.INSTANCE.toLong(from.getTxnNumber());
-    result.lsid = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getLsid());
+    try {
+      result.resumeToken = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getResumeToken());
+    } catch (Exception ex) {
+      result.resumeTokenException = ex;
+    }
+    try {
+      result.namespace = from.getNamespace();
+    } catch (Exception ex) {
+      result.namespaceException = ex;
+    }
+    try {
+      result.namespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getNamespaceDocument());
+    } catch (Exception ex) {
+      result.namespaceDocumentException = ex;
+    }
+    try {
+      result.destinationNamespace = from.getDestinationNamespace();
+    } catch (Exception ex) {
+      result.destinationNamespaceException = ex;
+    }
+    try {
+      result.destinationNamespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDestinationNamespaceDocument());
+    } catch (Exception ex) {
+      result.destinationNamespaceDocumentException = ex;
+    }
+    try {
+      result.databaseName = from.getDatabaseName();
+    } catch (Exception ex) {
+      result.databaseNameException = ex;
+    }
+    try {
+      result.fullDocument = from.getFullDocument();
+    } catch (Exception ex) {
+      result.fullDocumentException = ex;
+    }
+    try {
+      result.documentKey = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDocumentKey());
+    } catch (Exception ex) {
+      result.documentKeyException = ex;
+    }
+    try {
+      result.clusterTime = ConversionUtilsImpl.INSTANCE.toLong(from.getClusterTime());
+    } catch (Exception ex) {
+      result.clusterTimeException = ex;
+    }
+    try {
+      result.operationType = from.getOperationType();
+    } catch (Exception ex) {
+      result.operationTypeException = ex;
+    }
+    try {
+      result.updateDescription = UpdateDescription.fromDriverClass(from.getUpdateDescription());
+    } catch (Exception ex) {
+      result.updateDescriptionException = ex;
+    }
+    try {
+      result.txnNumber = ConversionUtilsImpl.INSTANCE.toLong(from.getTxnNumber());
+    } catch (Exception ex) {
+      result.txnNumberException = ex;
+    }
+    try {
+      result.lsid = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getLsid());
+    } catch (Exception ex) {
+      result.lsidException = ex;
+    }
     return result;
   }
 }

@@ -18,6 +18,10 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.MongoNamespace;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.FindPublisher;
@@ -31,11 +35,7 @@ import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoCollectionResult;
-import io.vertx.mongo.MongoNamespace;
 import io.vertx.mongo.MongoResult;
-import io.vertx.mongo.ReadConcern;
-import io.vertx.mongo.ReadPreference;
-import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.bulk.BulkWriteResult;
 import io.vertx.mongo.client.AggregateOptions;
 import io.vertx.mongo.client.ChangeStreamOptions;
@@ -94,8 +94,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public MongoNamespace getNamespace() {
-    com.mongodb.MongoNamespace __result = wrapped.getNamespace();
-    return MongoNamespace.fromDriverClass(__result);
+    return wrapped.getNamespace();
   }
 
   @Override
@@ -110,20 +109,17 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
 
   @Override
   public ReadPreference getReadPreference() {
-    com.mongodb.ReadPreference __result = wrapped.getReadPreference();
-    return ReadPreference.fromDriverClass(__result);
+    return wrapped.getReadPreference();
   }
 
   @Override
   public WriteConcern getWriteConcern() {
-    com.mongodb.WriteConcern __result = wrapped.getWriteConcern();
-    return WriteConcern.fromDriverClass(__result);
+    return wrapped.getWriteConcern();
   }
 
   @Override
   public ReadConcern getReadConcern() {
-    com.mongodb.ReadConcern __result = wrapped.getReadConcern();
-    return ReadConcern.fromDriverClass(__result);
+    return wrapped.getReadConcern();
   }
 
   @Override
@@ -146,8 +142,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public io.vertx.mongo.client.MongoCollection<TDocument> withReadPreference(
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference is null");
-    com.mongodb.ReadPreference __readPreference = readPreference.toDriverClass();
-    MongoCollection<TDocument> __result = wrapped.withReadPreference(__readPreference);
+    MongoCollection<TDocument> __result = wrapped.withReadPreference(readPreference);
     return new MongoCollectionImpl<>(clientContext, __result);
   }
 
@@ -155,16 +150,14 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public io.vertx.mongo.client.MongoCollection<TDocument> withWriteConcern(
       WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern is null");
-    com.mongodb.WriteConcern __writeConcern = writeConcern.toDriverClass();
-    MongoCollection<TDocument> __result = wrapped.withWriteConcern(__writeConcern);
+    MongoCollection<TDocument> __result = wrapped.withWriteConcern(writeConcern);
     return new MongoCollectionImpl<>(clientContext, __result);
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern is null");
-    com.mongodb.ReadConcern __readConcern = readConcern.toDriverClass();
-    MongoCollection<TDocument> __result = wrapped.withReadConcern(__readConcern);
+    MongoCollection<TDocument> __result = wrapped.withReadConcern(readConcern);
     return new MongoCollectionImpl<>(clientContext, __result);
   }
 
@@ -2309,8 +2302,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<Void> renameCollection(MongoNamespace newCollectionNamespace) {
     requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
-    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
-    Publisher<Void> __publisher = wrapped.renameCollection(__newCollectionNamespace);
+    Publisher<Void> __publisher = wrapped.renameCollection(newCollectionNamespace);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
@@ -2329,9 +2321,8 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       RenameCollectionOptions options) {
     requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
     requireNonNull(options, "options is null");
-    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
-    Publisher<Void> __publisher = wrapped.renameCollection(__newCollectionNamespace, __options);
+    Publisher<Void> __publisher = wrapped.renameCollection(newCollectionNamespace, __options);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
@@ -2352,8 +2343,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
-    Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, __newCollectionNamespace);
+    Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, newCollectionNamespace);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();
@@ -2375,9 +2365,8 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(newCollectionNamespace, "newCollectionNamespace is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    com.mongodb.MongoNamespace __newCollectionNamespace = newCollectionNamespace.toDriverClass();
     com.mongodb.client.model.RenameCollectionOptions __options = options.toDriverClass();
-    Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, __newCollectionNamespace, __options);
+    Publisher<Void> __publisher = wrapped.renameCollection(__clientSession, newCollectionNamespace, __options);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
     return __promise.future();

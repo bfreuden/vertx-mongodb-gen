@@ -15,14 +15,14 @@
 //
 package io.vertx.mongo.client.gridfs;
 
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoResult;
-import io.vertx.mongo.ReadConcern;
-import io.vertx.mongo.ReadPreference;
-import io.vertx.mongo.WriteConcern;
 import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;

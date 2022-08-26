@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.Exception;
 import java.lang.Integer;
 import java.lang.Object;
 import java.util.Map;
@@ -32,6 +33,10 @@ public class InsertManyResult {
 
   private Map<Integer, Object> insertedIds;
 
+  private Exception acknowledgedException;
+
+  private Exception insertedIdsException;
+
   private InsertManyResult() {
   }
 
@@ -41,6 +46,9 @@ public class InsertManyResult {
    *  @return true if the write was acknowledged
    */
   public boolean isAcknowledged() {
+    if (acknowledgedException != null)  {
+      throw new RuntimeException(acknowledgedException);
+    }
     return acknowledged;
   }
 
@@ -52,6 +60,9 @@ public class InsertManyResult {
    *  @return  A map of the index of the inserted document to the id of the inserted document.
    */
   public Map<Integer, Object> getInsertedIds() {
+    if (insertedIdsException != null)  {
+      throw new RuntimeException(insertedIdsException);
+    }
     return insertedIds;
   }
 
@@ -62,8 +73,16 @@ public class InsertManyResult {
   public static InsertManyResult fromDriverClass(com.mongodb.client.result.InsertManyResult from) {
     requireNonNull(from, "from is null");
     InsertManyResult result = new InsertManyResult();
-    result.acknowledged = from.wasAcknowledged();
-    result.insertedIds = CollectionsConversionUtils.mapValues(from.getInsertedIds(), ConversionUtilsImpl.INSTANCE::toObject);
+    try {
+      result.acknowledged = from.wasAcknowledged();
+    } catch (Exception ex) {
+      result.acknowledgedException = ex;
+    }
+    try {
+      result.insertedIds = CollectionsConversionUtils.mapValues(from.getInsertedIds(), ConversionUtilsImpl.INSTANCE::toObject);
+    } catch (Exception ex) {
+      result.insertedIdsException = ex;
+    }
     return result;
   }
 }

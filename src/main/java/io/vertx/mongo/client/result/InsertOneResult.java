@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.Exception;
 import java.lang.Object;
 
 @DataObject(
@@ -29,6 +30,10 @@ public class InsertOneResult {
 
   private Object insertedId;
 
+  private Exception acknowledgedException;
+
+  private Exception insertedIdException;
+
   private InsertOneResult() {
   }
 
@@ -38,6 +43,9 @@ public class InsertOneResult {
    *  @return true if the write was acknowledged
    */
   public boolean isAcknowledged() {
+    if (acknowledgedException != null)  {
+      throw new RuntimeException(acknowledgedException);
+    }
     return acknowledged;
   }
 
@@ -49,6 +57,9 @@ public class InsertOneResult {
    *  @return if _id of the inserted document if available, otherwise null
    */
   public Object getInsertedId() {
+    if (insertedIdException != null)  {
+      throw new RuntimeException(insertedIdException);
+    }
     return insertedId;
   }
 
@@ -59,8 +70,16 @@ public class InsertOneResult {
   public static InsertOneResult fromDriverClass(com.mongodb.client.result.InsertOneResult from) {
     requireNonNull(from, "from is null");
     InsertOneResult result = new InsertOneResult();
-    result.acknowledged = from.wasAcknowledged();
-    result.insertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getInsertedId());
+    try {
+      result.acknowledged = from.wasAcknowledged();
+    } catch (Exception ex) {
+      result.acknowledgedException = ex;
+    }
+    try {
+      result.insertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getInsertedId());
+    } catch (Exception ex) {
+      result.insertedIdException = ex;
+    }
     return result;
   }
 }

@@ -18,6 +18,7 @@ package io.vertx.mongo.client.result;
 import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
+import java.lang.Exception;
 
 @DataObject(
     generateConverter = true
@@ -26,6 +27,10 @@ public class DeleteResult {
   private boolean acknowledged;
 
   private long deletedCount;
+
+  private Exception acknowledgedException;
+
+  private Exception deletedCountException;
 
   private DeleteResult() {
   }
@@ -36,6 +41,9 @@ public class DeleteResult {
    *  @return true if the write was acknowledged
    */
   public boolean isAcknowledged() {
+    if (acknowledgedException != null)  {
+      throw new RuntimeException(acknowledgedException);
+    }
     return acknowledged;
   }
 
@@ -45,6 +53,9 @@ public class DeleteResult {
    *  @return the number of documents deleted
    */
   public long getDeletedCount() {
+    if (deletedCountException != null)  {
+      throw new RuntimeException(deletedCountException);
+    }
     return deletedCount;
   }
 
@@ -55,8 +66,16 @@ public class DeleteResult {
   public static DeleteResult fromDriverClass(com.mongodb.client.result.DeleteResult from) {
     requireNonNull(from, "from is null");
     DeleteResult result = new DeleteResult();
-    result.acknowledged = from.wasAcknowledged();
-    result.deletedCount = from.getDeletedCount();
+    try {
+      result.acknowledged = from.wasAcknowledged();
+    } catch (Exception ex) {
+      result.acknowledgedException = ex;
+    }
+    try {
+      result.deletedCount = from.getDeletedCount();
+    } catch (Exception ex) {
+      result.deletedCountException = ex;
+    }
     return result;
   }
 }

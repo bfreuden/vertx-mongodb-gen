@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import java.lang.Exception;
 import java.lang.Object;
 
 @DataObject(
@@ -33,6 +34,14 @@ public class UpdateResult {
 
   private Object upsertedId;
 
+  private Exception acknowledgedException;
+
+  private Exception matchedCountException;
+
+  private Exception modifiedCountException;
+
+  private Exception upsertedIdException;
+
   private UpdateResult() {
   }
 
@@ -42,6 +51,9 @@ public class UpdateResult {
    *  @return true if the write was acknowledged
    */
   public boolean isAcknowledged() {
+    if (acknowledgedException != null)  {
+      throw new RuntimeException(acknowledgedException);
+    }
     return acknowledged;
   }
 
@@ -51,6 +63,9 @@ public class UpdateResult {
    *  @return the number of documents matched
    */
   public long getMatchedCount() {
+    if (matchedCountException != null)  {
+      throw new RuntimeException(matchedCountException);
+    }
     return matchedCount;
   }
 
@@ -60,6 +75,9 @@ public class UpdateResult {
    *  @return the number of documents modified
    */
   public long getModifiedCount() {
+    if (modifiedCountException != null)  {
+      throw new RuntimeException(modifiedCountException);
+    }
     return modifiedCount;
   }
 
@@ -69,6 +87,9 @@ public class UpdateResult {
    *  @return if the replace resulted in an inserted document, the _id of the inserted document, otherwise null
    */
   public Object getUpsertedId() {
+    if (upsertedIdException != null)  {
+      throw new RuntimeException(upsertedIdException);
+    }
     return upsertedId;
   }
 
@@ -79,10 +100,26 @@ public class UpdateResult {
   public static UpdateResult fromDriverClass(com.mongodb.client.result.UpdateResult from) {
     requireNonNull(from, "from is null");
     UpdateResult result = new UpdateResult();
-    result.acknowledged = from.wasAcknowledged();
-    result.matchedCount = from.getMatchedCount();
-    result.modifiedCount = from.getModifiedCount();
-    result.upsertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getUpsertedId());
+    try {
+      result.acknowledged = from.wasAcknowledged();
+    } catch (Exception ex) {
+      result.acknowledgedException = ex;
+    }
+    try {
+      result.matchedCount = from.getMatchedCount();
+    } catch (Exception ex) {
+      result.matchedCountException = ex;
+    }
+    try {
+      result.modifiedCount = from.getModifiedCount();
+    } catch (Exception ex) {
+      result.modifiedCountException = ex;
+    }
+    try {
+      result.upsertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getUpsertedId());
+    } catch (Exception ex) {
+      result.upsertedIdException = ex;
+    }
     return result;
   }
 }
