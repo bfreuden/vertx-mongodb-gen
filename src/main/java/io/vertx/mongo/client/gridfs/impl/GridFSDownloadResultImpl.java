@@ -46,7 +46,7 @@ public class GridFSDownloadResultImpl extends MongoResultImpl<Buffer> implements
         OpenOptions options = new OpenOptions().setWrite(true);
         return clientContext.getVertx().fileSystem()
                 .open(filename, options)
-                .flatMap(file -> stream().pipeTo(file));
+                .flatMap(file -> stream(1).pipeTo(file));
     }
 
 
