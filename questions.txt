@@ -3,3 +3,13 @@ FindOption setSort -> sort
 Promise.promise() vs vertx.promise() ?
 add mongodriverinformation when creating mongoclient
 handler async result functions fluent or void ?
+missing data of gridfs upload publisher : getId() & getObjectId()
+create an ObjectID class?
+add convenience methods:
+ - dropdatabase(name)
+ - dropcollection(name)
+ - createAndGetCollection
+ - save (= replace + no need to provide the id)
+ - get gridfs bucket from database
+don't ignore <TResult> Class<TResult> methods?
+maybe create a VersatileMongoCollection interface with them?
