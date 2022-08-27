@@ -11,6 +11,7 @@ force batch size to 1 in mongoresult when not provided?
 really support objectid=false?
 
 TODO:
+create index with collation
 rename package from io.vertx.mongo to io.vertx.ext.mongo
 support a kind of automatic mapping of dates (prevent having to deal with $date objects)
 json-based clientsetting
@@ -24,3 +25,6 @@ add convenience methods:
  - createAndGetCollection
  - save (= replace + no need to provide the id)
  - get gridfs bucket from database
+review unit tests and make a diff
+write migration guide
+- update don't return the new doc by default
