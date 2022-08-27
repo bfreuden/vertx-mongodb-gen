@@ -23,6 +23,8 @@ add convenience methods:
  - dropdatabase(name)
  - dropcollection(name)
  - createAndGetCollection
+ - MongoCollection.acknowledged()
+ - MongoCollection.unacknowledged()
  - save (= replace + no need to provide the id)
  - get gridfs bucket from database
 review unit tests and make a diff
