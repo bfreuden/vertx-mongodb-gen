@@ -9,6 +9,7 @@ don't ignore <TResult> Class<TResult> methods?
 force batch size to 1 in mongoresult when not provided?
   because the mongo driver will probably choose a good batch size anyway and actually batch them in the publisher?
 really support objectid=false?
+gridfs updloadFile methods don't allow to set a "target" filename?
 
 TODO:
 create index with collation
