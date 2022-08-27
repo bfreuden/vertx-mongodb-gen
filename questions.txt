@@ -1,3 +1,5 @@
 InsertOneResult has an insertedId with an Object type?
 FindOption setSort -> sort
 Promise.promise() vs vertx.promise() ?
+add mongodriverinformation when creating mongoclient
+handler async result functions fluent or void ?
