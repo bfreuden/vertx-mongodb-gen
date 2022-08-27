@@ -33,3 +33,5 @@ review unit tests and make a diff
 write migration guide
 - update don't return the new doc by default
 install a replicaset to test watch methods
+client encryption should return Buffer instead of Byte
+builder method + config for client encryption
