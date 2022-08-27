@@ -13,3 +13,5 @@ add convenience methods:
  - get gridfs bucket from database
 don't ignore <TResult> Class<TResult> methods?
 maybe create a VersatileMongoCollection interface with them?
+force batch size to 1 in mongoresult when not provided?
+  because the mongo driver will probably choose a good batch size anyway and actually batch them in the publisher?
