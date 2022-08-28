@@ -36,3 +36,6 @@ write migration guide
 install a replicaset to test watch methods
 client encryption should return Buffer instead of Byte
 builder method + config for client encryption
+
+migration:
+batch size always hardcoded to 1 when unspecified
