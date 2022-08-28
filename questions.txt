@@ -13,7 +13,7 @@ gridfs updloadFile methods don't allow to set a "target" filename?
 squash some package names like model?
 
 TODO:
-create index with collation
+transaction options + builder
 possibility to post configure databases, collections, updateoptions, etc...
 rename package from io.vertx.mongo to io.vertx.ext.mongo
 support a kind of automatic mapping of dates (prevent having to deal with $date objects)
