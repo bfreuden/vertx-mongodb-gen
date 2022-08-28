@@ -48,12 +48,12 @@ public class Collation {
   /**
    * the collation case first value
    */
-  private CollationCaseFirst CaseFirst;
+  private CollationCaseFirst caseFirst;
 
   /**
    * the strength
    */
-  private CollationStrength Strength;
+  private CollationStrength strength;
 
   /**
    * if true will order numbers based on numerical order and not collation order
@@ -63,12 +63,12 @@ public class Collation {
   /**
    * the alternate
    */
-  private CollationAlternate Alternate;
+  private CollationAlternate alternate;
 
   /**
    * the maxVariable
    */
-  private CollationMaxVariable MaxVariable;
+  private CollationMaxVariable maxVariable;
 
   /**
    * the normalization value
@@ -130,8 +130,8 @@ public class Collation {
    *  @param caseFirst the collation case first value
    *  @return this
    */
-  public Collation CaseFirst(CollationCaseFirst caseFirst) {
-    this.CaseFirst = CaseFirst;
+  public Collation caseFirst(CollationCaseFirst caseFirst) {
+    this.caseFirst = caseFirst;
     return this;
   }
 
@@ -141,7 +141,7 @@ public class Collation {
    *  @return the collation case first value
    */
   public CollationCaseFirst getCaseFirst() {
-    return CaseFirst;
+    return caseFirst;
   }
 
   /**
@@ -150,8 +150,8 @@ public class Collation {
    *  @param strength the strength
    *  @return this
    */
-  public Collation Strength(CollationStrength strength) {
-    this.Strength = Strength;
+  public Collation strength(CollationStrength strength) {
+    this.strength = strength;
     return this;
   }
 
@@ -161,7 +161,7 @@ public class Collation {
    *  @return the collation strength
    */
   public CollationStrength getStrength() {
-    return Strength;
+    return strength;
   }
 
   /**
@@ -192,8 +192,8 @@ public class Collation {
    *  @param alternate the alternate
    *  @return this
    */
-  public Collation Alternate(CollationAlternate alternate) {
-    this.Alternate = Alternate;
+  public Collation alternate(CollationAlternate alternate) {
+    this.alternate = alternate;
     return this;
   }
 
@@ -203,7 +203,7 @@ public class Collation {
    *  @return the alternate
    */
   public CollationAlternate getAlternate() {
-    return Alternate;
+    return alternate;
   }
 
   /**
@@ -212,8 +212,8 @@ public class Collation {
    *  @param maxVariable the maxVariable
    *  @return this
    */
-  public Collation MaxVariable(CollationMaxVariable maxVariable) {
-    this.MaxVariable = MaxVariable;
+  public Collation maxVariable(CollationMaxVariable maxVariable) {
+    this.maxVariable = maxVariable;
     return this;
   }
 
@@ -224,7 +224,7 @@ public class Collation {
    *  @return the maxVariable
    */
   public CollationMaxVariable getMaxVariable() {
-    return MaxVariable;
+    return maxVariable;
   }
 
   /**
@@ -283,20 +283,20 @@ public class Collation {
     if (this.caseLevel != null) {
       builder.caseLevel(this.caseLevel);
     }
-    if (this.CaseFirst != null) {
-      builder.collationCaseFirst(this.CaseFirst);
+    if (this.caseFirst != null) {
+      builder.collationCaseFirst(this.caseFirst);
     }
-    if (this.Strength != null) {
-      builder.collationStrength(this.Strength);
+    if (this.strength != null) {
+      builder.collationStrength(this.strength);
     }
     if (this.numericOrdering != null) {
       builder.numericOrdering(this.numericOrdering);
     }
-    if (this.Alternate != null) {
-      builder.collationAlternate(this.Alternate);
+    if (this.alternate != null) {
+      builder.collationAlternate(this.alternate);
     }
-    if (this.MaxVariable != null) {
-      builder.collationMaxVariable(this.MaxVariable);
+    if (this.maxVariable != null) {
+      builder.collationMaxVariable(this.maxVariable);
     }
     if (this.normalization != null) {
       builder.normalization(this.normalization);

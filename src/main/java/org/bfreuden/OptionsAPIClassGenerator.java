@@ -99,8 +99,11 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
             String optionName = setter.name();
             boolean hasTimeUnit = setter.parameters().length == 2;
             // HACK
-            if (classDoc.name().equals("Collation") && optionName.startsWith("collation"))
+            if (classDoc.name().equals("Collation") && optionName.startsWith("collation")) {
                 optionName = optionName.substring("collation".length());
+                optionName = Character.toLowerCase(optionName.charAt(0)) + optionName.substring(1);
+
+            }
             if (optionName.startsWith("set") && Character.isUpperCase(optionName.charAt(3)))
                 optionName = Character.toLowerCase(optionName.charAt(3)) + optionName.substring(3);
             String mongoJavadoc = setter.getRawCommentText();

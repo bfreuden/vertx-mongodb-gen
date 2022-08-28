@@ -1,6 +1,7 @@
 package io.vertx.ext.mongo;
 
 import com.mongodb.WriteConcern;
+import com.mongodb.client.model.CollationStrength;
 import com.mongodb.client.model.ReturnDocument;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
@@ -766,28 +767,28 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-  //TODO implement Collation
-//  @Test
-//  public void testFindOneWithOptionsAndCollation() throws Exception {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject doc1 = createDoc();
-//      JsonObject doc2 = createDoc().put("foo", "bär");
-//      coll.insertOne(doc1, onSuccess(id1 -> {
-//        assertNotNull(id1);
-//        coll.insertOne(doc2, onSuccess(id2 -> {
-//          assertNotNull(id2);
-//          mongoDatabase.countWithOptions(collection, new JsonObject().put("foo", "bar"), new CountOptions().setCollation(new CollationOptions().setLocale("de_AT").setStrength(CollationStrength.TERTIARY)), onSuccess(count -> {
-//            assertNotNull(count);
-//            assertEquals(1, count.intValue());
-//            testComplete();
-//          }));
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
+  @Test
+  public void testFindOneWithOptionsAndCollation() throws Exception {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject doc1 = createDoc();
+      JsonObject doc2 = createDoc().put("foo", "bär");
+      coll.insertOne(doc1, onSuccess(id1 -> {
+        assertNotNull(id1);
+        coll.insertOne(doc2, onSuccess(id2 -> {
+          assertNotNull(id2);
+          coll.countDocuments(new JsonObject().put("foo", "bar"), new CountOptions().collation(new Collation().locale("de_AT").strength(CollationStrength.TERTIARY)), onSuccess(count -> {
+            assertNotNull(count);
+            assertEquals(1, count.intValue());
+            testComplete();
+          }));
+        }));
+      }));
+    }));
+    await();
+  }
+
   @Test
   public void testFindOneAndDeleteWithOptions() throws Exception {
     String collection = randomCollection();
@@ -1644,7 +1645,6 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 
-  //TODO implement ACKNOWLEDGED
   @Test
   public void testRemoveWithOptionsWithMongoClientDeleteResultAcknowledge() throws Exception {
     String collection = randomCollection();
