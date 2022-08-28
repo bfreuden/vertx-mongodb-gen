@@ -149,6 +149,8 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
 
     @Override
     protected List<JavaFile.Builder> getJavaFiles() {
+        if (optionsByName.isEmpty())
+            return Collections.emptyList();
         TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
                 .addModifiers(Modifier.PUBLIC);
         String rawCommentText = classDoc.getRawCommentText();
