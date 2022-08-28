@@ -4,6 +4,7 @@ import com.mongodb.MongoNamespace;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
+import com.mongodb.client.model.Collation;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import io.vertx.core.buffer.Buffer;

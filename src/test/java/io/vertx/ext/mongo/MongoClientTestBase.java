@@ -135,37 +135,38 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-//  @Test
-//  public void testCreateIndexWithCollation() {
-//    testCreateIndexWithCollation(new CollationOptions().setLocale(Locale.ENGLISH.toString()), 1);
-//  }
-//
-//  @Test
-//  public void testCreateIndexWithSimpleLocaleCollation() {
-//    testCreateIndexWithCollation(new CollationOptions().setLocale("simple"), 0);
-//  }
-//
-//  private void testCreateIndexWithCollation(CollationOptions collation, int expectedCollation) {
-//    String collection = randomCollection();
-//    mongoDatabase.createCollection(collection, onSuccess(res -> {
-//      JsonObject key = new JsonObject().put("field", 1);
-//      IndexOptions options = new IndexOptions()
-//        .setCollation(collation);
-//      mongoDatabase.createIndexWithOptions(collection, key, options, onSuccess(res2 -> {
-//        mongoDatabase.listIndexes(collection, onSuccess(res3 -> {
-//          long keyCount = res3.stream()
-//            .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field"))
-//            .count();
-//          assertEquals(1, keyCount);
-//          long collationCount = res3.stream().filter(o -> ((JsonObject) o).containsKey("collation")).count();
-//          assertEquals(expectedCollation, collationCount);
-//          testComplete();
-//        }));
-//      }));
-//    }));
-//    await();
-//  }
-//
+  @Test
+  public void testCreateIndexWithCollation() {
+    testCreateIndexWithCollation(new Collation().locale(Locale.ENGLISH.toString()), 1);
+  }
+
+  @Test
+  public void testCreateIndexWithSimpleLocaleCollation() {
+    testCreateIndexWithCollation(new Collation().locale("simple"), 0);
+  }
+
+  private void testCreateIndexWithCollation(Collation collation, int expectedCollation) {
+    String collection = randomCollection();
+    mongoDatabase.createCollection(collection, onSuccess(res -> {
+      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+      JsonObject key = new JsonObject().put("field", 1);
+      IndexOptions options = new IndexOptions()
+        .collation(collation);
+      coll.createIndex(key, options, onSuccess(res2 -> {
+        coll.listIndexes().all(onSuccess(res3 -> {
+          long keyCount = res3.stream()
+            .filter(o -> ((JsonObject) o).getJsonObject("key").containsKey("field"))
+            .count();
+          assertEquals(1, keyCount);
+          long collationCount = res3.stream().filter(o -> ((JsonObject) o).containsKey("collation")).count();
+          assertEquals(expectedCollation, collationCount);
+          testComplete();
+        }));
+      }));
+    }));
+    await();
+  }
+
   @Test
   public void testCreateAndDropIndex() {
     String collection = randomCollection();

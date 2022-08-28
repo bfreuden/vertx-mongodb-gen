@@ -29,6 +29,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 .filter(m -> !m.name().equals("hashCode"))
                 .filter(m -> !m.name().equals("equals"))
                 .filter(m -> !m.name().equals("toBsonDocument"))
+                .filter(m -> !m.name().equals("asDocument"))
                 .collect(Collectors.toList()));
         String builderFullyQualifiedName = classDoc.qualifiedTypeName() + ".Builder";
         if (context.builderClasses.contains(builderFullyQualifiedName)) {
@@ -97,6 +98,9 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
             Type optionType = parameter.type();
             String optionName = setter.name();
             boolean hasTimeUnit = setter.parameters().length == 2;
+            // HACK
+            if (classDoc.name().equals("Collation") && optionName.startsWith("collation"))
+                optionName = optionName.substring("collation".length());
             if (optionName.startsWith("set") && Character.isUpperCase(optionName.charAt(3)))
                 optionName = Character.toLowerCase(optionName.charAt(3)) + optionName.substring(3);
             String mongoJavadoc = setter.getRawCommentText();

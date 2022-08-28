@@ -5,7 +5,6 @@ com.mongodb.ReadPreference
 com.mongodb.TransactionOptions
 com.mongodb.TransactionOptions.Builder
 com.mongodb.WriteConcern
-com.mongodb.client.model.Collation
 com.mongodb.connection.ClusterDescription
 com.mongodb.selector.CompositeServerSelector
 com.mongodb.session.ClientSession

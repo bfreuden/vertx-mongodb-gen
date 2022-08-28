@@ -168,6 +168,12 @@ public class SourceGenDoclet {
         // FIXME hardcoded?
         inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
         inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
+
+        inspectionContext.optionsApiClasses.add("com.mongodb.client.model.Collation");
+        inspectionContext.builderClasses.add("com.mongodb.client.model.Collation.Builder");
+        inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation.Builder");
+        inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation");
+
         inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");

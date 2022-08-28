@@ -2,6 +2,7 @@ com.mongodb.ClientSessionOptions
 com.mongodb.client.gridfs.model.GridFSDownloadOptions
 com.mongodb.client.gridfs.model.GridFSUploadOptions
 com.mongodb.client.model.BulkWriteOptions
+com.mongodb.client.model.Collation
 com.mongodb.client.model.CountOptions
 com.mongodb.client.model.CreateCollectionOptions
 com.mongodb.client.model.CreateIndexOptions
