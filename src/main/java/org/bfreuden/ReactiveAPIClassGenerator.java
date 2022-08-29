@@ -7,11 +7,13 @@ import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBuckets;
 import com.squareup.javapoet.*;
-import com.sun.javadoc.*;
+import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.Type;
+import com.sun.javadoc.TypeVariable;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.gridfs.impl.GridFSReadStreamPublisher;
-import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.impl.MappingPublisher;
 import org.bfreuden.mappers.MapperGenerator;
 import org.bson.Document;
@@ -156,6 +158,21 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                                     "@param dataSourceName the data source name\n" +
                                     "@return the client\n")
                             .addStatement("return new $T(vertx, config, dataSourceName)", ClassName.bestGuess(mapToImpl(getTargetQualifiedClassName())))
+                            .build());
+
+            typeBuilder.addMethod(
+                    MethodSpec.methodBuilder("createShared")
+                            .returns(ClassName.bestGuess(getTargetQualifiedClassName()))
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                            .addParameter(ParameterSpec.builder(Vertx.class, "vertx").build())
+                            .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.client.ClientConfig"), "config").build())
+                            .addJavadoc("Create a Mongo client which shares its data source with any other Mongo clients created with the same\n" +
+                                    "default data source\n" +
+                                    "\n" +
+                                    "@param vertx          the Vert.x instance\n" +
+                                    "@param config         the configuration\n" +
+                                    "@return the client\n")
+                            .addStatement("return new $T(vertx, config, $S)", ClassName.bestGuess(mapToImpl(getTargetQualifiedClassName())), "__MONGO-DEFAULT-DS")
                             .build());
 
             typeBuilder.addMethod(

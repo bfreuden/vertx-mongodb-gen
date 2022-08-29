@@ -76,6 +76,18 @@ public interface MongoClient extends Closeable {
   }
 
   /**
+   * Create a Mongo client which shares its data source with any other Mongo clients created with the same
+   * default data source
+   *
+   * @param vertx          the Vert.x instance
+   * @param config         the configuration
+   * @return the client
+   */
+  static MongoClient createShared(Vertx vertx, ClientConfig config) {
+    return new MongoClientImpl(vertx, config, "__MONGO-DEFAULT-DS");
+  }
+
+  /**
    * Close the client and release its resources
    */
   Future<Void> close();
