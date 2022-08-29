@@ -24,9 +24,9 @@ import java.lang.String;
  *
  *  @since 3.11
  */
-@DataObject(
-    generateConverter = true
-)
+//@DataObject(
+//    generateConverter = true
+//)
 public class EncryptOptions {
   private String algorithm;
 
@@ -57,7 +57,7 @@ public class EncryptOptions {
    *  @return this
    *  @see #getKeyId()
    */
-  public EncryptOptions keyId(byte[] keyId) {
+  public EncryptOptions setKeyId(byte[] keyId) {
     this.keyId = keyId;
     return this;
   }
@@ -82,7 +82,7 @@ public class EncryptOptions {
    *  @return this
    *  @see #getKeyAltName()
    */
-  public EncryptOptions keyAltName(String keyAltName) {
+  public EncryptOptions setKeyAltName(String keyAltName) {
     this.keyAltName = keyAltName;
     return this;
   }

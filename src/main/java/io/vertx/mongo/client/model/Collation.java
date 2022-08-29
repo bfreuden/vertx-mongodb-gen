@@ -97,7 +97,7 @@ public class Collation {
    *  @see <a href="http://userguide.icu-project.org/locale">ICU User Guide - Locale</a>
    *  @return this
    */
-  public Collation locale(String locale) {
+  public Collation setLocale(String locale) {
     this.locale = locale;
     return this;
   }
@@ -119,7 +119,7 @@ public class Collation {
    *  @param caseLevel the case level value
    *  @return this
    */
-  public Collation caseLevel(Boolean caseLevel) {
+  public Collation setCaseLevel(Boolean caseLevel) {
     this.caseLevel = caseLevel;
     return this;
   }
@@ -140,7 +140,7 @@ public class Collation {
    *  @param caseFirst the collation case first value
    *  @return this
    */
-  public Collation caseFirst(CollationCaseFirst caseFirst) {
+  public Collation setCaseFirst(CollationCaseFirst caseFirst) {
     this.caseFirst = caseFirst;
     return this;
   }
@@ -160,7 +160,7 @@ public class Collation {
    *  @param strength the strength
    *  @return this
    */
-  public Collation strength(CollationStrength strength) {
+  public Collation setStrength(CollationStrength strength) {
     this.strength = strength;
     return this;
   }
@@ -180,7 +180,7 @@ public class Collation {
    *  @param numericOrdering if true will order numbers based on numerical order and not collation order
    *  @return this
    */
-  public Collation numericOrdering(Boolean numericOrdering) {
+  public Collation setNumericOrdering(Boolean numericOrdering) {
     this.numericOrdering = numericOrdering;
     return this;
   }
@@ -202,7 +202,7 @@ public class Collation {
    *  @param alternate the alternate
    *  @return this
    */
-  public Collation alternate(CollationAlternate alternate) {
+  public Collation setAlternate(CollationAlternate alternate) {
     this.alternate = alternate;
     return this;
   }
@@ -222,7 +222,7 @@ public class Collation {
    *  @param maxVariable the maxVariable
    *  @return this
    */
-  public Collation maxVariable(CollationMaxVariable maxVariable) {
+  public Collation setMaxVariable(CollationMaxVariable maxVariable) {
     this.maxVariable = maxVariable;
     return this;
   }
@@ -244,7 +244,7 @@ public class Collation {
    *  @param normalization the normalization value
    *  @return this
    */
-  public Collation normalization(Boolean normalization) {
+  public Collation setNormalization(Boolean normalization) {
     this.normalization = normalization;
     return this;
   }
@@ -267,7 +267,7 @@ public class Collation {
    *  @param backwards the backwards value
    *  @return this
    */
-  public Collation backwards(Boolean backwards) {
+  public Collation setBackwards(Boolean backwards) {
     this.backwards = backwards;
     return this;
   }

@@ -64,7 +64,7 @@ public class ReplaceOptions {
    *  @param upsert true if a new document should be inserted if there are no matches to the query filter
    *  @return this
    */
-  public ReplaceOptions upsert(Boolean upsert) {
+  public ReplaceOptions setUpsert(Boolean upsert) {
     this.upsert = upsert;
     return this;
   }
@@ -85,7 +85,7 @@ public class ReplaceOptions {
    *  @return this
    *  @mongodb.server.release 3.2
    */
-  public ReplaceOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+  public ReplaceOptions setBypassDocumentValidation(Boolean bypassDocumentValidation) {
     this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
@@ -108,7 +108,7 @@ public class ReplaceOptions {
    *  @return this
    *  @mongodb.server.release 3.4
    */
-  public ReplaceOptions collation(Collation collation) {
+  public ReplaceOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -130,7 +130,7 @@ public class ReplaceOptions {
    *  @return this
    *  @since 4.1
    */
-  public ReplaceOptions hint(JsonObject hint) {
+  public ReplaceOptions setHint(JsonObject hint) {
     this.hint = hint;
     return this;
   }
@@ -152,7 +152,7 @@ public class ReplaceOptions {
    *  @return this
    *  @since 4.1
    */
-  public ReplaceOptions hintString(String hint) {
+  public ReplaceOptions setHintString(String hint) {
     this.hintString = hint;
     return this;
   }

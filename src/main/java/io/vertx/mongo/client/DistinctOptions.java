@@ -56,7 +56,7 @@ public class DistinctOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/db.collection.find/ Filter
    */
-  public DistinctOptions filter(JsonObject filter) {
+  public DistinctOptions setFilter(JsonObject filter) {
     this.filter = filter;
     return this;
   }
@@ -71,7 +71,7 @@ public class DistinctOptions {
    *  @param maxTime  the max time (in milliseconds)
    *  @return this
    */
-  public DistinctOptions maxTime(Long maxTime) {
+  public DistinctOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -89,7 +89,7 @@ public class DistinctOptions {
    *  @since 1.3
    *  @mongodb.server.release 3.4
    */
-  public DistinctOptions collation(Collation collation) {
+  public DistinctOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -109,7 +109,7 @@ public class DistinctOptions {
    *  @since 1.8
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
-  public DistinctOptions batchSize(Integer batchSize) {
+  public DistinctOptions setBatchSize(Integer batchSize) {
     this.batchSize = batchSize;
     return this;
   }

@@ -95,7 +95,7 @@ public class MongoClientSettings {
    *  @return this
    *  @see MongoClientSettings#getClusterSettings()
    */
-  public MongoClientSettings clusterSettings(ClusterSettings block) {
+  public MongoClientSettings setClusterSettings(ClusterSettings block) {
     this.clusterSettings = block;
     return this;
   }
@@ -116,7 +116,7 @@ public class MongoClientSettings {
    *  @return this
    *  @see MongoClientSettings#getSocketSettings()
    */
-  public MongoClientSettings socketSettings(SocketSettings block) {
+  public MongoClientSettings setSocketSettings(SocketSettings block) {
     this.socketSettings = block;
     return this;
   }
@@ -139,7 +139,7 @@ public class MongoClientSettings {
    *  @return this
    *  @see MongoClientSettings#getConnectionPoolSettings()
    */
-  public MongoClientSettings connectionPoolSettings(ConnectionPoolSettings block) {
+  public MongoClientSettings setConnectionPoolSettings(ConnectionPoolSettings block) {
     this.connectionPoolSettings = block;
     return this;
   }
@@ -163,7 +163,7 @@ public class MongoClientSettings {
    *  @return this
    *  @see MongoClientSettings#getServerSettings()
    */
-  public MongoClientSettings serverSettings(ServerSettings block) {
+  public MongoClientSettings setServerSettings(ServerSettings block) {
     this.serverSettings = block;
     return this;
   }
@@ -186,7 +186,7 @@ public class MongoClientSettings {
    *  @return this
    *  @see MongoClientSettings#getSslSettings()
    */
-  public MongoClientSettings sslSettings(SslSettings block) {
+  public MongoClientSettings setSslSettings(SslSettings block) {
     this.sslSettings = block;
     return this;
   }
@@ -210,7 +210,7 @@ public class MongoClientSettings {
    *  @see #getRetryWrites()
    *  @mongodb.server.release 3.6
    */
-  public MongoClientSettings retryWrites(Boolean retryWrites) {
+  public MongoClientSettings setRetryWrites(Boolean retryWrites) {
     this.retryWrites = retryWrites;
     return this;
   }
@@ -236,7 +236,7 @@ public class MongoClientSettings {
    *  @since 3.11
    *  @mongodb.server.release 3.6
    */
-  public MongoClientSettings retryReads(Boolean retryReads) {
+  public MongoClientSettings setRetryReads(Boolean retryReads) {
     this.retryReads = retryReads;
     return this;
   }
@@ -262,7 +262,7 @@ public class MongoClientSettings {
    *  @see #getApplicationName()
    *  @mongodb.server.release 3.4
    */
-  public MongoClientSettings applicationName(String applicationName) {
+  public MongoClientSettings setApplicationName(String applicationName) {
     this.applicationName = applicationName;
     return this;
   }
@@ -288,7 +288,8 @@ public class MongoClientSettings {
    *  @since 3.11
    *  @see #getAutoEncryptionSettings()
    */
-  public MongoClientSettings autoEncryptionSettings(AutoEncryptionSettings autoEncryptionSettings) {
+  public MongoClientSettings setAutoEncryptionSettings(
+      AutoEncryptionSettings autoEncryptionSettings) {
     this.autoEncryptionSettings = autoEncryptionSettings;
     return this;
   }

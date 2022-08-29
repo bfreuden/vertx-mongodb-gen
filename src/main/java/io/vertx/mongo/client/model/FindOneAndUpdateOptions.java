@@ -92,7 +92,7 @@ public class FindOneAndUpdateOptions {
    *  @return this
    *  @mongodb.driver.manual tutorial/project-fields-from-query-results Projection
    */
-  public FindOneAndUpdateOptions projection(JsonObject projection) {
+  public FindOneAndUpdateOptions setProjection(JsonObject projection) {
     this.projection = projection;
     return this;
   }
@@ -114,7 +114,7 @@ public class FindOneAndUpdateOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
-  public FindOneAndUpdateOptions sort(JsonObject sort) {
+  public FindOneAndUpdateOptions setSort(JsonObject sort) {
     this.sort = sort;
     return this;
   }
@@ -136,7 +136,7 @@ public class FindOneAndUpdateOptions {
    *  @param upsert true if a new document should be inserted if there are no matches to the query filter
    *  @return this
    */
-  public FindOneAndUpdateOptions upsert(Boolean upsert) {
+  public FindOneAndUpdateOptions setUpsert(Boolean upsert) {
     this.upsert = upsert;
     return this;
   }
@@ -156,7 +156,7 @@ public class FindOneAndUpdateOptions {
    *  @param returnDocument set whether to return the document before it was updated / inserted or after
    *  @return this
    */
-  public FindOneAndUpdateOptions returnDocument(ReturnDocument returnDocument) {
+  public FindOneAndUpdateOptions setReturnDocument(ReturnDocument returnDocument) {
     this.returnDocument = returnDocument;
     return this;
   }
@@ -177,7 +177,7 @@ public class FindOneAndUpdateOptions {
    *  @param maxTime  the max time (in milliseconds)
    *  @return this
    */
-  public FindOneAndUpdateOptions maxTime(Long maxTime) {
+  public FindOneAndUpdateOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -199,7 +199,7 @@ public class FindOneAndUpdateOptions {
    *  @since 3.2
    *  @mongodb.server.release 3.2
    */
-  public FindOneAndUpdateOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+  public FindOneAndUpdateOptions setBypassDocumentValidation(Boolean bypassDocumentValidation) {
     this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
@@ -224,7 +224,7 @@ public class FindOneAndUpdateOptions {
    *  @since 3.4
    *  @mongodb.server.release 3.4
    */
-  public FindOneAndUpdateOptions collation(Collation collation) {
+  public FindOneAndUpdateOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -248,7 +248,7 @@ public class FindOneAndUpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public FindOneAndUpdateOptions arrayFilters(JsonArray arrayFilters) {
+  public FindOneAndUpdateOptions setArrayFilters(JsonArray arrayFilters) {
     this.arrayFilters = arrayFilters;
     return this;
   }
@@ -271,7 +271,7 @@ public class FindOneAndUpdateOptions {
    *  @return this
    *  @since 4.1
    */
-  public FindOneAndUpdateOptions hint(JsonObject hint) {
+  public FindOneAndUpdateOptions setHint(JsonObject hint) {
     this.hint = hint;
     return this;
   }
@@ -293,7 +293,7 @@ public class FindOneAndUpdateOptions {
    *  @return this
    *  @since 4.1
    */
-  public FindOneAndUpdateOptions hintString(String hint) {
+  public FindOneAndUpdateOptions setHintString(String hint) {
     this.hintString = hint;
     return this;
   }

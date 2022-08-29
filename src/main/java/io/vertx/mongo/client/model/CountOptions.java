@@ -69,7 +69,7 @@ public class CountOptions {
    *  @param hint a document describing the index which should be used for this operation.
    *  @return this
    */
-  public CountOptions hint(JsonObject hint) {
+  public CountOptions setHint(JsonObject hint) {
     this.hint = hint;
     return this;
   }
@@ -91,7 +91,7 @@ public class CountOptions {
    *  @param hint the name of the index which should be used for the operation
    *  @return this
    */
-  public CountOptions hintString(String hint) {
+  public CountOptions setHintString(String hint) {
     this.hintString = hint;
     return this;
   }
@@ -112,7 +112,7 @@ public class CountOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
    */
-  public CountOptions limit(Integer limit) {
+  public CountOptions setLimit(Integer limit) {
     this.limit = limit;
     return this;
   }
@@ -134,7 +134,7 @@ public class CountOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
    */
-  public CountOptions skip(Integer skip) {
+  public CountOptions setSkip(Integer skip) {
     this.skip = skip;
     return this;
   }
@@ -155,7 +155,7 @@ public class CountOptions {
    *  @param maxTime  the max time (in milliseconds)
    *  @return this
    */
-  public CountOptions maxTime(Long maxTime) {
+  public CountOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -178,7 +178,7 @@ public class CountOptions {
    *  @since 3.4
    *  @mongodb.server.release 3.4
    */
-  public CountOptions collation(Collation collation) {
+  public CountOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }

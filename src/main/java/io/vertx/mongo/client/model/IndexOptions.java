@@ -141,7 +141,7 @@ public class IndexOptions {
    *  @param background true if should create the index in the background
    *  @return this
    */
-  public IndexOptions background(Boolean background) {
+  public IndexOptions setBackground(Boolean background) {
     this.background = background;
     return this;
   }
@@ -161,7 +161,7 @@ public class IndexOptions {
    *  @param unique if the index should be unique
    *  @return this
    */
-  public IndexOptions unique(Boolean unique) {
+  public IndexOptions setUnique(Boolean unique) {
     this.unique = unique;
     return this;
   }
@@ -181,7 +181,7 @@ public class IndexOptions {
    *  @param name of the index
    *  @return this
    */
-  public IndexOptions name(String name) {
+  public IndexOptions setName(String name) {
     this.name = name;
     return this;
   }
@@ -201,7 +201,7 @@ public class IndexOptions {
    *  @param sparse if true, the index only references documents with the specified field
    *  @return this
    */
-  public IndexOptions sparse(Boolean sparse) {
+  public IndexOptions setSparse(Boolean sparse) {
     this.sparse = sparse;
     return this;
   }
@@ -222,7 +222,7 @@ public class IndexOptions {
    *  @return this
    *  @mongodb.driver.manual tutorial/expire-data TTL
    */
-  public IndexOptions expireAfter(Long expireAfter) {
+  public IndexOptions setExpireAfter(Long expireAfter) {
     this.expireAfter = expireAfter;
     return this;
   }
@@ -243,7 +243,7 @@ public class IndexOptions {
    *  @param version the index version number
    *  @return this
    */
-  public IndexOptions version(Integer version) {
+  public IndexOptions setVersion(Integer version) {
     this.version = version;
     return this;
   }
@@ -267,7 +267,7 @@ public class IndexOptions {
    *  @return this
    *  @mongodb.driver.manual tutorial/control-results-of-text-search Control Search Results with Weights
    */
-  public IndexOptions weights(JsonObject weights) {
+  public IndexOptions setWeights(JsonObject weights) {
     this.weights = weights;
     return this;
   }
@@ -294,7 +294,7 @@ public class IndexOptions {
    *  @return this
    *  @mongodb.driver.manual reference/text-search-languages Text Search languages
    */
-  public IndexOptions defaultLanguage(String defaultLanguage) {
+  public IndexOptions setDefaultLanguage(String defaultLanguage) {
     this.defaultLanguage = defaultLanguage;
     return this;
   }
@@ -320,7 +320,7 @@ public class IndexOptions {
    *  @return this
    *  @mongodb.driver.manual tutorial/specify-language-for-text-index/#specify-language-field-text-index-example Language override
    */
-  public IndexOptions languageOverride(String languageOverride) {
+  public IndexOptions setLanguageOverride(String languageOverride) {
     this.languageOverride = languageOverride;
     return this;
   }
@@ -343,7 +343,7 @@ public class IndexOptions {
    *  @param textVersion the text index version number.
    *  @return this
    */
-  public IndexOptions textVersion(Integer textVersion) {
+  public IndexOptions setTextVersion(Integer textVersion) {
     this.textVersion = textVersion;
     return this;
   }
@@ -363,7 +363,7 @@ public class IndexOptions {
    *  @param sphereVersion the 2dsphere index version number.
    *  @return this
    */
-  public IndexOptions sphereVersion(Integer sphereVersion) {
+  public IndexOptions setSphereVersion(Integer sphereVersion) {
     this.sphereVersion = sphereVersion;
     return this;
   }
@@ -383,7 +383,7 @@ public class IndexOptions {
    *  @param bits the number of precision of the stored geohash value
    *  @return this
    */
-  public IndexOptions bits(Integer bits) {
+  public IndexOptions setBits(Integer bits) {
     this.bits = bits;
     return this;
   }
@@ -403,7 +403,7 @@ public class IndexOptions {
    *  @param min the lower inclusive boundary for the longitude and latitude values
    *  @return this
    */
-  public IndexOptions min(Double min) {
+  public IndexOptions setMin(Double min) {
     this.min = min;
     return this;
   }
@@ -423,7 +423,7 @@ public class IndexOptions {
    *  @param max the upper inclusive boundary for the longitude and latitude values
    *  @return this
    */
-  public IndexOptions max(Double max) {
+  public IndexOptions setMax(Double max) {
     this.max = max;
     return this;
   }
@@ -444,7 +444,7 @@ public class IndexOptions {
    *  @return this
    *  @mongodb.driver.manual core/geohaystack/ geoHaystack Indexes
    */
-  public IndexOptions bucketSize(Double bucketSize) {
+  public IndexOptions setBucketSize(Double bucketSize) {
     this.bucketSize = bucketSize;
     return this;
   }
@@ -466,7 +466,7 @@ public class IndexOptions {
    *  @return this
    *  @mongodb.server.release 3.0
    */
-  public IndexOptions storageEngine(JsonObject storageEngine) {
+  public IndexOptions setStorageEngine(JsonObject storageEngine) {
     this.storageEngine = storageEngine;
     return this;
   }
@@ -489,7 +489,7 @@ public class IndexOptions {
    *  @mongodb.server.release 3.2
    *  @since 3.2
    */
-  public IndexOptions partialFilterExpression(JsonObject partialFilterExpression) {
+  public IndexOptions setPartialFilterExpression(JsonObject partialFilterExpression) {
     this.partialFilterExpression = partialFilterExpression;
     return this;
   }
@@ -514,7 +514,7 @@ public class IndexOptions {
    *  @since 3.4
    *  @mongodb.server.release 3.4
    */
-  public IndexOptions collation(Collation collation) {
+  public IndexOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -538,7 +538,7 @@ public class IndexOptions {
    *  @mongodb.server.release 4.2
    *  @since 3.10
    */
-  public IndexOptions wildcardProjection(JsonObject wildcardProjection) {
+  public IndexOptions setWildcardProjection(JsonObject wildcardProjection) {
     this.wildcardProjection = wildcardProjection;
     return this;
   }
@@ -562,7 +562,7 @@ public class IndexOptions {
    *  @mongodb.server.release 4.4
    *  @since 4.1
    */
-  public IndexOptions hidden(Boolean hidden) {
+  public IndexOptions setHidden(Boolean hidden) {
     this.hidden = hidden;
     return this;
   }

@@ -145,7 +145,7 @@ public class FindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/db.collection.find/ Filter
    */
-  public FindOptions filter(JsonObject filter) {
+  public FindOptions setFilter(JsonObject filter) {
     this.filter = filter;
     return this;
   }
@@ -161,7 +161,7 @@ public class FindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
    */
-  public FindOptions limit(Integer limit) {
+  public FindOptions setLimit(Integer limit) {
     this.limit = limit;
     return this;
   }
@@ -177,7 +177,7 @@ public class FindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
    */
-  public FindOptions skip(Integer skip) {
+  public FindOptions setSkip(Integer skip) {
     this.skip = skip;
     return this;
   }
@@ -193,7 +193,7 @@ public class FindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
    */
-  public FindOptions maxTime(Long maxTime) {
+  public FindOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -219,7 +219,7 @@ public class FindOptions {
    *  @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
    *  @since 1.2
    */
-  public FindOptions maxAwaitTime(Long maxAwaitTime) {
+  public FindOptions setMaxAwaitTime(Long maxAwaitTime) {
     this.maxAwaitTime = maxAwaitTime;
     return this;
   }
@@ -235,7 +235,7 @@ public class FindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/db.collection.find/ Projection
    */
-  public FindOptions projection(JsonObject projection) {
+  public FindOptions setProjection(JsonObject projection) {
     this.projection = projection;
     return this;
   }
@@ -251,7 +251,7 @@ public class FindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
-  public FindOptions sort(JsonObject sort) {
+  public FindOptions setSort(JsonObject sort) {
     this.sort = sort;
     return this;
   }
@@ -267,7 +267,7 @@ public class FindOptions {
    *  @param noCursorTimeout true if cursor timeout is disabled
    *  @return this
    */
-  public FindOptions noCursorTimeout(Boolean noCursorTimeout) {
+  public FindOptions setNoCursorTimeout(Boolean noCursorTimeout) {
     this.noCursorTimeout = noCursorTimeout;
     return this;
   }
@@ -284,7 +284,7 @@ public class FindOptions {
    *  @deprecated oplogReplay has been deprecated in MongoDB 4.4.
    */
   @Deprecated
-  public FindOptions oplogReplay(Boolean oplogReplay) {
+  public FindOptions setOplogReplay(Boolean oplogReplay) {
     this.oplogReplay = oplogReplay;
     return this;
   }
@@ -300,7 +300,7 @@ public class FindOptions {
    *  @param partial if partial results for sharded clusters is enabled
    *  @return this
    */
-  public FindOptions partial(Boolean partial) {
+  public FindOptions setPartial(Boolean partial) {
     this.partial = partial;
     return this;
   }
@@ -315,7 +315,7 @@ public class FindOptions {
    *  @param cursorType the cursor type
    *  @return this
    */
-  public FindOptions cursorType(CursorType cursorType) {
+  public FindOptions setCursorType(CursorType cursorType) {
     this.cursorType = cursorType;
     return this;
   }
@@ -333,7 +333,7 @@ public class FindOptions {
    *  @since 1.3
    *  @mongodb.server.release 3.4
    */
-  public FindOptions collation(Collation collation) {
+  public FindOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -349,7 +349,7 @@ public class FindOptions {
    *  @return this
    *  @since 1.6
    */
-  public FindOptions comment(String comment) {
+  public FindOptions setComment(String comment) {
     this.comment = comment;
     return this;
   }
@@ -365,7 +365,7 @@ public class FindOptions {
    *  @return this
    *  @since 1.6
    */
-  public FindOptions hint(JsonObject hint) {
+  public FindOptions setHint(JsonObject hint) {
     this.hint = hint;
     return this;
   }
@@ -381,7 +381,7 @@ public class FindOptions {
    *  @return this
    *  @since 1.13
    */
-  public FindOptions hintString(String hint) {
+  public FindOptions setHintString(String hint) {
     this.hintString = hint;
     return this;
   }
@@ -397,7 +397,7 @@ public class FindOptions {
    *  @return this
    *  @since 1.6
    */
-  public FindOptions max(JsonObject max) {
+  public FindOptions setMax(JsonObject max) {
     this.max = max;
     return this;
   }
@@ -413,7 +413,7 @@ public class FindOptions {
    *  @return this
    *  @since 1.6
    */
-  public FindOptions min(JsonObject min) {
+  public FindOptions setMin(JsonObject min) {
     this.min = min;
     return this;
   }
@@ -429,7 +429,7 @@ public class FindOptions {
    *  @return this
    *  @since 1.6
    */
-  public FindOptions returnKey(Boolean returnKey) {
+  public FindOptions setReturnKey(Boolean returnKey) {
     this.returnKey = returnKey;
     return this;
   }
@@ -445,7 +445,7 @@ public class FindOptions {
    *  @return this
    *  @since 1.6
    */
-  public FindOptions showRecordId(Boolean showRecordId) {
+  public FindOptions setShowRecordId(Boolean showRecordId) {
     this.showRecordId = showRecordId;
     return this;
   }
@@ -465,7 +465,7 @@ public class FindOptions {
    *  @since 1.8
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
-  public FindOptions batchSize(Integer batchSize) {
+  public FindOptions setBatchSize(Integer batchSize) {
     this.batchSize = batchSize;
     return this;
   }
@@ -485,7 +485,7 @@ public class FindOptions {
    *  @since 4.1
    *  @mongodb.server.release 4.4
    */
-  public FindOptions allowDiskUse(Boolean allowDiskUse) {
+  public FindOptions setAllowDiskUse(Boolean allowDiskUse) {
     this.allowDiskUse = allowDiskUse;
     return this;
   }

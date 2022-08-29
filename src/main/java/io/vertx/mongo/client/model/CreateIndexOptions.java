@@ -40,7 +40,7 @@ public class CreateIndexOptions {
    *  @param maxTime  the max time (in milliseconds)
    *  @return this
    */
-  public CreateIndexOptions maxTime(Long maxTime) {
+  public CreateIndexOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }

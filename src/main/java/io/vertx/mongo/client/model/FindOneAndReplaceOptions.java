@@ -86,7 +86,7 @@ public class FindOneAndReplaceOptions {
    *  @return this
    *  @mongodb.driver.manual tutorial/project-fields-from-query-results Projection
    */
-  public FindOneAndReplaceOptions projection(JsonObject projection) {
+  public FindOneAndReplaceOptions setProjection(JsonObject projection) {
     this.projection = projection;
     return this;
   }
@@ -108,7 +108,7 @@ public class FindOneAndReplaceOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
-  public FindOneAndReplaceOptions sort(JsonObject sort) {
+  public FindOneAndReplaceOptions setSort(JsonObject sort) {
     this.sort = sort;
     return this;
   }
@@ -130,7 +130,7 @@ public class FindOneAndReplaceOptions {
    *  @param upsert true if a new document should be inserted if there are no matches to the query filter
    *  @return this
    */
-  public FindOneAndReplaceOptions upsert(Boolean upsert) {
+  public FindOneAndReplaceOptions setUpsert(Boolean upsert) {
     this.upsert = upsert;
     return this;
   }
@@ -150,7 +150,7 @@ public class FindOneAndReplaceOptions {
    *  @param returnDocument set whether to return the document before it was replaced or after
    *  @return this
    */
-  public FindOneAndReplaceOptions returnDocument(ReturnDocument returnDocument) {
+  public FindOneAndReplaceOptions setReturnDocument(ReturnDocument returnDocument) {
     this.returnDocument = returnDocument;
     return this;
   }
@@ -170,7 +170,7 @@ public class FindOneAndReplaceOptions {
    *  @param maxTime  the max time (in milliseconds)
    *  @return this
    */
-  public FindOneAndReplaceOptions maxTime(Long maxTime) {
+  public FindOneAndReplaceOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -192,7 +192,7 @@ public class FindOneAndReplaceOptions {
    *  @since 3.2
    *  @mongodb.server.release 3.2
    */
-  public FindOneAndReplaceOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+  public FindOneAndReplaceOptions setBypassDocumentValidation(Boolean bypassDocumentValidation) {
     this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
@@ -217,7 +217,7 @@ public class FindOneAndReplaceOptions {
    *  @since 3.4
    *  @mongodb.server.release 3.4
    */
-  public FindOneAndReplaceOptions collation(Collation collation) {
+  public FindOneAndReplaceOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -240,7 +240,7 @@ public class FindOneAndReplaceOptions {
    *  @return this
    *  @since 4.1
    */
-  public FindOneAndReplaceOptions hint(JsonObject hint) {
+  public FindOneAndReplaceOptions setHint(JsonObject hint) {
     this.hint = hint;
     return this;
   }
@@ -262,7 +262,7 @@ public class FindOneAndReplaceOptions {
    *  @return this
    *  @since 4.1
    */
-  public FindOneAndReplaceOptions hintString(String hint) {
+  public FindOneAndReplaceOptions setHintString(String hint) {
     this.hintString = hint;
     return this;
   }

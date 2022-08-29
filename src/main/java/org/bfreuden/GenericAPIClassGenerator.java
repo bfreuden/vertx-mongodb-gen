@@ -400,7 +400,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             }
             type.addField(fieldBuilder.build());
             if (option.mongoSetterName != null) {
-                MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder(option.name)
+                MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + option.name.substring(0, 1).toUpperCase() + option.name.substring(1))
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(option.type.vertxType, option.setterParamName)
                         .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()))

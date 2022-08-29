@@ -70,7 +70,7 @@ public class UpdateOptions {
    *  @param upsert true if a new document should be inserted if there are no matches to the query filter
    *  @return this
    */
-  public UpdateOptions upsert(Boolean upsert) {
+  public UpdateOptions setUpsert(Boolean upsert) {
     this.upsert = upsert;
     return this;
   }
@@ -92,7 +92,7 @@ public class UpdateOptions {
    *  @since 3.2
    *  @mongodb.server.release 3.2
    */
-  public UpdateOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+  public UpdateOptions setBypassDocumentValidation(Boolean bypassDocumentValidation) {
     this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
@@ -117,7 +117,7 @@ public class UpdateOptions {
    *  @since 3.4
    *  @mongodb.server.release 3.4
    */
-  public UpdateOptions collation(Collation collation) {
+  public UpdateOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -141,7 +141,7 @@ public class UpdateOptions {
    *  @since 3.6
    *  @mongodb.server.release 3.6
    */
-  public UpdateOptions arrayFilters(JsonArray arrayFilters) {
+  public UpdateOptions setArrayFilters(JsonArray arrayFilters) {
     this.arrayFilters = arrayFilters;
     return this;
   }
@@ -164,7 +164,7 @@ public class UpdateOptions {
    *  @return this
    *  @since 4.1
    */
-  public UpdateOptions hint(JsonObject hint) {
+  public UpdateOptions setHint(JsonObject hint) {
     this.hint = hint;
     return this;
   }
@@ -186,7 +186,7 @@ public class UpdateOptions {
    *  @return this
    *  @since 4.1
    */
-  public UpdateOptions hintString(String hint) {
+  public UpdateOptions setHintString(String hint) {
     this.hintString = hint;
     return this;
   }

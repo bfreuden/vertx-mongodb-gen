@@ -138,12 +138,12 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 
   @Test
   public void testCreateIndexWithCollation() {
-    testCreateIndexWithCollation(new Collation().locale(Locale.ENGLISH.toString()), 1);
+    testCreateIndexWithCollation(new Collation().setLocale(Locale.ENGLISH.toString()), 1);
   }
 
   @Test
   public void testCreateIndexWithSimpleLocaleCollation() {
-    testCreateIndexWithCollation(new Collation().locale("simple"), 0);
+    testCreateIndexWithCollation(new Collation().setLocale("simple"), 0);
   }
 
   private void testCreateIndexWithCollation(Collation collation, int expectedCollation) {
@@ -152,7 +152,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
       JsonObject key = new JsonObject().put("field", 1);
       IndexOptions options = new IndexOptions()
-        .collation(collation);
+        .setCollation(collation);
       coll.createIndex(key, options, onSuccess(res2 -> {
         coll.listIndexes().all(onSuccess(res3 -> {
           long keyCount = res3.stream()
@@ -691,7 +691,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
         coll.findOneAndUpdate(
           new JsonObject().put("num", 123),
           new JsonObject().put("$inc", new JsonObject().put("num", 7)),
-          new FindOneAndUpdateOptions().projection(new JsonObject().put("num", 1)).returnDocument(ReturnDocument.AFTER)).
+          new FindOneAndUpdateOptions().setProjection(new JsonObject().put("num", 1)).setReturnDocument(ReturnDocument.AFTER)).
           onSuccess(obj -> {
             assertEquals(2, obj.size());
             assertEquals(130, (long) obj.getLong("num", -1L));
@@ -734,7 +734,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
         coll.findOneAndReplace(
           new JsonObject().put("num", 123),
           doc.put("num", 130),
-          new FindOneAndReplaceOptions().projection(new JsonObject().put("num", 1)).returnDocument(ReturnDocument.AFTER)).
+          new FindOneAndReplaceOptions().setProjection(new JsonObject().put("num", 1)).setReturnDocument(ReturnDocument.AFTER)).
           onSuccess(obj -> {
             assertEquals(2, obj.size());
             assertEquals(130, (long) obj.getLong("num", -1L));
@@ -778,7 +778,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
         assertNotNull(id1);
         coll.insertOne(doc2, onSuccess(id2 -> {
           assertNotNull(id2);
-          coll.countDocuments(new JsonObject().put("foo", "bar"), new CountOptions().collation(new Collation().locale("de_AT").strength(CollationStrength.TERTIARY)), onSuccess(count -> {
+          coll.countDocuments(new JsonObject().put("foo", "bar"), new CountOptions().setCollation(new Collation().setLocale("de_AT").setStrength(CollationStrength.TERTIARY)), onSuccess(count -> {
             assertNotNull(count);
             assertEquals(1, count.intValue());
             testComplete();
@@ -799,7 +799,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
         assertNotNull(id.getInsertedId());
         coll.findOneAndDelete(
           new JsonObject().put("num", 123),
-          new FindOneAndDeleteOptions().projection(new JsonObject().put("num", 1)),
+          new FindOneAndDeleteOptions().setProjection(new JsonObject().put("num", 1)),
           onSuccess(obj -> {
             assertEquals(123, (long) obj.getLong("num", -1L));
             assertFalse(obj.containsKey("foo"));
@@ -899,7 +899,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       JsonObject doc = createDoc();
       coll.insertOne(doc, onSuccess(res2 -> {
         assertNotNull(res2);
-        coll.find(new JsonObject().put("foo", "bar"), new FindOptions().projection(new JsonObject().put("num", true))).first(onSuccess(obj -> {
+        coll.find(new JsonObject().put("foo", "bar"), new FindOptions().setProjection(new JsonObject().put("num", true))).first(onSuccess(obj -> {
           assertEquals(2, obj.size());
           assertEquals(123, obj.getInteger("num").intValue());
           assertTrue(obj.containsKey("_id"));
@@ -938,7 +938,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //  @Test
 //  public void testFindWithId() throws Exception {
 //    int num = 10;
-//    doTestFind(num, new JsonObject(), new FindOptions().projection(new JsonObject().put("_id", 1)), results -> {
+//    doTestFind(num, new JsonObject(), new FindOptions().setProjection(new JsonObject().put("_id", 1)), results -> {
 //      assertEquals(num, results.size());
 //      for (JsonObject doc : results) {
 //        assertEquals(1, doc.size()); // _id field only
@@ -950,7 +950,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   @Test
   public void testFindWithFields() throws Exception {
     int num = 10;
-    doTestFind(num, new JsonObject(), new FindOptions().projection(new JsonObject().put("num", true)), results -> {
+    doTestFind(num, new JsonObject(), new FindOptions().setProjection(new JsonObject().put("num", true)), results -> {
       assertEquals(num, results.size());
       for (JsonObject doc : results) {
         assertEquals(2, doc.size()); // Contains _id too
@@ -961,7 +961,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   @Test
   public void testFindWithSort() throws Exception {
     int num = 11;
-    doTestFind(num, new JsonObject(), new FindOptions().sort(new JsonObject().put("foo", 1)), results -> {
+    doTestFind(num, new JsonObject(), new FindOptions().setSort(new JsonObject().put("foo", 1)), results -> {
       assertEquals(num, results.size());
       assertEquals("bar0", results.get(0).getString("foo"));
       assertEquals("bar1", results.get(1).getString("foo"));
@@ -973,7 +973,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   public void testFindWithLimit() throws Exception {
     int num = 10;
     int limit = 3;
-    doTestFind(num, new JsonObject(), new FindOptions().limit(limit), results -> {
+    doTestFind(num, new JsonObject(), new FindOptions().setLimit(limit), results -> {
       assertEquals(limit, results.size());
     });
   }
@@ -982,7 +982,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   public void testFindWithLimitLarger() throws Exception {
     int num = 10;
     int limit = 20;
-    doTestFind(num, new JsonObject(), new FindOptions().limit(limit), results -> {
+    doTestFind(num, new JsonObject(), new FindOptions().setLimit(limit), results -> {
       assertEquals(num, results.size());
     });
   }
@@ -991,7 +991,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   public void testFindWithSkip() throws Exception {
     int num = 10;
     int skip = 3;
-    doTestFind(num, new JsonObject(), new FindOptions().skip(skip), results -> {
+    doTestFind(num, new JsonObject(), new FindOptions().setSkip(skip), results -> {
       assertEquals(num - skip, results.size());
     });
   }
@@ -1000,7 +1000,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   public void testFindWithSkipLarger() throws Exception {
     int num = 10;
     int skip = 20;
-    doTestFind(num, new JsonObject(), new FindOptions().skip(skip), results -> {
+    doTestFind(num, new JsonObject(), new FindOptions().setSkip(skip), results -> {
       assertEquals(0, results.size());
     });
   }
@@ -1133,7 +1133,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       assertNotNull(res.getInsertedId());
       JsonObject replacement = createDoc();
       replacement.put("replacement", true);
-      coll.replaceOne(new JsonObject().put("_id", "foo"), replacement, new ReplaceOptions().upsert(true), onSuccess(v -> {
+      coll.replaceOne(new JsonObject().put("_id", "foo"), replacement, new ReplaceOptions().setUpsert(true), onSuccess(v -> {
         coll.find().all(onSuccess(list -> {
           assertNotNull(list);
           assertEquals(2, list.size());
@@ -1162,7 +1162,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       assertNotNull(id);
       JsonObject replacement = createDoc();
       replacement.put("replacement", true);
-      coll.replaceOne(new JsonObject().put("_id", upsertTestId), replacement, new ReplaceOptions().upsert(true), onSuccess(v -> {
+      coll.replaceOne(new JsonObject().put("_id", upsertTestId), replacement, new ReplaceOptions().setUpsert(true), onSuccess(v -> {
         coll.find().all(onSuccess(list -> {
           // FIXME? there was this getString thing
           assertEquals(upsertTestId, v.getUpsertedId()/*.getString("_id")*/);
@@ -1196,7 +1196,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       Object id = res.getInsertedId();
       JsonObject replacement = createDoc();
       replacement.put("replacement", true);
-      coll.replaceOne(resultToIdFilter(res), replacement, new ReplaceOptions().upsert(true), onSuccess(v -> {
+      coll.replaceOne(resultToIdFilter(res), replacement, new ReplaceOptions().setUpsert(true), onSuccess(v -> {
         coll.find().all(onSuccess(list -> {
           assertNotNull(list);
           assertEquals(1, list.size());
@@ -1224,7 +1224,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       assertNotNull(id);
       JsonObject replacement = createDoc();
       replacement.put("replacement", true);
-      coll.replaceOne(resultToIdFilter(res), replacement, new ReplaceOptions().upsert(true), onSuccess(v -> {
+      coll.replaceOne(resultToIdFilter(res), replacement, new ReplaceOptions().setUpsert(true), onSuccess(v -> {
         coll.find().all(onSuccess(list -> {
           assertNull(v.getUpsertedId());
           assertEquals(1, v.getMatchedCount());
@@ -1335,7 +1335,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   @Test
   public void testUpdateAll() throws Exception {
     int num = 10;
-    doTestUpdateMany(num, new JsonObject().put("num", 123), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")), new UpdateOptions().upsert(false), results -> {
+    doTestUpdateMany(num, new JsonObject().put("num", 123), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")), new UpdateOptions().setUpsert(false), results -> {
       assertEquals(num, results.size());
       for (JsonObject doc : results) {
         assertEquals(12, doc.size());
@@ -1348,7 +1348,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   @Test
   public void testUpdateAllWithMongoClientUpdateResult() throws Exception {
     int num = 10;
-    doTestUpdateManyWithMongoClientUpdateResult(num, new JsonObject().put("num", 123), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")), new UpdateOptions().upsert(false), results -> {
+    doTestUpdateManyWithMongoClientUpdateResult(num, new JsonObject().put("num", 123), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")), new UpdateOptions().setUpsert(false), results -> {
       assertEquals(num, results.size());
       for (JsonObject doc : results) {
         assertEquals(12, doc.size());
@@ -1365,7 +1365,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.insertOne(createDoc(), onSuccess(res1 -> {
       coll.updateOne(idFilter(upsertedId), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")),
-        new UpdateOptions().upsert(true), onSuccess(res -> {
+        new UpdateOptions().setUpsert(true), onSuccess(res -> {
           assertEquals(0, res.getModifiedCount());
           assertEquals(0, res.getMatchedCount());
           //FIXME getString commented out?
@@ -1834,7 +1834,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   public void testBulkOperation_upsertDocument() {
     String collection = randomCollection();
     JsonObject doc = new JsonObject().put("$set", new JsonObject().put("foo", "bar"));
-    UpdateOneModel<JsonObject> bulkUpdate = new UpdateOneModel<>(new JsonObject().put("foo", "bur"), doc, new UpdateOptions().upsert(true));
+    UpdateOneModel<JsonObject> bulkUpdate = new UpdateOneModel<>(new JsonObject().put("foo", "bur"), doc, new UpdateOptions().setUpsert(true));
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.bulkWrite(List.of(bulkUpdate), onSuccess(bulkResult -> {
       // even though one document was created, the MongoDB client returns 0 for all counts
@@ -1856,7 +1856,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   public void testBulkOperation_upsertDocument_upsertDisabled() {
     String collection = randomCollection();
     JsonObject doc = new JsonObject().put("$set", new JsonObject().put("foo", "bar"));
-    UpdateOneModel<JsonObject> bulkUpdate = new UpdateOneModel<>(new JsonObject().put("foo", "bur"), doc, new UpdateOptions().upsert(false));
+    UpdateOneModel<JsonObject> bulkUpdate = new UpdateOneModel<>(new JsonObject().put("foo", "bur"), doc, new UpdateOptions().setUpsert(false));
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.bulkWrite(List.of(bulkUpdate), onSuccess(bulkResult -> {
       assertEquals(0, bulkResult.getInsertedCount());
@@ -1930,7 +1930,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     String collection = randomCollection();
     JsonObject filter = new JsonObject().put("foo", "bar");
     JsonObject replace = new JsonObject().put("foo", "upsert");
-    ReplaceOneModel<JsonObject> bulkReplace = new ReplaceOneModel<>(filter, replace, new ReplaceOptions().upsert(true));
+    ReplaceOneModel<JsonObject> bulkReplace = new ReplaceOneModel<>(filter, replace, new ReplaceOptions().setUpsert(true));
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.bulkWrite(List.of(bulkReplace), onSuccess(bulkResult -> {
       assertEquals(0, bulkResult.getInsertedCount());
@@ -1999,12 +1999,12 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 
   @Test
   public void testBulkOperationwithOptions_completeBulk_orderedFalse() {
-    testCompleteBulk(new BulkWriteOptions().ordered(false), ACKNOWLEDGED);
+    testCompleteBulk(new BulkWriteOptions().setOrdered(false), ACKNOWLEDGED);
   }
 
   @Test
   public void testBulkOperationwithOptions_completeBulk_orderedTrue() {
-    testCompleteBulk(new BulkWriteOptions().ordered(true), ACKNOWLEDGED);
+    testCompleteBulk(new BulkWriteOptions().setOrdered(true), ACKNOWLEDGED);
   }
 
   private void testCompleteBulk(BulkWriteOptions bulkWriteOptions, WriteConcern concern) {

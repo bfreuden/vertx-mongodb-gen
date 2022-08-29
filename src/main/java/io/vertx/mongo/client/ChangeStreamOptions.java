@@ -72,7 +72,7 @@ public class ChangeStreamOptions {
    *  @param fullDocument the fullDocument
    *  @return this
    */
-  public ChangeStreamOptions fullDocument(FullDocument fullDocument) {
+  public ChangeStreamOptions setFullDocument(FullDocument fullDocument) {
     this.fullDocument = fullDocument;
     return this;
   }
@@ -87,7 +87,7 @@ public class ChangeStreamOptions {
    *  @param resumeToken the resume token
    *  @return this
    */
-  public ChangeStreamOptions resumeAfter(JsonObject resumeToken) {
+  public ChangeStreamOptions setResumeAfter(JsonObject resumeToken) {
     this.resumeAfter = resumeToken;
     return this;
   }
@@ -108,7 +108,7 @@ public class ChangeStreamOptions {
    *  @mongodb.server.release 4.0
    *  @mongodb.driver.manual reference/method/db.runCommand/
    */
-  public ChangeStreamOptions startAtOperationTime(Long startAtOperationTime) {
+  public ChangeStreamOptions setStartAtOperationTime(Long startAtOperationTime) {
     this.startAtOperationTime = startAtOperationTime;
     return this;
   }
@@ -132,7 +132,7 @@ public class ChangeStreamOptions {
    *  @mongodb.server.release 4.2
    *  @mongodb.driver.manual changeStreams/#change-stream-start-after
    */
-  public ChangeStreamOptions startAfter(JsonObject startAfter) {
+  public ChangeStreamOptions setStartAfter(JsonObject startAfter) {
     this.startAfter = startAfter;
     return this;
   }
@@ -148,7 +148,7 @@ public class ChangeStreamOptions {
    *                       default value
    *  @return this
    */
-  public ChangeStreamOptions maxAwaitTime(Long maxAwaitTime) {
+  public ChangeStreamOptions setMaxAwaitTime(Long maxAwaitTime) {
     this.maxAwaitTime = maxAwaitTime;
     return this;
   }
@@ -164,7 +164,7 @@ public class ChangeStreamOptions {
    *  @param collation the collation options to use
    *  @return this
    */
-  public ChangeStreamOptions collation(Collation collation) {
+  public ChangeStreamOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -184,7 +184,7 @@ public class ChangeStreamOptions {
    *  @since 1.8
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
-  public ChangeStreamOptions batchSize(Integer batchSize) {
+  public ChangeStreamOptions setBatchSize(Integer batchSize) {
     this.batchSize = batchSize;
     return this;
   }

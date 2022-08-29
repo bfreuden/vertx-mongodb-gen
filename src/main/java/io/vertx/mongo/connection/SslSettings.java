@@ -61,7 +61,7 @@ public class SslSettings {
    *  @return this
    *  @since 3.7
    */
-  public SslSettings applySettings(SslSettings sslSettings) {
+  public SslSettings setApplySettings(SslSettings sslSettings) {
     this.applySettings = sslSettings;
     return this;
   }
@@ -76,7 +76,7 @@ public class SslSettings {
    *  @param enabled should be true if SSL is to be enabled.
    *  @return this
    */
-  public SslSettings enabled(Boolean enabled) {
+  public SslSettings setEnabled(Boolean enabled) {
     this.enabled = enabled;
     return this;
   }
@@ -97,7 +97,7 @@ public class SslSettings {
    *  @param invalidHostNameAllowed whether invalid host names are allowed.
    *  @return this
    */
-  public SslSettings invalidHostNameAllowed(Boolean invalidHostNameAllowed) {
+  public SslSettings setInvalidHostNameAllowed(Boolean invalidHostNameAllowed) {
     this.invalidHostNameAllowed = invalidHostNameAllowed;
     return this;
   }

@@ -51,7 +51,7 @@ public class GridFSDownloadOptions {
    *  @param revision the file revision to download
    *  @return this
    */
-  public GridFSDownloadOptions revision(Integer revision) {
+  public GridFSDownloadOptions setRevision(Integer revision) {
     this.revision = revision;
     return this;
   }

@@ -45,7 +45,7 @@ public class InsertManyOptions {
    *  @param ordered true if documents should be inserted in order
    *  @return this
    */
-  public InsertManyOptions ordered(Boolean ordered) {
+  public InsertManyOptions setOrdered(Boolean ordered) {
     this.ordered = ordered;
     return this;
   }
@@ -68,7 +68,7 @@ public class InsertManyOptions {
    *  @since 3.2
    *  @mongodb.server.release 3.2
    */
-  public InsertManyOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+  public InsertManyOptions setBypassDocumentValidation(Boolean bypassDocumentValidation) {
     this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }

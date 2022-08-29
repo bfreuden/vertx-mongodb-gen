@@ -85,7 +85,7 @@ public class ClusterSettings {
    *  @return this
    *  @since 3.7
    */
-  public ClusterSettings applySettings(ClusterSettings clusterSettings) {
+  public ClusterSettings setApplySettings(ClusterSettings clusterSettings) {
     this.applySettings = clusterSettings;
     return this;
   }
@@ -109,7 +109,7 @@ public class ClusterSettings {
    *  @see com.mongodb.MongoClientSettings.Builder#applyConnectionString(ConnectionString)
    *  @see ClusterSettings.Builder#applyConnectionString(ConnectionString)
    */
-  public ClusterSettings srvHost(String srvHost) {
+  public ClusterSettings setSrvHost(String srvHost) {
     this.srvHost = srvHost;
     return this;
   }
@@ -129,7 +129,7 @@ public class ClusterSettings {
    *  @param mode the cluster connection mode
    *  @return this;
    */
-  public ClusterSettings mode(ClusterConnectionMode mode) {
+  public ClusterSettings setMode(ClusterConnectionMode mode) {
     this.mode = mode;
     return this;
   }
@@ -149,7 +149,7 @@ public class ClusterSettings {
    *  @param requiredReplicaSetName the required replica set name.
    *  @return this
    */
-  public ClusterSettings requiredReplicaSetName(String requiredReplicaSetName) {
+  public ClusterSettings setRequiredReplicaSetName(String requiredReplicaSetName) {
     this.requiredReplicaSetName = requiredReplicaSetName;
     return this;
   }
@@ -169,7 +169,7 @@ public class ClusterSettings {
    *  @param requiredClusterType the required cluster type
    *  @return this
    */
-  public ClusterSettings requiredClusterType(ClusterType requiredClusterType) {
+  public ClusterSettings setRequiredClusterType(ClusterType requiredClusterType) {
     this.requiredClusterType = requiredClusterType;
     return this;
   }
@@ -191,7 +191,7 @@ public class ClusterSettings {
    *  @return this
    *  @since 3.7
    */
-  public ClusterSettings localThreshold(Long localThreshold) {
+  public ClusterSettings setLocalThreshold(Long localThreshold) {
     this.localThreshold = localThreshold;
     return this;
   }
@@ -227,7 +227,7 @@ public class ClusterSettings {
    *  @param serverSelectionTimeout the timeout (in milliseconds)
    *  @return this
    */
-  public ClusterSettings serverSelectionTimeout(Long serverSelectionTimeout) {
+  public ClusterSettings setServerSelectionTimeout(Long serverSelectionTimeout) {
     this.serverSelectionTimeout = serverSelectionTimeout;
     return this;
   }

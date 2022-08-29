@@ -41,7 +41,7 @@ public class InsertOneOptions {
    *  @param bypassDocumentValidation If true, allows the write to opt-out of document level validation.
    *  @return this
    */
-  public InsertOneOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+  public InsertOneOptions setBypassDocumentValidation(Boolean bypassDocumentValidation) {
     this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }

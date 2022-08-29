@@ -47,7 +47,7 @@ public class GridFSUploadOptions {
    *  @param chunkSizeBytes the number of bytes per chunk for the uploaded file
    *  @return this
    */
-  public GridFSUploadOptions chunkSizeBytes(Integer chunkSizeBytes) {
+  public GridFSUploadOptions setChunkSizeBytes(Integer chunkSizeBytes) {
     this.chunkSizeBytes = chunkSizeBytes;
     return this;
   }
@@ -69,7 +69,7 @@ public class GridFSUploadOptions {
    *  @param metadata the metadata to be stored
    *  @return this
    */
-  public GridFSUploadOptions metadata(JsonObject metadata) {
+  public GridFSUploadOptions setMetadata(JsonObject metadata) {
     this.metadata = metadata;
     return this;
   }

@@ -62,7 +62,7 @@ public class ServerSettings {
    *  @return this
    *  @since 3.7
    */
-  public ServerSettings applySettings(ServerSettings serverSettings) {
+  public ServerSettings setApplySettings(ServerSettings serverSettings) {
     this.applySettings = serverSettings;
     return this;
   }
@@ -77,7 +77,7 @@ public class ServerSettings {
    *  @param heartbeatFrequency the heartbeat frequency (in milliseconds)
    *  @return this
    */
-  public ServerSettings heartbeatFrequency(Long heartbeatFrequency) {
+  public ServerSettings setHeartbeatFrequency(Long heartbeatFrequency) {
     this.heartbeatFrequency = heartbeatFrequency;
     return this;
   }
@@ -98,7 +98,7 @@ public class ServerSettings {
    *  @param minHeartbeatFrequency the minimum heartbeat frequency (in milliseconds)
    *  @return this
    */
-  public ServerSettings minHeartbeatFrequency(Long minHeartbeatFrequency) {
+  public ServerSettings setMinHeartbeatFrequency(Long minHeartbeatFrequency) {
     this.minHeartbeatFrequency = minHeartbeatFrequency;
     return this;
   }

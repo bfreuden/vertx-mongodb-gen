@@ -42,7 +42,7 @@ public class IndexOptionDefaults {
    *  @param storageEngine the storage engine options
    *  @return this
    */
-  public IndexOptionDefaults storageEngine(JsonObject storageEngine) {
+  public IndexOptionDefaults setStorageEngine(JsonObject storageEngine) {
     this.storageEngine = storageEngine;
     return this;
   }

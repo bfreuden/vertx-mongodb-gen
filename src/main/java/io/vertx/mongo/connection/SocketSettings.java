@@ -72,7 +72,7 @@ public class SocketSettings {
    *  @return this
    *  @since 3.7
    */
-  public SocketSettings applySettings(SocketSettings socketSettings) {
+  public SocketSettings setApplySettings(SocketSettings socketSettings) {
     this.applySettings = socketSettings;
     return this;
   }
@@ -87,7 +87,7 @@ public class SocketSettings {
    *  @param connectTimeout the connect timeout (in milliseconds)
    *  @return this
    */
-  public SocketSettings connectTimeout(Integer connectTimeout) {
+  public SocketSettings setConnectTimeout(Integer connectTimeout) {
     this.connectTimeout = connectTimeout;
     return this;
   }
@@ -107,7 +107,7 @@ public class SocketSettings {
    *  @param readTimeout the read timeout (in milliseconds)
    *  @return this
    */
-  public SocketSettings readTimeout(Integer readTimeout) {
+  public SocketSettings setReadTimeout(Integer readTimeout) {
     this.readTimeout = readTimeout;
     return this;
   }
@@ -127,7 +127,7 @@ public class SocketSettings {
    *  @param receiveBufferSize the receive buffer size
    *  @return this
    */
-  public SocketSettings receiveBufferSize(Integer receiveBufferSize) {
+  public SocketSettings setReceiveBufferSize(Integer receiveBufferSize) {
     this.receiveBufferSize = receiveBufferSize;
     return this;
   }
@@ -146,7 +146,7 @@ public class SocketSettings {
    *  @param sendBufferSize the send buffer size
    *  @return this
    */
-  public SocketSettings sendBufferSize(Integer sendBufferSize) {
+  public SocketSettings setSendBufferSize(Integer sendBufferSize) {
     this.sendBufferSize = sendBufferSize;
     return this;
   }

@@ -88,7 +88,7 @@ public class ConnectionPoolSettings {
    *  @return this
    *  @since 3.7
    */
-  public ConnectionPoolSettings applySettings(ConnectionPoolSettings connectionPoolSettings) {
+  public ConnectionPoolSettings setApplySettings(ConnectionPoolSettings connectionPoolSettings) {
     this.applySettings = connectionPoolSettings;
     return this;
   }
@@ -106,7 +106,7 @@ public class ConnectionPoolSettings {
    *  @param maxSize the maximum number of connections in the pool.
    *  @return this
    */
-  public ConnectionPoolSettings maxSize(Integer maxSize) {
+  public ConnectionPoolSettings setMaxSize(Integer maxSize) {
     this.maxSize = maxSize;
     return this;
   }
@@ -132,7 +132,7 @@ public class ConnectionPoolSettings {
    *  @param minSize the minimum number of connections to have in the pool at all times.
    *  @return this
    */
-  public ConnectionPoolSettings minSize(Integer minSize) {
+  public ConnectionPoolSettings setMinSize(Integer minSize) {
     this.minSize = minSize;
     return this;
   }
@@ -157,7 +157,7 @@ public class ConnectionPoolSettings {
    *  @param maxWaitTime the maximum amount of time to wait (in milliseconds)
    *  @return this
    */
-  public ConnectionPoolSettings maxWaitTime(Long maxWaitTime) {
+  public ConnectionPoolSettings setMaxWaitTime(Long maxWaitTime) {
     this.maxWaitTime = maxWaitTime;
     return this;
   }
@@ -180,7 +180,7 @@ public class ConnectionPoolSettings {
    *  @param maxConnectionLifeTime the maximum length of time a connection can live (in milliseconds)
    *  @return this
    */
-  public ConnectionPoolSettings maxConnectionLifeTime(Long maxConnectionLifeTime) {
+  public ConnectionPoolSettings setMaxConnectionLifeTime(Long maxConnectionLifeTime) {
     this.maxConnectionLifeTime = maxConnectionLifeTime;
     return this;
   }
@@ -202,7 +202,7 @@ public class ConnectionPoolSettings {
    *  @param maxConnectionIdleTime the maximum time a connection can be unused (in milliseconds)
    *  @return this
    */
-  public ConnectionPoolSettings maxConnectionIdleTime(Long maxConnectionIdleTime) {
+  public ConnectionPoolSettings setMaxConnectionIdleTime(Long maxConnectionIdleTime) {
     this.maxConnectionIdleTime = maxConnectionIdleTime;
     return this;
   }
@@ -223,7 +223,7 @@ public class ConnectionPoolSettings {
    *  @param maintenanceInitialDelay the time period to wait (in milliseconds)
    *  @return this
    */
-  public ConnectionPoolSettings maintenanceInitialDelay(Long maintenanceInitialDelay) {
+  public ConnectionPoolSettings setMaintenanceInitialDelay(Long maintenanceInitialDelay) {
     this.maintenanceInitialDelay = maintenanceInitialDelay;
     return this;
   }
@@ -243,7 +243,7 @@ public class ConnectionPoolSettings {
    *  @param maintenanceFrequency the time period between runs of the maintenance job (in milliseconds)
    *  @return this
    */
-  public ConnectionPoolSettings maintenanceFrequency(Long maintenanceFrequency) {
+  public ConnectionPoolSettings setMaintenanceFrequency(Long maintenanceFrequency) {
     this.maintenanceFrequency = maintenanceFrequency;
     return this;
   }

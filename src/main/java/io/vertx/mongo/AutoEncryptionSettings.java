@@ -88,7 +88,7 @@ public class AutoEncryptionSettings {
    *  @return this
    *  @see #getKeyVaultNamespace()
    */
-  public AutoEncryptionSettings keyVaultNamespace(String keyVaultNamespace) {
+  public AutoEncryptionSettings setKeyVaultNamespace(String keyVaultNamespace) {
     this.keyVaultNamespace = keyVaultNamespace;
     return this;
   }
@@ -115,7 +115,7 @@ public class AutoEncryptionSettings {
    *  @return this
    *  @see #getSchemaMap()
    */
-  public AutoEncryptionSettings schemaMap(Map<String, JsonObject> schemaMap) {
+  public AutoEncryptionSettings setSchemaMap(Map<String, JsonObject> schemaMap) {
     this.schemaMap = schemaMap;
     return this;
   }
@@ -131,7 +131,7 @@ public class AutoEncryptionSettings {
    *  @return this
    *  @see #isBypassAutoEncryption()
    */
-  public AutoEncryptionSettings bypassAutoEncryption(Boolean bypassAutoEncryption) {
+  public AutoEncryptionSettings setBypassAutoEncryption(Boolean bypassAutoEncryption) {
     this.bypassAutoEncryption = bypassAutoEncryption;
     return this;
   }

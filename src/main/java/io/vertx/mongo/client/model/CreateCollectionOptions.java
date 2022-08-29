@@ -72,7 +72,7 @@ public class CreateCollectionOptions {
    *  @param maxDocuments the maximum number of documents allowed in capped collection
    *  @return this
    */
-  public CreateCollectionOptions maxDocuments(Long maxDocuments) {
+  public CreateCollectionOptions setMaxDocuments(Long maxDocuments) {
     this.maxDocuments = maxDocuments;
     return this;
   }
@@ -92,7 +92,7 @@ public class CreateCollectionOptions {
    *  @param capped whether the collection is capped
    *  @return this
    */
-  public CreateCollectionOptions capped(Boolean capped) {
+  public CreateCollectionOptions setCapped(Boolean capped) {
     this.capped = capped;
     return this;
   }
@@ -112,7 +112,7 @@ public class CreateCollectionOptions {
    *  @param sizeInBytes the maximum size of a capped collection.
    *  @return this
    */
-  public CreateCollectionOptions sizeInBytes(Long sizeInBytes) {
+  public CreateCollectionOptions setSizeInBytes(Long sizeInBytes) {
     this.sizeInBytes = sizeInBytes;
     return this;
   }
@@ -133,7 +133,7 @@ public class CreateCollectionOptions {
    *  @return this
    *  @mongodb.server.release 3.0
    */
-  public CreateCollectionOptions storageEngineOptions(JsonObject storageEngineOptions) {
+  public CreateCollectionOptions setStorageEngineOptions(JsonObject storageEngineOptions) {
     this.storageEngineOptions = storageEngineOptions;
     return this;
   }
@@ -156,7 +156,7 @@ public class CreateCollectionOptions {
    *  @since 3.2
    *  @mongodb.server.release 3.2
    */
-  public CreateCollectionOptions indexOptionDefaults(IndexOptionDefaults indexOptionDefaults) {
+  public CreateCollectionOptions setIndexOptionDefaults(IndexOptionDefaults indexOptionDefaults) {
     this.indexOptionDefaults = indexOptionDefaults;
     return this;
   }
@@ -180,7 +180,7 @@ public class CreateCollectionOptions {
    *  @since 3.2
    *  @mongodb.server.release 3.2
    */
-  public CreateCollectionOptions validationOptions(ValidationOptions validationOptions) {
+  public CreateCollectionOptions setValidationOptions(ValidationOptions validationOptions) {
     this.validationOptions = validationOptions;
     return this;
   }
@@ -205,7 +205,7 @@ public class CreateCollectionOptions {
    *  @since 3.4
    *  @mongodb.server.release 3.4
    */
-  public CreateCollectionOptions collation(Collation collation) {
+  public CreateCollectionOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }

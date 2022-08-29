@@ -39,7 +39,7 @@ public class RenameCollectionOptions {
    *  @param dropTarget true if mongod should drop the target of renameCollection prior to renaming the collection.
    *  @return this
    */
-  public RenameCollectionOptions dropTarget(Boolean dropTarget) {
+  public RenameCollectionOptions setDropTarget(Boolean dropTarget) {
     this.dropTarget = dropTarget;
     return this;
   }

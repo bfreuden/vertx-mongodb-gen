@@ -89,7 +89,7 @@ public class GridFSFindOptions {
    *  @mongodb.driver.manual reference/method/db.collection.find/ Filter
    *  @see com.mongodb.client.model.Filters
    */
-  public GridFSFindOptions filter(JsonObject filter) {
+  public GridFSFindOptions setFilter(JsonObject filter) {
     this.filter = filter;
     return this;
   }
@@ -105,7 +105,7 @@ public class GridFSFindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.limit/#cursor.limit Limit
    */
-  public GridFSFindOptions limit(Integer limit) {
+  public GridFSFindOptions setLimit(Integer limit) {
     this.limit = limit;
     return this;
   }
@@ -121,7 +121,7 @@ public class GridFSFindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.skip/#cursor.skip Skip
    */
-  public GridFSFindOptions skip(Integer skip) {
+  public GridFSFindOptions setSkip(Integer skip) {
     this.skip = skip;
     return this;
   }
@@ -137,7 +137,7 @@ public class GridFSFindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.sort/ Sort
    */
-  public GridFSFindOptions sort(JsonObject sort) {
+  public GridFSFindOptions setSort(JsonObject sort) {
     this.sort = sort;
     return this;
   }
@@ -153,7 +153,7 @@ public class GridFSFindOptions {
    *  @param noCursorTimeout true if cursor timeout is disabled
    *  @return this
    */
-  public GridFSFindOptions noCursorTimeout(Boolean noCursorTimeout) {
+  public GridFSFindOptions setNoCursorTimeout(Boolean noCursorTimeout) {
     this.noCursorTimeout = noCursorTimeout;
     return this;
   }
@@ -169,7 +169,7 @@ public class GridFSFindOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
    */
-  public GridFSFindOptions maxTime(Long maxTime) {
+  public GridFSFindOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -187,7 +187,7 @@ public class GridFSFindOptions {
    *  @since 1.3
    *  @mongodb.server.release 3.4
    */
-  public GridFSFindOptions collation(Collation collation) {
+  public GridFSFindOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -207,7 +207,7 @@ public class GridFSFindOptions {
    *  @since 1.8
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
-  public GridFSFindOptions batchSize(Integer batchSize) {
+  public GridFSFindOptions setBatchSize(Integer batchSize) {
     this.batchSize = batchSize;
     return this;
   }

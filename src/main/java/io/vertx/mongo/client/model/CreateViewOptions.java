@@ -40,7 +40,7 @@ public class CreateViewOptions {
    *  @param collation the collation options to use
    *  @return this
    */
-  public CreateViewOptions collation(Collation collation) {
+  public CreateViewOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }

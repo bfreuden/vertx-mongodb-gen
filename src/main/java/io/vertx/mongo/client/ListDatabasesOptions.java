@@ -61,7 +61,7 @@ public class ListDatabasesOptions {
    *  @return this
    *  @mongodb.driver.manual reference/operator/meta/maxTimeMS/ Max Time
    */
-  public ListDatabasesOptions maxTime(Long maxTime) {
+  public ListDatabasesOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -78,7 +78,7 @@ public class ListDatabasesOptions {
    *  @mongodb.server.release 3.4.2
    *  @since 1.7
    */
-  public ListDatabasesOptions filter(JsonObject filter) {
+  public ListDatabasesOptions setFilter(JsonObject filter) {
     this.filter = filter;
     return this;
   }
@@ -96,7 +96,7 @@ public class ListDatabasesOptions {
    *  @mongodb.server.release 3.4.3
    *  @since 1.7
    */
-  public ListDatabasesOptions nameOnly(Boolean nameOnly) {
+  public ListDatabasesOptions setNameOnly(Boolean nameOnly) {
     this.nameOnly = nameOnly;
     return this;
   }
@@ -114,7 +114,7 @@ public class ListDatabasesOptions {
    *  @since 4.1
    *  @mongodb.server.release 4.0
    */
-  public ListDatabasesOptions authorizedDatabasesOnly(Boolean authorizedDatabasesOnly) {
+  public ListDatabasesOptions setAuthorizedDatabasesOnly(Boolean authorizedDatabasesOnly) {
     this.authorizedDatabasesOnly = authorizedDatabasesOnly;
     return this;
   }
@@ -134,7 +134,7 @@ public class ListDatabasesOptions {
    *  @since 1.8
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
-  public ListDatabasesOptions batchSize(Integer batchSize) {
+  public ListDatabasesOptions setBatchSize(Integer batchSize) {
     this.batchSize = batchSize;
     return this;
   }

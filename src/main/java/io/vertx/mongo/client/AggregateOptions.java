@@ -78,7 +78,7 @@ public class AggregateOptions {
    *  @return this
    *  @mongodb.driver.manual reference/command/aggregate/ Aggregation
    */
-  public AggregateOptions allowDiskUse(Boolean allowDiskUse) {
+  public AggregateOptions setAllowDiskUse(Boolean allowDiskUse) {
     this.allowDiskUse = allowDiskUse;
     return this;
   }
@@ -94,7 +94,7 @@ public class AggregateOptions {
    *  @return this
    *  @mongodb.driver.manual reference/method/cursor.maxTimeMS/#cursor.maxTimeMS Max Time
    */
-  public AggregateOptions maxTime(Long maxTime) {
+  public AggregateOptions setMaxTime(Long maxTime) {
     this.maxTime = maxTime;
     return this;
   }
@@ -113,7 +113,7 @@ public class AggregateOptions {
    *  @mongodb.server.release 3.6
    *  @since 1.6
    */
-  public AggregateOptions maxAwaitTime(Long maxAwaitTime) {
+  public AggregateOptions setMaxAwaitTime(Long maxAwaitTime) {
     this.maxAwaitTime = maxAwaitTime;
     return this;
   }
@@ -133,7 +133,7 @@ public class AggregateOptions {
    *  @mongodb.driver.manual reference/command/aggregate/ Aggregation
    *  @mongodb.server.release 3.2
    */
-  public AggregateOptions bypassDocumentValidation(Boolean bypassDocumentValidation) {
+  public AggregateOptions setBypassDocumentValidation(Boolean bypassDocumentValidation) {
     this.bypassDocumentValidation = bypassDocumentValidation;
     return this;
   }
@@ -151,7 +151,7 @@ public class AggregateOptions {
    *  @since 1.3
    *  @mongodb.server.release 3.4
    */
-  public AggregateOptions collation(Collation collation) {
+  public AggregateOptions setCollation(Collation collation) {
     this.collation = collation;
     return this;
   }
@@ -168,7 +168,7 @@ public class AggregateOptions {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  public AggregateOptions comment(String comment) {
+  public AggregateOptions setComment(String comment) {
     this.comment = comment;
     return this;
   }
@@ -185,7 +185,7 @@ public class AggregateOptions {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  public AggregateOptions hint(JsonObject hint) {
+  public AggregateOptions setHint(JsonObject hint) {
     this.hint = hint;
     return this;
   }
@@ -205,7 +205,7 @@ public class AggregateOptions {
    *  @since 1.8
    *  @mongodb.driver.manual reference/method/cursor.batchSize/#cursor.batchSize Batch Size
    */
-  public AggregateOptions batchSize(Integer batchSize) {
+  public AggregateOptions setBatchSize(Integer batchSize) {
     this.batchSize = batchSize;
     return this;
   }
