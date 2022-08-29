@@ -104,7 +104,7 @@ public class DeleteOptions {
    *  @mongodb.server.release 4.4
    */
   public DeleteOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 

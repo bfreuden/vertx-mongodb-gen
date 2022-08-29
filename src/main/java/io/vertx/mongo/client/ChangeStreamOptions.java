@@ -92,7 +92,7 @@ public class ChangeStreamOptions {
    *  @return this
    */
   public ChangeStreamOptions resumeAfter(JsonObject resumeToken) {
-    this.resumeAfter = resumeAfter;
+    this.resumeAfter = resumeToken;
     return this;
   }
 

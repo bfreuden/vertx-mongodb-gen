@@ -1,0 +1,6 @@
+com.mongodb.AuthenticationMechanism
+com.mongodb.ReadConcernLevel
+com.mongodb.connection.ClusterConnectionMode
+com.mongodb.connection.ClusterType
+com.mongodb.connection.ServerConnectionState
+com.mongodb.connection.ServerType

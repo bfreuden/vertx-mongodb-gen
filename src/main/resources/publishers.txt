@@ -1,2 +1,11 @@
-com.mongodb.reactivestreams.client.MongoClients
-com.mongodb.reactivestreams.client.gridfs.GridFSBuckets
+com.mongodb.reactivestreams.client.AggregatePublisher
+com.mongodb.reactivestreams.client.ChangeStreamPublisher
+com.mongodb.reactivestreams.client.DistinctPublisher
+com.mongodb.reactivestreams.client.FindPublisher
+com.mongodb.reactivestreams.client.ListCollectionsPublisher
+com.mongodb.reactivestreams.client.ListDatabasesPublisher
+com.mongodb.reactivestreams.client.ListIndexesPublisher
+com.mongodb.reactivestreams.client.MapReducePublisher
+com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher
+com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher
+com.mongodb.reactivestreams.client.gridfs.GridFSUploadPublisher

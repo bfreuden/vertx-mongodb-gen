@@ -1,0 +1,13 @@
+com.mongodb.ConnectionString
+com.mongodb.MongoClientSettings
+com.mongodb.MongoClientSettings.Builder
+com.mongodb.ReadConcern
+com.mongodb.ReadPreference
+com.mongodb.ReadPreferenceHedgeOptions
+com.mongodb.TaggableReadPreference
+com.mongodb.WriteConcern
+com.mongodb.connection.BufferProvider
+com.mongodb.connection.ServerDescription
+com.mongodb.connection.ServerDescription.Builder
+com.mongodb.connection.Stream
+com.mongodb.connection.TopologyVersion

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator {
 
     public PublisherOptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
-        super(context, classDoc);
+        super(context, classDoc, true);
     }
 
     @Override

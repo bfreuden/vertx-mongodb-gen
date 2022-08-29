@@ -263,7 +263,7 @@ public class FindOneAndReplaceOptions {
    *  @since 4.1
    */
   public FindOneAndReplaceOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 

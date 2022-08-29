@@ -92,7 +92,7 @@ public class CountOptions {
    *  @return this
    */
   public CountOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 

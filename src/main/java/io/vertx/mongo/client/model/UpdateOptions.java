@@ -187,7 +187,7 @@ public class UpdateOptions {
    *  @since 4.1
    */
   public UpdateOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 

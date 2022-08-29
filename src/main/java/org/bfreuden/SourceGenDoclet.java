@@ -2,10 +2,14 @@ package org.bfreuden;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mongodb.*;
+import com.mongodb.connection.StreamFactoryFactory;
+import com.mongodb.selector.ServerSelector;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import org.apache.commons.io.FileUtils;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -34,40 +38,8 @@ public class SourceGenDoclet {
     }
     public static boolean start(RootDoc root) throws IOException {
         ClassDoc[] classes = root.classes();
-//        String startClass = "com.mongodb.reactivestreams.client.MongoClient";
 
         InspectionContext inspectionContext = new InspectionContext();
-        Set<String> apiPackages = inspectionContext.apiPackages;
-        apiPackages.add("com.mongodb");
-        apiPackages.add("com.mongodb.reactivestreams.client");
-        apiPackages.add("com.mongodb.reactivestreams.client.gridfs");
-        apiPackages.add("com.mongodb.client.gridfs.model");
-        apiPackages.add("com.mongodb.reactivestreams.client.vault");
-        apiPackages.add("com.mongodb.client.model.vault");
-        apiPackages.add("com.mongodb.connection");
-        apiPackages.add("com.mongodb.selector");
-        apiPackages.add("com.mongodb.bulk");
-        apiPackages.add("com.mongodb.client.model");
-        apiPackages.add("com.mongodb.client.result");
-        apiPackages.add("com.mongodb.session");
-        apiPackages.add("com.mongodb.client.model.changestream");
-
-        Set<String> dependenciesPackages = inspectionContext.dependenciesPackages;
-        dependenciesPackages.add("java");
-        dependenciesPackages.add("org.bson");
-        dependenciesPackages.add("org.reactivestreams");
-        dependenciesPackages.add("com.mongodb.internal");
-        dependenciesPackages.add("com.mongodb.management"); // really?
-        dependenciesPackages.add("com.mongodb.reactivestreams.client.internal");
-        dependenciesPackages.add("com.mongodb.connection.netty");
-        dependenciesPackages.add("com.mongodb.event"); // TODO not for the moment
-
-        Set<String> stopClasses = inspectionContext.stopClasses;
-//        stopClasses.add("com.mongodb.client.model.Collation");
-
-        Set<String> stopEdges = inspectionContext.stopEdges;
-//        stopEdges.add("com.mongodb.reactivestreams.client.MongoClient#return:getClusterDescription");
-//        stopEdges.add("com.mongodb.ReadPreference#param:choose");
 
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.MongoClient"));
         inspectionContext.inspect(findClassDoc(classes, "com.mongodb.reactivestreams.client.MongoClients"));
@@ -112,12 +84,113 @@ public class SourceGenDoclet {
                 System.out.println("https://mongodb.github.io/mongo-java-driver/4.1/apidocs/mongodb-driver-core/" +clazz.replace('.', '/') + ".html");
 
         }
+        File genSourceDir = new File("src/main/java");
 
-        generateSources(inspectionContext, graphNoInit);
+        generateMainSources(genSourceDir, inspectionContext, graphNoInit);
+
+        InspectionContext clientSettingsContext = new InspectionContext();
+        clientSettingsContext.conversionUtilsGenerator = inspectionContext.conversionUtilsGenerator;
+        clientSettingsContext.inspect(findClassDoc(classes, MongoClientSettings.class.getName()));
+        clientSettingsContext.finalizeInspection(classes);
+        generateClientBuilderSources(genSourceDir, clientSettingsContext, clientSettingsContext.graph);
+
         return true;
     }
 
-    private static void generateSources(InspectionContext inspectionContext, Graph<String, DefaultEdge> graph) throws IOException {
+    private static void generateClientBuilderSources(File genSourceDir, InspectionContext inspectionContext, Graph<String, DefaultEdge> graph) throws IOException {
+        inspectionContext.otherApiClasses.remove(Block.class.getName());
+        inspectionContext.otherApiClasses.remove(ConnectionString.class.getName());
+        inspectionContext.otherApiClasses.remove(ServerAddress.class.getName());// TODO accept it
+        inspectionContext.otherApiClasses.remove(ServerSelector.class.getName());
+        inspectionContext.otherApiClasses.remove(StreamFactoryFactory.class.getName());
+        inspectionContext.otherApiClasses.remove(MongoCompressor.class.getName()); // TODO accept it
+        inspectionContext.otherApiClasses.remove(MongoCredential.class.getName()); // TODO accept it
+        inspectionContext.otherApiClasses.add(ReadPreference.class.getName()); // TODO accept it
+        inspectionContext.otherApiClasses.add(ReadConcern.class.getName()); // TODO accept it
+        inspectionContext.otherApiClasses.add(WriteConcern.class.getName()); // TODO accept it
+        inspectionContext.otherApiClasses.add(CodecRegistry.class.getName());
+
+        inspectionContext.excludedApiClasses.add(Block.class.getName());
+        inspectionContext.excludedApiClasses.add(ConnectionString.class.getName());
+        inspectionContext.excludedApiClasses.add(ServerAddress.class.getName()); // TODO accept it
+        inspectionContext.excludedApiClasses.add(ServerSelector.class.getName());
+        inspectionContext.excludedApiClasses.add(ReadPreference.class.getName()); // TODO accept it
+        inspectionContext.excludedApiClasses.add(ReadConcern.class.getName()); // TODO accept it
+        inspectionContext.excludedApiClasses.add(WriteConcern.class.getName()); // TODO accept it
+        inspectionContext.excludedApiClasses.add(CodecRegistry.class.getName());
+        inspectionContext.excludedApiClasses.add(StreamFactoryFactory.class.getName());
+        inspectionContext.excludedApiClasses.add(MongoCompressor.class.getName());  // TODO accept it
+        inspectionContext.excludedApiClasses.add(MongoCredential.class.getName()); // TODO accept it
+
+        inspectionContext.optionsApiClasses.remove(ReadPreferenceHedgeOptions.class.getName());
+        inspectionContext.builderClasses.remove(ReadPreferenceHedgeOptions.Builder.class.getName());
+
+        String sourceSet = "/client-builder/";
+
+        identifyClassTypes(inspectionContext, graph, sourceSet);
+        for (String options : inspectionContext.optionsApiClasses) {
+            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options), true)
+                    .generate(genSourceDir);
+        }
+
+        new BuilderPostInitializerClassGenerator(inspectionContext).generate(genSourceDir);
+    }
+
+    private static void generateMainSources(File genSourceDir, InspectionContext inspectionContext, Graph<String, DefaultEdge> graph) throws IOException {
+
+        String sourceSet = "/";
+        // FIXME hardcoded?
+        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
+        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
+
+        inspectionContext.optionsApiClasses.add("com.mongodb.client.model.Collation");
+        inspectionContext.builderClasses.add("com.mongodb.client.model.Collation.Builder");
+        inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation.Builder");
+        inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation");
+
+        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
+        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
+        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.UpdateDescription");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.ChangeStreamDocument");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.gridfs.model.GridFSFile");
+
+        identifyClassTypes(inspectionContext, graph, sourceSet);
+
+        for (String result : inspectionContext.resultApiClasses) {
+            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(result), true)
+                    .generate(genSourceDir);
+        }
+        for (String model : inspectionContext.modelApiClasses) {
+            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(model), false)
+                    .generate(genSourceDir);
+        }
+        for (String options : inspectionContext.optionsApiClasses) {
+            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options), false)
+                    .generate(genSourceDir);
+        }
+        for (String reactive : inspectionContext.publishersApiClasses) {
+            new PublisherOptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
+                    .generate(genSourceDir);
+        }
+        for (String reactive : inspectionContext.publishersApiClasses) {
+            new PublisherResultAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
+                    .generate(genSourceDir);
+        }
+//        int i = 0;
+        for (String reactive : inspectionContext.reactiveApiClasses) {
+//            i++;
+//            if (i == 2)
+//                continue;
+            new ReactiveAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
+                    .generate(genSourceDir);
+//            if (i == 7)
+//                break;
+        }
+        inspectionContext.conversionUtilsGenerator.generateSource(genSourceDir);
+    }
+
+    private static void identifyClassTypes(InspectionContext inspectionContext, Graph<String, DefaultEdge> graph, String sourceSet) throws IOException {
         // remove isolated nodes
         ArrayList<String> vertices = new ArrayList<>(graph.vertexSet());
         for (String vertex : vertices)
@@ -148,8 +221,8 @@ public class SourceGenDoclet {
             classes.removeIf(it -> !graph.vertexSet().contains(it));
 
         DijkstraShortestPath<String, DefaultEdge> shortestPath = new DijkstraShortestPath<>(graph);
-        HashSet<String> isolatedApiClasses = new HashSet<>();
-        HashSet<String> linkedApiClasses = new HashSet<>();
+        inspectionContext.isolatedApiClasses = new HashSet<>();
+        inspectionContext.linkedApiClasses = new HashSet<>();
         for (String vertex : graph.vertexSet()) {
             boolean isolated = true;
             for (String reactiveApiClass : inspectionContext.reactiveApiClasses) {
@@ -159,30 +232,14 @@ public class SourceGenDoclet {
                 }
             }
             if (isolated)
-                isolatedApiClasses.add(vertex);
+                inspectionContext.isolatedApiClasses.add(vertex);
             else if (!inspectionContext.reactiveApiClasses.contains(vertex))
-                linkedApiClasses.add(vertex);
+                inspectionContext.linkedApiClasses.add(vertex);
 
         }
 
-        // FIXME hardcoded?
-        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
-        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
-
-        inspectionContext.optionsApiClasses.add("com.mongodb.client.model.Collation");
-        inspectionContext.builderClasses.add("com.mongodb.client.model.Collation.Builder");
-        inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation.Builder");
-        inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation");
-
-        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
-        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
-        inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
-        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.UpdateDescription");
-        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.ChangeStreamDocument");
-        inspectionContext.resultApiClasses.add("com.mongodb.client.gridfs.model.GridFSFile");
-
         inspectionContext.otherApiClasses = new HashSet<>();
-        for (String isolatedApiClass : isolatedApiClasses) {
+        for (String isolatedApiClass : inspectionContext.isolatedApiClasses) {
             if (!inspectionContext.reactiveApiClasses.contains(isolatedApiClass) &&
             !inspectionContext.publishersApiClasses.contains(isolatedApiClass) &&
             !inspectionContext.enumApiClasses.contains(isolatedApiClass) &&
@@ -204,79 +261,44 @@ public class SourceGenDoclet {
 
         System.out.println("other api classes: ?");
         System.out.println("other api classes (" + inspectionContext.otherApiClasses.size() + "): " + inspectionContext.otherApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/other.txt"), inspectionContext.otherApiClasses.stream().sorted().collect(Collectors.toList()));
-
-        File genSourceDir = new File("src/main/java");
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "other.txt"), inspectionContext.otherApiClasses.stream().sorted().collect(Collectors.toList()));
 
 
         System.out.println("reactive classes: rxjava classes used in mongodb api");
         System.out.println("reactive classes: " + inspectionContext.reactiveClasses);
         System.out.println("reactive api classes: api classes using rxjava, that must be rewritten using callbacks and futures");
         System.out.println("reactive api classes (" + inspectionContext.reactiveApiClasses.size() + "): " + inspectionContext.reactiveApiClasses);
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "reactive.txt"), inspectionContext.reactiveApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("isolated api classes: classes that have no \"link\" back to a reactive api class (could be used as-is in the vertx api)");
-        System.out.println("isolated api classes (" + isolatedApiClasses.size() + "): " + isolatedApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/isolated.txt"), isolatedApiClasses.stream().sorted().collect(Collectors.toList()));
+        System.out.println("isolated api classes (" + inspectionContext.isolatedApiClasses.size() + "): " + inspectionContext.isolatedApiClasses);
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "isolated.txt"), inspectionContext.isolatedApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("linked api classes: classes that have a \"link\" back to a reactive api class (could not be used as-is in the vertx api)");
-        System.out.println("linked api classes (" + linkedApiClasses.size() + "): " + linkedApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/linked.txt"), linkedApiClasses.stream().sorted().collect(Collectors.toList()));
+        System.out.println("linked api classes (" + inspectionContext.linkedApiClasses.size() + "): " + inspectionContext.linkedApiClasses);
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "linked.txt"), inspectionContext.linkedApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("publishers api classes: classes extending rxjava publisher, that should lead to the creating of an options class");
         System.out.println("publishers api classes (" + inspectionContext.publishersApiClasses.size() + "): " + inspectionContext.publishersApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/publishers.txt"), linkedApiClasses.stream().sorted().collect(Collectors.toList()));
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "publishers.txt"), inspectionContext.publishersApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("options api classes: classes seen as a parameter of a function returning a publisher");
         System.out.println("options api classes (" + inspectionContext.optionsApiClasses.size() + "): " + inspectionContext.optionsApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/options.txt"), inspectionContext.optionsApiClasses.stream().sorted().collect(Collectors.toList()));
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "options.txt"), inspectionContext.optionsApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("enum api classes: enums");
         System.out.println("enum api classes (" + inspectionContext.enumApiClasses.size() + "): " + inspectionContext.enumApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/enum.txt"), inspectionContext.enumApiClasses.stream().sorted().collect(Collectors.toList()));
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "enum.txt"), inspectionContext.enumApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("builder api classes: builders of read-only beans");
         System.out.println("builder api classes (" + inspectionContext.builderClasses.size() + "): " + inspectionContext.builderClasses);
-        FileUtils.writeLines(new File("src/main/resources/builder.txt"), inspectionContext.builderClasses.stream().sorted().collect(Collectors.toList()));
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "builder.txt"), inspectionContext.builderClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("result api classes: beans with hidden constructors and no setters");
         System.out.println("result api classes (" + inspectionContext.resultApiClasses.size() + "): " + inspectionContext.resultApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/result.txt"), inspectionContext.resultApiClasses.stream().sorted().collect(Collectors.toList()));
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "result.txt"), inspectionContext.resultApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("model api classes: beans with constructors but no setters");
         System.out.println("model api classes (" + inspectionContext.modelApiClasses.size() + "): " + inspectionContext.modelApiClasses);
-        FileUtils.writeLines(new File("src/main/resources/model.txt"), inspectionContext.modelApiClasses.stream().sorted().collect(Collectors.toList()));
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "model.txt"), inspectionContext.modelApiClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("bson-based api classes: classes containing methods or constructors have bson parameters or return type");
         System.out.println("bson-based api classes (" + inspectionContext.bsonBasedClasses.size() + "): " + inspectionContext.bsonBasedClasses);
-        FileUtils.writeLines(new File("src/main/resources/bson.txt"), inspectionContext.bsonBasedClasses.stream().sorted().collect(Collectors.toList()));
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "bson.txt"), inspectionContext.bsonBasedClasses.stream().sorted().collect(Collectors.toList()));
         System.out.println("non-api parameter and return classes: classes of method parameters and return values not belonging to the api");
         System.out.println("non-api parameter and return classes (" + inspectionContext.nonApiParameterAndReturnClasses.size() + "): " + inspectionContext.nonApiParameterAndReturnClasses);
-        FileUtils.writeLines(new File("src/main/resources/non-api.txt"), inspectionContext.nonApiParameterAndReturnClasses.stream().sorted().collect(Collectors.toList()));
-
-
-
-        for (String result : inspectionContext.resultApiClasses) {
-            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(result), true)
-                    .generate(genSourceDir);
-        }
-        for (String model : inspectionContext.modelApiClasses) {
-            new BeanAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(model), false)
-                    .generate(genSourceDir);
-        }
-        for (String options : inspectionContext.optionsApiClasses) {
-            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options))
-                    .generate(genSourceDir);
-        }
-        for (String reactive : inspectionContext.publishersApiClasses) {
-            new PublisherOptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
-                    .generate(genSourceDir);
-        }
-        for (String reactive : inspectionContext.publishersApiClasses) {
-            new PublisherResultAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
-                    .generate(genSourceDir);
-        }
-//        int i = 0;
-        for (String reactive : inspectionContext.reactiveApiClasses) {
-//            i++;
-//            if (i == 2)
-//                continue;
-            new ReactiveAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(reactive))
-                    .generate(genSourceDir);
-//            if (i == 7)
-//                break;
-        }
-        inspectionContext.conversionUtilsGenerator.generateSource(genSourceDir);
+        FileUtils.writeLines(new File("src/main/resources" + sourceSet + "non-api.txt"), inspectionContext.nonApiParameterAndReturnClasses.stream().sorted().collect(Collectors.toList()));
     }
 
     private static Graph<String, DefaultEdge> sugGraphFrom(Graph<String, DefaultEdge> graph, String... startVertices) {

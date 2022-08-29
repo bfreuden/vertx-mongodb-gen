@@ -187,7 +187,7 @@ public class FindOneAndDeleteOptions {
    *  @mongodb.server.release 4.4
    */
   public FindOneAndDeleteOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 

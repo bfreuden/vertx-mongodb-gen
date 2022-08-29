@@ -13,6 +13,10 @@ import java.util.*;
 
 public class InspectionContext {
 
+    public HashSet<String> isolatedApiClasses;
+    public HashSet<String> linkedApiClasses;
+    public HashSet<ClassDoc> actualClientSettingsBuilders = new HashSet<>();
+
     public static class PublisherDesc {
         ClassName resultClassName;
         String firstMethodName;
@@ -36,12 +40,35 @@ public class InspectionContext {
     public final Set<String> nonApiParameterAndReturnClasses = new HashSet<>();
     public final Map<String, ClassDoc> classDocs = new HashMap<String, ClassDoc>();
     public final Set<String> optionsApiClasses = new HashSet<>();
+    public final Set<String> excludedApiClasses = new HashSet<>();
     public final Set<String> reactiveClasses = new HashSet<>();
     public final Set<String> builderClasses = new HashSet<>();
     public final Set<String> bsonBasedClasses = new HashSet<>();
     Graph<String, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
     public InspectionContext() {
+        apiPackages.add("com.mongodb");
+        apiPackages.add("com.mongodb.reactivestreams.client");
+        apiPackages.add("com.mongodb.reactivestreams.client.gridfs");
+        apiPackages.add("com.mongodb.client.gridfs.model");
+        apiPackages.add("com.mongodb.reactivestreams.client.vault");
+        apiPackages.add("com.mongodb.client.model.vault");
+        apiPackages.add("com.mongodb.connection");
+        apiPackages.add("com.mongodb.selector");
+        apiPackages.add("com.mongodb.bulk");
+        apiPackages.add("com.mongodb.client.model");
+        apiPackages.add("com.mongodb.client.result");
+        apiPackages.add("com.mongodb.session");
+        apiPackages.add("com.mongodb.client.model.changestream");
+
+        dependenciesPackages.add("java");
+        dependenciesPackages.add("org.bson");
+        dependenciesPackages.add("org.reactivestreams");
+        dependenciesPackages.add("com.mongodb.internal");
+        dependenciesPackages.add("com.mongodb.management"); // really?
+        dependenciesPackages.add("com.mongodb.reactivestreams.client.internal");
+        dependenciesPackages.add("com.mongodb.connection.netty");
+        dependenciesPackages.add("com.mongodb.event"); // TODO not for the moment
     }
 
     private String getPackageName(ClassDoc classDoc) {

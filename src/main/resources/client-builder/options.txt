@@ -1,0 +1,7 @@
+com.mongodb.AutoEncryptionSettings
+com.mongodb.MongoClientSettings
+com.mongodb.connection.ClusterSettings
+com.mongodb.connection.ConnectionPoolSettings
+com.mongodb.connection.ServerSettings
+com.mongodb.connection.SocketSettings
+com.mongodb.connection.SslSettings

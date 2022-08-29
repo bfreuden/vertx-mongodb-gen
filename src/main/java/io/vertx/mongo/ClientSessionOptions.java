@@ -16,8 +16,6 @@
 package io.vertx.mongo;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.mongo.client.ClientSession;
-
 import java.lang.Boolean;
 
 /**
@@ -41,6 +39,16 @@ public class ClientSessionOptions {
    * the default transaction options to use for all transactions on this session,
    */
   private TransactionOptions defaultTransactionOptions;
+
+  /**
+   * @return MongoDB driver object
+   * @hidden
+   */
+  public com.mongodb.ClientSessionOptions toDriverClass() {
+    com.mongodb.ClientSessionOptions.Builder builder = com.mongodb.ClientSessionOptions.builder();
+    initializeDriverBuilderClass(builder);
+    return builder.build();
+  }
 
   /**
    *  Sets whether operations using the session should causally consistent with each other.
@@ -91,17 +99,15 @@ public class ClientSessionOptions {
   }
 
   /**
-   * @return MongoDB driver object
+   * @param builder MongoDB driver builder
    * @hidden
    */
-  public com.mongodb.ClientSessionOptions toDriverClass() {
-    com.mongodb.ClientSessionOptions.Builder builder = com.mongodb.ClientSessionOptions.builder();
+  public void initializeDriverBuilderClass(com.mongodb.ClientSessionOptions.Builder builder) {
     if (this.causallyConsistent != null) {
       builder.causallyConsistent(this.causallyConsistent);
     }
     if (this.defaultTransactionOptions != null) {
       builder.defaultTransactionOptions(this.defaultTransactionOptions.toDriverClass());
     }
-    return builder.build();
   }
 }

@@ -1,0 +1,6 @@
+com.mongodb.reactivestreams.client.ClientSession
+com.mongodb.reactivestreams.client.MongoClient
+com.mongodb.reactivestreams.client.MongoCollection
+com.mongodb.reactivestreams.client.MongoDatabase
+com.mongodb.reactivestreams.client.gridfs.GridFSBucket
+com.mongodb.reactivestreams.client.vault.ClientEncryption

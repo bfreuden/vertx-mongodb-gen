@@ -1,9 +1,10 @@
 package org.bfreuden;
 
+import com.mongodb.AutoEncryptionSettings;
+import com.mongodb.Block;
+import com.mongodb.MongoClientSettings;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
-import io.vertx.core.json.JsonObject;
-import org.bson.conversions.Bson;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
@@ -12,8 +13,11 @@ import java.util.stream.Collectors;
 
 public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
 
-    public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
+    private final boolean clientSettingsOption;
+
+    public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc, boolean clientSettingsOption) {
         super(context, classDoc);
+        this.clientSettingsOption = clientSettingsOption;
     }
     @Override
     protected void analyzeClass() {
@@ -71,7 +75,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                     String mongoJavadoc = null;
                     AnnotationDesc[] annotations = parameter.annotations();
                     boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
-                    createOption(methods, constructor, optionType, optionName, optionName, mongoJavadoc, null, false, parameter.name(), deprecated);
+                    createOption(methods, constructor, optionType, optionName, optionName, mongoJavadoc, null, false, parameter.name(), deprecated, false);
                 }
 
             }
@@ -86,43 +90,71 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 .filter(this::isRegularSetter)
                 .collect(Collectors.toList());
         analyzeSetterOptions(methods, regularSetters);
-        if (!methods.isEmpty())
+        if (!methods.isEmpty() && !clientSettingsOption)
             throw new IllegalStateException("unknown method: " + methods);
     }
 
     protected void analyzeSetterOptions(List<MethodDoc> methods, List<MethodDoc> setters) {
         for (MethodDoc setter: setters) {
-            methods.remove(setter);
-            Parameter parameter = setter.parameters()[0];
-            String setterParamName = parameter.name();
-            Type optionType = parameter.type();
-            String optionName = setter.name();
-            boolean hasTimeUnit = setter.parameters().length == 2;
-            // HACK
-            if (classDoc.name().equals("Collation") && optionName.startsWith("collation")) {
-                optionName = optionName.substring("collation".length());
-                optionName = Character.toLowerCase(optionName.charAt(0)) + optionName.substring(1);
+            try {
+                methods.remove(setter);
+                Parameter parameter = setter.parameters()[0];
+                String setterParamName = parameter.name();
+                Type optionType = parameter.type();
+                // HACK for client settings options builder
+                if (optionType.qualifiedTypeName().contains(MongoClientSettings.class.getSimpleName()))
+                    throw new IllegalStateException("@unsupported class@ " + optionType.qualifiedTypeName());
+                // HACK for client settings options builder
+                if (classDoc.qualifiedTypeName().contains(AutoEncryptionSettings.class.getSimpleName())) {
+                    ParameterizedType parameterizedType = optionType.asParameterizedType();
+                    // can't use vertx generators for Object?
+                    if (parameterizedType != null && parameterizedType.toString().matches(".*\\bObject\\b.*"))
+                        throw new IllegalStateException("@unsupported class@ " + optionType.qualifiedTypeName());
+                };
+                String optionName = setter.name();
+                boolean isBlock = false;
+                // HACK for client settings options builder
+                if (setter.name().startsWith("applyTo") && setter.parameters().length == 1 && setter.parameters()[0].type().qualifiedTypeName().equals(Block.class.getName())) {
+                    ParameterizedType parameterizedType = setter.parameters()[0].type().asParameterizedType();
 
+                    optionType = parameterizedType.typeArguments()[0];
+                    String qname = optionType.qualifiedTypeName();
+                    if (qname.endsWith(".Builder"))
+                        optionType = context.classDocs.get(qname.substring(0, qname.length() - ".Builder".length()));
+                    optionName = optionName.substring("applyTo".length());
+                    optionName = Character.toLowerCase(optionName.charAt(0)) + optionName.substring(1);
+                    isBlock = true;
+                }
+                boolean hasTimeUnit = setter.parameters().length == 2;
+                // HACK
+                if (classDoc.name().equals("Collation") && optionName.startsWith("collation")) {
+                    optionName = optionName.substring("collation".length());
+                    optionName = Character.toLowerCase(optionName.charAt(0)) + optionName.substring(1);
+
+                }
+                if (optionName.startsWith("set") && Character.isUpperCase(optionName.charAt(3)))
+                    optionName = Character.toLowerCase(optionName.charAt(3)) + optionName.substring(3);
+                String mongoJavadoc = setter.getRawCommentText();
+                String mongoSetterName = setter.name();
+                AnnotationDesc[] annotations = setter.annotations();
+                boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
+                createOption(methods, setter, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null, deprecated, isBlock);
+            } catch (RuntimeException ex) {
+                if (!ex.getMessage().startsWith("@unsupported class@") || !clientSettingsOption)
+                    throw ex;
             }
-            if (optionName.startsWith("set") && Character.isUpperCase(optionName.charAt(3)))
-                optionName = Character.toLowerCase(optionName.charAt(3)) + optionName.substring(3);
-            String mongoJavadoc = setter.getRawCommentText();
-            String mongoSetterName = setter.name();
-            AnnotationDesc[] annotations = setter.annotations();
-            boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
-            createOption(methods, setter, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null, deprecated);
 
         }
     }
 
-    protected void createOption(List<MethodDoc> methods, ExecutableMemberDoc methodDoc, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName, boolean deprecated) {
+    protected void createOption(List<MethodDoc> methods, ExecutableMemberDoc methodDoc, Type optionType, String optionName, String setterParamName, String mongoJavadoc, String mongoSetterName, boolean withTimeUnit, String mongoCtorParamName, boolean deprecated, boolean isBlock) {
         if (optionsByName.containsKey(optionName))
             throw new IllegalStateException("option already exists: " + optionName + " for " + classDoc.qualifiedTypeName());
         Option option = new Option();
+        option.isBlock = isBlock;
         option.name = optionName;
         option.deprecated = deprecated;
         option.withTimeUnit = withTimeUnit;
-        optionsByName.put(option.name, option);
         option.mongoJavadoc = mongoJavadoc;
         option.mongoSetterName = mongoSetterName;
         option.setterParamName = setterParamName;
@@ -141,6 +173,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
             methods.remove(getter);
             option.mongoGetterJavadoc = getter.getRawCommentText();
         }
+        optionsByName.put(option.name, option);
     }
 
     protected boolean isFluentSetter(ClassDoc classDoc, MethodDoc m) {
@@ -154,6 +187,8 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
     protected List<JavaFile.Builder> getJavaFiles() {
         if (optionsByName.isEmpty())
             return Collections.emptyList();
+        if (clientSettingsOption)
+            context.actualClientSettingsBuilders.add(classDoc);
         TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
                 .addModifiers(Modifier.PUBLIC);
         String rawCommentText = classDoc.getRawCommentText();

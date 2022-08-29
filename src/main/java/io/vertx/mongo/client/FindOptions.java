@@ -386,7 +386,7 @@ public class FindOptions {
    *  @since 1.13
    */
   public FindOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 

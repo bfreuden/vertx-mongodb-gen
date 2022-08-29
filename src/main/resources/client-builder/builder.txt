@@ -1,0 +1,10 @@
+com.mongodb.AutoEncryptionSettings.Builder
+com.mongodb.MongoClientSettings.Builder
+com.mongodb.ReadPreferenceHedgeOptions.Builder
+com.mongodb.connection.AsynchronousSocketChannelStreamFactoryFactory.Builder
+com.mongodb.connection.ClusterSettings.Builder
+com.mongodb.connection.ConnectionPoolSettings.Builder
+com.mongodb.connection.ServerDescription.Builder
+com.mongodb.connection.ServerSettings.Builder
+com.mongodb.connection.SocketSettings.Builder
+com.mongodb.connection.SslSettings.Builder

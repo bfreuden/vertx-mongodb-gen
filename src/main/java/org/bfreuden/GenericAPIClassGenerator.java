@@ -295,10 +295,18 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
     }
 
     protected MethodSpec.Builder toMongoBuilder() {
-        MethodSpec.Builder toMongo = MethodSpec.methodBuilder("toDriverClass")
-                .addJavadoc("@return MongoDB driver object\n@hidden")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
+        MethodSpec.Builder toMongo;
+        if (hasBuilder) {
+            toMongo = MethodSpec.methodBuilder("initializeDriverBuilderClass")
+                    .addJavadoc("@param builder MongoDB driver builder\n@hidden")
+                    .addParameter(ClassName.bestGuess(classDoc.qualifiedTypeName() + ".Builder"), "builder")
+                    .addModifiers(Modifier.PUBLIC);
+        } else {
+            toMongo = MethodSpec.methodBuilder("toDriverClass")
+                    .addJavadoc("@return MongoDB driver object\n@hidden")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
+        }
         List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
         StringJoiner ctorParams = new StringJoiner(", ");
         for (Option option : requiredOptions) {
@@ -312,7 +320,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         }
         if (hasBuilder) {
             configurableName = "builder";
-            toMongo.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+//            toMongo.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
         } else {
             configurableName = "result";
             toMongo.addStatement("$T result = new $T(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()), ClassName.bestGuess(classDoc.qualifiedTypeName()));
@@ -326,6 +334,8 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         toMongoBuilder.beginControlFlow("if (this." + option.name + " != null)");
         if (option.withTimeUnit) {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ", $T.MILLISECONDS)", TimeUnit.class);
+        } else if (option.isBlock) {
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(_builder -> " + option.name + ".initializeDriverBuilderClass(_builder))");
         } else if (option.type.toMongoEnabledType) {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".toDriverClass())");
         } else if (option.type.mapper != null) {
@@ -335,13 +345,12 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         }
 
         toMongoBuilder.endControlFlow();
-
     }
 
     protected MethodSpec toMongo(MethodSpec.Builder toMongoBuilder) {
-        if (hasBuilder)
-            toMongoBuilder.addStatement("return builder.build()");
-        else
+        if (!hasBuilder)
+//            toMongoBuilder.addStatement("return builder");
+//        else
             toMongoBuilder.addStatement("return result");
         return toMongoBuilder.build();
     }
@@ -349,6 +358,27 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
     protected void inflateOptionType(TypeSpec.Builder type) {
         type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
         MethodSpec.Builder toMongoMethod = toMongoBuilder();
+        if (hasBuilder) {
+            MethodSpec.Builder toMongo2 = MethodSpec.methodBuilder("toDriverClass")
+                    .addJavadoc("@return MongoDB driver object\n@hidden")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
+            StringJoiner ctorParams = new StringJoiner(", ");
+            List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
+            for (Option option : requiredOptions) {
+                toMongo2
+                        .beginControlFlow("if (this." + option.name + " == null)")
+                        .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
+                        .endControlFlow();
+                if (option.withTimeUnit || option.type.toMongoEnabledType)
+                    throw new IllegalStateException("not implemented");
+                ctorParams.add("this." +option.name);
+            }
+            toMongo2.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+            toMongo2.addStatement("initializeDriverBuilderClass(builder)");
+            toMongo2.addStatement("return builder.build()");
+            type.addMethod(toMongo2.build());
+        }
         for (Option option: optionsByName.values()) {
             if (option.name.equals("commitQuorum")) {
                 System.out.println("WARNING: ignoring commitQuorum parameter");
@@ -373,7 +403,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(option.type.vertxType, option.setterParamName)
                         .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()))
-                        .addStatement("this." + option.name + " = " + option.name)
+                        .addStatement("this." + option.name + " = " + option.setterParamName)
                         .addStatement("return this");
                 if (option.mongoJavadoc != null) {
                     if (option.withTimeUnit) {
@@ -444,5 +474,6 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         String mongoGetterJavadoc;
         boolean mandatory = false;
         boolean withTimeUnit = false;
+        boolean isBlock = false;
     }
 }

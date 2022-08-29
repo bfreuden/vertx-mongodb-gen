@@ -81,6 +81,16 @@ public class Collation {
   private Boolean backwards;
 
   /**
+   * @return MongoDB driver object
+   * @hidden
+   */
+  public com.mongodb.client.model.Collation toDriverClass() {
+    com.mongodb.client.model.Collation.Builder builder = com.mongodb.client.model.Collation.builder();
+    initializeDriverBuilderClass(builder);
+    return builder.build();
+  }
+
+  /**
    *  Sets the locale
    *
    *  @param locale the locale
@@ -272,11 +282,10 @@ public class Collation {
   }
 
   /**
-   * @return MongoDB driver object
+   * @param builder MongoDB driver builder
    * @hidden
    */
-  public com.mongodb.client.model.Collation toDriverClass() {
-    com.mongodb.client.model.Collation.Builder builder = com.mongodb.client.model.Collation.builder();
+  public void initializeDriverBuilderClass(com.mongodb.client.model.Collation.Builder builder) {
     if (this.locale != null) {
       builder.locale(this.locale);
     }
@@ -304,6 +313,5 @@ public class Collation {
     if (this.backwards != null) {
       builder.backwards(this.backwards);
     }
-    return builder.build();
   }
 }

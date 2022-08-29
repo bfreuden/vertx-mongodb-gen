@@ -106,6 +106,8 @@ public abstract class APIClassGenerator {
                 System.out.println("WARNING: ignored method because return type is ignored: " + methodDoc);
                 throw new RuntimeException("@ignored type@");
             }
+            if (context.excludedApiClasses.contains(qualifiedTypeName))
+                throw new IllegalStateException("@unsupported class@ " + qualifiedTypeName);
             if (Types.isAcceptedAsIs(qualifiedTypeName)) {
                 ActualType result = ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));
                 if (qualifiedTypeName.equals(List.class.getName()) || qualifiedTypeName.equals(Set.class.getName()))
@@ -184,7 +186,7 @@ public abstract class APIClassGenerator {
                     return actualType;
                 }
             } else {
-                throw new IllegalStateException("unsupported class: " + qualifiedTypeName);
+                throw new IllegalStateException("@unsupported class@: " + qualifiedTypeName);
             }
         } else if (type.getClass().getName().contains("ArrayType")) {
             ActualType actualType2 = getActualType2(methodDoc, name, type.asClassDoc(), location, null);
@@ -294,7 +296,7 @@ public abstract class APIClassGenerator {
             if ("@ignored type@".equals(ex.getMessage()))
                 return null;
             else
-                throw new RuntimeException(ex);
+                throw new RuntimeException(ex.getMessage(), ex);
         }
     }
 

@@ -294,7 +294,7 @@ public class FindOneAndUpdateOptions {
    *  @since 4.1
    */
   public FindOneAndUpdateOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 

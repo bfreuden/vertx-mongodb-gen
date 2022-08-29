@@ -153,7 +153,7 @@ public class ReplaceOptions {
    *  @since 4.1
    */
   public ReplaceOptions hintString(String hint) {
-    this.hintString = hintString;
+    this.hintString = hint;
     return this;
   }
 
