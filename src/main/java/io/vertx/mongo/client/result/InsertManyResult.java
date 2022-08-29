@@ -17,7 +17,6 @@ package io.vertx.mongo.client.result;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.CollectionsConversionUtils;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Exception;
@@ -25,9 +24,6 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.util.Map;
 
-@DataObject(
-    generateConverter = true
-)
 public class InsertManyResult {
   private boolean acknowledged;
 

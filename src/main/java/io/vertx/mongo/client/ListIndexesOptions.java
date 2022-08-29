@@ -16,7 +16,6 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.reactivestreams.client.ListIndexesPublisher;
-import io.vertx.codegen.annotations.DataObject;
 import java.lang.Integer;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +25,6 @@ import java.util.concurrent.TimeUnit;
  *
  *  @since 1.0
  */
-@DataObject(
-    generateConverter = true
-)
 public class ListIndexesOptions {
   /**
    *  the max time

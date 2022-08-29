@@ -17,14 +17,10 @@ package io.vertx.mongo.bulk;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.CollectionsConversionUtils;
 import java.lang.Exception;
 import java.util.List;
 
-@DataObject(
-    generateConverter = true
-)
 public class BulkWriteResult {
   private boolean acknowledged;
 

@@ -6,6 +6,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.connection.*;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettingsInitializer;
 
 import java.util.function.Consumer;
@@ -20,6 +21,7 @@ public class ClientConfig implements MongoClientSettingsInitializer {
     private ConnectionString mongoConnectionString;
     private MongoClientSettings mongoSettings;
     private io.vertx.mongo.MongoClientSettings vertxMongoSettings;
+    private JsonObject jsonSettings;
     private boolean useObjectIds = false;
     private io.vertx.mongo.MongoClientSettings settings;
     public Consumer<ServerSettings.Builder> serverSettingsInitializer;
@@ -39,6 +41,8 @@ public class ClientConfig implements MongoClientSettingsInitializer {
             throw new IllegalStateException("already configured with a connection string");
         if (settings != null)
             throw new IllegalStateException("already configured with a Vert.x MongoClientSettings");
+        if (jsonSettings != null)
+            throw new IllegalStateException("already configured with a JsonObject");
     }
 
     public boolean isUseObjectIds() {
@@ -58,6 +62,16 @@ public class ClientConfig implements MongoClientSettingsInitializer {
     public ClientConfig mongoSettings(MongoClientSettings settings) {
         assertNotConfigured();
         this.mongoSettings = settings;
+        return this;
+    }
+
+    public JsonObject getJsonSettings() {
+        return jsonSettings;
+    }
+
+    public ClientConfig jsonSettings(JsonObject settings) {
+        assertNotConfigured();
+        this.jsonSettings = settings;
         return this;
     }
 

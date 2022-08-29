@@ -356,7 +356,8 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
     }
 
     protected void inflateOptionType(TypeSpec.Builder type) {
-        type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
+        if (classDoc.typeParameters().length == 0 && !resultBean)
+            type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
         MethodSpec.Builder toMongoMethod = toMongoBuilder();
         if (hasBuilder) {
             MethodSpec.Builder toMongo2 = MethodSpec.methodBuilder("toDriverClass")

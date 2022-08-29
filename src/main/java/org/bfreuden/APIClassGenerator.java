@@ -1,10 +1,12 @@
 package org.bfreuden;
 
+import com.google.common.collect.Lists;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.io.FileUtils;
 import org.bfreuden.mappers.*;
 import org.reactivestreams.Publisher;
 
@@ -25,6 +27,7 @@ public abstract class APIClassGenerator {
     protected final List<MongoMethod> constructors = new ArrayList<>();
     protected LinkedHashMap<String, OptionsAPIClassGenerator.Option> optionsByName = new LinkedHashMap<>();
     protected Set<String> staticImports = new HashSet<>();
+    protected boolean generatePackageInfo = false;
 
     public APIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         this.context = context;
@@ -39,6 +42,19 @@ public abstract class APIClassGenerator {
         for (JavaFile.Builder javaFile : javaFiles) {
             javaFile.addFileComment(Copyright.COPYRIGHT);
             javaFile.build().writeTo(genSourceDir);
+        }
+        if (generatePackageInfo) {
+            String targetPackage = getTargetPackage().replace('.', '/');
+            File packageInfo = new File(genSourceDir, targetPackage + "/package-info.java");
+            if (!packageInfo.exists()) {
+                packageInfo.getParentFile().mkdirs();
+                FileUtils.writeLines(packageInfo, Lists.newArrayList(
+                        "@ModuleGen(name = \"" + getTargetPackage().replace('.', '-') + "\", groupPackage = \"" + getTargetPackage() + "\")",
+                        "package " + getTargetPackage() + ";",
+                        "",
+                        "import io.vertx.codegen.annotations.ModuleGen;"
+                ));
+            }
         }
     }
 

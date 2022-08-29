@@ -2,6 +2,7 @@ package org.bfreuden;
 
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
+import io.vertx.codegen.annotations.DataObject;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
@@ -17,6 +18,7 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
         super(context, classDoc);
         this.isResultOnlyOptions = true; // don't write toMongoMethod or setters
         this.resultBean = resultBean;
+        this.generatePackageInfo = !resultBean && classDoc.typeParameters().length == 0;
     }
 
     @Override
@@ -74,6 +76,7 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
     protected List<JavaFile.Builder> getJavaFiles() {
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(getTargetClassName());
         typeBuilder.addModifiers(Modifier.PUBLIC);
+
 //        if (isAbstract)
 //            typeBuilder.addModifiers(Modifier.ABSTRACT);
 

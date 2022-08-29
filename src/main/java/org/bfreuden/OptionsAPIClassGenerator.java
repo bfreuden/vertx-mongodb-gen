@@ -18,6 +18,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
     public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc, boolean clientSettingsOption) {
         super(context, classDoc);
         this.clientSettingsOption = clientSettingsOption;
+        this.generatePackageInfo = true;
     }
     @Override
     protected void analyzeClass() {

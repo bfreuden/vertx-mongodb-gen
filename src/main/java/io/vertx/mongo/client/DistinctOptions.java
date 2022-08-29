@@ -16,7 +16,6 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.reactivestreams.client.DistinctPublisher;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
@@ -29,9 +28,6 @@ import java.util.concurrent.TimeUnit;
  *
  *  @since 1.0
  */
-@DataObject(
-    generateConverter = true
-)
 public class DistinctOptions {
   /**
    * the filter, which may be null.

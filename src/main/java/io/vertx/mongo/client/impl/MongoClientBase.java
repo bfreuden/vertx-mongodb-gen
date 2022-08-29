@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.core.shareddata.Shareable;
 import io.vertx.mongo.AutoEncryptionSettings;
+import io.vertx.mongo.MongoClientSettingsConverter;
 import io.vertx.mongo.client.ClientConfig;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.connection.*;
@@ -113,8 +114,12 @@ public abstract class MongoClientBase implements MongoClient {
                         settingsBuilder.applyConnectionString(config.getMongoConnectionString());
                     } else if (config.getConnectionString() != null) {
                         settingsBuilder.applyConnectionString(new ConnectionString(config.getConnectionString()));
-                    }  else if (config.getSettings() != null) {
+                    }  else if (config.getSettings() != null || config.getJsonSettings() != null) {
                         io.vertx.mongo.MongoClientSettings vertxConfig = config.getSettings();
+                        if (vertxConfig == null) {
+                            vertxConfig = new io.vertx.mongo.MongoClientSettings();
+                            MongoClientSettingsConverter.fromJson(config.getJsonSettings(), vertxConfig);
+                        }
                         mergeVertxSettingsIntoMongoSettingsBuilder(config, settingsBuilder, vertxConfig);
                     }
                     settingsBuilder.codecRegistry(

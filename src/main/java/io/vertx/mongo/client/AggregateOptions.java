@@ -16,7 +16,6 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.reactivestreams.client.AggregatePublisher;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
@@ -31,9 +30,6 @@ import java.util.concurrent.TimeUnit;
  *
  *  @since 1.0
  */
-@DataObject(
-    generateConverter = true
-)
 public class AggregateOptions {
   /**
    * true if writing to temporary files is enabled

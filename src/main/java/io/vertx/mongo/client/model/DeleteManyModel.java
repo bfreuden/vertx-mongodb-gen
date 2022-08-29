@@ -15,14 +15,10 @@
 //
 package io.vertx.mongo.client.model;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import org.bson.conversions.Bson;
 
-@DataObject(
-    generateConverter = true
-)
 public class DeleteManyModel<T> extends WriteModel<T> {
   private JsonObject filter;
 

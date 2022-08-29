@@ -17,16 +17,12 @@ package io.vertx.mongo.client.model.changestream;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Exception;
 import java.lang.String;
 import java.util.List;
 
-@DataObject(
-    generateConverter = true
-)
 public class UpdateDescription {
   private List<String> removedFields;
 

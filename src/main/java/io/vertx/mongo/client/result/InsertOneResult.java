@@ -17,14 +17,10 @@ package io.vertx.mongo.client.result;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Exception;
 import java.lang.Object;
 
-@DataObject(
-    generateConverter = true
-)
 public class InsertOneResult {
   private boolean acknowledged;
 

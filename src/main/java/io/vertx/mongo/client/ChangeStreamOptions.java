@@ -17,7 +17,6 @@ package io.vertx.mongo.client;
 
 import com.mongodb.client.model.changestream.FullDocument;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
@@ -31,9 +30,6 @@ import java.util.concurrent.TimeUnit;
  *  @mongodb.server.release 3.6
  *  @since 1.6
  */
-@DataObject(
-    generateConverter = true
-)
 public class ChangeStreamOptions {
   /**
    * the fullDocument

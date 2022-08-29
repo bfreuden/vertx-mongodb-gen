@@ -17,12 +17,8 @@ package io.vertx.mongo.client.result;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.codegen.annotations.DataObject;
 import java.lang.Exception;
 
-@DataObject(
-    generateConverter = true
-)
 public class DeleteResult {
   private boolean acknowledged;
 

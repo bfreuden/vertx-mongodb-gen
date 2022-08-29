@@ -15,11 +15,6 @@
 //
 package io.vertx.mongo.client.model;
 
-import io.vertx.codegen.annotations.DataObject;
-
-@DataObject(
-    generateConverter = true
-)
 public class InsertOneModel<T> extends WriteModel<T> {
   private T document;
 

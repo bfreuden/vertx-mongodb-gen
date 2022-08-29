@@ -15,16 +15,12 @@
 //
 package io.vertx.mongo.client.model;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.util.List;
 import org.bson.conversions.Bson;
 
-@DataObject(
-    generateConverter = true
-)
 public class UpdateOneModel<T> extends WriteModel<T> {
   private JsonObject filter;
 

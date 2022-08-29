@@ -19,16 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import com.mongodb.MongoNamespace;
 import com.mongodb.client.model.changestream.OperationType;
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.Exception;
 import java.lang.Long;
 import java.lang.String;
 
-@DataObject(
-    generateConverter = true
-)
 public class ChangeStreamDocument<TDocument> {
   private JsonObject resumeToken;
 
