@@ -406,6 +406,13 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     .addModifiers(Modifier.PUBLIC)
                     .addParameter(ClassName.get(JsonObject.class), "json")
                     .addStatement("$T.fromJson(json, this)", ClassName.bestGuess(getTargetQualifiedClassName() + "Converter")).build());
+            type.addMethod(MethodSpec.methodBuilder("toJson")
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(ClassName.get(JsonObject.class))
+                    .addStatement("$T result = new $T()", ClassName.get(JsonObject.class), ClassName.get(JsonObject.class))
+                    .addStatement("$T.toJson(this, result)", ClassName.bestGuess(getTargetQualifiedClassName() + "Converter"))
+                    .addStatement("return result")
+                    .build());
         }
         MethodSpec.Builder toMongoMethod = toMongoBuilder();
         if (hasBuilder) {
@@ -440,8 +447,6 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
 //            type.addField(FieldSpec.builder(Exception.class, option.name + "Exception").addModifiers(Modifier.PRIVATE).build());
             // write field
             FieldSpec.Builder fieldBuilder = FieldSpec.builder(optionSerializer != null ? optionSerializer : option.type.vertxType, option.name).addModifiers(Modifier.PRIVATE);
-            if (optionSerializer != null)
-                fieldBuilder.initializer("new $T(($T)null)", optionSerializer, option.type.vertxType);
             if (option.mongoJavadoc != null) {
                 // FIXME hack
                 option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "hint(JsonObject)");
@@ -456,9 +461,24 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             type.addField(fieldBuilder.build());
             if (option.mongoSetterName != null) {
                 MethodSpec.Builder setterBuilder = optionSetterBuilder(option, false)
-                        .addParameter(option.type.vertxType, option.setterParamName)
-                        .addStatement(optionSerializer != null ? "this." + option.name + ".setValue(" + option.setterParamName  +")":  "this." + option.name + " = " + option.setterParamName)
-                        .addStatement("return this");
+                        .addParameter(option.type.vertxType, option.setterParamName);
+                if (optionSerializer != null) {
+                    setterBuilder
+                            .beginControlFlow(String.format("if (%s == null)", option.setterParamName))
+                            .addStatement("this." + option.name + " = null")
+                            .nextControlFlow(String.format("else if (this.%s == null)", option.name))
+                            .addStatement(CodeBlock.of(String.format("this.%s = new $T(%s)", option.name, option.setterParamName), optionSerializer))
+                            .nextControlFlow("else")
+                            .addStatement("this." + option.name + ".setValue(" + option.setterParamName  +")")
+                            .endControlFlow()
+                            .addStatement("return this");
+
+                } else {
+                    setterBuilder
+                            .addStatement("this." + option.name + " = " + option.setterParamName)
+                            .addStatement("return this");
+                }
+
                 if (isDataObject && !option.isCodeGenCompatible)
                     setterBuilder.addAnnotation(GenIgnore.class);
                 type.addMethod(setterBuilder.build());
@@ -473,8 +493,16 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             }
             boolean isBoolean = option.type.vertxType.toString().toLowerCase().contains("boolean");
             MethodSpec.Builder getterBuilder = optionGetterBuilder(option, isBoolean, isDataObject && !option.isCodeGenCompatible, false)
-                    .returns(option.type.vertxType)
-                    .addStatement(optionSerializer != null ? "return " + option.name + ".getValue()" : "return " + option.name);
+                    .returns(option.type.vertxType);
+            if (optionSerializer != null) {
+                getterBuilder.beginControlFlow(String.format("if (this.%s == null)", option.name))
+                        .addStatement("return null")
+                        .nextControlFlow("else")
+                        .addStatement("return " + option.name + ".getValue()")
+                        .endControlFlow();
+            } else {
+                getterBuilder.addStatement("return " + option.name);
+            }
             if (isDataObject && !option.isCodeGenCompatible)
                 getterBuilder.addAnnotation(GenIgnore.class);
             type.addMethod(getterBuilder.build());

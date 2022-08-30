@@ -47,6 +47,12 @@ public class InsertManyOptions {
     InsertManyOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    InsertManyOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets whether the server should insert the documents in the order provided.
    *

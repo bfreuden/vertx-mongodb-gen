@@ -45,6 +45,12 @@ public class SslSettings {
     SslSettingsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    SslSettingsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden

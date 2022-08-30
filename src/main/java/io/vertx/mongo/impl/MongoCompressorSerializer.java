@@ -1,9 +1,11 @@
 package io.vertx.mongo.impl;
 
 import com.mongodb.MongoCompressor;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.impl.OptionSerializer;
 
+@DataObject
 public class MongoCompressorSerializer extends OptionSerializer<MongoCompressor> {
 
     public MongoCompressorSerializer(MongoCompressor value) {

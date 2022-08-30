@@ -42,6 +42,12 @@ public class GridFSDownloadOptions {
     GridFSDownloadOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    GridFSDownloadOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Set the revision of the file to retrieve.
    *

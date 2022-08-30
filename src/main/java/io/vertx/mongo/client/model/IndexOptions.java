@@ -142,6 +142,12 @@ public class IndexOptions {
     IndexOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    IndexOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Should the index should be created in the background
    *

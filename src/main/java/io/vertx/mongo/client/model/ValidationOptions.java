@@ -54,6 +54,12 @@ public class ValidationOptions {
     ValidationOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    ValidationOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the validation rules for all
    *

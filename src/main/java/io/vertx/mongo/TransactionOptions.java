@@ -44,17 +44,17 @@ public class TransactionOptions {
   /**
    * the read concern
    */
-  private ReadConcernSerializer readConcern = new ReadConcernSerializer((ReadConcern)null);
+  private ReadConcernSerializer readConcern;
 
   /**
    * the write concern, which must be acknowledged
    */
-  private WriteConcernSerializer writeConcern = new WriteConcernSerializer((WriteConcern)null);
+  private WriteConcernSerializer writeConcern;
 
   /**
    * the read preference, which currently must be primary. This restriction may be relaxed in future versions.
    */
-  private ReadPreferenceSerializer readPreference = new ReadPreferenceSerializer((ReadPreference)null);
+  private ReadPreferenceSerializer readPreference;
 
   /**
    * the max commit time, which must be either null or greater than zero, in the given time unit
@@ -66,6 +66,12 @@ public class TransactionOptions {
 
   public TransactionOptions(JsonObject json) {
     TransactionOptionsConverter.fromJson(json, this);
+  }
+
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    TransactionOptionsConverter.toJson(this, result);
+    return result;
   }
 
   /**
@@ -86,7 +92,13 @@ public class TransactionOptions {
    */
   @GenIgnore
   public TransactionOptions setReadConcern(ReadConcern readConcern) {
-    this.readConcern.setValue(readConcern);
+    if (readConcern == null) {
+      this.readConcern = null;
+    } else if (this.readConcern == null) {
+      this.readConcern = new ReadConcernSerializer(readConcern);
+    } else {
+      this.readConcern.setValue(readConcern);
+    }
     return this;
   }
 
@@ -110,7 +122,11 @@ public class TransactionOptions {
    */
   @GenIgnore
   public ReadConcern getMongoReadConcern() {
-    return readConcern.getValue();
+    if (this.readConcern == null) {
+      return null;
+    } else {
+      return readConcern.getValue();
+    }
   }
 
   /**
@@ -132,7 +148,13 @@ public class TransactionOptions {
    */
   @GenIgnore
   public TransactionOptions setWriteConcern(WriteConcern writeConcern) {
-    this.writeConcern.setValue(writeConcern);
+    if (writeConcern == null) {
+      this.writeConcern = null;
+    } else if (this.writeConcern == null) {
+      this.writeConcern = new WriteConcernSerializer(writeConcern);
+    } else {
+      this.writeConcern.setValue(writeConcern);
+    }
     return this;
   }
 
@@ -156,7 +178,11 @@ public class TransactionOptions {
    */
   @GenIgnore
   public WriteConcern getMongoWriteConcern() {
-    return writeConcern.getValue();
+    if (this.writeConcern == null) {
+      return null;
+    } else {
+      return writeConcern.getValue();
+    }
   }
 
   /**
@@ -178,7 +204,13 @@ public class TransactionOptions {
    */
   @GenIgnore
   public TransactionOptions setReadPreference(ReadPreference readPreference) {
-    this.readPreference.setValue(readPreference);
+    if (readPreference == null) {
+      this.readPreference = null;
+    } else if (this.readPreference == null) {
+      this.readPreference = new ReadPreferenceSerializer(readPreference);
+    } else {
+      this.readPreference.setValue(readPreference);
+    }
     return this;
   }
 
@@ -202,7 +234,11 @@ public class TransactionOptions {
    */
   @GenIgnore
   public ReadPreference getMongoReadPreference() {
-    return readPreference.getValue();
+    if (this.readPreference == null) {
+      return null;
+    } else {
+      return readPreference.getValue();
+    }
   }
 
   /**

@@ -1,9 +1,11 @@
 package io.vertx.mongo.impl;
 
 import com.mongodb.MongoCredential;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.impl.OptionSerializer;
 
+@DataObject
 public class MongoCredentialSerializer extends OptionSerializer<MongoCredential> {
     public MongoCredentialSerializer(MongoCredential value) {
         super(value);

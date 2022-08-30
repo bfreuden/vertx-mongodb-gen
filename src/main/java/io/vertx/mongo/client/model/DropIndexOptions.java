@@ -42,6 +42,12 @@ public class DropIndexOptions {
     DropIndexOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    DropIndexOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the maximum execution time on the server for this operation.
    *

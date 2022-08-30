@@ -86,6 +86,12 @@ public class FindOneAndReplaceOptions {
     FindOneAndReplaceOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    FindOneAndReplaceOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets a document describing the fields to return for all matching documents.
    *

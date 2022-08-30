@@ -168,7 +168,10 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
         option.mongoSetterName = mongoSetterName;
         option.setterParamName = setterParamName;
         option.type = getActualType(methodDoc, optionName, optionType, TypeLocation.PARAMETER);
-        option.isCodeGenCompatible = isDataObject && (!option.type.mongoType.toString().startsWith("com.mongodb") || !Types.isAcceptedAsIs(option.type.mongoType.toString()));
+        String mongoType = option.type.mongoType.toString();
+        //FIXME hack to
+        option.isCodeGenCompatible = isDataObject && !(mongoType.startsWith("com.mongodb") && Types.isAcceptedAsIs(mongoType) ||
+                mongoType.startsWith("java.util.List<") && mongoType.substring("java.util.List<".length(),mongoType.length() - 1).startsWith("com.mongodb") && Types.isAcceptedAsIs(mongoType.substring("java.util.List<".length(),mongoType.length() - 1)));
         if (option.type.vertxType.isPrimitive())
             option.type.vertxType = option.type.vertxType.box();
         if (mongoCtorParamName != null)

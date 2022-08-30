@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class OptionListSerializer<T, S extends OptionSerializer<T>> extends OptionSerializer<List<T>> {
@@ -19,20 +20,22 @@ public abstract class OptionListSerializer<T, S extends OptionSerializer<T>> ext
     }
 
     public OptionListSerializer(JsonObject jsonValue, Class<S> serializerClass, Class<T> objectClass) {
-        super(jsonValue);
+        super((JsonObject) null);
         this.serializerClass = serializerClass;
         this.objectClass = objectClass;
+        fromJson(jsonValue);
     }
 
     protected void fromJson(JsonObject jsonValue) {
         JsonArray list = jsonValue.getJsonArray("list");
+        this.value = new ArrayList<>(list.size());
         for (int i=0 ; i<list.size() ; i++) {
             JsonObject jsonObject = list.getJsonObject(i);
             try {
                 Constructor<S> ctor = serializerClass.getDeclaredConstructor(JsonObject.class);
                 S serializer = ctor.newInstance(jsonObject);
                 serializer.fromJson(jsonObject);
-                list.add(serializer.getValue());
+                this.value.add(serializer.getValue());
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
@@ -47,7 +50,7 @@ public abstract class OptionListSerializer<T, S extends OptionSerializer<T>> ext
         this.value = value;
     }
 
-    public JsonObject toJson() {
+    protected JsonObject toJsonInternal() {
         JsonObject result = new JsonObject();
         JsonArray list = new JsonArray();
         result.put("list", list);
@@ -62,5 +65,5 @@ public abstract class OptionListSerializer<T, S extends OptionSerializer<T>> ext
         }
         return result;
     }
-    
+
 }

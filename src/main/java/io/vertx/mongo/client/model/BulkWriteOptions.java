@@ -45,6 +45,12 @@ public class BulkWriteOptions {
     BulkWriteOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    BulkWriteOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  If true, then when a write fails, return without performing the remaining
    *  writes. If false, then when a write fails, continue with the remaining writes, if any.

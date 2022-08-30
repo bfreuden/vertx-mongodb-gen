@@ -48,6 +48,12 @@ public class GridFSUploadOptions {
     GridFSUploadOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    GridFSUploadOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the chunk size in bytes.
    *

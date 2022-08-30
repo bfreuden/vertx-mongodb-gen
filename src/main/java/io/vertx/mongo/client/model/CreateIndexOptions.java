@@ -41,13 +41,19 @@ public class CreateIndexOptions {
   /**
    * the create index commit quorum
    */
-  private CreateIndexCommitQuorumSerializer commitQuorum = new CreateIndexCommitQuorumSerializer((CreateIndexCommitQuorum)null);
+  private CreateIndexCommitQuorumSerializer commitQuorum;
 
   public CreateIndexOptions() {
   }
 
   public CreateIndexOptions(JsonObject json) {
     CreateIndexOptionsConverter.fromJson(json, this);
+  }
+
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    CreateIndexOptionsConverter.toJson(this, result);
+    return result;
   }
 
   /**
@@ -80,7 +86,13 @@ public class CreateIndexOptions {
    */
   @GenIgnore
   public CreateIndexOptions setCommitQuorum(CreateIndexCommitQuorum commitQuorum) {
-    this.commitQuorum.setValue(commitQuorum);
+    if (commitQuorum == null) {
+      this.commitQuorum = null;
+    } else if (this.commitQuorum == null) {
+      this.commitQuorum = new CreateIndexCommitQuorumSerializer(commitQuorum);
+    } else {
+      this.commitQuorum.setValue(commitQuorum);
+    }
     return this;
   }
 
@@ -108,7 +120,11 @@ public class CreateIndexOptions {
    */
   @GenIgnore
   public CreateIndexCommitQuorum getMongoCommitQuorum() {
-    return commitQuorum.getValue();
+    if (this.commitQuorum == null) {
+      return null;
+    } else {
+      return commitQuorum.getValue();
+    }
   }
 
   /**

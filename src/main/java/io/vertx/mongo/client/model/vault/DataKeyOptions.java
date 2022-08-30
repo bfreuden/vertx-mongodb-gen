@@ -47,6 +47,12 @@ public class DataKeyOptions {
     DataKeyOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    DataKeyOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Set the alternate key names.
    *

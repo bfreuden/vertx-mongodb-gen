@@ -43,6 +43,12 @@ public class InsertOneOptions {
     InsertOneOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    InsertOneOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the bypass document level validation flag.
    *

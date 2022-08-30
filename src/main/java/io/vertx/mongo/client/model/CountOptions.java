@@ -70,6 +70,12 @@ public class CountOptions {
     CountOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    CountOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the hint to apply.
    *
@@ -93,7 +99,7 @@ public class CountOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  <p>Note: If {@link CountOptions#setHint(JsonObject)} is set that will be used instead of any hint string.</p>
+   *  <p>Note: If {@link CountOptions#hint(JsonObject)} is set that will be used instead of any hint string.</p>
    *
    *  @param hint the name of the index which should be used for the operation
    *  @return this

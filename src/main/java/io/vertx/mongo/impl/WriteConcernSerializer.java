@@ -1,9 +1,11 @@
 package io.vertx.mongo.impl;
 
 import com.mongodb.WriteConcern;
+import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.impl.OptionSerializer;
 
+@DataObject
 public class WriteConcernSerializer extends OptionSerializer<WriteConcern> {
     public WriteConcernSerializer(WriteConcern value) {
         super(value);

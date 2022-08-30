@@ -46,6 +46,12 @@ public class ServerSettings {
     ServerSettingsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    ServerSettingsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden

@@ -69,6 +69,12 @@ public class FindOneAndDeleteOptions {
     FindOneAndDeleteOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    FindOneAndDeleteOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets a document describing the fields to return for all matching documents.
    *
@@ -186,7 +192,7 @@ public class FindOneAndDeleteOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  <p>Note: If {@link FindOneAndDeleteOptions#setHint(JsonObject)} is set that will be used instead of any hint string.</p>
+   *  <p>Note: If {@link FindOneAndDeleteOptions#hint(JsonObject)} is set that will be used instead of any hint string.</p>
    *
    *  @param hint the name of the index which should be used for the operation
    *  @return this

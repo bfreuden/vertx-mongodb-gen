@@ -73,6 +73,12 @@ public class CreateCollectionOptions {
     CreateCollectionOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    CreateCollectionOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the maximum number of documents allowed in a capped collection.
    *

@@ -362,7 +362,12 @@ public abstract class APIClassGenerator {
     }
 
     protected String mapToSerializer(String packageNameOrClassName) {
-        return mapToImplSuffix(mapPackageName(packageNameOrClassName), "Serializer");
+        String suffix = "Serializer";
+        if (packageNameOrClassName.startsWith("java.util.List<")) {
+            suffix = "List" + suffix;
+            packageNameOrClassName = packageNameOrClassName.substring("java.util.List<".length(),  packageNameOrClassName.length() - 1);
+        }
+        return mapToImplSuffix(mapPackageName(packageNameOrClassName), suffix);
     }
 
     private static String mapToImplSuffix(String packageNameOrClassName, String suffix) {

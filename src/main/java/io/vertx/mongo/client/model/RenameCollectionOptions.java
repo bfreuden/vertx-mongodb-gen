@@ -41,6 +41,12 @@ public class RenameCollectionOptions {
     RenameCollectionOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    RenameCollectionOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets if mongod should drop the target of renameCollection prior to renaming the collection.
    *

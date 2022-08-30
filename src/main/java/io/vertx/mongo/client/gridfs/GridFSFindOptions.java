@@ -81,6 +81,12 @@ public class GridFSFindOptions {
     GridFSFindOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    GridFSFindOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the query filter to apply to the query.
    *  <p>

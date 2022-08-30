@@ -65,6 +65,12 @@ public class ReplaceOptions {
     ReplaceOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    ReplaceOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Set to true if a new document should be inserted if there are no matches to the query filter.
    *

@@ -92,6 +92,12 @@ public class FindOneAndUpdateOptions {
     FindOneAndUpdateOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    FindOneAndUpdateOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets a document describing the fields to return for all matching documents.
    *

@@ -88,6 +88,12 @@ public class Collation {
     CollationConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    CollationConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden

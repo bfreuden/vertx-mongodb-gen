@@ -41,6 +41,12 @@ public class CreateViewOptions {
     CreateViewOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    CreateViewOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the collation options
    *

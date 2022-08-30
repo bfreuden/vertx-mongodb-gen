@@ -43,6 +43,12 @@ public class IndexOptionDefaults {
     IndexOptionDefaultsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    IndexOptionDefaultsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the default storage engine options document for indexes.
    *

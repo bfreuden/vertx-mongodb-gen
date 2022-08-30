@@ -43,6 +43,12 @@ public class GridFSDownloadControlOptions {
     GridFSDownloadControlOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    GridFSDownloadControlOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  The preferred number of bytes per {@code ByteBuffer} returned by the {@code Publisher}.
    *

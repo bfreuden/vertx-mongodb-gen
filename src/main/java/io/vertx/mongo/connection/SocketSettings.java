@@ -56,6 +56,12 @@ public class SocketSettings {
     SocketSettingsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    SocketSettingsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden

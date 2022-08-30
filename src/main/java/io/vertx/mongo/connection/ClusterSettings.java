@@ -22,7 +22,6 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ServerAddressListSerializer;
-
 import java.lang.Long;
 import java.lang.String;
 import java.util.List;
@@ -79,6 +78,12 @@ public class ClusterSettings {
     ClusterSettingsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    ClusterSettingsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden
@@ -101,6 +106,8 @@ public class ClusterSettings {
    *
    *  @param srvHost the SRV host name
    *  @return this
+   *  @see com.mongodb.MongoClientSettings.Builder#applyConnectionString(ConnectionString)
+   *  @see ClusterSettings.Builder#applyConnectionString(ConnectionString)
    */
   public ClusterSettings setSrvHost(String srvHost) {
     this.srvHost = srvHost;
@@ -124,13 +131,14 @@ public class ClusterSettings {
    */
   @GenIgnore
   public ClusterSettings setHosts(List<ServerAddress> hosts) {
-    this.hosts.setValue(hosts);
+    if (hosts == null) {
+      this.hosts = null;
+    } else if (this.hosts == null) {
+      this.hosts = new ServerAddressListSerializer(hosts);
+    } else {
+      this.hosts.setValue(hosts);
+    }
     return this;
-  }
-
-  @GenIgnore
-  public List<ServerAddress> getMongoHosts() {
-    return hosts.getValue();
   }
 
   /**
@@ -138,6 +146,7 @@ public class ClusterSettings {
    *
    *  @param hosts the seed list of hosts
    *  @return this
+   *
    * @hidden
    */
   public ClusterSettings setHosts(ServerAddressListSerializer hosts) {
@@ -145,10 +154,15 @@ public class ClusterSettings {
     return this;
   }
 
-  /**
-   *  @return return
-   * @hidden
-   */
+  @GenIgnore
+  public List<ServerAddress> getMongoHosts() {
+    if (this.hosts == null) {
+      return null;
+    } else {
+      return hosts.getValue();
+    }
+  }
+
   public ServerAddressListSerializer getHosts() {
     return hosts;
   }

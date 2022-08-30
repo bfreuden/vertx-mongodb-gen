@@ -53,6 +53,12 @@ public class DeleteOptions {
     DeleteOptionsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    DeleteOptionsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    *  Sets the collation options
    *
@@ -103,7 +109,7 @@ public class DeleteOptions {
   /**
    *  Sets the hint to apply.
    *
-   *  <p>Note: If {@link DeleteOptions#setHint(JsonObject)} is set that will be used instead of any hint string.</p>
+   *  <p>Note: If {@link DeleteOptions#hint(JsonObject)} is set that will be used instead of any hint string.</p>
    *
    *  @param hint the name of the index which should be used for the operation
    *  @return this

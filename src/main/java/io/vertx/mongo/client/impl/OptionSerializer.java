@@ -1,6 +1,13 @@
 package io.vertx.mongo.client.impl;
 
+import com.mongodb.ServerAddress;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ServerAddressSerializer;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class OptionSerializer<T> {
 
@@ -11,7 +18,8 @@ public abstract class OptionSerializer<T> {
     }
 
     public OptionSerializer(JsonObject jsonValue) {
-        this.fromJson(jsonValue);
+        if (jsonValue != null)
+            this.fromJson(jsonValue);
     }
 
     protected abstract void fromJson(JsonObject jsonValue);
@@ -25,5 +33,28 @@ public abstract class OptionSerializer<T> {
     }
 
     public abstract JsonObject toJson();
-    
+
+    public static <V, S extends OptionSerializer<V>> List<S> toSerializerList(List<V> list, Class<S> serializerClass, Class<V> objectClass) {
+        ArrayList<S> result = new ArrayList<>(list.size());
+        for (V item : list) {
+            try {
+                Constructor<S> ctor = serializerClass.getConstructor(objectClass);
+                S serializer = ctor.newInstance(item);
+                result.add(serializer);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }
+
+    public static  <V, S extends OptionSerializer<V>> List<V> fromSerializerList(List<S> list) {
+        ArrayList<V> result = new ArrayList<>(list.size());
+        for (S serializer : list) {
+            result.add(serializer.value);
+        }
+        return result;
+    }
+
+
 }

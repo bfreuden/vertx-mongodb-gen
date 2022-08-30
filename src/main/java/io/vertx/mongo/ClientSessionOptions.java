@@ -17,8 +17,6 @@ package io.vertx.mongo;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.client.ClientSession;
-
 import java.lang.Boolean;
 
 /**
@@ -48,6 +46,12 @@ public class ClientSessionOptions {
 
   public ClientSessionOptions(JsonObject json) {
     ClientSessionOptionsConverter.fromJson(json, this);
+  }
+
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    ClientSessionOptionsConverter.toJson(this, result);
+    return result;
   }
 
   /**

@@ -72,6 +72,12 @@ public class ConnectionPoolSettings {
     ConnectionPoolSettingsConverter.fromJson(json, this);
   }
 
+  public JsonObject toJson() {
+    JsonObject result = new JsonObject();
+    ConnectionPoolSettingsConverter.toJson(this, result);
+    return result;
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden
