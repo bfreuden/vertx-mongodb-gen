@@ -14,23 +14,61 @@ import java.util.function.Consumer;
 @DataObject(
         generateConverter = true
 )
-public class ClientConfig implements MongoClientSettingsInitializer {
+public class ClientConfig {
 
     private String connectionString;
-
     private ConnectionString mongoConnectionString;
     private MongoClientSettings mongoSettings;
-    private io.vertx.mongo.MongoClientSettings vertxMongoSettings;
-    private JsonObject jsonSettings;
     private boolean useObjectIds = false;
     private io.vertx.mongo.MongoClientSettings settings;
-    public Consumer<ServerSettings.Builder> serverSettingsInitializer;
-    private Consumer<SslSettings.Builder> sslSettingsInitializer;
-    private Consumer<MongoClientSettings.Builder> mongoClientSettingsInitializer;
-    private Consumer<ConnectionPoolSettings.Builder> connectionPoolSettingsInitializer;
-    private Consumer<AutoEncryptionSettings.Builder> autoEncryptionSettingsInitializer;
-    private Consumer<SocketSettings.Builder> socketSettingsInitializer;
-    private Consumer<ClusterSettings.Builder> clusterSettingsInitializer;
+    private final MongoClientSettingsInitializer initializer = new MongoClientSettingsInitializer();
+
+    public ClientConfig() {}
+
+    public ClientConfig(JsonObject config) {
+        ClientConfigConverter.fromJson(config, this);
+    }
+
+    public JsonObject toJson() {
+        JsonObject result = new JsonObject();
+        ClientConfigConverter.toJson(this, result);
+        return result;
+    }
+
+    public static ClientConfig defaultConfig() {
+        ClientConfig result = new ClientConfig();
+        return result;
+    }
+
+    public static ClientConfig fromConnectionString(String connectionString) {
+        ClientConfig result = new ClientConfig();
+        result.setConnectionString(connectionString);
+        return result;
+    }
+
+    public static ClientConfig fromConnectionString(ConnectionString connectionString) {
+        ClientConfig result = new ClientConfig();
+        result.setMongoConnectionString(connectionString);
+        return result;
+    }
+
+    public static ClientConfig fromSettings(io.vertx.mongo.MongoClientSettings clientSettings) {
+        ClientConfig result = new ClientConfig();
+        result.setSettings(clientSettings);
+        return result;
+    }
+
+    public static ClientConfig fromSettings(MongoClientSettings clientSettings) {
+        ClientConfig result = new ClientConfig();
+        result.setMongoSettings(clientSettings);
+        return result;
+    }
+
+    public static ClientConfig fromSettings(JsonObject jsonSettings) {
+        ClientConfig result = new ClientConfig();
+        result.setSettings(new io.vertx.mongo.MongoClientSettings(jsonSettings));
+        return result;
+    }
 
     private void assertNotConfigured() {
         if (mongoConnectionString != null)
@@ -41,8 +79,6 @@ public class ClientConfig implements MongoClientSettingsInitializer {
             throw new IllegalStateException("already configured with a connection string");
         if (settings != null)
             throw new IllegalStateException("already configured with a Vert.x MongoClientSettings");
-        if (jsonSettings != null)
-            throw new IllegalStateException("already configured with a JsonObject");
     }
 
     public boolean isUseObjectIds() {
@@ -53,53 +89,40 @@ public class ClientConfig implements MongoClientSettingsInitializer {
         this.useObjectIds = useObjectIds;
         return this;
     }
+
     @GenIgnore
     public MongoClientSettings getMongoSettings() {
         return mongoSettings;
     }
 
     @GenIgnore
-    public ClientConfig mongoSettings(MongoClientSettings settings) {
+    public ClientConfig setMongoSettings(MongoClientSettings settings) {
         assertNotConfigured();
         this.mongoSettings = settings;
         return this;
     }
 
-    public JsonObject getJsonSettings() {
-        return jsonSettings;
-    }
-
-    public ClientConfig jsonSettings(JsonObject settings) {
-        assertNotConfigured();
-        this.jsonSettings = settings;
-        return this;
-    }
-
-    @GenIgnore
     public io.vertx.mongo.MongoClientSettings getSettings() {
         return settings;
     }
 
-    @GenIgnore
-    public ClientConfig settings(io.vertx.mongo.MongoClientSettings settings) {
+    public ClientConfig setSettings(io.vertx.mongo.MongoClientSettings settings) {
         assertNotConfigured();
         this.settings = settings;
         return this;
     }
 
-    @GenIgnore
     public ConnectionString getMongoConnectionString() {
         return mongoConnectionString;
     }
 
-    @GenIgnore
-    public ClientConfig mongoConnectionString(ConnectionString connectionString) {
+    public ClientConfig setMongoConnectionString(ConnectionString connectionString) {
         assertNotConfigured();
         this.mongoConnectionString = connectionString;
         return this;
     }
 
-    public ClientConfig connectionString(String connectionString) {
+    public ClientConfig setConnectionString(String connectionString) {
         assertNotConfigured();
         this.connectionString = connectionString;
         return this;
@@ -109,96 +132,8 @@ public class ClientConfig implements MongoClientSettingsInitializer {
         return connectionString;
     }
 
-    @Override
-    public void initializeWithServerSettings(Consumer<ServerSettings.Builder> builderInitializer) {
-        this.serverSettingsInitializer = builderInitializer;
+    public MongoClientSettingsInitializer getPostInitializer() {
+        return this.initializer;
     }
-
-    @Override
-    public void initializeWithSslSettings(Consumer<SslSettings.Builder> builderInitializer) {
-        this.sslSettingsInitializer = builderInitializer;
-    }
-
-    @Override
-    public void initializeWithMongoClientSettings(Consumer<MongoClientSettings.Builder> builderInitializer) {
-        this.mongoClientSettingsInitializer = builderInitializer;
-    }
-
-    @Override
-    public void initializeWithConnectionPoolSettings(Consumer<ConnectionPoolSettings.Builder> builderInitializer) {
-        this.connectionPoolSettingsInitializer = builderInitializer;
-    }
-
-    @Override
-    public void initializeWithAutoEncryptionSettings(Consumer<AutoEncryptionSettings.Builder> builderInitializer) {
-        this.autoEncryptionSettingsInitializer = builderInitializer;
-    }
-
-    @Override
-    public void initializeWithSocketSettings(Consumer<SocketSettings.Builder> builderInitializer) {
-        this.socketSettingsInitializer = builderInitializer;
-    }
-
-    @Override
-    public void initializeWithClusterSettings(Consumer<ClusterSettings.Builder> builderInitializer) {
-        this.clusterSettingsInitializer = builderInitializer;
-    }
-
-    /**
-     * @return initializer
-     * @hidden
-     */
-    public Consumer<ServerSettings.Builder> getServerSettingsInitializer() {
-        return serverSettingsInitializer;
-    }
-
-    /**
-     * @return initializer
-     * @hidden
-     */
-    public Consumer<SslSettings.Builder> getSslSettingsInitializer() {
-        return sslSettingsInitializer;
-    }
-
-    /**
-     * @return initializer
-     * @hidden
-     */
-    public Consumer<MongoClientSettings.Builder> getMongoClientSettingsInitializer() {
-        return mongoClientSettingsInitializer;
-    }
-
-    /**
-     * @return initializer
-     * @hidden
-     */
-    public Consumer<ConnectionPoolSettings.Builder> getConnectionPoolSettingsInitializer() {
-        return connectionPoolSettingsInitializer;
-    }
-
-    /**
-     * @return initializer
-     * @hidden
-     */
-    public Consumer<AutoEncryptionSettings.Builder> getAutoEncryptionSettingsInitializer() {
-        return autoEncryptionSettingsInitializer;
-    }
-
-    /**
-     * @return initializer
-     * @hidden
-     */
-    public Consumer<SocketSettings.Builder> getSocketSettingsInitializer() {
-        return socketSettingsInitializer;
-    }
-
-    /**
-     * @return initializer
-     * @hidden
-     */
-    public Consumer<ClusterSettings.Builder> getClusterSettingsInitializer() {
-        return clusterSettingsInitializer;
-    }
-
 
 }

@@ -297,7 +297,7 @@ public class ClusterSettings {
     if (this.srvHost != null) {
       builder.srvHost(this.srvHost);
     }
-    if (this.hosts.getValue() != null) {
+    if (this.hosts != null && this.hosts.getValue() != null) {
       builder.hosts(this.hosts.getValue());
     }
     if (this.mode != null) {

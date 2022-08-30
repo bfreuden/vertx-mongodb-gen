@@ -693,10 +693,10 @@ public class MongoClientSettings {
     if (this.sslSettings != null) {
       builder.applyToSslSettings(_builder -> sslSettings.initializeDriverBuilderClass(_builder));
     }
-    if (this.readPreference.getValue() != null) {
+    if (this.readPreference != null && this.readPreference.getValue() != null) {
       builder.readPreference(this.readPreference.getValue());
     }
-    if (this.writeConcern.getValue() != null) {
+    if (this.writeConcern != null && this.writeConcern.getValue() != null) {
       builder.writeConcern(this.writeConcern.getValue());
     }
     if (this.retryWrites != null) {
@@ -705,16 +705,16 @@ public class MongoClientSettings {
     if (this.retryReads != null) {
       builder.retryReads(this.retryReads);
     }
-    if (this.readConcern.getValue() != null) {
+    if (this.readConcern != null && this.readConcern.getValue() != null) {
       builder.readConcern(this.readConcern.getValue());
     }
-    if (this.credential.getValue() != null) {
+    if (this.credential != null && this.credential.getValue() != null) {
       builder.credential(this.credential.getValue());
     }
     if (this.applicationName != null) {
       builder.applicationName(this.applicationName);
     }
-    if (this.compressorList.getValue() != null) {
+    if (this.compressorList != null && this.compressorList.getValue() != null) {
       builder.compressorList(this.compressorList.getValue());
     }
     if (this.autoEncryptionSettings != null) {

@@ -11,6 +11,7 @@ import io.vertx.core.shareddata.LocalMap;
 import io.vertx.core.shareddata.Shareable;
 import io.vertx.mongo.AutoEncryptionSettings;
 import io.vertx.mongo.MongoClientSettingsConverter;
+import io.vertx.mongo.MongoClientSettingsInitializer;
 import io.vertx.mongo.client.ClientConfig;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.connection.*;
@@ -110,18 +111,6 @@ public abstract class MongoClientBase implements MongoClient {
                     mongo = MongoClients.create(config.getMongoSettings());
                 } else {
                     MongoClientSettings.Builder settingsBuilder = MongoClientSettings.builder();
-                    if (config.getMongoConnectionString() != null) {
-                        settingsBuilder.applyConnectionString(config.getMongoConnectionString());
-                    } else if (config.getConnectionString() != null) {
-                        settingsBuilder.applyConnectionString(new ConnectionString(config.getConnectionString()));
-                    }  else if (config.getSettings() != null || config.getJsonSettings() != null) {
-                        io.vertx.mongo.MongoClientSettings vertxConfig = config.getSettings();
-                        if (vertxConfig == null) {
-                            vertxConfig = new io.vertx.mongo.MongoClientSettings();
-                            MongoClientSettingsConverter.fromJson(config.getJsonSettings(), vertxConfig);
-                        }
-                        mergeVertxSettingsIntoMongoSettingsBuilder(config, settingsBuilder, vertxConfig);
-                    }
                     settingsBuilder.codecRegistry(
                             CodecRegistries.fromRegistries(
                                     commonCodecRegistry,
@@ -130,60 +119,71 @@ public abstract class MongoClientBase implements MongoClient {
                                     )
                             )
                     );
+                    io.vertx.mongo.MongoClientSettings vertxConfig = null;
+                    if (config.getMongoConnectionString() != null) {
+                        settingsBuilder.applyConnectionString(config.getMongoConnectionString());
+                        mergeVertxSettingsIntoMongoSettingsBuilder(config.getPostInitializer(), settingsBuilder, null);
+                    } else if (config.getConnectionString() != null) {
+                        settingsBuilder.applyConnectionString(new ConnectionString(config.getConnectionString()));
+                        mergeVertxSettingsIntoMongoSettingsBuilder(config.getPostInitializer(), settingsBuilder, null);
+                    }  else if (config.getSettings() != null) {
+                        vertxConfig = config.getSettings();
+                    }
+                    mergeVertxSettingsIntoMongoSettingsBuilder(config.getPostInitializer(), settingsBuilder, vertxConfig);
                     mongo = MongoClients.create(settingsBuilder.build());
                 }
             }
             return mongo;
         }
 
-        private void mergeVertxSettingsIntoMongoSettingsBuilder(ClientConfig config, MongoClientSettings.Builder settingsBuilder, io.vertx.mongo.MongoClientSettings vertxConfig) {
+        private void mergeVertxSettingsIntoMongoSettingsBuilder(MongoClientSettingsInitializer postInitializer, MongoClientSettings.Builder settingsBuilder, io.vertx.mongo.MongoClientSettings vertxConfig) {
             settingsBuilder.applyToClusterSettings(_builder -> {
-                ClusterSettings clusterSettings = vertxConfig.getClusterSettings();
+                ClusterSettings clusterSettings = vertxConfig == null ? null : vertxConfig.getClusterSettings();
                 if (clusterSettings != null)
                     clusterSettings.initializeDriverBuilderClass(_builder);
-                if (config.getClusterSettingsInitializer() != null)
-                    config.getClusterSettingsInitializer().accept(_builder);
+                if (postInitializer.getClusterSettingsInitializer() != null)
+                    postInitializer.getClusterSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToConnectionPoolSettings(_builder -> {
-                ConnectionPoolSettings connectionPoolSettings = vertxConfig.getConnectionPoolSettings();
+                ConnectionPoolSettings connectionPoolSettings = vertxConfig == null ? null : vertxConfig.getConnectionPoolSettings();
                 if (connectionPoolSettings != null)
                     connectionPoolSettings.initializeDriverBuilderClass(_builder);
-                if (config.getConnectionPoolSettingsInitializer() != null)
-                    config.getConnectionPoolSettingsInitializer().accept(_builder);
+                if (postInitializer.getConnectionPoolSettingsInitializer() != null)
+                    postInitializer.getConnectionPoolSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToServerSettings(_builder -> {
-                ServerSettings serverSettings = vertxConfig.getServerSettings();
+                ServerSettings serverSettings = vertxConfig == null ? null : vertxConfig.getServerSettings();
                 if (serverSettings != null)
                     serverSettings.initializeDriverBuilderClass(_builder);
-                if (config.getServerSettingsInitializer() != null)
-                    config.getServerSettingsInitializer().accept(_builder);
+                if (postInitializer.getServerSettingsInitializer() != null)
+                    postInitializer.getServerSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToSocketSettings(_builder -> {
-                SocketSettings socketSettings = vertxConfig.getSocketSettings();
+                SocketSettings socketSettings = vertxConfig == null ? null : vertxConfig.getSocketSettings();
                 if (socketSettings != null)
                     socketSettings.initializeDriverBuilderClass(_builder);
-                if (config.getSocketSettingsInitializer() != null)
-                    config.getSocketSettingsInitializer().accept(_builder);
+                if (postInitializer.getSocketSettingsInitializer() != null)
+                    postInitializer.getSocketSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToSslSettings(_builder -> {
-                SslSettings sslSettings = vertxConfig.getSslSettings();
+                SslSettings sslSettings = vertxConfig == null ? null : vertxConfig.getSslSettings();
                 if (sslSettings != null)
                     sslSettings.initializeDriverBuilderClass(_builder);
-                if (config.getSslSettingsInitializer() != null)
-                    config.getSslSettingsInitializer().accept(_builder);
+                if (postInitializer.getSslSettingsInitializer() != null)
+                    postInitializer.getSslSettingsInitializer().accept(creatingContext, _builder);
             });
             {
-                AutoEncryptionSettings autoEncryptionSettings = vertxConfig.getAutoEncryptionSettings();
-                if (autoEncryptionSettings != null || config.getAutoEncryptionSettingsInitializer() != null) {
+                AutoEncryptionSettings autoEncryptionSettings = vertxConfig == null ? null : vertxConfig.getAutoEncryptionSettings();
+                if (autoEncryptionSettings != null || postInitializer.getAutoEncryptionSettingsInitializer() != null) {
                     com.mongodb.AutoEncryptionSettings.Builder _builder = com.mongodb.AutoEncryptionSettings.builder();
                     if (autoEncryptionSettings != null)
                         autoEncryptionSettings.initializeDriverBuilderClass(_builder);
-                    if (config.getAutoEncryptionSettingsInitializer() != null)
-                        config.getAutoEncryptionSettingsInitializer().accept(_builder);
+                    if (postInitializer.getAutoEncryptionSettingsInitializer() != null)
+                        postInitializer.getAutoEncryptionSettingsInitializer().accept(creatingContext, _builder);
                 }
             }
-            if (config.getMongoClientSettingsInitializer() != null) {
-                config.getMongoClientSettingsInitializer().accept(settingsBuilder);
+            if (postInitializer.getMongoClientSettingsInitializer() != null) {
+                postInitializer.getMongoClientSettingsInitializer().accept(creatingContext, settingsBuilder);
             }
         }
 

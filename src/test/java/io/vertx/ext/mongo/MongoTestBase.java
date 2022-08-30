@@ -86,9 +86,9 @@ public abstract class MongoTestBase extends VertxTestBase {
     ClientConfig config = new ClientConfig();
     String connectionString = getConnectionString();
     if (connectionString != null) {
-      config.connectionString(connectionString);
+      config.setConnectionString(connectionString);
     } else {
-      config.connectionString("mongodb://localhost:27018");
+      config.setConnectionString("mongodb://localhost:27018");
     }
     return config;
   }

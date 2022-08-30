@@ -282,13 +282,13 @@ public class TransactionOptions {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.TransactionOptions.Builder builder) {
-    if (this.readConcern.getValue() != null) {
+    if (this.readConcern != null && this.readConcern.getValue() != null) {
       builder.readConcern(this.readConcern.getValue());
     }
-    if (this.writeConcern.getValue() != null) {
+    if (this.writeConcern != null && this.writeConcern.getValue() != null) {
       builder.writeConcern(this.writeConcern.getValue());
     }
-    if (this.readPreference.getValue() != null) {
+    if (this.readPreference != null && this.readPreference.getValue() != null) {
       builder.readPreference(this.readPreference.getValue());
     }
     if (this.maxCommitTime != null) {

@@ -370,7 +370,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         if (option.mandatory)
             return;
         if (!option.withTimeUnit && !option.isBlock && !option.type.toMongoEnabledType && option.type.mapper == null && isDataObject && !option.isCodeGenCompatible)
-            toMongoBuilder.beginControlFlow("if (this." + option.name + ".getValue() != null)");
+            toMongoBuilder.beginControlFlow("if (this." + option.name + " != null && this." + option.name + ".getValue() != null)");
         else
             toMongoBuilder.beginControlFlow("if (this." + option.name + " != null)");
         if (option.withTimeUnit) {

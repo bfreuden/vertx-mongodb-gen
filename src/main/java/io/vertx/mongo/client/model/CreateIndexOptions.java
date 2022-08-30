@@ -149,7 +149,7 @@ public class CreateIndexOptions {
     if (this.maxTime != null) {
       result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }
-    if (this.commitQuorum.getValue() != null) {
+    if (this.commitQuorum != null && this.commitQuorum.getValue() != null) {
       result.commitQuorum(this.commitQuorum.getValue());
     }
     return result;
