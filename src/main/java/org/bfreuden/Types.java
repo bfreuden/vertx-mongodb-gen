@@ -34,6 +34,7 @@ public class Types {
         ACCEPTED.add(CreateIndexCommitQuorum.class.getName());
         ACCEPTED.add(MongoCompressor.class.getName());
         ACCEPTED.add(MongoCredential.class.getName());
+        ACCEPTED.add(ServerAddress.class.getName());
         IGNORED.add("com.mongodb.internal.async.client.AsyncClientSession");
 
 

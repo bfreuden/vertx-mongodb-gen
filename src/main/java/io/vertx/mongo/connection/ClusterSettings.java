@@ -15,12 +15,17 @@
 //
 package io.vertx.mongo.connection;
 
+import com.mongodb.ServerAddress;
 import com.mongodb.connection.ClusterConnectionMode;
 import com.mongodb.connection.ClusterType;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.ServerAddressListSerializer;
+
 import java.lang.Long;
 import java.lang.String;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,6 +41,11 @@ public class ClusterSettings {
    * the SRV host name
    */
   private String srvHost;
+
+  /**
+   * the seed list of hosts
+   */
+  private ServerAddressListSerializer hosts;
 
   /**
    * the cluster connection mode
@@ -104,6 +114,43 @@ public class ClusterSettings {
    */
   public String getSrvHost() {
     return srvHost;
+  }
+
+  /**
+   *  Sets the hosts for the cluster. Any duplicate server addresses are removed from the list.
+   *
+   *  @param hosts the seed list of hosts
+   *  @return this
+   */
+  @GenIgnore
+  public ClusterSettings setHosts(List<ServerAddress> hosts) {
+    this.hosts.setValue(hosts);
+    return this;
+  }
+
+  @GenIgnore
+  public List<ServerAddress> getMongoHosts() {
+    return hosts.getValue();
+  }
+
+  /**
+   *  Sets the hosts for the cluster. Any duplicate server addresses are removed from the list.
+   *
+   *  @param hosts the seed list of hosts
+   *  @return this
+   * @hidden
+   */
+  public ClusterSettings setHosts(ServerAddressListSerializer hosts) {
+    this.hosts = hosts;
+    return this;
+  }
+
+  /**
+   *  @return return
+   * @hidden
+   */
+  public ServerAddressListSerializer getHosts() {
+    return hosts;
   }
 
   /**
@@ -235,6 +282,9 @@ public class ClusterSettings {
   public void initializeDriverBuilderClass(com.mongodb.connection.ClusterSettings.Builder builder) {
     if (this.srvHost != null) {
       builder.srvHost(this.srvHost);
+    }
+    if (this.hosts.getValue() != null) {
+      builder.hosts(this.hosts.getValue());
     }
     if (this.mode != null) {
       builder.mode(this.mode);

@@ -100,7 +100,7 @@ public class SourceGenDoclet {
     private static void generateClientBuilderSources(File genSourceDir, InspectionContext inspectionContext, Graph<String, DefaultEdge> graph) throws IOException {
         inspectionContext.otherApiClasses.remove(Block.class.getName());
         inspectionContext.otherApiClasses.remove(ConnectionString.class.getName());
-        inspectionContext.otherApiClasses.remove(ServerAddress.class.getName());// TODO accept it
+//        inspectionContext.otherApiClasses.remove(ServerAddress.class.getName());// TODO accept it
         inspectionContext.otherApiClasses.remove(ServerSelector.class.getName());
         inspectionContext.otherApiClasses.remove(StreamFactoryFactory.class.getName());
 //        inspectionContext.otherApiClasses.remove(MongoCompressor.class.getName()); // TODO accept it
@@ -109,7 +109,7 @@ public class SourceGenDoclet {
 
         inspectionContext.excludedApiClasses.add(Block.class.getName());
         inspectionContext.excludedApiClasses.add(ConnectionString.class.getName());
-        inspectionContext.excludedApiClasses.add(ServerAddress.class.getName()); // TODO accept it
+//        inspectionContext.excludedApiClasses.add(ServerAddress.class.getName()); // TODO accept it
         inspectionContext.excludedApiClasses.add(ServerSelector.class.getName());
         inspectionContext.excludedApiClasses.add(CodecRegistry.class.getName());
         inspectionContext.excludedApiClasses.add(StreamFactoryFactory.class.getName());
