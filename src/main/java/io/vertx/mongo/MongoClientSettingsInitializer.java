@@ -25,19 +25,19 @@ import com.mongodb.connection.SslSettings;
 import java.util.function.Consumer;
 
 public abstract interface MongoClientSettingsInitializer {
-  void initializeWithServerSettings(Consumer<ServerSettings.Builder> builderInitializer);
+  void initializeWithConnectionPoolSettings(
+      Consumer<ConnectionPoolSettings.Builder> builderInitializer);
 
-  void initializeWithSslSettings(Consumer<SslSettings.Builder> builderInitializer);
+  void initializeWithSocketSettings(Consumer<SocketSettings.Builder> builderInitializer);
 
   void initializeWithMongoClientSettings(Consumer<MongoClientSettings.Builder> builderInitializer);
 
-  void initializeWithConnectionPoolSettings(
-      Consumer<ConnectionPoolSettings.Builder> builderInitializer);
+  void initializeWithClusterSettings(Consumer<ClusterSettings.Builder> builderInitializer);
 
   void initializeWithAutoEncryptionSettings(
       Consumer<AutoEncryptionSettings.Builder> builderInitializer);
 
-  void initializeWithSocketSettings(Consumer<SocketSettings.Builder> builderInitializer);
+  void initializeWithServerSettings(Consumer<ServerSettings.Builder> builderInitializer);
 
-  void initializeWithClusterSettings(Consumer<ClusterSettings.Builder> builderInitializer);
+  void initializeWithSslSettings(Consumer<SslSettings.Builder> builderInitializer);
 }
