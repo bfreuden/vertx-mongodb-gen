@@ -1,15 +1,16 @@
 package io.vertx.mongo.impl;
 
-import com.mongodb.WriteConcern;
+import com.mongodb.MongoCompressor;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.impl.OptionSerializer;
 
-public class WriteConcernSerializer extends OptionSerializer<WriteConcern> {
-    public WriteConcernSerializer(WriteConcern value) {
+public class MongoCompressorSerializer extends OptionSerializer<MongoCompressor> {
+
+    public MongoCompressorSerializer(MongoCompressor value) {
         super(value);
     }
 
-    public WriteConcernSerializer(JsonObject jsonValue) {
+    public MongoCompressorSerializer(JsonObject jsonValue) {
         super(jsonValue);
     }
 

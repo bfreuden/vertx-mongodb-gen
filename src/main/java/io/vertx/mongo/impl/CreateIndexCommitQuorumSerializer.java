@@ -14,7 +14,7 @@ public class CreateIndexCommitQuorumSerializer extends OptionSerializer<CreateIn
     }
 
     @Override
-    protected void fromJson() {
+    protected void fromJson(JsonObject jsonValue) {
         //TODO
         throw new IllegalStateException("TODO");
     }

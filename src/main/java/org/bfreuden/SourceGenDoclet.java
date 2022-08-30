@@ -103,24 +103,18 @@ public class SourceGenDoclet {
         inspectionContext.otherApiClasses.remove(ServerAddress.class.getName());// TODO accept it
         inspectionContext.otherApiClasses.remove(ServerSelector.class.getName());
         inspectionContext.otherApiClasses.remove(StreamFactoryFactory.class.getName());
-        inspectionContext.otherApiClasses.remove(MongoCompressor.class.getName()); // TODO accept it
-        inspectionContext.otherApiClasses.remove(MongoCredential.class.getName()); // TODO accept it
-//        inspectionContext.otherApiClasses.add(ReadPreference.class.getName()); // TODO accept it
-//        inspectionContext.otherApiClasses.add(ReadConcern.class.getName()); // TODO accept it
-//        inspectionContext.otherApiClasses.add(WriteConcern.class.getName()); // TODO accept it
+//        inspectionContext.otherApiClasses.remove(MongoCompressor.class.getName()); // TODO accept it
+//        inspectionContext.otherApiClasses.remove(MongoCredential.class.getName()); // TODO accept it
         inspectionContext.otherApiClasses.add(CodecRegistry.class.getName());
 
         inspectionContext.excludedApiClasses.add(Block.class.getName());
         inspectionContext.excludedApiClasses.add(ConnectionString.class.getName());
         inspectionContext.excludedApiClasses.add(ServerAddress.class.getName()); // TODO accept it
         inspectionContext.excludedApiClasses.add(ServerSelector.class.getName());
-//        inspectionContext.excludedApiClasses.add(ReadPreference.class.getName()); // TODO accept it
-//        inspectionContext.excludedApiClasses.add(ReadConcern.class.getName()); // TODO accept it
-//        inspectionContext.excludedApiClasses.add(WriteConcern.class.getName()); // TODO accept it
         inspectionContext.excludedApiClasses.add(CodecRegistry.class.getName());
         inspectionContext.excludedApiClasses.add(StreamFactoryFactory.class.getName());
-        inspectionContext.excludedApiClasses.add(MongoCompressor.class.getName());  // TODO accept it
-        inspectionContext.excludedApiClasses.add(MongoCredential.class.getName()); // TODO accept it
+//        inspectionContext.excludedApiClasses.add(MongoCompressor.class.getName());  // TODO accept it
+//        inspectionContext.excludedApiClasses.add(MongoCredential.class.getName()); // TODO accept it
 
         inspectionContext.optionsApiClasses.remove(ReadPreferenceHedgeOptions.class.getName());
         inspectionContext.builderClasses.remove(ReadPreferenceHedgeOptions.Builder.class.getName());

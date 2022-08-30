@@ -1,15 +1,15 @@
 package io.vertx.mongo.impl;
 
-import com.mongodb.WriteConcern;
+import com.mongodb.MongoCredential;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.impl.OptionSerializer;
 
-public class WriteConcernSerializer extends OptionSerializer<WriteConcern> {
-    public WriteConcernSerializer(WriteConcern value) {
+public class MongoCredentialSerializer extends OptionSerializer<MongoCredential> {
+    public MongoCredentialSerializer(MongoCredential value) {
         super(value);
     }
 
-    public WriteConcernSerializer(JsonObject jsonValue) {
+    public MongoCredentialSerializer(JsonObject jsonValue) {
         super(jsonValue);
     }
 
@@ -17,6 +17,7 @@ public class WriteConcernSerializer extends OptionSerializer<WriteConcern> {
     protected void fromJson(JsonObject jsonValue) {
         //TODO
         throw new IllegalStateException("TODO");
+
     }
 
     @Override

@@ -11,10 +11,10 @@ public abstract class OptionSerializer<T> {
     }
 
     public OptionSerializer(JsonObject jsonValue) {
-        this.fromJson();
+        this.fromJson(jsonValue);
     }
 
-    protected abstract void fromJson();
+    protected abstract void fromJson(JsonObject jsonValue);
 
     public T getValue() {
         return value;

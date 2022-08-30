@@ -19,6 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
+import org.bson.BsonValue;
+import org.bson.types.ObjectId;
+
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;

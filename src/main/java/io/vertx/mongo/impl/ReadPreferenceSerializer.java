@@ -17,7 +17,7 @@ public class ReadPreferenceSerializer extends OptionSerializer<ReadPreference> {
     }
 
     @Override
-    protected void fromJson() {
+    protected void fromJson(JsonObject jsonValue) {
         throw new IllegalStateException("not implemented");
     }
 

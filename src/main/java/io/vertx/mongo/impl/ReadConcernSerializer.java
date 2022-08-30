@@ -15,7 +15,7 @@ public class ReadConcernSerializer extends OptionSerializer<ReadConcern> {
     }
 
     @Override
-    protected void fromJson() {
+    protected void fromJson(JsonObject jsonValue) {
         //TODO
         throw new IllegalStateException("TODO");
     }

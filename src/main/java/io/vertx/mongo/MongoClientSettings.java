@@ -15,6 +15,8 @@
 //
 package io.vertx.mongo;
 
+import com.mongodb.MongoCompressor;
+import com.mongodb.MongoCredential;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
@@ -26,11 +28,11 @@ import io.vertx.mongo.connection.ConnectionPoolSettings;
 import io.vertx.mongo.connection.ServerSettings;
 import io.vertx.mongo.connection.SocketSettings;
 import io.vertx.mongo.connection.SslSettings;
-import io.vertx.mongo.impl.ReadConcernSerializer;
-import io.vertx.mongo.impl.ReadPreferenceSerializer;
-import io.vertx.mongo.impl.WriteConcernSerializer;
+import io.vertx.mongo.impl.*;
+
 import java.lang.Boolean;
 import java.lang.String;
+import java.util.List;
 
 /**
  *  Various settings to control the behavior of a {@code MongoClient}.
@@ -92,9 +94,19 @@ public class MongoClientSettings {
   private ReadConcernSerializer readConcern = new ReadConcernSerializer((ReadConcern)null);
 
   /**
+   * the credential
+   */
+  private MongoCredentialSerializer credential = new MongoCredentialSerializer((MongoCredential)null);
+
+  /**
    * the logical name of the application using this MongoClient.  It may be null.
    */
   private String applicationName;
+
+  /**
+   * the list of compressors to request
+   */
+  private MongoCompressorListSerializer compressorList;
 
   /**
    * the auto-encryption settings
@@ -119,7 +131,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link ClusterSettings.Builder} block and then sets the clusterSettings.
+   *  Applies the {@link ClusterSettings} block and then sets the clusterSettings.
    *
    *  @param block the block to apply to the ClusterSettings.
    *  @return this
@@ -140,7 +152,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link SocketSettings.Builder} block and then sets the socketSettings.
+   *  Applies the {@link SocketSettings} block and then sets the socketSettings.
    *
    *  @param block the block to apply to the SocketSettings.
    *  @return this
@@ -163,7 +175,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link ConnectionPoolSettings.Builder} block and then sets the connectionPoolSettings.
+   *  Applies the {@link ConnectionPoolSettings} block and then sets the connectionPoolSettings.
    *
    *  @param block the block to apply to the ConnectionPoolSettings.
    *  @return this
@@ -187,7 +199,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link ServerSettings.Builder} block and then sets the serverSettings.
+   *  Applies the {@link ServerSettings} block and then sets the serverSettings.
    *
    *  @param block the block to apply to the ServerSettings.
    *  @return this
@@ -210,7 +222,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link SslSettings.Builder} block and then sets the sslSettings.
+   *  Applies the {@link SslSettings} block and then sets the sslSettings.
    *
    *  @param block the block to apply to the SslSettings.
    *  @return this
@@ -345,7 +357,7 @@ public class MongoClientSettings {
    *
    *  @param retryWrites sets if writes should be retried if they fail due to a network error.
    *  @return this
-   *  @see #getRetryWrites()
+   *  @see #isRetryWrites()
    *  @mongodb.server.release 3.6
    */
   public MongoClientSettings setRetryWrites(Boolean retryWrites) {
@@ -370,7 +382,7 @@ public class MongoClientSettings {
    *
    *  @param retryReads sets if reads should be retried if they fail due to a network error.
    *  @return this
-   *  @see #getRetryReads()
+   *  @see #isRetryReads()
    *  @since 3.11
    *  @mongodb.server.release 3.6
    */
@@ -445,6 +457,52 @@ public class MongoClientSettings {
   }
 
   /**
+   *  Sets the credential.
+   *
+   *  @param credential the credential
+   *  @return this
+   */
+  @GenIgnore
+  public MongoClientSettings setCredential(MongoCredential credential) {
+    this.credential.setValue(credential);
+    return this;
+  }
+
+  /**
+   *  Sets the credential.
+   *
+   *  @param credential the credential
+   *  @return this
+   *
+   * @hidden
+   */
+  public MongoClientSettings setCredential(MongoCredentialSerializer credential) {
+    this.credential = credential;
+    return this;
+  }
+
+  /**
+   *  Gets the credential.
+   *
+   *  @return the credential, which may be null
+   */
+  @GenIgnore
+  public MongoCredential getMongoCredential() {
+    return credential.getValue();
+  }
+
+  /**
+   *  Gets the credential.
+   *
+   *  @return the credential, which may be null
+   *
+   * @hidden
+   */
+  public MongoCredentialSerializer getCredential() {
+    return credential;
+  }
+
+  /**
    *  Sets the logical name of the application using this MongoClient.  The application name may be used by the client to identify
    *  the application to the server, for use in server logs, slow query logs, and profile collection.
    *
@@ -470,6 +528,50 @@ public class MongoClientSettings {
    */
   public String getApplicationName() {
     return applicationName;
+  }
+
+  /**
+   *  Sets the compressors to use for compressing messages to the server. The driver will use the first compressor in the list
+   *  that the server is configured to support.
+   *
+   *  @param compressorList the list of compressors to request
+   *  @return this
+   *  @see #getCompressorList()
+   *  @mongodb.server.release 3.4
+   */
+  @GenIgnore
+  public MongoClientSettings setCompressorList(List<MongoCompressor> compressorList) {
+    this.compressorList.setValue(compressorList);
+    return this;
+  }
+
+  @GenIgnore
+  public List<MongoCompressor> getMongoCompressorList() {
+    return compressorList.getValue();
+  }
+
+  /**
+   *  Sets the compressors to use for compressing messages to the server. The driver will use the first compressor in the list
+   *  that the server is configured to support.
+   *
+   *  @param compressorList the list of compressors to request
+   *  @return this
+   *  @see #getCompressorList()
+   *  @mongodb.server.release 3.4
+   * @hidden
+   */
+  public MongoClientSettings setCompressorList(MongoCompressorListSerializer compressorList) {
+    this.compressorList = compressorList;
+    return this;
+  }
+
+
+  /**
+   *  @return return
+   * @hidden
+   */
+  public MongoCompressorListSerializer getCompressorList() {
+    return compressorList;
   }
 
   /**
@@ -551,8 +653,14 @@ public class MongoClientSettings {
     if (this.readConcern.getValue() != null) {
       builder.readConcern(this.readConcern.getValue());
     }
+    if (this.credential.getValue() != null) {
+      builder.credential(this.credential.getValue());
+    }
     if (this.applicationName != null) {
       builder.applicationName(this.applicationName);
+    }
+    if (this.compressorList.getValue() != null) {
+      builder.compressorList(this.compressorList.getValue());
     }
     if (this.autoEncryptionSettings != null) {
       builder.autoEncryptionSettings(this.autoEncryptionSettings.toDriverClass());
