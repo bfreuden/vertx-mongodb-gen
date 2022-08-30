@@ -64,6 +64,13 @@ public class UpdateOptions {
    */
   private String hintString;
 
+  public UpdateOptions() {
+  }
+
+  public UpdateOptions(JsonObject json) {
+    UpdateOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Set to true if a new document should be inserted if there are no matches to the query filter.
    *

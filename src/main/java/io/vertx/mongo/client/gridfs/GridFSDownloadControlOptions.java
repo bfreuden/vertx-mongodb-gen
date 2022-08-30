@@ -17,6 +17,7 @@ package io.vertx.mongo.client.gridfs;
 
 import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Integer;
 
 /**
@@ -34,6 +35,13 @@ public class GridFSDownloadControlOptions {
    * the preferred buffer size in bytes to use per {@code ByteBuffer} in the {@code Publisher}, defaults to chunk
    */
   private Integer bufferSizeBytes;
+
+  public GridFSDownloadControlOptions() {
+  }
+
+  public GridFSDownloadControlOptions(JsonObject json) {
+    GridFSDownloadControlOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  The preferred number of bytes per {@code ByteBuffer} returned by the {@code Publisher}.

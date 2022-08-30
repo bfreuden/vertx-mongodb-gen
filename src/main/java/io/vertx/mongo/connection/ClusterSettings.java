@@ -18,6 +18,7 @@ package io.vertx.mongo.connection;
 import com.mongodb.connection.ClusterConnectionMode;
 import com.mongodb.connection.ClusterType;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Long;
 import java.lang.String;
 import java.util.concurrent.TimeUnit;
@@ -31,11 +32,6 @@ import java.util.concurrent.TimeUnit;
     generateConverter = true
 )
 public class ClusterSettings {
-  /**
-   * the clusterSettings
-   */
-  private ClusterSettings applySettings;
-
   /**
    * the SRV host name
    */
@@ -66,6 +62,13 @@ public class ClusterSettings {
    */
   private Long serverSelectionTimeout;
 
+  public ClusterSettings() {
+  }
+
+  public ClusterSettings(JsonObject json) {
+    ClusterSettingsConverter.fromJson(json, this);
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden
@@ -74,24 +77,6 @@ public class ClusterSettings {
     com.mongodb.connection.ClusterSettings.Builder builder = com.mongodb.connection.ClusterSettings.builder();
     initializeDriverBuilderClass(builder);
     return builder.build();
-  }
-
-  /**
-   *  Applies the clusterSettings to the builder
-   *
-   *  <p>Note: Overwrites all existing settings</p>
-   *
-   *  @param clusterSettings the clusterSettings
-   *  @return this
-   *  @since 3.7
-   */
-  public ClusterSettings setApplySettings(ClusterSettings clusterSettings) {
-    this.applySettings = clusterSettings;
-    return this;
-  }
-
-  public ClusterSettings getApplySettings() {
-    return applySettings;
   }
 
   /**
@@ -250,9 +235,6 @@ public class ClusterSettings {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.connection.ClusterSettings.Builder builder) {
-    if (this.applySettings != null) {
-      builder.applySettings(this.applySettings.toDriverClass());
-    }
     if (this.srvHost != null) {
       builder.srvHost(this.srvHost);
     }

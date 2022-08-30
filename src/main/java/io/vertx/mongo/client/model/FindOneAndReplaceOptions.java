@@ -79,6 +79,13 @@ public class FindOneAndReplaceOptions {
    */
   private String hintString;
 
+  public FindOneAndReplaceOptions() {
+  }
+
+  public FindOneAndReplaceOptions(JsonObject json) {
+    FindOneAndReplaceOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets a document describing the fields to return for all matching documents.
    *

@@ -47,6 +47,13 @@ public class ValidationOptions {
    */
   private ValidationAction validationAction;
 
+  public ValidationOptions() {
+  }
+
+  public ValidationOptions(JsonObject json) {
+    ValidationOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets the validation rules for all
    *

@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.gridfs.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Integer;
 
 /**
@@ -33,6 +34,13 @@ public class GridFSDownloadOptions {
    * the file revision to download
    */
   private Integer revision;
+
+  public GridFSDownloadOptions() {
+  }
+
+  public GridFSDownloadOptions(JsonObject json) {
+    GridFSDownloadOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  Set the revision of the file to retrieve.

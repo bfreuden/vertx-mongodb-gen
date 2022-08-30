@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
 
 /**
@@ -34,6 +35,13 @@ public class InsertOneOptions {
    * If true, allows the write to opt-out of document level validation.
    */
   private Boolean bypassDocumentValidation;
+
+  public InsertOneOptions() {
+  }
+
+  public InsertOneOptions(JsonObject json) {
+    InsertOneOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  Sets the bypass document level validation flag.

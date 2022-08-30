@@ -63,6 +63,13 @@ public class CountOptions {
    */
   private Collation collation;
 
+  public CountOptions() {
+  }
+
+  public CountOptions(JsonObject json) {
+    CountOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets the hint to apply.
    *

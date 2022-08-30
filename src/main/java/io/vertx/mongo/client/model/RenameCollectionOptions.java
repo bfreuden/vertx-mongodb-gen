@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
 
 /**
@@ -32,6 +33,13 @@ public class RenameCollectionOptions {
    * true if mongod should drop the target of renameCollection prior to renaming the collection.
    */
   private Boolean dropTarget;
+
+  public RenameCollectionOptions() {
+  }
+
+  public RenameCollectionOptions(JsonObject json) {
+    RenameCollectionOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  Sets if mongod should drop the target of renameCollection prior to renaming the collection.

@@ -20,6 +20,7 @@ import com.mongodb.client.model.CollationCaseFirst;
 import com.mongodb.client.model.CollationMaxVariable;
 import com.mongodb.client.model.CollationStrength;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
 import java.lang.String;
 
@@ -79,6 +80,13 @@ public class Collation {
    * the backwards value
    */
   private Boolean backwards;
+
+  public Collation() {
+  }
+
+  public Collation(JsonObject json) {
+    CollationConverter.fromJson(json, this);
+  }
 
   /**
    * @return MongoDB driver object

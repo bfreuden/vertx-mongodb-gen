@@ -28,6 +28,8 @@ public abstract class APIClassGenerator {
     protected LinkedHashMap<String, OptionsAPIClassGenerator.Option> optionsByName = new LinkedHashMap<>();
     protected Set<String> staticImports = new HashSet<>();
     protected boolean generatePackageInfo = false;
+    protected boolean isDataObject;
+    protected boolean publisherOption;
 
     public APIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         this.context = context;
@@ -356,11 +358,19 @@ public abstract class APIClassGenerator {
         return packageNameOrClassName;
     }
     protected String mapToImpl(String packageNameOrClassName) {
+        return mapToImplSuffix(packageNameOrClassName, "Impl");
+    }
+
+    protected String mapToSerializer(String packageNameOrClassName) {
+        return mapToImplSuffix(mapPackageName(packageNameOrClassName), "Serializer");
+    }
+
+    private static String mapToImplSuffix(String packageNameOrClassName, String suffix) {
         int index = packageNameOrClassName.lastIndexOf('.');
         String packageName = packageNameOrClassName.substring(0, index + 1);
         String last = packageNameOrClassName.substring(index + 1);
         if (Character.isUpperCase(last.charAt(0)))
-            packageNameOrClassName = packageName + "impl." + last + "Impl";
+            packageNameOrClassName = packageName + "impl." + last + suffix;
         else
             packageNameOrClassName = packageName + "impl";
         return packageNameOrClassName;

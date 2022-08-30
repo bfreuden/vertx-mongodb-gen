@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +34,13 @@ public class DropIndexOptions {
    *  the max time
    */
   private Long maxTime;
+
+  public DropIndexOptions() {
+  }
+
+  public DropIndexOptions(JsonObject json) {
+    DropIndexOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  Sets the maximum execution time on the server for this operation.

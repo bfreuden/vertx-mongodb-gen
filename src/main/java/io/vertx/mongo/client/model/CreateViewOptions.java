@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 
 /**
  *  Options for creating a view
@@ -32,6 +33,13 @@ public class CreateViewOptions {
    * the collation options to use
    */
   private Collation collation;
+
+  public CreateViewOptions() {
+  }
+
+  public CreateViewOptions(JsonObject json) {
+    CreateViewOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  Sets the collation options

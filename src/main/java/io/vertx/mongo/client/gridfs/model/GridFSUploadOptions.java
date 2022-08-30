@@ -41,6 +41,13 @@ public class GridFSUploadOptions {
    */
   private JsonObject metadata;
 
+  public GridFSUploadOptions() {
+  }
+
+  public GridFSUploadOptions(JsonObject json) {
+    GridFSUploadOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets the chunk size in bytes.
    *

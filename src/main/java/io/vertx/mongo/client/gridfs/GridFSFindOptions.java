@@ -74,6 +74,13 @@ public class GridFSFindOptions {
    */
   private Integer batchSize;
 
+  public GridFSFindOptions() {
+  }
+
+  public GridFSFindOptions(JsonObject json) {
+    GridFSFindOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets the query filter to apply to the query.
    *  <p>

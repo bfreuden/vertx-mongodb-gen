@@ -15,11 +15,16 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
 
     private final boolean clientSettingsOption;
 
-    public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc, boolean clientSettingsOption) {
+    public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc, boolean publisherOption, boolean clientSettingsOption) {
         super(context, classDoc);
         this.clientSettingsOption = clientSettingsOption;
         this.generatePackageInfo = true;
+        this.publisherOption = publisherOption;
+        this.isDataObject = classDoc.typeParameters().length == 0 && !resultBean
+                // FIXME HACK
+                && !classDoc.name().equals("EncryptOptions");
     }
+
     @Override
     protected void analyzeClass() {
         Type superclassType = classDoc.superclassType();
@@ -33,6 +38,8 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 .filter(m -> !m.name().equals("toString"))
                 .filter(m -> !m.name().equals("hashCode"))
                 .filter(m -> !m.name().equals("equals"))
+                .filter(m -> !m.name().equals("merge"))
+                .filter(m -> !(m.name().toLowerCase().contains("apply") && m.parameters().length == 1 && m.parameters()[0].type().qualifiedTypeName().equals(classDoc.qualifiedTypeName())))
                 .filter(m -> !m.name().equals("toBsonDocument"))
                 .filter(m -> !m.name().equals("asDocument"))
                 .collect(Collectors.toList()));
@@ -58,6 +65,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                     .filter(m -> !m.name().equals("toString"))
                     .filter(m -> !m.name().equals("hashCode"))
                     .filter(m -> !m.name().equals("equals"))
+                    .filter(m -> !(m.name().toLowerCase().contains("apply") && m.parameters().length == 1 && m.parameters()[0].type().qualifiedTypeName().equals(classDoc.qualifiedTypeName())))
                     .filter(m -> !m.name().equals("build"))
                     .forEach(methods::add);
         } else {
@@ -141,8 +149,8 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 boolean deprecated = Arrays.stream(annotations).anyMatch(it -> it.annotationType().qualifiedTypeName().equals(Deprecated.class.getName()));
                 createOption(methods, setter, optionType, optionName, setterParamName, mongoJavadoc, mongoSetterName, hasTimeUnit, null, deprecated, isBlock);
             } catch (RuntimeException ex) {
-                if (!ex.getMessage().startsWith("@unsupported class@") || !clientSettingsOption)
-                    throw ex;
+                if (ex.getMessage() == null || !ex.getMessage().startsWith("@unsupported class@") || !clientSettingsOption)
+                    throw new RuntimeException(ex.getMessage(), ex);
             }
 
         }
@@ -160,6 +168,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
         option.mongoSetterName = mongoSetterName;
         option.setterParamName = setterParamName;
         option.type = getActualType(methodDoc, optionName, optionType, TypeLocation.PARAMETER);
+        option.isCodeGenCompatible = isDataObject && (!option.type.mongoType.toString().startsWith("com.mongodb") || !Types.isAcceptedAsIs(option.type.mongoType.toString()));
         if (option.type.vertxType.isPrimitive())
             option.type.vertxType = option.type.vertxType.box();
         if (mongoCtorParamName != null)
@@ -171,6 +180,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 .findFirst();
         if (maybeGetter.isPresent()) {
             MethodDoc getter = maybeGetter.get();
+            option.mongoGetterName = getter.name();
             methods.remove(getter);
             option.mongoGetterJavadoc = getter.getRawCommentText();
         }
@@ -208,8 +218,11 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
             }
             type.addJavadoc(joiner.toString().replace("$", "$$"));
         }
+//        boolean withImpl = optionsByName.values().stream().anyMatch(option -> !option.isCodeGenCompatible);
         inflateOptionType(type);
-        return Collections.singletonList(JavaFile.builder(getTargetPackage(), type.build()));
+        JavaFile.Builder builder = JavaFile.builder(getTargetPackage(), type.build());
+        addStaticImports(builder);
+        return Collections.singletonList(builder);
     }
 
 }

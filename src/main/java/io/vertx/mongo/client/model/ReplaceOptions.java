@@ -58,6 +58,13 @@ public class ReplaceOptions {
    */
   private String hintString;
 
+  public ReplaceOptions() {
+  }
+
+  public ReplaceOptions(JsonObject json) {
+    ReplaceOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Set to true if a new document should be inserted if there are no matches to the query filter.
    *

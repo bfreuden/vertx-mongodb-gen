@@ -46,11 +46,11 @@ public interface ClientSession {
   boolean notifyMessageSent();
 
   /**
-   *  Gets the transaction options.  Only call this method of the session has an active transaction
+   * Gets the transaction options.  Only call this method of the session has an active transaction
    *
-   *  @return the transaction options
+   * @return the transaction options
    */
-  TransactionOptions getTransactionOptions();
+  com.mongodb.TransactionOptions getTransactionOptions();
 
   /**
    *  Start a transaction in the context of this session with default transaction options. A transaction can not be started if there is

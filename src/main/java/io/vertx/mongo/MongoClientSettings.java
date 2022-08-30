@@ -15,12 +15,20 @@
 //
 package io.vertx.mongo;
 
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.connection.ClusterSettings;
 import io.vertx.mongo.connection.ConnectionPoolSettings;
 import io.vertx.mongo.connection.ServerSettings;
 import io.vertx.mongo.connection.SocketSettings;
 import io.vertx.mongo.connection.SslSettings;
+import io.vertx.mongo.impl.ReadConcernSerializer;
+import io.vertx.mongo.impl.ReadPreferenceSerializer;
+import io.vertx.mongo.impl.WriteConcernSerializer;
 import java.lang.Boolean;
 import java.lang.String;
 
@@ -59,6 +67,16 @@ public class MongoClientSettings {
   private SslSettings sslSettings;
 
   /**
+   * read preference
+   */
+  private ReadPreferenceSerializer readPreference = new ReadPreferenceSerializer((ReadPreference)null);
+
+  /**
+   * the write concern
+   */
+  private WriteConcernSerializer writeConcern = new WriteConcernSerializer((WriteConcern)null);
+
+  /**
    * sets if writes should be retried if they fail due to a network error.
    */
   private Boolean retryWrites;
@@ -69,6 +87,11 @@ public class MongoClientSettings {
   private Boolean retryReads;
 
   /**
+   * the read concern
+   */
+  private ReadConcernSerializer readConcern = new ReadConcernSerializer((ReadConcern)null);
+
+  /**
    * the logical name of the application using this MongoClient.  It may be null.
    */
   private String applicationName;
@@ -77,6 +100,13 @@ public class MongoClientSettings {
    * the auto-encryption settings
    */
   private AutoEncryptionSettings autoEncryptionSettings;
+
+  public MongoClientSettings() {
+  }
+
+  public MongoClientSettings(JsonObject json) {
+    MongoClientSettingsConverter.fromJson(json, this);
+  }
 
   /**
    * @return MongoDB driver object
@@ -201,6 +231,114 @@ public class MongoClientSettings {
   }
 
   /**
+   *  Sets the read preference.
+   *
+   *  @param readPreference read preference
+   *  @return this
+   *  @see MongoClientSettings#getReadPreference()
+   */
+  @GenIgnore
+  public MongoClientSettings setReadPreference(ReadPreference readPreference) {
+    this.readPreference.setValue(readPreference);
+    return this;
+  }
+
+  /**
+   *  Sets the read preference.
+   *
+   *  @param readPreference read preference
+   *  @return this
+   *  @see MongoClientSettings#getReadPreference()
+   *
+   * @hidden
+   */
+  public MongoClientSettings setReadPreference(ReadPreferenceSerializer readPreference) {
+    this.readPreference = readPreference;
+    return this;
+  }
+
+  /**
+   *  The read preference to use for queries, map-reduce, aggregation, and count.
+   *
+   *  <p>Default is {@code ReadPreference.primary()}.</p>
+   *
+   *  @return the read preference
+   *  @see ReadPreference#primary()
+   */
+  @GenIgnore
+  public ReadPreference getMongoReadPreference() {
+    return readPreference.getValue();
+  }
+
+  /**
+   *  The read preference to use for queries, map-reduce, aggregation, and count.
+   *
+   *  <p>Default is {@code ReadPreference.primary()}.</p>
+   *
+   *  @return the read preference
+   *  @see ReadPreference#primary()
+   *
+   * @hidden
+   */
+  public ReadPreferenceSerializer getReadPreference() {
+    return readPreference;
+  }
+
+  /**
+   *  Sets the write concern.
+   *
+   *  @param writeConcern the write concern
+   *  @return this
+   *  @see MongoClientSettings#getWriteConcern()
+   */
+  @GenIgnore
+  public MongoClientSettings setWriteConcern(WriteConcern writeConcern) {
+    this.writeConcern.setValue(writeConcern);
+    return this;
+  }
+
+  /**
+   *  Sets the write concern.
+   *
+   *  @param writeConcern the write concern
+   *  @return this
+   *  @see MongoClientSettings#getWriteConcern()
+   *
+   * @hidden
+   */
+  public MongoClientSettings setWriteConcern(WriteConcernSerializer writeConcern) {
+    this.writeConcern = writeConcern;
+    return this;
+  }
+
+  /**
+   *  The write concern to use.
+   *
+   *  <p>Default is {@code WriteConcern.ACKNOWLEDGED}.</p>
+   *
+   *  @return the write concern
+   *  @see WriteConcern#ACKNOWLEDGED
+   */
+  @GenIgnore
+  public WriteConcern getMongoWriteConcern() {
+    return writeConcern.getValue();
+  }
+
+  /**
+   *  The write concern to use.
+   *
+   *  <p>Default is {@code WriteConcern.ACKNOWLEDGED}.</p>
+   *
+   *  @return the write concern
+   *  @see WriteConcern#ACKNOWLEDGED
+   *
+   * @hidden
+   */
+  public WriteConcernSerializer getWriteConcern() {
+    return writeConcern;
+  }
+
+  /**
    *  Sets whether writes should be retried if they fail due to a network error.
    *
    *  <p>Starting with the 3.11.0 release, the default value is true</p>
@@ -250,6 +388,60 @@ public class MongoClientSettings {
    */
   public Boolean isRetryReads() {
     return retryReads;
+  }
+
+  /**
+   *  Sets the read concern.
+   *
+   *  @param readConcern the read concern
+   *  @return this
+   *  @mongodb.server.release 3.2
+   *  @mongodb.driver.manual reference/readConcern/ Read Concern
+   */
+  @GenIgnore
+  public MongoClientSettings setReadConcern(ReadConcern readConcern) {
+    this.readConcern.setValue(readConcern);
+    return this;
+  }
+
+  /**
+   *  Sets the read concern.
+   *
+   *  @param readConcern the read concern
+   *  @return this
+   *  @mongodb.server.release 3.2
+   *  @mongodb.driver.manual reference/readConcern/ Read Concern
+   *
+   * @hidden
+   */
+  public MongoClientSettings setReadConcern(ReadConcernSerializer readConcern) {
+    this.readConcern = readConcern;
+    return this;
+  }
+
+  /**
+   *  The read concern to use.
+   *
+   *  @return the read concern
+   *  @mongodb.server.release 3.2
+   *  @mongodb.driver.manual reference/readConcern/ Read Concern
+   */
+  @GenIgnore
+  public ReadConcern getMongoReadConcern() {
+    return readConcern.getValue();
+  }
+
+  /**
+   *  The read concern to use.
+   *
+   *  @return the read concern
+   *  @mongodb.server.release 3.2
+   *  @mongodb.driver.manual reference/readConcern/ Read Concern
+   *
+   * @hidden
+   */
+  public ReadConcernSerializer getReadConcern() {
+    return readConcern;
   }
 
   /**
@@ -344,11 +536,20 @@ public class MongoClientSettings {
     if (this.sslSettings != null) {
       builder.applyToSslSettings(_builder -> sslSettings.initializeDriverBuilderClass(_builder));
     }
+    if (this.readPreference.getValue() != null) {
+      builder.readPreference(this.readPreference.getValue());
+    }
+    if (this.writeConcern.getValue() != null) {
+      builder.writeConcern(this.writeConcern.getValue());
+    }
     if (this.retryWrites != null) {
       builder.retryWrites(this.retryWrites);
     }
     if (this.retryReads != null) {
       builder.retryReads(this.retryReads);
+    }
+    if (this.readConcern.getValue() != null) {
+      builder.readConcern(this.readConcern.getValue());
     }
     if (this.applicationName != null) {
       builder.applicationName(this.applicationName);

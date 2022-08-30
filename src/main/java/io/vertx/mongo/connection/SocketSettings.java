@@ -16,6 +16,7 @@
 package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Integer;
 import java.util.concurrent.TimeUnit;
 
@@ -28,11 +29,6 @@ import java.util.concurrent.TimeUnit;
     generateConverter = true
 )
 public class SocketSettings {
-  /**
-   * the socketSettings
-   */
-  private SocketSettings applySettings;
-
   /**
    * the connect timeout
    */
@@ -53,6 +49,13 @@ public class SocketSettings {
    */
   private Integer sendBufferSize;
 
+  public SocketSettings() {
+  }
+
+  public SocketSettings(JsonObject json) {
+    SocketSettingsConverter.fromJson(json, this);
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden
@@ -61,24 +64,6 @@ public class SocketSettings {
     com.mongodb.connection.SocketSettings.Builder builder = com.mongodb.connection.SocketSettings.builder();
     initializeDriverBuilderClass(builder);
     return builder.build();
-  }
-
-  /**
-   *  Applies the socketSettings to the builder
-   *
-   *  <p>Note: Overwrites all existing settings</p>
-   *
-   *  @param socketSettings the socketSettings
-   *  @return this
-   *  @since 3.7
-   */
-  public SocketSettings setApplySettings(SocketSettings socketSettings) {
-    this.applySettings = socketSettings;
-    return this;
-  }
-
-  public SocketSettings getApplySettings() {
-    return applySettings;
   }
 
   /**
@@ -165,9 +150,6 @@ public class SocketSettings {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.connection.SocketSettings.Builder builder) {
-    if (this.applySettings != null) {
-      builder.applySettings(this.applySettings.toDriverClass());
-    }
     if (this.connectTimeout != null) {
       builder.connectTimeout(this.connectTimeout, TimeUnit.MILLISECONDS);
     }

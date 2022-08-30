@@ -71,6 +71,13 @@ public class AutoEncryptionSettings {
    */
   private Boolean bypassAutoEncryption;
 
+  public AutoEncryptionSettings() {
+  }
+
+  public AutoEncryptionSettings(JsonObject json) {
+    AutoEncryptionSettingsConverter.fromJson(json, this);
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden

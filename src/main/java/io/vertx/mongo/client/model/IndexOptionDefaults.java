@@ -36,6 +36,13 @@ public class IndexOptionDefaults {
    */
   private JsonObject storageEngine;
 
+  public IndexOptionDefaults() {
+  }
+
+  public IndexOptionDefaults(JsonObject json) {
+    IndexOptionDefaultsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets the default storage engine options document for indexes.
    *

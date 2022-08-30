@@ -105,18 +105,18 @@ public class SourceGenDoclet {
         inspectionContext.otherApiClasses.remove(StreamFactoryFactory.class.getName());
         inspectionContext.otherApiClasses.remove(MongoCompressor.class.getName()); // TODO accept it
         inspectionContext.otherApiClasses.remove(MongoCredential.class.getName()); // TODO accept it
-        inspectionContext.otherApiClasses.add(ReadPreference.class.getName()); // TODO accept it
-        inspectionContext.otherApiClasses.add(ReadConcern.class.getName()); // TODO accept it
-        inspectionContext.otherApiClasses.add(WriteConcern.class.getName()); // TODO accept it
+//        inspectionContext.otherApiClasses.add(ReadPreference.class.getName()); // TODO accept it
+//        inspectionContext.otherApiClasses.add(ReadConcern.class.getName()); // TODO accept it
+//        inspectionContext.otherApiClasses.add(WriteConcern.class.getName()); // TODO accept it
         inspectionContext.otherApiClasses.add(CodecRegistry.class.getName());
 
         inspectionContext.excludedApiClasses.add(Block.class.getName());
         inspectionContext.excludedApiClasses.add(ConnectionString.class.getName());
         inspectionContext.excludedApiClasses.add(ServerAddress.class.getName()); // TODO accept it
         inspectionContext.excludedApiClasses.add(ServerSelector.class.getName());
-        inspectionContext.excludedApiClasses.add(ReadPreference.class.getName()); // TODO accept it
-        inspectionContext.excludedApiClasses.add(ReadConcern.class.getName()); // TODO accept it
-        inspectionContext.excludedApiClasses.add(WriteConcern.class.getName()); // TODO accept it
+//        inspectionContext.excludedApiClasses.add(ReadPreference.class.getName()); // TODO accept it
+//        inspectionContext.excludedApiClasses.add(ReadConcern.class.getName()); // TODO accept it
+//        inspectionContext.excludedApiClasses.add(WriteConcern.class.getName()); // TODO accept it
         inspectionContext.excludedApiClasses.add(CodecRegistry.class.getName());
         inspectionContext.excludedApiClasses.add(StreamFactoryFactory.class.getName());
         inspectionContext.excludedApiClasses.add(MongoCompressor.class.getName());  // TODO accept it
@@ -129,7 +129,7 @@ public class SourceGenDoclet {
 
         identifyClassTypes(inspectionContext, graph, sourceSet);
         for (String options : inspectionContext.optionsApiClasses) {
-            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options), true)
+            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options), false, true)
                     .generate(genSourceDir);
         }
 
@@ -140,15 +140,15 @@ public class SourceGenDoclet {
 
         String sourceSet = "/";
         // FIXME hardcoded?
-        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
-        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
+//        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
+//        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
 
         inspectionContext.optionsApiClasses.add("com.mongodb.client.model.Collation");
         inspectionContext.builderClasses.add("com.mongodb.client.model.Collation.Builder");
         inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation.Builder");
         inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation");
 
-        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
+//        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
         inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.UpdateDescription");
@@ -166,7 +166,7 @@ public class SourceGenDoclet {
                     .generate(genSourceDir);
         }
         for (String options : inspectionContext.optionsApiClasses) {
-            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options), false)
+            new OptionsAPIClassGenerator(inspectionContext, inspectionContext.classDocs.get(options), false, false)
                     .generate(genSourceDir);
         }
         for (String reactive : inspectionContext.publishersApiClasses) {

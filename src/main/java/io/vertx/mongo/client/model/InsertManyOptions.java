@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
 
 /**
@@ -38,6 +39,13 @@ public class InsertManyOptions {
    * If true, allows the write to opt-out of document level validation.
    */
   private Boolean bypassDocumentValidation;
+
+  public InsertManyOptions() {
+  }
+
+  public InsertManyOptions(JsonObject json) {
+    InsertManyOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  Sets whether the server should insert the documents in the order provided.

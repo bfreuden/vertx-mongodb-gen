@@ -4,10 +4,12 @@ import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
 import org.bfreuden.mappers.ConversionUtilsMapperGenerator;
@@ -137,6 +139,42 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         }
         mongoMethod.computeJavadocs();
         return mongoMethod;
+    }
+
+    protected MethodSpec.Builder fromDriverClassBuilder() {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("fromDriverClass")
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+
+        methodBuilder.addJavadoc("@return mongo object\n@hidden");
+        TypeName returnType;
+        for (TypeVariableName typeVariableName: typeVariables)
+            methodBuilder.addTypeVariable(typeVariableName);
+        if (typeVariables.isEmpty()) {
+            returnType = ClassName.bestGuess(mapPackageName(classDoc.qualifiedTypeName()));
+            methodBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(classDoc.qualifiedTypeName()), "from").build());
+        } else {
+            returnType = ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(classDoc.qualifiedTypeName())), typeVariables.toArray(new TypeName[0]));
+            methodBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), typeVariables.toArray(new TypeName[0])), "from").build());
+        }
+        methodBuilder.returns(returnType);
+        staticImports.add("java.util.Objects.requireNonNull");
+        methodBuilder.addStatement("requireNonNull(from, $S)", "from is null");
+        methodBuilder.addStatement("$T result = new $T()",returnType, returnType);
+        for (Option option: optionsByName.values()) {
+            methodBuilder.beginControlFlow("try");
+            if (option.withTimeUnit) {
+                methodBuilder.addStatement("result." + option.name + " = from." + option.mongoGetterName + "($T.MILLISECONDS)",  ClassName.get(TimeUnit.class));
+            } else if (option.type.mapper != null) {
+                methodBuilder.addStatement(option.type.mapper.asStatementFromExpression("result." + option.name + " = %s", "from." + option.mongoGetterName + "()"));
+            } else {
+                methodBuilder.addStatement("result." + option.name + " = from." + option.mongoGetterName + "()");
+            }
+            methodBuilder.nextControlFlow("catch (Exception ex)");
+            methodBuilder.addStatement("result." + option.name +"Exception = ex");
+            methodBuilder.endControlFlow();
+        }
+        methodBuilder.addStatement("return result");
+        return methodBuilder;
     }
 
     private static class MethodWriteConfig {
@@ -331,7 +369,10 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
     protected void addOptionToMongoBuilder(MethodSpec.Builder toMongoBuilder, Option option) {
         if (option.mandatory)
             return;
-        toMongoBuilder.beginControlFlow("if (this." + option.name + " != null)");
+        if (!option.withTimeUnit && !option.isBlock && !option.type.toMongoEnabledType && option.type.mapper == null && isDataObject && !option.isCodeGenCompatible)
+            toMongoBuilder.beginControlFlow("if (this." + option.name + ".getValue() != null)");
+        else
+            toMongoBuilder.beginControlFlow("if (this." + option.name + " != null)");
         if (option.withTimeUnit) {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ", $T.MILLISECONDS)", TimeUnit.class);
         } else if (option.isBlock) {
@@ -340,10 +381,11 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".toDriverClass())");
         } else if (option.type.mapper != null) {
             toMongoBuilder.addStatement(option.type.mapper.asStatementFromExpression(configurableName + "." + option.mongoSetterName + "(%s)", "this." + option.name));
+        } else if (isDataObject && !option.isCodeGenCompatible) {
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".getValue())");
         } else {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ")");
         }
-
         toMongoBuilder.endControlFlow();
     }
 
@@ -356,8 +398,15 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
     }
 
     protected void inflateOptionType(TypeSpec.Builder type) {
-        if (classDoc.typeParameters().length == 0 && !resultBean)
+        if (isDataObject) {
             type.addAnnotation(AnnotationSpec.builder(DataObject.class).addMember("generateConverter", CodeBlock.of("true")).build());
+            type.addMethod(MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC).build());
+            type.addMethod(MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ClassName.get(JsonObject.class), "json")
+                    .addStatement("$T.fromJson(json, this)", ClassName.bestGuess(getTargetQualifiedClassName() + "Converter")).build());
+        }
         MethodSpec.Builder toMongoMethod = toMongoBuilder();
         if (hasBuilder) {
             MethodSpec.Builder toMongo2 = MethodSpec.methodBuilder("toDriverClass")
@@ -381,14 +430,20 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             type.addMethod(toMongo2.build());
         }
         for (Option option: optionsByName.values()) {
-            if (option.name.equals("commitQuorum")) {
-                System.out.println("WARNING: ignoring commitQuorum parameter");
-                continue;
+            ClassName optionSerializer = null;
+            if (isDataObject && !option.isCodeGenCompatible) {
+                optionSerializer = ClassName.bestGuess(mapToSerializer(option.type.mongoType.toString()));
             }
             if (!isResultOnlyOptions)
                 addOptionToMongoBuilder(toMongoMethod, option);
-            FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.type.vertxType, option.name).addModifiers(Modifier.PRIVATE);
+//            // write exception fields
+//            type.addField(FieldSpec.builder(Exception.class, option.name + "Exception").addModifiers(Modifier.PRIVATE).build());
+            // write field
+            FieldSpec.Builder fieldBuilder = FieldSpec.builder(optionSerializer != null ? optionSerializer : option.type.vertxType, option.name).addModifiers(Modifier.PRIVATE);
+            if (optionSerializer != null)
+                fieldBuilder.initializer("new $T(($T)null)", optionSerializer, option.type.vertxType);
             if (option.mongoJavadoc != null) {
+                // FIXME hack
                 option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "hint(JsonObject)");
                 Optional<String> firstParam = Arrays.stream(option.mongoJavadoc.split("\n+")).filter(it -> it.contains("@param")).findFirst();
                 if (firstParam.isPresent()) {
@@ -400,74 +455,108 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             }
             type.addField(fieldBuilder.build());
             if (option.mongoSetterName != null) {
-                MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + option.name.substring(0, 1).toUpperCase() + option.name.substring(1))
-                        .addModifiers(Modifier.PUBLIC)
+                MethodSpec.Builder setterBuilder = optionSetterBuilder(option, false)
                         .addParameter(option.type.vertxType, option.setterParamName)
-                        .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()))
-                        .addStatement("this." + option.name + " = " + option.setterParamName)
+                        .addStatement(optionSerializer != null ? "this." + option.name + ".setValue(" + option.setterParamName  +")":  "this." + option.name + " = " + option.setterParamName)
                         .addStatement("return this");
-                if (option.mongoJavadoc != null) {
-                    if (option.withTimeUnit) {
-                        String[] split = option.mongoJavadoc.split("\n");
-                        boolean paramFound = false;
-                        StringJoiner joiner = new StringJoiner("\n");
-                        for (String line : split) {
-                            if (!paramFound) {
-                                paramFound = line.contains("@param");
-                                if (paramFound)
-                                    line += " (in milliseconds)";
-                                joiner.add(line);
-                            } else if (!line.contains("@param")) {
-                                joiner.add(line);
-                            }
-                        }
-                        setterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
-                    } else {
-                        setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "$$"));
-                    }
-                }
-                if (option.deprecated)
-                    setterBuilder.addAnnotation(Deprecated.class);
+                if (isDataObject && !option.isCodeGenCompatible)
+                    setterBuilder.addAnnotation(GenIgnore.class);
                 type.addMethod(setterBuilder.build());
+                if (optionSerializer != null) {
+                    MethodSpec.Builder setterBuilder2 = optionSetterBuilder(option, true)
+                            .addParameter(optionSerializer, option.setterParamName)
+                            .addStatement("this." + option.name + " = " + option.setterParamName)
+                            .addStatement("return this");
+                    type.addMethod(setterBuilder2.build());
+
+                }
             }
             boolean isBoolean = option.type.vertxType.toString().toLowerCase().contains("boolean");
-            MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder((isBoolean ? "is" : "get") + Character.toUpperCase(option.name.charAt(0)) + option.name.substring(1))
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(option.type.vertxType);
-            if (resultBean) {
-                getterBuilder.beginControlFlow("if (" + option.name + "Exception != null) ");
-                getterBuilder.addStatement("throw new RuntimeException(" + option.name + "Exception)");
-                getterBuilder.endControlFlow();
-            }
-            getterBuilder.addStatement("return " + option.name);
-            if (option.deprecated)
-                getterBuilder.addAnnotation(Deprecated.class);
-            if (option.mongoGetterJavadoc != null) {
-                if (option.withTimeUnit) {
-                    String[] split = option.mongoGetterJavadoc.split("\n");
-                    StringJoiner joiner = new StringJoiner("\n");
-                    for (String line : split) {
-                        if (line.contains("@param"))
-                            continue;
-                        if (option.withTimeUnit && line.contains("@return") && line.contains("in the given time unit"))
-                            line = line.replace("in the given time unit", "(in milliseconds)");
-                        joiner.add(line);
-                    }
-                    getterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
-                } else {
-                    getterBuilder.addJavadoc(option.mongoGetterJavadoc.replace("$", "$$"));
-                }
-            }
+            MethodSpec.Builder getterBuilder = optionGetterBuilder(option, isBoolean, isDataObject && !option.isCodeGenCompatible, false)
+                    .returns(option.type.vertxType)
+                    .addStatement(optionSerializer != null ? "return " + option.name + ".getValue()" : "return " + option.name);
+            if (isDataObject && !option.isCodeGenCompatible)
+                getterBuilder.addAnnotation(GenIgnore.class);
             type.addMethod(getterBuilder.build());
+            if (optionSerializer != null) {
+                MethodSpec.Builder getterBuilder2 = optionGetterBuilder(option, isBoolean, false, true)
+                        .returns(optionSerializer)
+                        .addStatement("return " + option.name);
+                type.addMethod(getterBuilder2.build());
+            }
         }
+//        if (!publisherOption && !classDoc.isAbstract())
+//            type.addMethod(fromDriverClassBuilder().build());
         if (!isResultOnlyOptions)
             type.addMethod(toMongo(toMongoMethod));
+    }
+
+    private MethodSpec.Builder optionGetterBuilder(Option option, boolean isBoolean, boolean mongoName, boolean hiddenJavadoc) {
+        String getterBaseName = Character.toUpperCase(option.name.charAt(0)) + option.name.substring(1);
+        if (mongoName)
+            getterBaseName = "Mongo" + getterBaseName;
+        MethodSpec.Builder getterBuilder = MethodSpec.methodBuilder((isBoolean ? "is" : "get") + getterBaseName)
+                .addModifiers(Modifier.PUBLIC);
+        if (resultBean) {
+            getterBuilder.beginControlFlow("if (" + option.name + "Exception != null) ");
+            getterBuilder.addStatement("throw new RuntimeException(" + option.name + "Exception)");
+            getterBuilder.endControlFlow();
+        }
+        if (option.deprecated)
+            getterBuilder.addAnnotation(Deprecated.class);
+        if (option.mongoGetterJavadoc != null) {
+            if (option.withTimeUnit) {
+                String[] split = option.mongoGetterJavadoc.split("\n");
+                StringJoiner joiner = new StringJoiner("\n");
+                for (String line : split) {
+                    if (line.contains("@param"))
+                        continue;
+                    if (option.withTimeUnit && line.contains("@return") && line.contains("in the given time unit"))
+                        line = line.replace("in the given time unit", "(in milliseconds)");
+                    joiner.add(line);
+                }
+                getterBuilder.addJavadoc(joiner.toString().replace("$", "$$") + (hiddenJavadoc ? "\n@hidden" : ""));
+            } else {
+                getterBuilder.addJavadoc(option.mongoGetterJavadoc.replace("$", "$$") + (hiddenJavadoc ? "\n@hidden" : ""));
+            }
+        }
+        return getterBuilder;
+    }
+
+    private MethodSpec.Builder optionSetterBuilder(Option option, boolean hiddenJavadoc) {
+        MethodSpec.Builder setterBuilder = MethodSpec.methodBuilder("set" + option.name.substring(0, 1).toUpperCase() + option.name.substring(1))
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.bestGuess(getTargetPackage() + "." + getTargetClassName()));
+        if (option.mongoJavadoc != null) {
+            if (option.withTimeUnit) {
+                String[] split = option.mongoJavadoc.split("\n");
+                boolean paramFound = false;
+                StringJoiner joiner = new StringJoiner("\n");
+                for (String line : split) {
+                    if (!paramFound) {
+                        paramFound = line.contains("@param");
+                        if (paramFound)
+                            line += " (in milliseconds)";
+                        joiner.add(line);
+                    } else if (!line.contains("@param")) {
+                        joiner.add(line);
+                    }
+                }
+                setterBuilder.addJavadoc(joiner.toString().replace("$", "$$") + (hiddenJavadoc ? "\n@hidden" : ""));
+            } else {
+                setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "$$") + (hiddenJavadoc ? "\n@hidden" : ""));
+            }
+        }
+        if (option.deprecated)
+            setterBuilder.addAnnotation(Deprecated.class);
+        return setterBuilder;
     }
 
     protected static class Option {
         public boolean deprecated;
         public String mongoGetterName;
         public ActualType type;
+        public boolean isCodeGenCompatible = true;
         String name;
         String setterParamName;
         String mongoSetterName;

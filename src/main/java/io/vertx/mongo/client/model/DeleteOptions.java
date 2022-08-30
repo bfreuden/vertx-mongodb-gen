@@ -46,6 +46,13 @@ public class DeleteOptions {
    */
   private String hintString;
 
+  public DeleteOptions() {
+  }
+
+  public DeleteOptions(JsonObject json) {
+    DeleteOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets the collation options
    *

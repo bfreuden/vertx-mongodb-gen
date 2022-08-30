@@ -85,6 +85,13 @@ public class FindOneAndUpdateOptions {
    */
   private String hintString;
 
+  public FindOneAndUpdateOptions() {
+  }
+
+  public FindOneAndUpdateOptions(JsonObject json) {
+    FindOneAndUpdateOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets a document describing the fields to return for all matching documents.
    *

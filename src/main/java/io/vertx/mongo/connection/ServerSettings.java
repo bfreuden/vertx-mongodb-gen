@@ -16,6 +16,7 @@
 package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
 
@@ -29,11 +30,6 @@ import java.util.concurrent.TimeUnit;
 )
 public class ServerSettings {
   /**
-   * the serverSettings
-   */
-  private ServerSettings applySettings;
-
-  /**
    * the heartbeat frequency
    */
   private Long heartbeatFrequency;
@@ -43,6 +39,13 @@ public class ServerSettings {
    */
   private Long minHeartbeatFrequency;
 
+  public ServerSettings() {
+  }
+
+  public ServerSettings(JsonObject json) {
+    ServerSettingsConverter.fromJson(json, this);
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden
@@ -51,24 +54,6 @@ public class ServerSettings {
     com.mongodb.connection.ServerSettings.Builder builder = com.mongodb.connection.ServerSettings.builder();
     initializeDriverBuilderClass(builder);
     return builder.build();
-  }
-
-  /**
-   *  Applies the serverSettings to the builder
-   *
-   *  <p>Note: Overwrites all existing settings</p>
-   *
-   *  @param serverSettings the serverSettings
-   *  @return this
-   *  @since 3.7
-   */
-  public ServerSettings setApplySettings(ServerSettings serverSettings) {
-    this.applySettings = serverSettings;
-    return this;
-  }
-
-  public ServerSettings getApplySettings() {
-    return applySettings;
   }
 
   /**
@@ -118,9 +103,6 @@ public class ServerSettings {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.connection.ServerSettings.Builder builder) {
-    if (this.applySettings != null) {
-      builder.applySettings(this.applySettings.toDriverClass());
-    }
     if (this.heartbeatFrequency != null) {
       builder.heartbeatFrequency(this.heartbeatFrequency, TimeUnit.MILLISECONDS);
     }

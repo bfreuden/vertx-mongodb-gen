@@ -2,7 +2,6 @@ package org.bfreuden;
 
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
-import io.vertx.codegen.annotations.DataObject;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
@@ -126,36 +125,7 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
             typeBuilder.addMethod(MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE).build());
 
             // we just need a fromDriverClass method
-            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("fromDriverClass")
-                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
-
-            methodBuilder.addJavadoc("@return mongo object\n@hidden");
-            TypeName returnType;
-            for (TypeVariableName typeVariableName: typeVariables)
-                methodBuilder.addTypeVariable(typeVariableName);
-            if (typeVariables.isEmpty()) {
-                returnType = ClassName.bestGuess(mapPackageName(classDoc.qualifiedTypeName()));
-                methodBuilder.addParameter(ParameterSpec.builder(ClassName.bestGuess(classDoc.qualifiedTypeName()), "from").build());
-            } else {
-                returnType = ParameterizedTypeName.get(ClassName.bestGuess(mapPackageName(classDoc.qualifiedTypeName())), typeVariables.toArray(new TypeName[0]));
-                methodBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), typeVariables.toArray(new TypeName[0])), "from").build());
-            }
-            methodBuilder.returns(returnType);
-            staticImports.add("java.util.Objects.requireNonNull");
-            methodBuilder.addStatement("requireNonNull(from, $S)", "from is null");
-            methodBuilder.addStatement("$T result = new $T()",returnType, returnType);
-            for (Option option: optionsByName.values()) {
-                methodBuilder.beginControlFlow("try");
-                if (option.type.mapper != null) {
-                    methodBuilder.addStatement(option.type.mapper.asStatementFromExpression("result." + option.name + " = %s", "from." + option.mongoGetterName + "()"));
-                } else {
-                    methodBuilder.addStatement("result." + option.name + " = from." + option.mongoGetterName + "()");
-                }
-                methodBuilder.nextControlFlow("catch (Exception ex)");
-                methodBuilder.addStatement("result." + option.name +"Exception = ex");
-                methodBuilder.endControlFlow();
-            }
-            methodBuilder.addStatement("return result");
+            MethodSpec.Builder methodBuilder = fromDriverClassBuilder();
             typeBuilder.addMethod(methodBuilder.build());
         }
         JavaFile.Builder builder = JavaFile.builder(getTargetPackage(), typeBuilder.build());

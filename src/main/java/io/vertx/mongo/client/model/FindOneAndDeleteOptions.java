@@ -62,6 +62,13 @@ public class FindOneAndDeleteOptions {
    */
   private String hintString;
 
+  public FindOneAndDeleteOptions() {
+  }
+
+  public FindOneAndDeleteOptions(JsonObject json) {
+    FindOneAndDeleteOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets a document describing the fields to return for all matching documents.
    *

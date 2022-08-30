@@ -135,6 +135,13 @@ public class IndexOptions {
    */
   private Boolean hidden;
 
+  public IndexOptions() {
+  }
+
+  public IndexOptions(JsonObject json) {
+    IndexOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Should the index should be created in the background
    *

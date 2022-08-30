@@ -51,9 +51,8 @@ public class ClientSessionImpl extends ClientSessionBase {
   }
 
   @Override
-  public TransactionOptions getTransactionOptions() {
-    com.mongodb.TransactionOptions __result = wrapped.getTransactionOptions();
-    return TransactionOptions.fromDriverClass(__result);
+  public com.mongodb.TransactionOptions getTransactionOptions() {
+    return wrapped.getTransactionOptions();
   }
 
   @Override

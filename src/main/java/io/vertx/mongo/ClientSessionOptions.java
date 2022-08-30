@@ -16,7 +16,6 @@
 package io.vertx.mongo;
 
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
 
@@ -42,7 +41,10 @@ public class ClientSessionOptions {
    */
   private TransactionOptions defaultTransactionOptions;
 
-  public void fromJson(JsonObject json) {
+  public ClientSessionOptions() {
+  }
+
+  public ClientSessionOptions(JsonObject json) {
     ClientSessionOptionsConverter.fromJson(json, this);
   }
 
@@ -63,7 +65,6 @@ public class ClientSessionOptions {
    *  @return this
    *  @mongodb.driver.dochub core/causal-consistency Causal Consistency
    */
-  @GenIgnore
   public ClientSessionOptions setCausallyConsistent(Boolean causallyConsistent) {
     this.causallyConsistent = causallyConsistent;
     return this;
@@ -76,7 +77,6 @@ public class ClientSessionOptions {
    *  which is currently true.
    *  @mongodb.driver.dochub core/causal-consistency Causal Consistency
    */
-  @GenIgnore
   public Boolean isCausallyConsistent() {
     return causallyConsistent;
   }
@@ -89,7 +89,6 @@ public class ClientSessionOptions {
    *  @since 3.8
    *  @mongodb.server.release 4.0
    */
-  @GenIgnore
   public ClientSessionOptions setDefaultTransactionOptions(
       TransactionOptions defaultTransactionOptions) {
     this.defaultTransactionOptions = defaultTransactionOptions;
@@ -103,7 +102,6 @@ public class ClientSessionOptions {
    *  @since 3.8
    *  @mongodb.server.release 4.0
    */
-  @GenIgnore
   public TransactionOptions getDefaultTransactionOptions() {
     return defaultTransactionOptions;
   }

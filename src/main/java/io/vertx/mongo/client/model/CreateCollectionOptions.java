@@ -66,6 +66,13 @@ public class CreateCollectionOptions {
    */
   private Collation collation;
 
+  public CreateCollectionOptions() {
+  }
+
+  public CreateCollectionOptions(JsonObject json) {
+    CreateCollectionOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Sets the maximum number of documents allowed in a capped collection.
    *

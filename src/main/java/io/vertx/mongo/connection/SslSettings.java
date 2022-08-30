@@ -16,6 +16,7 @@
 package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
 
 /**
@@ -28,11 +29,6 @@ import java.lang.Boolean;
 )
 public class SslSettings {
   /**
-   * the sslSettings
-   */
-  private SslSettings applySettings;
-
-  /**
    * should be true if SSL is to be enabled.
    */
   private Boolean enabled;
@@ -42,6 +38,13 @@ public class SslSettings {
    */
   private Boolean invalidHostNameAllowed;
 
+  public SslSettings() {
+  }
+
+  public SslSettings(JsonObject json) {
+    SslSettingsConverter.fromJson(json, this);
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden
@@ -50,24 +53,6 @@ public class SslSettings {
     com.mongodb.connection.SslSettings.Builder builder = com.mongodb.connection.SslSettings.builder();
     initializeDriverBuilderClass(builder);
     return builder.build();
-  }
-
-  /**
-   *  Applies the sslSettings to the builder
-   *
-   *  <p>Note: Overwrites all existing settings</p>
-   *
-   *  @param sslSettings the sslSettings
-   *  @return this
-   *  @since 3.7
-   */
-  public SslSettings setApplySettings(SslSettings sslSettings) {
-    this.applySettings = sslSettings;
-    return this;
-  }
-
-  public SslSettings getApplySettings() {
-    return applySettings;
   }
 
   /**
@@ -117,9 +102,6 @@ public class SslSettings {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.connection.SslSettings.Builder builder) {
-    if (this.applySettings != null) {
-      builder.applySettings(this.applySettings.toDriverClass());
-    }
     if (this.enabled != null) {
       builder.enabled(this.enabled);
     }

@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
 
 /**
@@ -36,6 +37,13 @@ public class BulkWriteOptions {
    * If true, allows the write to opt-out of document level validation.
    */
   private Boolean bypassDocumentValidation;
+
+  public BulkWriteOptions() {
+  }
+
+  public BulkWriteOptions(JsonObject json) {
+    BulkWriteOptionsConverter.fromJson(json, this);
+  }
 
   /**
    *  If true, then when a write fails, return without performing the remaining

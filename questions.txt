@@ -1,6 +1,7 @@
 
 InsertOneResult has an insertedId with an Object type?
 FindOption setSort -> sort
+    => setSort because vertx codegen won't work with sort
 Promise.promise() vs vertx.promise()?
 handler async result functions fluent or void?
 create an ObjectID class?
@@ -13,6 +14,8 @@ gridfs updloadFile methods don't allow to set a "target" filename?
 squash some package names like model?
 
 TODO:
+implement Serializer classes
+implement all ConversionUtilsImpl methods
 transaction options + builder
 possibility to post configure databases, collections, updateoptions, etc...
 rename package from io.vertx.mongo to io.vertx.ext.mongo
@@ -35,7 +38,7 @@ install a replicaset to test watch methods
 client encryption should return Buffer instead of Byte
 builder method + config for client encryption
 add @links to the mongo javadoc for each method
-
+have impl classes for options with non serializable mongo classes
 
 migration:
 batch size always hardcoded to 1 when unspecified

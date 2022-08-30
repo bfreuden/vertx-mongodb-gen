@@ -15,7 +15,6 @@
 //
 package io.vertx.mongo.client.model.vault;
 
-import io.vertx.codegen.annotations.DataObject;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import java.lang.String;
 
@@ -24,9 +23,6 @@ import java.lang.String;
  *
  *  @since 3.11
  */
-//@DataObject(
-//    generateConverter = true
-//)
 public class EncryptOptions {
   private String algorithm;
 

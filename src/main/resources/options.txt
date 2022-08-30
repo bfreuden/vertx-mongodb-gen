@@ -1,4 +1,5 @@
 com.mongodb.ClientSessionOptions
+com.mongodb.TransactionOptions
 com.mongodb.client.gridfs.model.GridFSDownloadOptions
 com.mongodb.client.gridfs.model.GridFSUploadOptions
 com.mongodb.client.model.BulkWriteOptions

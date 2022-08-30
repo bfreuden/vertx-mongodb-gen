@@ -1,9 +1,6 @@
 package org.bfreuden;
 
-import com.mongodb.MongoNamespace;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.WriteConcern;
+import com.mongodb.*;
 import com.mongodb.client.model.Collation;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -34,6 +31,7 @@ public class Types {
         ACCEPTED.add(ReadConcern.class.getName());
         ACCEPTED.add(WriteConcern.class.getName());
         ACCEPTED.add(ReadPreference.class.getName());
+        ACCEPTED.add(CreateIndexCommitQuorum.class.getName());
         IGNORED.add("com.mongodb.internal.async.client.AsyncClientSession");
 
 

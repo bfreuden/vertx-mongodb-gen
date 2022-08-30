@@ -16,6 +16,7 @@
 package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.json.JsonObject;
 import java.lang.Integer;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
@@ -29,11 +30,6 @@ import java.util.concurrent.TimeUnit;
     generateConverter = true
 )
 public class ConnectionPoolSettings {
-  /**
-   * the connectionPoolSettings
-   */
-  private ConnectionPoolSettings applySettings;
-
   /**
    * the maximum number of connections in the pool.
    */
@@ -69,6 +65,13 @@ public class ConnectionPoolSettings {
    */
   private Long maintenanceFrequency;
 
+  public ConnectionPoolSettings() {
+  }
+
+  public ConnectionPoolSettings(JsonObject json) {
+    ConnectionPoolSettingsConverter.fromJson(json, this);
+  }
+
   /**
    * @return MongoDB driver object
    * @hidden
@@ -77,24 +80,6 @@ public class ConnectionPoolSettings {
     com.mongodb.connection.ConnectionPoolSettings.Builder builder = com.mongodb.connection.ConnectionPoolSettings.builder();
     initializeDriverBuilderClass(builder);
     return builder.build();
-  }
-
-  /**
-   *  Applies the connectionPoolSettings to the builder
-   *
-   *  <p>Note: Overwrites all existing settings</p>
-   *
-   *  @param connectionPoolSettings the connectionPoolSettings
-   *  @return this
-   *  @since 3.7
-   */
-  public ConnectionPoolSettings setApplySettings(ConnectionPoolSettings connectionPoolSettings) {
-    this.applySettings = connectionPoolSettings;
-    return this;
-  }
-
-  public ConnectionPoolSettings getApplySettings() {
-    return applySettings;
   }
 
   /**
@@ -263,9 +248,6 @@ public class ConnectionPoolSettings {
    */
   public void initializeDriverBuilderClass(
       com.mongodb.connection.ConnectionPoolSettings.Builder builder) {
-    if (this.applySettings != null) {
-      builder.applySettings(this.applySettings.toDriverClass());
-    }
     if (this.maxSize != null) {
       builder.maxSize(this.maxSize);
     }

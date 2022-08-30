@@ -40,6 +40,13 @@ public class DataKeyOptions {
    */
   private JsonObject masterKey;
 
+  public DataKeyOptions() {
+  }
+
+  public DataKeyOptions(JsonObject json) {
+    DataKeyOptionsConverter.fromJson(json, this);
+  }
+
   /**
    *  Set the alternate key names.
    *
