@@ -17,6 +17,7 @@ package io.vertx.mongo.client.gridfs.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 
 /**
@@ -83,7 +84,8 @@ public class GridFSDownloadOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.gridfs.model.GridFSDownloadOptions toDriverClass() {
+  public com.mongodb.client.gridfs.model.GridFSDownloadOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.gridfs.model.GridFSDownloadOptions result = new com.mongodb.client.gridfs.model.GridFSDownloadOptions();
     if (this.revision != null) {
       result.revision(this.revision);

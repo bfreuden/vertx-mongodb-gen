@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 
 /**
@@ -103,7 +104,7 @@ public class BulkWriteOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.BulkWriteOptions toDriverClass() {
+  public com.mongodb.client.model.BulkWriteOptions toDriverClass(MongoClientContext clientContext) {
     com.mongodb.client.model.BulkWriteOptions result = new com.mongodb.client.model.BulkWriteOptions();
     if (this.ordered != null) {
       result.ordered(this.ordered);

@@ -19,6 +19,7 @@ import com.mongodb.CreateIndexCommitQuorum;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.serializers.CreateIndexOptionsSerializer;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Long;
 
 @DataObject
@@ -84,7 +85,8 @@ public class CreateIndexOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.CreateIndexOptions toDriverClass() {
-    return this.serializer.toDriverClass();
+  public com.mongodb.client.model.CreateIndexOptions toDriverClass(
+      MongoClientContext clientContext) {
+    return this.serializer.toDriverClass(clientContext);
   }
 }

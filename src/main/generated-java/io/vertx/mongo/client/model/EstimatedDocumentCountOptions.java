@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +73,8 @@ public class EstimatedDocumentCountOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.EstimatedDocumentCountOptions toDriverClass() {
+  public com.mongodb.client.model.EstimatedDocumentCountOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.EstimatedDocumentCountOptions result = new com.mongodb.client.model.EstimatedDocumentCountOptions();
     if (this.maxTime != null) {
       result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);

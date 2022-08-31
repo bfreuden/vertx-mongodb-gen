@@ -30,6 +30,7 @@ import io.vertx.mongo.connection.ConnectionPoolSettings;
 import io.vertx.mongo.connection.ServerSettings;
 import io.vertx.mongo.connection.SocketSettings;
 import io.vertx.mongo.connection.SslSettings;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.MongoCompressorSerializer;
 import io.vertx.mongo.impl.MongoCredentialSerializer;
 import io.vertx.mongo.impl.ReadConcernSerializer;
@@ -84,9 +85,9 @@ public class MongoClientSettingsSerializer {
     return result;
   }
 
-  public MongoClientSettings toDriverClass() {
+  public MongoClientSettings toDriverClass(MongoClientContext clientContext) {
     MongoClientSettings.Builder builder = MongoClientSettings.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -267,21 +268,22 @@ public class MongoClientSettingsSerializer {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(MongoClientSettings.Builder builder) {
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      MongoClientSettings.Builder builder) {
     if (this.clusterSettings != null) {
-      builder.applyToClusterSettings(_builder -> clusterSettings.initializeDriverBuilderClass(_builder));
+      builder.applyToClusterSettings(_builder -> clusterSettings.initializeDriverBuilderClass(clientContext, _builder));
     }
     if (this.socketSettings != null) {
-      builder.applyToSocketSettings(_builder -> socketSettings.initializeDriverBuilderClass(_builder));
+      builder.applyToSocketSettings(_builder -> socketSettings.initializeDriverBuilderClass(clientContext, _builder));
     }
     if (this.connectionPoolSettings != null) {
-      builder.applyToConnectionPoolSettings(_builder -> connectionPoolSettings.initializeDriverBuilderClass(_builder));
+      builder.applyToConnectionPoolSettings(_builder -> connectionPoolSettings.initializeDriverBuilderClass(clientContext, _builder));
     }
     if (this.serverSettings != null) {
-      builder.applyToServerSettings(_builder -> serverSettings.initializeDriverBuilderClass(_builder));
+      builder.applyToServerSettings(_builder -> serverSettings.initializeDriverBuilderClass(clientContext, _builder));
     }
     if (this.sslSettings != null) {
-      builder.applyToSslSettings(_builder -> sslSettings.initializeDriverBuilderClass(_builder));
+      builder.applyToSslSettings(_builder -> sslSettings.initializeDriverBuilderClass(clientContext, _builder));
     }
     if (this.readPreference != null) {
       builder.readPreference(this.readPreference);
@@ -308,7 +310,7 @@ public class MongoClientSettingsSerializer {
       builder.compressorList(this.compressorList);
     }
     if (this.autoEncryptionSettings != null) {
-      builder.autoEncryptionSettings(this.autoEncryptionSettings.toDriverClass());
+      builder.autoEncryptionSettings(this.autoEncryptionSettings.toDriverClass(clientContext));
     }
   }
 }

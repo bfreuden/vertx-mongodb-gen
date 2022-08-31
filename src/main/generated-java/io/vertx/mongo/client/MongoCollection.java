@@ -49,6 +49,7 @@ import io.vertx.mongo.client.result.DeleteResult;
 import io.vertx.mongo.client.result.InsertManyResult;
 import io.vertx.mongo.client.result.InsertOneResult;
 import io.vertx.mongo.client.result.UpdateResult;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Class;
 import java.lang.Long;
 import java.lang.String;
@@ -2621,5 +2622,6 @@ public interface MongoCollection<TDocument> {
    * @return mongo object
    * @hidden
    */
-  com.mongodb.reactivestreams.client.MongoCollection<TDocument> toDriverClass();
+  com.mongodb.reactivestreams.client.MongoCollection<TDocument> toDriverClass(
+      MongoClientContext clientContext);
 }

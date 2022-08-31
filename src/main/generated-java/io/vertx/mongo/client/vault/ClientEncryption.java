@@ -20,6 +20,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.mongo.client.model.vault.DataKeyOptions;
 import io.vertx.mongo.client.model.vault.EncryptOptions;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Object;
 import java.lang.String;
 
@@ -120,5 +121,6 @@ public interface ClientEncryption {
    * @return mongo object
    * @hidden
    */
-  com.mongodb.reactivestreams.client.vault.ClientEncryption toDriverClass();
+  com.mongodb.reactivestreams.client.vault.ClientEncryption toDriverClass(
+      MongoClientContext clientContext);
 }

@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 
 /**
@@ -71,7 +72,8 @@ public class RenameCollectionOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.RenameCollectionOptions toDriverClass() {
+  public com.mongodb.client.model.RenameCollectionOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.RenameCollectionOptions result = new com.mongodb.client.model.RenameCollectionOptions();
     if (this.dropTarget != null) {
       result.dropTarget(this.dropTarget);

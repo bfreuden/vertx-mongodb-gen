@@ -19,7 +19,7 @@ import com.mongodb.client.model.ReturnDocument;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Long;
 import java.lang.String;
@@ -325,13 +325,14 @@ public class FindOneAndUpdateOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.FindOneAndUpdateOptions toDriverClass() {
+  public com.mongodb.client.model.FindOneAndUpdateOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.FindOneAndUpdateOptions result = new com.mongodb.client.model.FindOneAndUpdateOptions();
     if (this.projection != null) {
-      result.projection(ConversionUtilsImpl.INSTANCE.toBson(this.projection));
+      result.projection(clientContext.getConversionUtils().toBson(this.projection));
     }
     if (this.sort != null) {
-      result.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+      result.sort(clientContext.getConversionUtils().toBson(this.sort));
     }
     if (this.upsert != null) {
       result.upsert(this.upsert);
@@ -346,13 +347,13 @@ public class FindOneAndUpdateOptions {
       result.bypassDocumentValidation(this.bypassDocumentValidation);
     }
     if (this.collation != null) {
-      result.collation(this.collation.toDriverClass());
+      result.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.arrayFilters != null) {
-      result.arrayFilters(ConversionUtilsImpl.INSTANCE.toBsonList(this.arrayFilters));
+      result.arrayFilters(clientContext.getConversionUtils().toBsonList(this.arrayFilters));
     }
     if (this.hint != null) {
-      result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+      result.hint(clientContext.getConversionUtils().toBson(this.hint));
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);

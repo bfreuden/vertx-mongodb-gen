@@ -17,6 +17,7 @@ package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 
 /**
@@ -55,9 +56,9 @@ public class SslSettings {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.connection.SslSettings toDriverClass() {
+  public com.mongodb.connection.SslSettings toDriverClass(MongoClientContext clientContext) {
     com.mongodb.connection.SslSettings.Builder builder = com.mongodb.connection.SslSettings.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -107,7 +108,8 @@ public class SslSettings {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.connection.SslSettings.Builder builder) {
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.connection.SslSettings.Builder builder) {
     if (this.enabled != null) {
       builder.enabled(this.enabled);
     }

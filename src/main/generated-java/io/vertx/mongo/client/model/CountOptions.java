@@ -17,7 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
@@ -211,10 +211,10 @@ public class CountOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.CountOptions toDriverClass() {
+  public com.mongodb.client.model.CountOptions toDriverClass(MongoClientContext clientContext) {
     com.mongodb.client.model.CountOptions result = new com.mongodb.client.model.CountOptions();
     if (this.hint != null) {
-      result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+      result.hint(clientContext.getConversionUtils().toBson(this.hint));
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);
@@ -229,7 +229,7 @@ public class CountOptions {
       result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }
     if (this.collation != null) {
-      result.collation(this.collation.toDriverClass());
+      result.collation(this.collation.toDriverClass(clientContext));
     }
     return result;
   }

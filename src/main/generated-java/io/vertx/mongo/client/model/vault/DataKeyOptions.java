@@ -17,7 +17,7 @@ package io.vertx.mongo.client.model.vault;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.String;
 import java.util.List;
 
@@ -115,13 +115,14 @@ public class DataKeyOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.vault.DataKeyOptions toDriverClass() {
+  public com.mongodb.client.model.vault.DataKeyOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.vault.DataKeyOptions result = new com.mongodb.client.model.vault.DataKeyOptions();
     if (this.keyAltNames != null) {
       result.keyAltNames(this.keyAltNames);
     }
     if (this.masterKey != null) {
-      result.masterKey(ConversionUtilsImpl.INSTANCE.toBsonDocument(this.masterKey));
+      result.masterKey(clientContext.getConversionUtils().toBsonDocument(this.masterKey));
     }
     return result;
   }

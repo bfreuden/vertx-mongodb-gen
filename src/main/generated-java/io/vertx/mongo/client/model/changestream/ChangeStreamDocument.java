@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import com.mongodb.MongoNamespace;
 import com.mongodb.client.model.changestream.OperationType;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.Long;
 import java.lang.String;
@@ -277,11 +277,12 @@ public class ChangeStreamDocument<TDocument> {
    * @hidden
    */
   public static <TDocument> ChangeStreamDocument<TDocument> fromDriverClass(
+      MongoClientContext clientContext,
       com.mongodb.client.model.changestream.ChangeStreamDocument<TDocument> from) {
     requireNonNull(from, "from is null");
     ChangeStreamDocument<TDocument> result = new ChangeStreamDocument<TDocument>();
     try {
-      result.resumeToken = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getResumeToken());
+      result.resumeToken = clientContext.getConversionUtils().toJsonObject(from.getResumeToken());
     } catch (Exception ex) {
       result.resumeTokenException = ex;
     }
@@ -291,7 +292,7 @@ public class ChangeStreamDocument<TDocument> {
       result.namespaceException = ex;
     }
     try {
-      result.namespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getNamespaceDocument());
+      result.namespaceDocument = clientContext.getConversionUtils().toJsonObject(from.getNamespaceDocument());
     } catch (Exception ex) {
       result.namespaceDocumentException = ex;
     }
@@ -301,7 +302,7 @@ public class ChangeStreamDocument<TDocument> {
       result.destinationNamespaceException = ex;
     }
     try {
-      result.destinationNamespaceDocument = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDestinationNamespaceDocument());
+      result.destinationNamespaceDocument = clientContext.getConversionUtils().toJsonObject(from.getDestinationNamespaceDocument());
     } catch (Exception ex) {
       result.destinationNamespaceDocumentException = ex;
     }
@@ -316,12 +317,12 @@ public class ChangeStreamDocument<TDocument> {
       result.fullDocumentException = ex;
     }
     try {
-      result.documentKey = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getDocumentKey());
+      result.documentKey = clientContext.getConversionUtils().toJsonObject(from.getDocumentKey());
     } catch (Exception ex) {
       result.documentKeyException = ex;
     }
     try {
-      result.clusterTime = ConversionUtilsImpl.INSTANCE.toLong(from.getClusterTime());
+      result.clusterTime = clientContext.getConversionUtils().toLong(from.getClusterTime());
     } catch (Exception ex) {
       result.clusterTimeException = ex;
     }
@@ -331,17 +332,17 @@ public class ChangeStreamDocument<TDocument> {
       result.operationTypeException = ex;
     }
     try {
-      result.updateDescription = UpdateDescription.fromDriverClass(from.getUpdateDescription());
+      result.updateDescription = UpdateDescription.fromDriverClass(clientContext, from.getUpdateDescription());
     } catch (Exception ex) {
       result.updateDescriptionException = ex;
     }
     try {
-      result.txnNumber = ConversionUtilsImpl.INSTANCE.toLong(from.getTxnNumber());
+      result.txnNumber = clientContext.getConversionUtils().toLong(from.getTxnNumber());
     } catch (Exception ex) {
       result.txnNumberException = ex;
     }
     try {
-      result.lsid = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getLsid());
+      result.lsid = clientContext.getConversionUtils().toJsonObject(from.getLsid());
     } catch (Exception ex) {
       result.lsidException = ex;
     }

@@ -35,7 +35,7 @@ import org.bson.types.ObjectId;
 /**
  * @hidden
  */
-public abstract interface ConversionUtils {
+public interface ConversionUtils {
   Bson toBson(JsonObject from);
 
   BsonBinary toBsonBinary(byte[] from);

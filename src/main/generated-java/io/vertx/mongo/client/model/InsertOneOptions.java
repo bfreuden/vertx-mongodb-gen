@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 
 /**
@@ -73,7 +74,7 @@ public class InsertOneOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.InsertOneOptions toDriverClass() {
+  public com.mongodb.client.model.InsertOneOptions toDriverClass(MongoClientContext clientContext) {
     com.mongodb.client.model.InsertOneOptions result = new com.mongodb.client.model.InsertOneOptions();
     if (this.bypassDocumentValidation != null) {
       result.bypassDocumentValidation(this.bypassDocumentValidation);

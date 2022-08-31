@@ -18,6 +18,7 @@ package io.vertx.mongo;
 import com.mongodb.TransactionOptions;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 
 /**
@@ -59,9 +60,9 @@ public class ClientSessionOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.ClientSessionOptions toDriverClass() {
+  public com.mongodb.ClientSessionOptions toDriverClass(MongoClientContext clientContext) {
     com.mongodb.ClientSessionOptions.Builder builder = com.mongodb.ClientSessionOptions.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -117,7 +118,8 @@ public class ClientSessionOptions {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.ClientSessionOptions.Builder builder) {
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.ClientSessionOptions.Builder builder) {
     if (this.causallyConsistent != null) {
       builder.causallyConsistent(this.causallyConsistent);
     }

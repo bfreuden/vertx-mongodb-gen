@@ -17,7 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Long;
 
@@ -238,7 +238,8 @@ public class CreateCollectionOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.CreateCollectionOptions toDriverClass() {
+  public com.mongodb.client.model.CreateCollectionOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.CreateCollectionOptions result = new com.mongodb.client.model.CreateCollectionOptions();
     if (this.maxDocuments != null) {
       result.maxDocuments(this.maxDocuments);
@@ -250,16 +251,16 @@ public class CreateCollectionOptions {
       result.sizeInBytes(this.sizeInBytes);
     }
     if (this.storageEngineOptions != null) {
-      result.storageEngineOptions(ConversionUtilsImpl.INSTANCE.toBson(this.storageEngineOptions));
+      result.storageEngineOptions(clientContext.getConversionUtils().toBson(this.storageEngineOptions));
     }
     if (this.indexOptionDefaults != null) {
-      result.indexOptionDefaults(this.indexOptionDefaults.toDriverClass());
+      result.indexOptionDefaults(this.indexOptionDefaults.toDriverClass(clientContext));
     }
     if (this.validationOptions != null) {
-      result.validationOptions(this.validationOptions.toDriverClass());
+      result.validationOptions(this.validationOptions.toDriverClass(clientContext));
     }
     if (this.collation != null) {
-      result.collation(this.collation.toDriverClass());
+      result.collation(this.collation.toDriverClass(clientContext));
     }
     return result;
   }

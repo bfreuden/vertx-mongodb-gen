@@ -21,6 +21,7 @@ import com.mongodb.client.model.CollationMaxVariable;
 import com.mongodb.client.model.CollationStrength;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.String;
 
@@ -98,9 +99,9 @@ public class Collation {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.Collation toDriverClass() {
+  public com.mongodb.client.model.Collation toDriverClass(MongoClientContext clientContext) {
     com.mongodb.client.model.Collation.Builder builder = com.mongodb.client.model.Collation.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -299,7 +300,8 @@ public class Collation {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.client.model.Collation.Builder builder) {
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.client.model.Collation.Builder builder) {
     if (this.locale != null) {
       builder.locale(this.locale);
     }

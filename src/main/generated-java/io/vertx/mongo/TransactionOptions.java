@@ -20,6 +20,7 @@ import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.serializers.TransactionOptionsSerializer;
 import java.lang.Long;
 
@@ -42,8 +43,8 @@ public class TransactionOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.TransactionOptions toDriverClass() {
-    return this.serializer.toDriverClass();
+  public com.mongodb.TransactionOptions toDriverClass(MongoClientContext clientContext) {
+    return this.serializer.toDriverClass(clientContext);
   }
 
   /**
@@ -135,7 +136,8 @@ public class TransactionOptions {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.TransactionOptions.Builder builder) {
-    this.serializer.initializeDriverBuilderClass(builder);
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.TransactionOptions.Builder builder) {
+    this.serializer.initializeDriverBuilderClass(clientContext, builder);
   }
 }

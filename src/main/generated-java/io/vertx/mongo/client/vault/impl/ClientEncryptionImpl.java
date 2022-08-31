@@ -25,7 +25,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.mongo.client.model.vault.DataKeyOptions;
 import io.vertx.mongo.client.model.vault.EncryptOptions;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Object;
@@ -51,7 +50,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider);
     Promise<BsonBinary> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
+    return __promise.future().map(clientContext.getConversionUtils()::toByteArray);
   }
 
   @Override
@@ -64,11 +63,11 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
   public Future<byte[]> createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions) {
     requireNonNull(kmsProvider, "kmsProvider is null");
     requireNonNull(dataKeyOptions, "dataKeyOptions is null");
-    com.mongodb.client.model.vault.DataKeyOptions __dataKeyOptions = dataKeyOptions.toDriverClass();
+    com.mongodb.client.model.vault.DataKeyOptions __dataKeyOptions = dataKeyOptions.toDriverClass(clientContext);
     Publisher<BsonBinary> __publisher = wrapped.createDataKey(kmsProvider, __dataKeyOptions);
     Promise<BsonBinary> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
+    return __promise.future().map(clientContext.getConversionUtils()::toByteArray);
   }
 
   @Override
@@ -82,12 +81,12 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
   public Future<byte[]> encrypt(Object value, EncryptOptions options) {
     requireNonNull(value, "value is null");
     requireNonNull(options, "options is null");
-    BsonValue __value = ConversionUtilsImpl.INSTANCE.toBsonValue(value);
-    com.mongodb.client.model.vault.EncryptOptions __options = options.toDriverClass();
+    BsonValue __value = clientContext.getConversionUtils().toBsonValue(value);
+    com.mongodb.client.model.vault.EncryptOptions __options = options.toDriverClass(clientContext);
     Publisher<BsonBinary> __publisher = wrapped.encrypt(__value, __options);
     Promise<BsonBinary> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toByteArray);
+    return __promise.future().map(clientContext.getConversionUtils()::toByteArray);
   }
 
   @Override
@@ -100,11 +99,11 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
   @Override
   public Future<Object> decrypt(byte[] value) {
     requireNonNull(value, "value is null");
-    BsonBinary __value = ConversionUtilsImpl.INSTANCE.toBsonBinary(value);
+    BsonBinary __value = clientContext.getConversionUtils().toBsonBinary(value);
     Publisher<BsonValue> __publisher = wrapped.decrypt(__value);
     Promise<BsonValue> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toObject);
+    return __promise.future().map(clientContext.getConversionUtils()::toObject);
   }
 
   @Override
@@ -122,7 +121,7 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
     return clientContext;
   }
 
-  public ClientEncryption toDriverClass() {
+  public ClientEncryption toDriverClass(MongoClientContext clientContext) {
     return wrapped;
   }
 }

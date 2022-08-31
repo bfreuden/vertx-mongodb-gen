@@ -39,7 +39,7 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public BsonInt64 toBsonInt64(Long from) {
-        return new BsonInt64(from);
+        return null;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public ByteBuffer toByteBuffer(Buffer from) {
-        return ByteBuffer.wrap(from.getBytes());
+        return null;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public JsonObject toJsonObject(Bson from) {
-        throw new IllegalStateException("not implemented");
+        return null;
     }
 
     @Override

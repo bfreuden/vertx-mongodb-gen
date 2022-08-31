@@ -16,6 +16,7 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.reactivestreams.client.ListIndexesPublisher;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +78,8 @@ public class ListIndexesOptions {
    * @param <TDocument> document class
    * @hidden
    */
-  public <TDocument> void initializePublisher(ListIndexesPublisher<TDocument> publisher) {
+  public <TDocument> void initializePublisher(MongoClientContext clientContext,
+      ListIndexesPublisher<TDocument> publisher) {
     if (this.maxTime != null) {
       publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }

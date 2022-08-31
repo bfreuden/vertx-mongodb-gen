@@ -32,7 +32,7 @@ public class GridFSDownloadResultImpl extends MongoResultImpl<Buffer> implements
     public Future<GridFSFile> getGridFSFile() {
         Promise<com.mongodb.client.gridfs.model.GridFSFile> __promise = clientContext.getVertx().promise();
         gridFSPublisher.getGridFSFile().subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-        return __promise.future().map(GridFSFile::fromDriverClass);
+        return __promise.future().map(_item -> GridFSFile.fromDriverClass(clientContext, _item));
     }
 
     @Override

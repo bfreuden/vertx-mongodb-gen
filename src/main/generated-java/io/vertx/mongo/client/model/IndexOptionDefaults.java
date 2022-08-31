@@ -17,7 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 
 /**
  *  The default options for a collection to apply on the creation of indexes.
@@ -73,10 +73,11 @@ public class IndexOptionDefaults {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.IndexOptionDefaults toDriverClass() {
+  public com.mongodb.client.model.IndexOptionDefaults toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.IndexOptionDefaults result = new com.mongodb.client.model.IndexOptionDefaults();
     if (this.storageEngine != null) {
-      result.storageEngine(ConversionUtilsImpl.INSTANCE.toBson(this.storageEngine));
+      result.storageEngine(clientContext.getConversionUtils().toBson(this.storageEngine));
     }
     return result;
   }

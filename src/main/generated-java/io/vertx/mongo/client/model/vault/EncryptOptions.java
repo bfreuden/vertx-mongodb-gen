@@ -15,7 +15,7 @@
 //
 package io.vertx.mongo.client.model.vault;
 
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.String;
 
 /**
@@ -100,13 +100,14 @@ public class EncryptOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.vault.EncryptOptions toDriverClass() {
+  public com.mongodb.client.model.vault.EncryptOptions toDriverClass(
+      MongoClientContext clientContext) {
     if (this.algorithm == null) {
       throw new IllegalArgumentException("algorithm is mandatory");
     }
     com.mongodb.client.model.vault.EncryptOptions result = new com.mongodb.client.model.vault.EncryptOptions(this.algorithm);
     if (this.keyId != null) {
-      result.keyId(ConversionUtilsImpl.INSTANCE.toBsonBinary(this.keyId));
+      result.keyId(clientContext.getConversionUtils().toBsonBinary(this.keyId));
     }
     if (this.keyAltName != null) {
       result.keyAltName(this.keyAltName);

@@ -17,6 +17,7 @@ package io.vertx.mongo.client.result;
 
 import static java.util.Objects.requireNonNull;
 
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 
 public class DeleteResult {
@@ -60,7 +61,8 @@ public class DeleteResult {
    * @return mongo object
    * @hidden
    */
-  public static DeleteResult fromDriverClass(com.mongodb.client.result.DeleteResult from) {
+  public static DeleteResult fromDriverClass(MongoClientContext clientContext,
+      com.mongodb.client.result.DeleteResult from) {
     requireNonNull(from, "from is null");
     DeleteResult result = new DeleteResult();
     try {

@@ -29,11 +29,13 @@ public final class MongoClientContext {
     private final VertxInternal vertx;
     private final ContextInternal context;
     private final ClientConfig config;
+    private final ConversionUtils conversionUtils;
 
     public MongoClientContext(VertxInternal vertx, ContextInternal context, ClientConfig config) {
         this.vertx = vertx;
         this.context = context;
         this.config = config;
+        conversionUtils = ConversionUtilsImpl.INSTANCE;
     }
 
     public VertxInternal getVertx() {
@@ -45,5 +47,8 @@ public final class MongoClientContext {
     }
     public ClientConfig getConfig() {
         return config;
+    }
+    public ConversionUtils getConversionUtils() {
+        return conversionUtils;
     }
 }

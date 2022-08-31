@@ -17,7 +17,7 @@ package io.vertx.mongo.bulk;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.Object;
 
@@ -62,7 +62,8 @@ public class BulkWriteInsert {
    * @return mongo object
    * @hidden
    */
-  public static BulkWriteInsert fromDriverClass(com.mongodb.bulk.BulkWriteInsert from) {
+  public static BulkWriteInsert fromDriverClass(MongoClientContext clientContext,
+      com.mongodb.bulk.BulkWriteInsert from) {
     requireNonNull(from, "from is null");
     BulkWriteInsert result = new BulkWriteInsert();
     try {
@@ -71,7 +72,7 @@ public class BulkWriteInsert {
       result.indexException = ex;
     }
     try {
-      result.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
+      result.id = clientContext.getConversionUtils().toObject(from.getId());
     } catch (Exception ex) {
       result.idException = ex;
     }

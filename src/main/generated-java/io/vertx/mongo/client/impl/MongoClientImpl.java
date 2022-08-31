@@ -38,8 +38,8 @@ import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.ListDatabasesOptions;
 import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MappingPublisher;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.MongoResultImpl;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Override;
@@ -78,7 +78,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<String> listDatabaseNames(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     Publisher<String> __publisher = wrapped.listDatabaseNames(__clientSession);
     return new MongoResultImpl<>(clientContext, __publisher);
   }
@@ -92,7 +92,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<JsonObject> listDatabases(ListDatabasesOptions options) {
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(JsonObject.class);
-    options.initializePublisher(__publisher);
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
@@ -104,7 +104,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<JsonObject> listDatabases(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(__clientSession, JsonObject.class);
     return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
   }
@@ -113,9 +113,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public MongoResult<JsonObject> listDatabases(ClientSession clientSession,
       ListDatabasesOptions options) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(__clientSession, JsonObject.class);
-    options.initializePublisher(__publisher);
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
@@ -127,15 +127,15 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch() {
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ChangeStreamOptions options) {
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -147,9 +147,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__pipeline, JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
@@ -157,10 +157,10 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline,
       ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__pipeline, JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -172,9 +172,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
@@ -182,10 +182,10 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(ClientSession clientSession,
       ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -199,10 +199,10 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
       JsonArray pipeline) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, __pipeline, JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
@@ -211,11 +211,11 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
       JsonArray pipeline, ChangeStreamOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    List<? extends Bson> __pipeline = ConversionUtilsImpl.INSTANCE.toBsonList(pipeline);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, __pipeline, JsonObject.class);
-    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, ChangeStreamDocument::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -241,7 +241,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public Future<ClientSession> startSession(ClientSessionOptions options) {
     requireNonNull(options, "options is null");
-    com.mongodb.ClientSessionOptions __options = options.toDriverClass();
+    com.mongodb.ClientSessionOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.reactivestreams.client.ClientSession> __publisher = wrapped.startSession(__options);
     Promise<com.mongodb.reactivestreams.client.ClientSession> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -260,7 +260,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     return wrapped.getClusterDescription();
   }
 
-  public MongoClient toDriverClass() {
+  public MongoClient toDriverClass(MongoClientContext clientContext) {
     return wrapped;
   }
 }

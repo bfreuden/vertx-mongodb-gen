@@ -17,7 +17,7 @@ package io.vertx.mongo.client;
 
 import com.mongodb.reactivestreams.client.ListCollectionsPublisher;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
@@ -100,9 +100,10 @@ public class ListCollectionsOptions {
    * @param <TDocument> document class
    * @hidden
    */
-  public <TDocument> void initializePublisher(ListCollectionsPublisher<TDocument> publisher) {
+  public <TDocument> void initializePublisher(MongoClientContext clientContext,
+      ListCollectionsPublisher<TDocument> publisher) {
     if (this.filter != null) {
-      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
     }
     if (this.maxTime != null) {
       publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);

@@ -18,6 +18,7 @@ package io.vertx.mongo.client.gridfs;
 import com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 
 /**
@@ -77,7 +78,8 @@ public class GridFSDownloadControlOptions {
    * @param publisher MongoDB driver publisher
    * @hidden
    */
-  public void initializePublisher(GridFSDownloadPublisher publisher) {
+  public void initializePublisher(MongoClientContext clientContext,
+      GridFSDownloadPublisher publisher) {
     if (this.bufferSizeBytes != null) {
       publisher.bufferSizeBytes(this.bufferSizeBytes);
     }

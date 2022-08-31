@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 
 /**
  *  Options for creating a view
@@ -72,10 +73,11 @@ public class CreateViewOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.CreateViewOptions toDriverClass() {
+  public com.mongodb.client.model.CreateViewOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.CreateViewOptions result = new com.mongodb.client.model.CreateViewOptions();
     if (this.collation != null) {
-      result.collation(this.collation.toDriverClass());
+      result.collation(this.collation.toDriverClass(clientContext));
     }
     return result;
   }

@@ -16,7 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import org.bson.conversions.Bson;
 
 public class ReplaceOneModel<T> extends WriteModel<T> {
@@ -87,13 +87,14 @@ public class ReplaceOneModel<T> extends WriteModel<T> {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.ReplaceOneModel<T> toDriverClass() {
+  public com.mongodb.client.model.ReplaceOneModel<T> toDriverClass(
+      MongoClientContext clientContext) {
     if (__ctorIndex == 0) {
-      Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
+      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
       return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, this.replacement);
     } else if (__ctorIndex == 1) {
-      Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(this.filter);
-      com.mongodb.client.model.ReplaceOptions __replaceOptions = this.replaceOptions.toDriverClass();
+      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
+      com.mongodb.client.model.ReplaceOptions __replaceOptions = this.replaceOptions.toDriverClass(clientContext);
       return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, this.replacement, __replaceOptions);
     } else {
       throw new IllegalArgumentException("unknown constructor");

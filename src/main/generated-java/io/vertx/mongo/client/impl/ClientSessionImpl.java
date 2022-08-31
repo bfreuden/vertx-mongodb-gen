@@ -98,7 +98,7 @@ public class ClientSessionImpl extends ClientSessionBase {
     return clientContext;
   }
 
-  public ClientSession toDriverClass() {
+  public ClientSession toDriverClass(MongoClientContext clientContext) {
     return wrapped;
   }
 }

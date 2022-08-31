@@ -27,6 +27,7 @@ import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.impl.MongoClientImpl;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.String;
 import java.lang.Void;
 import java.util.UUID;
@@ -299,5 +300,5 @@ public interface MongoClient extends Closeable {
    * @return mongo object
    * @hidden
    */
-  com.mongodb.reactivestreams.client.MongoClient toDriverClass();
+  com.mongodb.reactivestreams.client.MongoClient toDriverClass(MongoClientContext clientContext);
 }

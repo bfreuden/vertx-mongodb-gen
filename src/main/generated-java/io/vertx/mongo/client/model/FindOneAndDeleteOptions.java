@@ -17,7 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Long;
 import java.lang.String;
 import java.util.concurrent.TimeUnit;
@@ -219,22 +219,23 @@ public class FindOneAndDeleteOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.FindOneAndDeleteOptions toDriverClass() {
+  public com.mongodb.client.model.FindOneAndDeleteOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.FindOneAndDeleteOptions result = new com.mongodb.client.model.FindOneAndDeleteOptions();
     if (this.projection != null) {
-      result.projection(ConversionUtilsImpl.INSTANCE.toBson(this.projection));
+      result.projection(clientContext.getConversionUtils().toBson(this.projection));
     }
     if (this.sort != null) {
-      result.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+      result.sort(clientContext.getConversionUtils().toBson(this.sort));
     }
     if (this.maxTime != null) {
       result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }
     if (this.collation != null) {
-      result.collation(this.collation.toDriverClass());
+      result.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.hint != null) {
-      result.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+      result.hint(clientContext.getConversionUtils().toBson(this.hint));
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);

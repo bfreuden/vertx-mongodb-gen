@@ -20,6 +20,7 @@ import com.mongodb.client.model.CreateIndexOptions;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.CreateIndexCommitQuorumSerializer;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +77,7 @@ public class CreateIndexOptionsSerializer {
    * @return MongoDB driver object
    * @hidden
    */
-  public CreateIndexOptions toDriverClass() {
+  public CreateIndexOptions toDriverClass(MongoClientContext clientContext) {
     CreateIndexOptions result = new CreateIndexOptions();
     if (this.maxTime != null) {
       result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);

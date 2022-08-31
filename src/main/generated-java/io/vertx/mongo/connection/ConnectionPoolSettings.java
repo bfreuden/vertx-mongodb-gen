@@ -17,6 +17,7 @@ package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
@@ -82,9 +83,10 @@ public class ConnectionPoolSettings {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.connection.ConnectionPoolSettings toDriverClass() {
+  public com.mongodb.connection.ConnectionPoolSettings toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.connection.ConnectionPoolSettings.Builder builder = com.mongodb.connection.ConnectionPoolSettings.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -252,7 +254,7 @@ public class ConnectionPoolSettings {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
       com.mongodb.connection.ConnectionPoolSettings.Builder builder) {
     if (this.maxSize != null) {
       builder.maxSize(this.maxSize);

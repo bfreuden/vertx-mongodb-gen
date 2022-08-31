@@ -17,7 +17,7 @@ package io.vertx.mongo.client.gridfs.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 
 /**
@@ -100,13 +100,14 @@ public class GridFSUploadOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.gridfs.model.GridFSUploadOptions toDriverClass() {
+  public com.mongodb.client.gridfs.model.GridFSUploadOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.gridfs.model.GridFSUploadOptions result = new com.mongodb.client.gridfs.model.GridFSUploadOptions();
     if (this.chunkSizeBytes != null) {
       result.chunkSizeBytes(this.chunkSizeBytes);
     }
     if (this.metadata != null) {
-      result.metadata(ConversionUtilsImpl.INSTANCE.toDocument(this.metadata));
+      result.metadata(clientContext.getConversionUtils().toDocument(this.metadata));
     }
     return result;
   }

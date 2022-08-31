@@ -17,6 +17,7 @@ package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
 
@@ -56,9 +57,9 @@ public class ServerSettings {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.connection.ServerSettings toDriverClass() {
+  public com.mongodb.connection.ServerSettings toDriverClass(MongoClientContext clientContext) {
     com.mongodb.connection.ServerSettings.Builder builder = com.mongodb.connection.ServerSettings.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -108,7 +109,8 @@ public class ServerSettings {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.connection.ServerSettings.Builder builder) {
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.connection.ServerSettings.Builder builder) {
     if (this.heartbeatFrequency != null) {
       builder.heartbeatFrequency(this.heartbeatFrequency, TimeUnit.MILLISECONDS);
     }

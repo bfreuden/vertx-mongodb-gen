@@ -18,7 +18,7 @@ package io.vertx.mongo.client.model.changestream;
 import static java.util.Objects.requireNonNull;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.String;
 import java.util.List;
@@ -64,7 +64,7 @@ public class UpdateDescription {
    * @return mongo object
    * @hidden
    */
-  public static UpdateDescription fromDriverClass(
+  public static UpdateDescription fromDriverClass(MongoClientContext clientContext,
       com.mongodb.client.model.changestream.UpdateDescription from) {
     requireNonNull(from, "from is null");
     UpdateDescription result = new UpdateDescription();
@@ -74,7 +74,7 @@ public class UpdateDescription {
       result.removedFieldsException = ex;
     }
     try {
-      result.updatedFields = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getUpdatedFields());
+      result.updatedFields = clientContext.getConversionUtils().toJsonObject(from.getUpdatedFields());
     } catch (Exception ex) {
       result.updatedFieldsException = ex;
     }

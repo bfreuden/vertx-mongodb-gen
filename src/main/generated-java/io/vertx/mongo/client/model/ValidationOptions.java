@@ -19,7 +19,7 @@ import com.mongodb.client.model.ValidationAction;
 import com.mongodb.client.model.ValidationLevel;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 
 /**
  *  Validation options for documents being inserted or updated in a collection
@@ -127,10 +127,11 @@ public class ValidationOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.ValidationOptions toDriverClass() {
+  public com.mongodb.client.model.ValidationOptions toDriverClass(
+      MongoClientContext clientContext) {
     com.mongodb.client.model.ValidationOptions result = new com.mongodb.client.model.ValidationOptions();
     if (this.validator != null) {
-      result.validator(ConversionUtilsImpl.INSTANCE.toBson(this.validator));
+      result.validator(clientContext.getConversionUtils().toBson(this.validator));
     }
     if (this.validationLevel != null) {
       result.validationLevel(this.validationLevel);

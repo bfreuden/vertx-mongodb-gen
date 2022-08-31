@@ -17,7 +17,7 @@ package io.vertx.mongo.client.result;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.Object;
 
@@ -64,7 +64,8 @@ public class InsertOneResult {
    * @return mongo object
    * @hidden
    */
-  public static InsertOneResult fromDriverClass(com.mongodb.client.result.InsertOneResult from) {
+  public static InsertOneResult fromDriverClass(MongoClientContext clientContext,
+      com.mongodb.client.result.InsertOneResult from) {
     requireNonNull(from, "from is null");
     InsertOneResult result = new InsertOneResult();
     try {
@@ -73,7 +74,7 @@ public class InsertOneResult {
       result.acknowledgedException = ex;
     }
     try {
-      result.insertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getInsertedId());
+      result.insertedId = clientContext.getConversionUtils().toObject(from.getInsertedId());
     } catch (Exception ex) {
       result.insertedIdException = ex;
     }

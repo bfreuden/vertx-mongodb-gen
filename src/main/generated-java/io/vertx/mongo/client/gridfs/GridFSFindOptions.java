@@ -19,7 +19,7 @@ import com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
@@ -233,9 +233,9 @@ public class GridFSFindOptions {
    * @param publisher MongoDB driver publisher
    * @hidden
    */
-  public void initializePublisher(GridFSFindPublisher publisher) {
+  public void initializePublisher(MongoClientContext clientContext, GridFSFindPublisher publisher) {
     if (this.filter != null) {
-      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
     }
     if (this.limit != null) {
       publisher.limit(this.limit);
@@ -244,7 +244,7 @@ public class GridFSFindOptions {
       publisher.skip(this.skip);
     }
     if (this.sort != null) {
-      publisher.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+      publisher.sort(clientContext.getConversionUtils().toBson(this.sort));
     }
     if (this.noCursorTimeout != null) {
       publisher.noCursorTimeout(this.noCursorTimeout);
@@ -253,7 +253,7 @@ public class GridFSFindOptions {
       publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }
     if (this.collation != null) {
-      publisher.collation(this.collation.toDriverClass());
+      publisher.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);

@@ -16,7 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import org.bson.conversions.Bson;
 
 public class IndexModel {
@@ -70,13 +70,13 @@ public class IndexModel {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.IndexModel toDriverClass() {
+  public com.mongodb.client.model.IndexModel toDriverClass(MongoClientContext clientContext) {
     if (__ctorIndex == 0) {
-      Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(this.keys);
+      Bson __keys = clientContext.getConversionUtils().toBson(this.keys);
       return new com.mongodb.client.model.IndexModel(__keys);
     } else if (__ctorIndex == 1) {
-      Bson __keys = ConversionUtilsImpl.INSTANCE.toBson(this.keys);
-      com.mongodb.client.model.IndexOptions __options = this.options.toDriverClass();
+      Bson __keys = clientContext.getConversionUtils().toBson(this.keys);
+      com.mongodb.client.model.IndexOptions __options = this.options.toDriverClass(clientContext);
       return new com.mongodb.client.model.IndexModel(__keys, __options);
     } else {
       throw new IllegalArgumentException("unknown constructor");

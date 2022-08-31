@@ -18,7 +18,7 @@ package io.vertx.mongo.client;
 import com.mongodb.reactivestreams.client.DistinctPublisher;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
@@ -123,15 +123,16 @@ public class DistinctOptions {
    * @param <TDocument> document class
    * @hidden
    */
-  public <TDocument> void initializePublisher(DistinctPublisher<TDocument> publisher) {
+  public <TDocument> void initializePublisher(MongoClientContext clientContext,
+      DistinctPublisher<TDocument> publisher) {
     if (this.filter != null) {
-      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
     }
     if (this.maxTime != null) {
       publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }
     if (this.collation != null) {
-      publisher.collation(this.collation.toDriverClass());
+      publisher.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);

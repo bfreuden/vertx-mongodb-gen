@@ -19,7 +19,7 @@ import com.mongodb.client.model.changestream.FullDocument;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
 import java.util.concurrent.TimeUnit;
@@ -198,24 +198,25 @@ public class ChangeStreamOptions {
    * @param <TDocument> document class
    * @hidden
    */
-  public <TDocument> void initializePublisher(ChangeStreamPublisher<TDocument> publisher) {
+  public <TDocument> void initializePublisher(MongoClientContext clientContext,
+      ChangeStreamPublisher<TDocument> publisher) {
     if (this.fullDocument != null) {
       publisher.fullDocument(this.fullDocument);
     }
     if (this.resumeAfter != null) {
-      publisher.resumeAfter(ConversionUtilsImpl.INSTANCE.toBsonDocument(this.resumeAfter));
+      publisher.resumeAfter(clientContext.getConversionUtils().toBsonDocument(this.resumeAfter));
     }
     if (this.startAtOperationTime != null) {
-      publisher.startAtOperationTime(ConversionUtilsImpl.INSTANCE.toBsonTimestamp(this.startAtOperationTime));
+      publisher.startAtOperationTime(clientContext.getConversionUtils().toBsonTimestamp(this.startAtOperationTime));
     }
     if (this.startAfter != null) {
-      publisher.startAfter(ConversionUtilsImpl.INSTANCE.toBsonDocument(this.startAfter));
+      publisher.startAfter(clientContext.getConversionUtils().toBsonDocument(this.startAfter));
     }
     if (this.maxAwaitTime != null) {
       publisher.maxAwaitTime(this.maxAwaitTime, TimeUnit.MILLISECONDS);
     }
     if (this.collation != null) {
-      publisher.collation(this.collation.toDriverClass());
+      publisher.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);

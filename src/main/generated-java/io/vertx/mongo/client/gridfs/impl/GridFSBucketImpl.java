@@ -40,7 +40,6 @@ import io.vertx.mongo.client.gridfs.GridFSFindOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.client.gridfs.model.GridFSUploadOptions;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MappingPublisher;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.MongoResultImpl;
@@ -125,7 +124,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(filename, __source);
     Promise<ObjectId> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+    return __promise.future().map(clientContext.getConversionUtils()::toString);
   }
 
   @Override
@@ -154,11 +153,11 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(source, "source is null");
     requireNonNull(options, "options is null");
     GridFSReadStreamPublisher __source = new GridFSReadStreamPublisher(source);
-    com.mongodb.client.gridfs.model.GridFSUploadOptions __options = options.toDriverClass();
+    com.mongodb.client.gridfs.model.GridFSUploadOptions __options = options.toDriverClass(clientContext);
     GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(filename, __source, __options);
     Promise<ObjectId> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+    return __promise.future().map(clientContext.getConversionUtils()::toString);
   }
 
   @Override
@@ -187,12 +186,12 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
     requireNonNull(source, "source is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     GridFSReadStreamPublisher __source = new GridFSReadStreamPublisher(source);
     GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(__clientSession, filename, __source);
     Promise<ObjectId> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+    return __promise.future().map(clientContext.getConversionUtils()::toString);
   }
 
   @Override
@@ -222,13 +221,13 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(filename, "filename is null");
     requireNonNull(source, "source is null");
     requireNonNull(options, "options is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     GridFSReadStreamPublisher __source = new GridFSReadStreamPublisher(source);
-    com.mongodb.client.gridfs.model.GridFSUploadOptions __options = options.toDriverClass();
+    com.mongodb.client.gridfs.model.GridFSUploadOptions __options = options.toDriverClass(clientContext);
     GridFSUploadPublisher<ObjectId> __publisher = wrapped.uploadFromPublisher(__clientSession, filename, __source, __options);
     Promise<ObjectId> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future().map(ConversionUtilsImpl.INSTANCE::toString);
+    return __promise.future().map(clientContext.getConversionUtils()::toString);
   }
 
   @Override
@@ -255,7 +254,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public GridFSDownloadResult downloadByObjectId(String id) {
     requireNonNull(id, "id is null");
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__id);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
@@ -264,9 +263,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public GridFSDownloadResult downloadByObjectId(String id,
       GridFSDownloadControlOptions controlOptions) {
     requireNonNull(id, "id is null");
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__id);
-    controlOptions.initializePublisher(__publisher);
+    controlOptions.initializePublisher(clientContext, __publisher);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
@@ -282,7 +281,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       GridFSDownloadControlOptions controlOptions) {
     requireNonNull(filename, "filename is null");
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename);
-    controlOptions.initializePublisher(__publisher);
+    controlOptions.initializePublisher(clientContext, __publisher);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
@@ -290,7 +289,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public GridFSDownloadResult downloadByFilename(String filename, GridFSDownloadOptions options) {
     requireNonNull(filename, "filename is null");
     requireNonNull(options, "options is null");
-    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass(clientContext);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename, __options);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
@@ -300,9 +299,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       GridFSDownloadControlOptions controlOptions) {
     requireNonNull(filename, "filename is null");
     requireNonNull(options, "options is null");
-    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass(clientContext);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(filename, __options);
-    controlOptions.initializePublisher(__publisher);
+    controlOptions.initializePublisher(clientContext, __publisher);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
@@ -310,8 +309,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public GridFSDownloadResult downloadByObjectId(ClientSession clientSession, String id) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, __id);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
@@ -321,10 +320,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       GridFSDownloadControlOptions controlOptions) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, __id);
-    controlOptions.initializePublisher(__publisher);
+    controlOptions.initializePublisher(clientContext, __publisher);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
@@ -332,7 +331,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public GridFSDownloadResult downloadByFilename(ClientSession clientSession, String filename) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
@@ -342,9 +341,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       GridFSDownloadControlOptions controlOptions) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename);
-    controlOptions.initializePublisher(__publisher);
+    controlOptions.initializePublisher(clientContext, __publisher);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
@@ -354,8 +353,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
     requireNonNull(options, "options is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass(clientContext);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename, __options);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
@@ -366,25 +365,25 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filename, "filename is null");
     requireNonNull(options, "options is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    com.mongodb.client.gridfs.model.GridFSDownloadOptions __options = options.toDriverClass(clientContext);
     GridFSDownloadPublisher __publisher = wrapped.downloadToPublisher(__clientSession, filename, __options);
-    controlOptions.initializePublisher(__publisher);
+    controlOptions.initializePublisher(clientContext, __publisher);
     return new GridFSDownloadResultImpl(clientContext, __publisher);
   }
 
   @Override
   public MongoResult<GridFSFile> find() {
     GridFSFindPublisher __publisher = wrapped.find();
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<GridFSFile> find(GridFSFindOptions options) {
     GridFSFindPublisher __publisher = wrapped.find();
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -396,19 +395,19 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public MongoResult<GridFSFile> find(JsonObject filter) {
     requireNonNull(filter, "filter is null");
-    Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    Bson __filter = clientContext.getConversionUtils().toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__filter);
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<GridFSFile> find(JsonObject filter, GridFSFindOptions options) {
     requireNonNull(filter, "filter is null");
-    Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    Bson __filter = clientContext.getConversionUtils().toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__filter);
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -420,19 +419,19 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public MongoResult<GridFSFile> find(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     GridFSFindPublisher __publisher = wrapped.find(__clientSession);
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
   @Override
   public MongoResult<GridFSFile> find(ClientSession clientSession, GridFSFindOptions options) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     GridFSFindPublisher __publisher = wrapped.find(__clientSession);
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -445,10 +444,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public MongoResult<GridFSFile> find(ClientSession clientSession, JsonObject filter) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    Bson __filter = clientContext.getConversionUtils().toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
   }
 
@@ -457,11 +456,11 @@ public class GridFSBucketImpl extends GridFSBucketBase {
       GridFSFindOptions options) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(filter, "filter is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    Bson __filter = ConversionUtilsImpl.INSTANCE.toBson(filter);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    Bson __filter = clientContext.getConversionUtils().toBson(filter);
     GridFSFindPublisher __publisher = wrapped.find(__clientSession, __filter);
-    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, GridFSFile::fromDriverClass);
-    options.initializePublisher(__publisher);
+    MappingPublisher<com.mongodb.client.gridfs.model.GridFSFile, GridFSFile> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> GridFSFile.fromDriverClass(clientContext, _item));
+    options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
       return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first, __batchSize);
@@ -473,7 +472,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public Future<Void> delete(String id) {
     requireNonNull(id, "id is null");
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     Publisher<Void> __publisher = wrapped.delete(__id);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -489,7 +488,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public Future<Void> delete(Object id) {
     requireNonNull(id, "id is null");
-    BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
+    BsonValue __id = clientContext.getConversionUtils().toBsonValue(id);
     Publisher<Void> __publisher = wrapped.delete(__id);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -506,8 +505,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public Future<Void> delete(ClientSession clientSession, String id) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     Publisher<Void> __publisher = wrapped.delete(__clientSession, __id);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -525,8 +524,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public Future<Void> delete(ClientSession clientSession, Object id) {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    BsonValue __id = clientContext.getConversionUtils().toBsonValue(id);
     Publisher<Void> __publisher = wrapped.delete(__clientSession, __id);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -544,7 +543,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public Future<Void> rename(String id, String newFilename) {
     requireNonNull(id, "id is null");
     requireNonNull(newFilename, "newFilename is null");
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     Publisher<Void> __publisher = wrapped.rename(__id, newFilename);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -561,7 +560,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   public Future<Void> rename(Object id, String newFilename) {
     requireNonNull(id, "id is null");
     requireNonNull(newFilename, "newFilename is null");
-    BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
+    BsonValue __id = clientContext.getConversionUtils().toBsonValue(id);
     Publisher<Void> __publisher = wrapped.rename(__id, newFilename);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -579,8 +578,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
     requireNonNull(newFilename, "newFilename is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    ObjectId __id = ConversionUtilsImpl.INSTANCE.toObjectId(id);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    ObjectId __id = clientContext.getConversionUtils().toObjectId(id);
     Publisher<Void> __publisher = wrapped.rename(__clientSession, __id, newFilename);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -599,8 +598,8 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(id, "id is null");
     requireNonNull(newFilename, "newFilename is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
-    BsonValue __id = ConversionUtilsImpl.INSTANCE.toBsonValue(id);
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    BsonValue __id = clientContext.getConversionUtils().toBsonValue(id);
     Publisher<Void> __publisher = wrapped.rename(__clientSession, __id, newFilename);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -631,7 +630,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   @Override
   public Future<Void> drop(ClientSession clientSession) {
     requireNonNull(clientSession, "clientSession is null");
-    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass();
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     Publisher<Void> __publisher = wrapped.drop(__clientSession);
     Promise<Void> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -648,7 +647,7 @@ public class GridFSBucketImpl extends GridFSBucketBase {
     return clientContext;
   }
 
-  public GridFSBucket toDriverClass() {
+  public GridFSBucket toDriverClass(MongoClientContext clientContext) {
     return wrapped;
   }
 }

@@ -18,7 +18,7 @@ package io.vertx.mongo.client.gridfs.model;
 import static java.util.Objects.requireNonNull;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.Object;
 import java.lang.String;
@@ -147,16 +147,17 @@ public class GridFSFile {
    * @return mongo object
    * @hidden
    */
-  public static GridFSFile fromDriverClass(com.mongodb.client.gridfs.model.GridFSFile from) {
+  public static GridFSFile fromDriverClass(MongoClientContext clientContext,
+      com.mongodb.client.gridfs.model.GridFSFile from) {
     requireNonNull(from, "from is null");
     GridFSFile result = new GridFSFile();
     try {
-      result.objectId = ConversionUtilsImpl.INSTANCE.toString(from.getObjectId());
+      result.objectId = clientContext.getConversionUtils().toString(from.getObjectId());
     } catch (Exception ex) {
       result.objectIdException = ex;
     }
     try {
-      result.id = ConversionUtilsImpl.INSTANCE.toObject(from.getId());
+      result.id = clientContext.getConversionUtils().toObject(from.getId());
     } catch (Exception ex) {
       result.idException = ex;
     }
@@ -181,7 +182,7 @@ public class GridFSFile {
       result.uploadDateException = ex;
     }
     try {
-      result.metadata = ConversionUtilsImpl.INSTANCE.toJsonObject(from.getMetadata());
+      result.metadata = clientContext.getConversionUtils().toJsonObject(from.getMetadata());
     } catch (Exception ex) {
       result.metadataException = ex;
     }

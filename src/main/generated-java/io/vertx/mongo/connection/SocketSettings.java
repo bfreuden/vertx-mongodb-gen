@@ -17,6 +17,7 @@ package io.vertx.mongo.connection;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.util.concurrent.TimeUnit;
 
@@ -66,9 +67,9 @@ public class SocketSettings {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.connection.SocketSettings toDriverClass() {
+  public com.mongodb.connection.SocketSettings toDriverClass(MongoClientContext clientContext) {
     com.mongodb.connection.SocketSettings.Builder builder = com.mongodb.connection.SocketSettings.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -155,7 +156,8 @@ public class SocketSettings {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.connection.SocketSettings.Builder builder) {
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.connection.SocketSettings.Builder builder) {
     if (this.connectTimeout != null) {
       builder.connectTimeout(this.connectTimeout, TimeUnit.MILLISECONDS);
     }

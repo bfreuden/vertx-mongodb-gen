@@ -18,7 +18,7 @@ package io.vertx.mongo;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.CollectionsConversionUtils;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.String;
 import java.util.Map;
@@ -88,9 +88,9 @@ public class AutoEncryptionSettings {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.AutoEncryptionSettings toDriverClass() {
+  public com.mongodb.AutoEncryptionSettings toDriverClass(MongoClientContext clientContext) {
     com.mongodb.AutoEncryptionSettings.Builder builder = com.mongodb.AutoEncryptionSettings.builder();
-    initializeDriverBuilderClass(builder);
+    initializeDriverBuilderClass(clientContext, builder);
     return builder.build();
   }
 
@@ -168,12 +168,13 @@ public class AutoEncryptionSettings {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.AutoEncryptionSettings.Builder builder) {
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.AutoEncryptionSettings.Builder builder) {
     if (this.keyVaultNamespace != null) {
       builder.keyVaultNamespace(this.keyVaultNamespace);
     }
     if (this.schemaMap != null) {
-      builder.schemaMap(CollectionsConversionUtils.mapValues(this.schemaMap, ConversionUtilsImpl.INSTANCE::toBsonDocument));
+      builder.schemaMap(CollectionsConversionUtils.mapValues(this.schemaMap, clientContext.getConversionUtils()::toBsonDocument));
     }
     if (this.bypassAutoEncryption != null) {
       builder.bypassAutoEncryption(this.bypassAutoEncryption);

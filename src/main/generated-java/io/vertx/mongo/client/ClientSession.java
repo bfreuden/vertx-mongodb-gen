@@ -19,6 +19,7 @@ import com.mongodb.TransactionOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Void;
 
 /**
@@ -102,5 +103,5 @@ public interface ClientSession {
    * @return mongo object
    * @hidden
    */
-  com.mongodb.reactivestreams.client.ClientSession toDriverClass();
+  com.mongodb.reactivestreams.client.ClientSession toDriverClass(MongoClientContext clientContext);
 }

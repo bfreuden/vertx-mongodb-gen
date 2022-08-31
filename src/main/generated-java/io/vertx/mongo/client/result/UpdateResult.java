@@ -17,7 +17,7 @@ package io.vertx.mongo.client.result;
 
 import static java.util.Objects.requireNonNull;
 
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.Object;
 
@@ -94,7 +94,8 @@ public class UpdateResult {
    * @return mongo object
    * @hidden
    */
-  public static UpdateResult fromDriverClass(com.mongodb.client.result.UpdateResult from) {
+  public static UpdateResult fromDriverClass(MongoClientContext clientContext,
+      com.mongodb.client.result.UpdateResult from) {
     requireNonNull(from, "from is null");
     UpdateResult result = new UpdateResult();
     try {
@@ -113,7 +114,7 @@ public class UpdateResult {
       result.modifiedCountException = ex;
     }
     try {
-      result.upsertedId = ConversionUtilsImpl.INSTANCE.toObject(from.getUpsertedId());
+      result.upsertedId = clientContext.getConversionUtils().toObject(from.getUpsertedId());
     } catch (Exception ex) {
       result.upsertedIdException = ex;
     }

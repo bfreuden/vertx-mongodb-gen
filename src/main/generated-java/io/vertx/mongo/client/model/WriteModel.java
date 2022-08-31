@@ -15,10 +15,13 @@
 //
 package io.vertx.mongo.client.model;
 
+import io.vertx.mongo.impl.MongoClientContext;
+
 public abstract class WriteModel<T> {
   /**
    * @return MongoDB driver object
    * @hidden
    */
-  public abstract com.mongodb.client.model.WriteModel<T> toDriverClass();
+  public abstract com.mongodb.client.model.WriteModel<T> toDriverClass(
+      MongoClientContext clientContext);
 }

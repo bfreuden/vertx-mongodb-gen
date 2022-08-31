@@ -19,7 +19,7 @@ import com.mongodb.client.model.MapReduceAction;
 import com.mongodb.reactivestreams.client.MapReducePublisher;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Deprecated;
 import java.lang.Integer;
@@ -393,7 +393,8 @@ public class MapReduceOptions {
    * @param <TDocument> document class
    * @hidden
    */
-  public <TDocument> void initializePublisher(MapReducePublisher<TDocument> publisher) {
+  public <TDocument> void initializePublisher(MongoClientContext clientContext,
+      MapReducePublisher<TDocument> publisher) {
     if (this.collectionName != null) {
       publisher.collectionName(this.collectionName);
     }
@@ -401,13 +402,13 @@ public class MapReduceOptions {
       publisher.finalizeFunction(this.finalizeFunction);
     }
     if (this.scope != null) {
-      publisher.scope(ConversionUtilsImpl.INSTANCE.toBson(this.scope));
+      publisher.scope(clientContext.getConversionUtils().toBson(this.scope));
     }
     if (this.sort != null) {
-      publisher.sort(ConversionUtilsImpl.INSTANCE.toBson(this.sort));
+      publisher.sort(clientContext.getConversionUtils().toBson(this.sort));
     }
     if (this.filter != null) {
-      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
     }
     if (this.limit != null) {
       publisher.limit(this.limit);
@@ -437,7 +438,7 @@ public class MapReduceOptions {
       publisher.bypassDocumentValidation(this.bypassDocumentValidation);
     }
     if (this.collation != null) {
-      publisher.collation(this.collation.toDriverClass());
+      publisher.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);

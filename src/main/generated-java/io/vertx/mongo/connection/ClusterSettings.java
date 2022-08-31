@@ -21,6 +21,7 @@ import com.mongodb.connection.ClusterType;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.connection.serializers.ClusterSettingsSerializer;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Long;
 import java.lang.String;
 import java.util.List;
@@ -44,8 +45,8 @@ public class ClusterSettings {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.connection.ClusterSettings toDriverClass() {
-    return this.serializer.toDriverClass();
+  public com.mongodb.connection.ClusterSettings toDriverClass(MongoClientContext clientContext) {
+    return this.serializer.toDriverClass(clientContext);
   }
 
   /**
@@ -218,7 +219,8 @@ public class ClusterSettings {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.connection.ClusterSettings.Builder builder) {
-    this.serializer.initializeDriverBuilderClass(builder);
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.connection.ClusterSettings.Builder builder) {
+    this.serializer.initializeDriverBuilderClass(clientContext, builder);
   }
 }

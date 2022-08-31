@@ -18,7 +18,7 @@ package io.vertx.mongo.client;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
@@ -219,7 +219,8 @@ public class AggregateOptions {
    * @param <TDocument> document class
    * @hidden
    */
-  public <TDocument> void initializePublisher(AggregatePublisher<TDocument> publisher) {
+  public <TDocument> void initializePublisher(MongoClientContext clientContext,
+      AggregatePublisher<TDocument> publisher) {
     if (this.allowDiskUse != null) {
       publisher.allowDiskUse(this.allowDiskUse);
     }
@@ -233,13 +234,13 @@ public class AggregateOptions {
       publisher.bypassDocumentValidation(this.bypassDocumentValidation);
     }
     if (this.collation != null) {
-      publisher.collation(this.collation.toDriverClass());
+      publisher.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.comment != null) {
       publisher.comment(this.comment);
     }
     if (this.hint != null) {
-      publisher.hint(ConversionUtilsImpl.INSTANCE.toBson(this.hint));
+      publisher.hint(clientContext.getConversionUtils().toBson(this.hint));
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);

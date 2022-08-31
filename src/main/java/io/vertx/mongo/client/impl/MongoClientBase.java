@@ -14,6 +14,8 @@ import io.vertx.mongo.MongoClientSettingsInitializer;
 import io.vertx.mongo.client.ClientConfig;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.connection.*;
+import io.vertx.mongo.impl.ConversionUtils;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.codec.json.JsonObjectCodec;
 import org.bson.codecs.*;
@@ -33,6 +35,7 @@ public abstract class MongoClientBase implements MongoClient {
     private final MongoHolder holder;
     protected final MongoClientContext clientContext;
     protected final com.mongodb.reactivestreams.client.MongoClient wrapped;
+    private final CodecRegistry codecRegistry;
 
     protected MongoClientBase(Vertx vertx, ClientConfig config, String dataSourceName) {
         Objects.requireNonNull(vertx);
@@ -40,9 +43,10 @@ public abstract class MongoClientBase implements MongoClient {
         Objects.requireNonNull(dataSourceName);
         this.vertx = (VertxInternal) vertx;
         this.creatingContext = this.vertx.getOrCreateContext();
+        this.clientContext = new MongoClientContext(this.vertx, creatingContext, config);
         this.holder = lookupHolder(dataSourceName);
         this.wrapped = holder.mongo(config);
-        this.clientContext = new MongoClientContext(this.vertx, creatingContext, config);
+        this.codecRegistry = holder.codecRegistry;
         creatingContext.addCloseHook(this);
     }
 
@@ -92,6 +96,7 @@ public abstract class MongoClientBase implements MongoClient {
         com.mongodb.reactivestreams.client.MongoClient mongo;
         Runnable closeRunner;
         int refCount = 1;
+        CodecRegistry codecRegistry;
 
         MongoHolder(Runnable closeRunner) {
             this.closeRunner = closeRunner;
@@ -108,6 +113,7 @@ public abstract class MongoClientBase implements MongoClient {
             if (mongo == null) {
                 if (config.getMongoSettings() != null) {
                     mongo = MongoClients.create(config.getMongoSettings());
+                    codecRegistry = config.getMongoSettings().getCodecRegistry();
                 } else {
                     MongoClientSettings.Builder settingsBuilder = MongoClientSettings.builder();
                     settingsBuilder.codecRegistry(
@@ -129,7 +135,9 @@ public abstract class MongoClientBase implements MongoClient {
                         vertxConfig = config.getSettings();
                     }
                     mergeVertxSettingsIntoMongoSettingsBuilder(config.getPostInitializer(), settingsBuilder, vertxConfig);
-                    mongo = MongoClients.create(settingsBuilder.build());
+                    MongoClientSettings settings = settingsBuilder.build();
+                    mongo = MongoClients.create(settings);
+                    codecRegistry = settings.getCodecRegistry();
                 }
             }
             return mongo;
@@ -139,35 +147,35 @@ public abstract class MongoClientBase implements MongoClient {
             settingsBuilder.applyToClusterSettings(_builder -> {
                 ClusterSettings clusterSettings = vertxConfig == null ? null : vertxConfig.getClusterSettings();
                 if (clusterSettings != null)
-                    clusterSettings.initializeDriverBuilderClass(_builder);
+                    clusterSettings.initializeDriverBuilderClass(clientContext, _builder);
                 if (postInitializer.getClusterSettingsInitializer() != null)
                     postInitializer.getClusterSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToConnectionPoolSettings(_builder -> {
                 ConnectionPoolSettings connectionPoolSettings = vertxConfig == null ? null : vertxConfig.getConnectionPoolSettings();
                 if (connectionPoolSettings != null)
-                    connectionPoolSettings.initializeDriverBuilderClass(_builder);
+                    connectionPoolSettings.initializeDriverBuilderClass(clientContext, _builder);
                 if (postInitializer.getConnectionPoolSettingsInitializer() != null)
                     postInitializer.getConnectionPoolSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToServerSettings(_builder -> {
                 ServerSettings serverSettings = vertxConfig == null ? null : vertxConfig.getServerSettings();
                 if (serverSettings != null)
-                    serverSettings.initializeDriverBuilderClass(_builder);
+                    serverSettings.initializeDriverBuilderClass(clientContext, _builder);
                 if (postInitializer.getServerSettingsInitializer() != null)
                     postInitializer.getServerSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToSocketSettings(_builder -> {
                 SocketSettings socketSettings = vertxConfig == null ? null : vertxConfig.getSocketSettings();
                 if (socketSettings != null)
-                    socketSettings.initializeDriverBuilderClass(_builder);
+                    socketSettings.initializeDriverBuilderClass(clientContext, _builder);
                 if (postInitializer.getSocketSettingsInitializer() != null)
                     postInitializer.getSocketSettingsInitializer().accept(creatingContext, _builder);
             });
             settingsBuilder.applyToSslSettings(_builder -> {
                 SslSettings sslSettings = vertxConfig == null ? null : vertxConfig.getSslSettings();
                 if (sslSettings != null)
-                    sslSettings.initializeDriverBuilderClass(_builder);
+                    sslSettings.initializeDriverBuilderClass(clientContext, _builder);
                 if (postInitializer.getSslSettingsInitializer() != null)
                     postInitializer.getSslSettingsInitializer().accept(creatingContext, _builder);
             });
@@ -176,7 +184,7 @@ public abstract class MongoClientBase implements MongoClient {
                 if (autoEncryptionSettings != null || postInitializer.getAutoEncryptionSettingsInitializer() != null) {
                     com.mongodb.AutoEncryptionSettings.Builder _builder = com.mongodb.AutoEncryptionSettings.builder();
                     if (autoEncryptionSettings != null)
-                        autoEncryptionSettings.initializeDriverBuilderClass(_builder);
+                        autoEncryptionSettings.initializeDriverBuilderClass(clientContext, _builder);
                     if (postInitializer.getAutoEncryptionSettingsInitializer() != null)
                         postInitializer.getAutoEncryptionSettingsInitializer().accept(creatingContext, _builder);
                 }

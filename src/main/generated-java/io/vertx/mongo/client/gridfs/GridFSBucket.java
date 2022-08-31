@@ -33,6 +33,7 @@ import io.vertx.mongo.client.gridfs.model.GridFSDownloadOptions;
 import io.vertx.mongo.client.gridfs.model.GridFSFile;
 import io.vertx.mongo.client.gridfs.model.GridFSUploadOptions;
 import io.vertx.mongo.client.impl.MongoDatabaseImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
@@ -777,5 +778,6 @@ public interface GridFSBucket {
    * @return mongo object
    * @hidden
    */
-  com.mongodb.reactivestreams.client.gridfs.GridFSBucket toDriverClass();
+  com.mongodb.reactivestreams.client.gridfs.GridFSBucket toDriverClass(
+      MongoClientContext clientContext);
 }

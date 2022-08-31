@@ -27,6 +27,7 @@ import io.vertx.mongo.connection.ConnectionPoolSettings;
 import io.vertx.mongo.connection.ServerSettings;
 import io.vertx.mongo.connection.SocketSettings;
 import io.vertx.mongo.connection.SslSettings;
+import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.serializers.MongoClientSettingsSerializer;
 import java.lang.Boolean;
 import java.lang.String;
@@ -51,8 +52,8 @@ public class MongoClientSettings {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.MongoClientSettings toDriverClass() {
-    return this.serializer.toDriverClass();
+  public com.mongodb.MongoClientSettings toDriverClass(MongoClientContext clientContext) {
+    return this.serializer.toDriverClass(clientContext);
   }
 
   /**
@@ -405,7 +406,8 @@ public class MongoClientSettings {
    * @param builder MongoDB driver builder
    * @hidden
    */
-  public void initializeDriverBuilderClass(com.mongodb.MongoClientSettings.Builder builder) {
-    this.serializer.initializeDriverBuilderClass(builder);
+  public void initializeDriverBuilderClass(MongoClientContext clientContext,
+      com.mongodb.MongoClientSettings.Builder builder) {
+    this.serializer.initializeDriverBuilderClass(clientContext, builder);
   }
 }

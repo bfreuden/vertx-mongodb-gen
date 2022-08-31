@@ -18,6 +18,7 @@ package io.vertx.mongo.bulk;
 import static java.util.Objects.requireNonNull;
 
 import io.vertx.mongo.impl.CollectionsConversionUtils;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.util.List;
 
@@ -159,7 +160,8 @@ public class BulkWriteResult {
    * @return mongo object
    * @hidden
    */
-  public static BulkWriteResult fromDriverClass(com.mongodb.bulk.BulkWriteResult from) {
+  public static BulkWriteResult fromDriverClass(MongoClientContext clientContext,
+      com.mongodb.bulk.BulkWriteResult from) {
     requireNonNull(from, "from is null");
     BulkWriteResult result = new BulkWriteResult();
     try {
@@ -188,12 +190,12 @@ public class BulkWriteResult {
       result.modifiedCountException = ex;
     }
     try {
-      result.inserts = CollectionsConversionUtils.mapItems(from.getInserts(), BulkWriteInsert::fromDriverClass);
+      result.inserts = CollectionsConversionUtils.mapItems(from.getInserts(), _item -> BulkWriteInsert.fromDriverClass(clientContext, _item));
     } catch (Exception ex) {
       result.insertsException = ex;
     }
     try {
-      result.upserts = CollectionsConversionUtils.mapItems(from.getUpserts(), BulkWriteUpsert::fromDriverClass);
+      result.upserts = CollectionsConversionUtils.mapItems(from.getUpserts(), _item -> BulkWriteUpsert.fromDriverClass(clientContext, _item));
     } catch (Exception ex) {
       result.upsertsException = ex;
     }

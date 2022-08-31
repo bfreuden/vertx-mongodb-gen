@@ -17,7 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Integer;
@@ -595,7 +595,7 @@ public class IndexOptions {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.IndexOptions toDriverClass() {
+  public com.mongodb.client.model.IndexOptions toDriverClass(MongoClientContext clientContext) {
     com.mongodb.client.model.IndexOptions result = new com.mongodb.client.model.IndexOptions();
     if (this.background != null) {
       result.background(this.background);
@@ -616,7 +616,7 @@ public class IndexOptions {
       result.version(this.version);
     }
     if (this.weights != null) {
-      result.weights(ConversionUtilsImpl.INSTANCE.toBson(this.weights));
+      result.weights(clientContext.getConversionUtils().toBson(this.weights));
     }
     if (this.defaultLanguage != null) {
       result.defaultLanguage(this.defaultLanguage);
@@ -643,16 +643,16 @@ public class IndexOptions {
       result.bucketSize(this.bucketSize);
     }
     if (this.storageEngine != null) {
-      result.storageEngine(ConversionUtilsImpl.INSTANCE.toBson(this.storageEngine));
+      result.storageEngine(clientContext.getConversionUtils().toBson(this.storageEngine));
     }
     if (this.partialFilterExpression != null) {
-      result.partialFilterExpression(ConversionUtilsImpl.INSTANCE.toBson(this.partialFilterExpression));
+      result.partialFilterExpression(clientContext.getConversionUtils().toBson(this.partialFilterExpression));
     }
     if (this.collation != null) {
-      result.collation(this.collation.toDriverClass());
+      result.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.wildcardProjection != null) {
-      result.wildcardProjection(ConversionUtilsImpl.INSTANCE.toBson(this.wildcardProjection));
+      result.wildcardProjection(clientContext.getConversionUtils().toBson(this.wildcardProjection));
     }
     if (this.hidden != null) {
       result.hidden(this.hidden);

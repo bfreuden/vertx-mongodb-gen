@@ -17,7 +17,7 @@ package io.vertx.mongo.client;
 
 import com.mongodb.reactivestreams.client.ListDatabasesPublisher;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ConversionUtilsImpl;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
@@ -148,12 +148,13 @@ public class ListDatabasesOptions {
    * @param <TDocument> document class
    * @hidden
    */
-  public <TDocument> void initializePublisher(ListDatabasesPublisher<TDocument> publisher) {
+  public <TDocument> void initializePublisher(MongoClientContext clientContext,
+      ListDatabasesPublisher<TDocument> publisher) {
     if (this.maxTime != null) {
       publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }
     if (this.filter != null) {
-      publisher.filter(ConversionUtilsImpl.INSTANCE.toBson(this.filter));
+      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
     }
     if (this.nameOnly != null) {
       publisher.nameOnly(this.nameOnly);

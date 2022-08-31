@@ -28,6 +28,7 @@ import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.model.CreateCollectionOptions;
 import io.vertx.mongo.client.model.CreateViewOptions;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
+import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Class;
 import java.lang.String;
 import java.lang.Void;
