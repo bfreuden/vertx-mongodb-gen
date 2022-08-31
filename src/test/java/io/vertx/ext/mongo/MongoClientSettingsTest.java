@@ -17,7 +17,8 @@ public class MongoClientSettingsTest {
     @Test
     public void basicTest() {
         // build a real object including com.mongodb.ReadPreference and com.mongodb.ServerAddress
-        // mongo driver objects that we don't want to converter into a data object
+        // mongo driver objects that we don't want to convert into a data object
+        // (because some of them have a convenient toBson method)
         MongoClientSettings settings = new MongoClientSettings()
                 .setReadPreference(ReadPreference.nearest())
                 .setClusterSettings(new ClusterSettings()
