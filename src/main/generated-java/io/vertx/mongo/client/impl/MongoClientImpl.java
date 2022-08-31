@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import com.mongodb.connection.ClusterDescription;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.ListDatabasesPublisher;
+import com.mongodb.reactivestreams.client.MongoClient;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Closeable;
 import io.vertx.core.Future;
@@ -35,7 +36,6 @@ import io.vertx.mongo.client.ChangeStreamOptions;
 import io.vertx.mongo.client.ClientConfig;
 import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.ListDatabasesOptions;
-import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
@@ -233,10 +233,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   }
 
   @Override
-  public MongoClient startSession(Handler<AsyncResult<ClientSession>> resultHandler) {
+  public void startSession(Handler<AsyncResult<ClientSession>> resultHandler) {
     Future<ClientSession> __future = this.startSession();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -250,11 +249,10 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   }
 
   @Override
-  public MongoClient startSession(ClientSessionOptions options,
+  public void startSession(ClientSessionOptions options,
       Handler<AsyncResult<ClientSession>> resultHandler) {
     Future<ClientSession> __future = this.startSession(options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -262,7 +260,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     return wrapped.getClusterDescription();
   }
 
-  public com.mongodb.reactivestreams.client.MongoClient toDriverClass() {
+  public MongoClient toDriverClass() {
     return wrapped;
   }
 }

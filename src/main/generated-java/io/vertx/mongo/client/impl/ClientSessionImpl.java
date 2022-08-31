@@ -75,11 +75,9 @@ public class ClientSessionImpl extends ClientSessionBase {
   }
 
   @Override
-  public io.vertx.mongo.client.ClientSession commitTransaction(
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void commitTransaction(Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.commitTransaction();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -91,11 +89,9 @@ public class ClientSessionImpl extends ClientSessionBase {
   }
 
   @Override
-  public io.vertx.mongo.client.ClientSession abortTransaction(
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void abortTransaction(Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.abortTransaction();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   public MongoClientContext getClientContext() {

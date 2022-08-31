@@ -55,11 +55,9 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
   }
 
   @Override
-  public io.vertx.mongo.client.vault.ClientEncryption createDataKey(String kmsProvider,
-      Handler<AsyncResult<byte[]>> resultHandler) {
+  public void createDataKey(String kmsProvider, Handler<AsyncResult<byte[]>> resultHandler) {
     Future<byte[]> __future = this.createDataKey(kmsProvider);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -74,11 +72,10 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
   }
 
   @Override
-  public io.vertx.mongo.client.vault.ClientEncryption createDataKey(String kmsProvider,
-      DataKeyOptions dataKeyOptions, Handler<AsyncResult<byte[]>> resultHandler) {
+  public void createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions,
+      Handler<AsyncResult<byte[]>> resultHandler) {
     Future<byte[]> __future = this.createDataKey(kmsProvider, dataKeyOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -94,11 +91,10 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
   }
 
   @Override
-  public io.vertx.mongo.client.vault.ClientEncryption encrypt(Object value, EncryptOptions options,
+  public void encrypt(Object value, EncryptOptions options,
       Handler<AsyncResult<byte[]>> resultHandler) {
     Future<byte[]> __future = this.encrypt(value, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -112,11 +108,9 @@ public class ClientEncryptionImpl extends ClientEncryptionBase {
   }
 
   @Override
-  public io.vertx.mongo.client.vault.ClientEncryption decrypt(byte[] value,
-      Handler<AsyncResult<Object>> resultHandler) {
+  public void decrypt(byte[] value, Handler<AsyncResult<Object>> resultHandler) {
     Future<Object> __future = this.decrypt(value);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override

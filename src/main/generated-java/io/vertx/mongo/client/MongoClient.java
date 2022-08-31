@@ -254,11 +254,10 @@ public interface MongoClient extends Closeable {
   /**
    *  Creates a client session.
    *  @param resultHandler an async result for the client session.
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.9
    */
-  MongoClient startSession(Handler<AsyncResult<ClientSession>> resultHandler);
+  void startSession(Handler<AsyncResult<ClientSession>> resultHandler);
 
   /**
    *  Creates a client session.
@@ -273,11 +272,10 @@ public interface MongoClient extends Closeable {
    *  Creates a client session.
    *  @param options the options for the client session
    *  @param resultHandler an async result for the client session.
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoClient startSession(ClientSessionOptions options,
+  void startSession(ClientSessionOptions options,
       Handler<AsyncResult<ClientSession>> resultHandler);
 
   /**

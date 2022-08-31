@@ -289,7 +289,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 if (method.returnType.singlePublisher) {
                     MethodSpec.Builder handlerMethodBuilder = MethodSpec.methodBuilder(methodWriteConfig.vertxName)
                             .addModifiers(Modifier.PUBLIC)
-                            .returns(fluentReturnType);
+                            .returns(TypeName.VOID);
                     if (!isImpl)
                         handlerMethodBuilder.addModifiers(Modifier.ABSTRACT);
                     for (TypeVariableName variable : method.typeVariables)

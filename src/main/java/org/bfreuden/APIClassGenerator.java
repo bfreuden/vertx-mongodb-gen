@@ -503,9 +503,9 @@ public abstract class APIClassGenerator {
                                     .replace("Publisher", "async result")
                                     .replace(" a async result", " an async result");
                             asyncNewRawCommentText.add(newDocLine2);
-                            int index = docLine.indexOf("@return") + "@return".length();
-                            String newReturnLine = docLine.substring(0, index) + " <code>this</code>";
-                            asyncNewRawCommentText.add(newReturnLine);
+//                            int index = docLine.indexOf("@return") + "@return".length();
+//                            String newReturnLine = docLine.substring(0, index) + " <code>this</code>";
+//                            asyncNewRawCommentText.add(newReturnLine);
                         } else {
                             newRawCommentText.add(docLine);
                             asyncNewRawCommentText.add(docLine);

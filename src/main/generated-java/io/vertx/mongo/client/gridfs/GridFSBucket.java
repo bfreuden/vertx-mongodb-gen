@@ -143,10 +143,9 @@ public interface GridFSBucket {
    *  @param filename the filename
    *  @param source   the stream providing the file data
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket uploadStream(String filename, ReadStream<Buffer> source,
+  void uploadStream(String filename, ReadStream<Buffer> source,
       Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -171,10 +170,9 @@ public interface GridFSBucket {
    *  @param filename the filename providing the file data
    *  
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket uploadFile(String filename, Handler<AsyncResult<String>> resultHandler);
+  void uploadFile(String filename, Handler<AsyncResult<String>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -201,10 +199,9 @@ public interface GridFSBucket {
    *  @param source   the stream providing the file data
    *  @param options  the GridFSUploadOptions
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket uploadStream(String filename, ReadStream<Buffer> source, GridFSUploadOptions options,
+  void uploadStream(String filename, ReadStream<Buffer> source, GridFSUploadOptions options,
       Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -231,10 +228,9 @@ public interface GridFSBucket {
    *  
    *  @param options  the GridFSUploadOptions
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @since 1.13
    */
-  GridFSBucket uploadFile(String filename, GridFSUploadOptions options,
+  void uploadFile(String filename, GridFSUploadOptions options,
       Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -263,11 +259,10 @@ public interface GridFSBucket {
    *  @param filename the filename
    *  @param source   the stream providing the file data
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSBucket uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
+  void uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
       Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -295,11 +290,10 @@ public interface GridFSBucket {
    *  @param filename the filename providing the file data
    *  
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSBucket uploadFile(ClientSession clientSession, String filename,
+  void uploadFile(ClientSession clientSession, String filename,
       Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -330,11 +324,10 @@ public interface GridFSBucket {
    *  @param source   the stream providing the file data
    *  @param options  the GridFSUploadOptions
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSBucket uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
+  void uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
       GridFSUploadOptions options, Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -365,11 +358,10 @@ public interface GridFSBucket {
    *  
    *  @param options  the GridFSUploadOptions
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSBucket uploadFile(ClientSession clientSession, String filename, GridFSUploadOptions options,
+  void uploadFile(ClientSession clientSession, String filename, GridFSUploadOptions options,
       Handler<AsyncResult<String>> resultHandler);
 
   /**
@@ -616,9 +608,8 @@ public interface GridFSBucket {
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
    *  @param id       the ObjectId of the file to be deleted
    *  @param resultHandler an async result with a single element, representing that the file has been deleted
-   *  @return <code>this</code>
    */
-  GridFSBucket delete(String id, Handler<AsyncResult<Void>> resultHandler);
+  void delete(String id, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -631,9 +622,8 @@ public interface GridFSBucket {
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
    *  @param id       the ObjectId of the file to be deleted
    *  @param resultHandler an async result with a single element, representing that the file has been deleted
-   *  @return <code>this</code>
    */
-  GridFSBucket delete(Object id, Handler<AsyncResult<Void>> resultHandler);
+  void delete(Object id, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -650,12 +640,10 @@ public interface GridFSBucket {
    *  @param clientSession the client session with which to associate this operation
    *  @param id       the ObjectId of the file to be deleted
    *  @param resultHandler an async result with a single element, representing that the file has been deleted
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  GridFSBucket delete(ClientSession clientSession, String id,
-      Handler<AsyncResult<Void>> resultHandler);
+  void delete(ClientSession clientSession, String id, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -672,12 +660,10 @@ public interface GridFSBucket {
    *  @param clientSession the client session with which to associate this operation
    *  @param id       the ObjectId of the file to be deleted
    *  @param resultHandler an async result with a single element, representing that the file has been deleted
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  GridFSBucket delete(ClientSession clientSession, Object id,
-      Handler<AsyncResult<Void>> resultHandler);
+  void delete(ClientSession clientSession, Object id, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -692,9 +678,8 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param resultHandler an async result with a single element, representing that the file has been renamed
-   *  @return <code>this</code>
    */
-  GridFSBucket rename(String id, String newFilename, Handler<AsyncResult<Void>> resultHandler);
+  void rename(String id, String newFilename, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -709,9 +694,8 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param resultHandler an async result with a single element, representing that the file has been renamed
-   *  @return <code>this</code>
    */
-  GridFSBucket rename(Object id, String newFilename, Handler<AsyncResult<Void>> resultHandler);
+  void rename(Object id, String newFilename, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -730,11 +714,10 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param resultHandler an async result with a single element, representing that the file has been renamed
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  GridFSBucket rename(ClientSession clientSession, String id, String newFilename,
+  void rename(ClientSession clientSession, String id, String newFilename,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -754,11 +737,10 @@ public interface GridFSBucket {
    *  @param id          the id of the file in the files collection to rename
    *  @param newFilename the new filename for the file
    *  @param resultHandler an async result with a single element, representing that the file has been renamed
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  GridFSBucket rename(ClientSession clientSession, Object id, String newFilename,
+  void rename(ClientSession clientSession, Object id, String newFilename,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -770,9 +752,8 @@ public interface GridFSBucket {
   /**
    *  Drops the data associated with this bucket from the database.
    *  @param resultHandler an async result with a single element, representing that the collections have been dropped
-   *  @return <code>this</code>
    */
-  GridFSBucket drop(Handler<AsyncResult<Void>> resultHandler);
+  void drop(Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Drops the data associated with this bucket from the database.
@@ -787,11 +768,10 @@ public interface GridFSBucket {
    *  Drops the data associated with this bucket from the database.
    *  @param clientSession the client session with which to associate this operation
    *  @param resultHandler an async result with a single element, representing that the collections have been dropped
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  GridFSBucket drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler);
+  void drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    * @return mongo object

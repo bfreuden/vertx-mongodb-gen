@@ -140,9 +140,8 @@ public interface MongoDatabase {
    *  Executes command in the context of the current database.
    *  @param command the command to be run
    *  @param resultHandler an async result containing the command result
-   *  @return <code>this</code>
    */
-  MongoDatabase runCommand(JsonObject command, Handler<AsyncResult<JsonObject>> resultHandler);
+  void runCommand(JsonObject command, Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
    *  Executes command in the context of the current database.
@@ -157,9 +156,8 @@ public interface MongoDatabase {
    *  @param command        the command to be run
    *  @param readPreference the {@link com.mongodb.ReadPreference} to be used when executing the command
    *  @param resultHandler an async result containing the command result
-   *  @return <code>this</code>
    */
-  MongoDatabase runCommand(JsonObject command, ReadPreference readPreference,
+  void runCommand(JsonObject command, ReadPreference readPreference,
       Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
@@ -177,11 +175,10 @@ public interface MongoDatabase {
    *  @param clientSession the client session with which to associate this operation
    *  @param command the command to be run
    *  @param resultHandler an async result containing the command result
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase runCommand(ClientSession clientSession, JsonObject command,
+  void runCommand(ClientSession clientSession, JsonObject command,
       Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
@@ -202,12 +199,11 @@ public interface MongoDatabase {
    *  @param command        the command to be run
    *  @param readPreference the {@link com.mongodb.ReadPreference} to be used when executing the command
    *  @param resultHandler an async result containing the command result
-   *  @return <code>this</code>
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase runCommand(ClientSession clientSession, JsonObject command,
-      ReadPreference readPreference, Handler<AsyncResult<JsonObject>> resultHandler);
+  void runCommand(ClientSession clientSession, JsonObject command, ReadPreference readPreference,
+      Handler<AsyncResult<JsonObject>> resultHandler);
 
   /**
    *  Drops this database.
@@ -219,10 +215,9 @@ public interface MongoDatabase {
   /**
    *  Drops this database.
    *  @param resultHandler an async result identifying when the database has been dropped
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
    */
-  MongoDatabase drop(Handler<AsyncResult<Void>> resultHandler);
+  void drop(Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Drops this database.
@@ -238,12 +233,11 @@ public interface MongoDatabase {
    *  Drops this database.
    *  @param clientSession the client session with which to associate this operation
    *  @param resultHandler an async result identifying when the database has been dropped
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/dropDatabase/#dbcmd.dropDatabase Drop database
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler);
+  void drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Gets the names of all the collections in this database.
@@ -309,10 +303,9 @@ public interface MongoDatabase {
    *  Create a new collection with the given name.
    *  @param collectionName the name for the new collection to create
    *  @param resultHandler an async result identifying when the collection has been created
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
-  MongoDatabase createCollection(String collectionName, Handler<AsyncResult<Void>> resultHandler);
+  void createCollection(String collectionName, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Create a new collection with the selected options
@@ -328,10 +321,9 @@ public interface MongoDatabase {
    *  @param collectionName the name for the new collection to create
    *  @param options        various options for creating the collection
    *  @param resultHandler an async result identifying when the collection has been created
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    */
-  MongoDatabase createCollection(String collectionName, CreateCollectionOptions options,
+  void createCollection(String collectionName, CreateCollectionOptions options,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -350,12 +342,11 @@ public interface MongoDatabase {
    *  @param clientSession the client session with which to associate this operation
    *  @param collectionName the name for the new collection to create
    *  @param resultHandler an async result identifying when the collection has been created
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase createCollection(ClientSession clientSession, String collectionName,
+  void createCollection(ClientSession clientSession, String collectionName,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -377,12 +368,11 @@ public interface MongoDatabase {
    *  @param collectionName the name for the new collection to create
    *  @param options        various options for creating the collection
    *  @param resultHandler an async result identifying when the collection has been created
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/commands/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase createCollection(ClientSession clientSession, String collectionName,
+  void createCollection(ClientSession clientSession, String collectionName,
       CreateCollectionOptions options, Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -403,12 +393,11 @@ public interface MongoDatabase {
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
    *  @param resultHandler an async result identifying when the collection view has been created
-   *  @return <code>this</code>
    *  @since 1.3
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  MongoDatabase createView(String viewName, String viewOn, JsonArray pipeline,
+  void createView(String viewName, String viewOn, JsonArray pipeline,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -432,12 +421,11 @@ public interface MongoDatabase {
    *  @param pipeline the pipeline that defines the view
    *  @param createViewOptions various options for creating the view
    *  @param resultHandler an async result identifying when the collection view has been created
-   *  @return <code>this</code>
    *  @since 1.3
    *  @mongodb.server.release 3.4
    *  @mongodb.driver.manual reference/command/create Create Command
    */
-  MongoDatabase createView(String viewName, String viewOn, JsonArray pipeline,
+  void createView(String viewName, String viewOn, JsonArray pipeline,
       CreateViewOptions createViewOptions, Handler<AsyncResult<Void>> resultHandler);
 
   /**
@@ -461,13 +449,12 @@ public interface MongoDatabase {
    *  @param viewOn   the backing collection/view for the view
    *  @param pipeline the pipeline that defines the view
    *  @param resultHandler an async result identifying when the collection view has been created
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
-      JsonArray pipeline, Handler<AsyncResult<Void>> resultHandler);
+  void createView(ClientSession clientSession, String viewName, String viewOn, JsonArray pipeline,
+      Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Creates a view with the given name, backing collection/view name, aggregation pipeline, and options that defines the view.
@@ -492,14 +479,12 @@ public interface MongoDatabase {
    *  @param pipeline the pipeline that defines the view
    *  @param createViewOptions various options for creating the view
    *  @param resultHandler an async result identifying when the collection view has been created
-   *  @return <code>this</code>
    *  @mongodb.driver.manual reference/command/create Create Command
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  MongoDatabase createView(ClientSession clientSession, String viewName, String viewOn,
-      JsonArray pipeline, CreateViewOptions createViewOptions,
-      Handler<AsyncResult<Void>> resultHandler);
+  void createView(ClientSession clientSession, String viewName, String viewOn, JsonArray pipeline,
+      CreateViewOptions createViewOptions, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Creates a change stream for this database.

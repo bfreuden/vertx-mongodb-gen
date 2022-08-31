@@ -170,11 +170,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> estimatedDocumentCount(
-      Handler<AsyncResult<Long>> resultHandler) {
+  public void estimatedDocumentCount(Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.estimatedDocumentCount();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -188,11 +186,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> estimatedDocumentCount(
-      EstimatedDocumentCountOptions options, Handler<AsyncResult<Long>> resultHandler) {
+  public void estimatedDocumentCount(EstimatedDocumentCountOptions options,
+      Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.estimatedDocumentCount(options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -204,11 +201,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
-      Handler<AsyncResult<Long>> resultHandler) {
+  public void countDocuments(Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.countDocuments();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -222,11 +217,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(JsonObject filter,
-      Handler<AsyncResult<Long>> resultHandler) {
+  public void countDocuments(JsonObject filter, Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.countDocuments(filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -242,11 +235,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(JsonObject filter,
-      CountOptions options, Handler<AsyncResult<Long>> resultHandler) {
+  public void countDocuments(JsonObject filter, CountOptions options,
+      Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.countDocuments(filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -260,11 +252,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
-      ClientSession clientSession, Handler<AsyncResult<Long>> resultHandler) {
+  public void countDocuments(ClientSession clientSession,
+      Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.countDocuments(clientSession);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -280,11 +271,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
-      ClientSession clientSession, JsonObject filter, Handler<AsyncResult<Long>> resultHandler) {
+  public void countDocuments(ClientSession clientSession, JsonObject filter,
+      Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.countDocuments(clientSession, filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -303,12 +293,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> countDocuments(
-      ClientSession clientSession, JsonObject filter, CountOptions options,
+  public void countDocuments(ClientSession clientSession, JsonObject filter, CountOptions options,
       Handler<AsyncResult<Long>> resultHandler) {
     Future<Long> __future = this.countDocuments(clientSession, filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -613,12 +601,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(
-      List<? extends WriteModel<? extends TDocument>> requests,
+  public void bulkWrite(List<? extends WriteModel<? extends TDocument>> requests,
       Handler<AsyncResult<BulkWriteResult>> resultHandler) {
     Future<BulkWriteResult> __future = this.bulkWrite(requests);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -635,12 +621,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(
-      List<? extends WriteModel<? extends TDocument>> requests, BulkWriteOptions options,
-      Handler<AsyncResult<BulkWriteResult>> resultHandler) {
+  public void bulkWrite(List<? extends WriteModel<? extends TDocument>> requests,
+      BulkWriteOptions options, Handler<AsyncResult<BulkWriteResult>> resultHandler) {
     Future<BulkWriteResult> __future = this.bulkWrite(requests, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -657,12 +641,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(ClientSession clientSession,
+  public void bulkWrite(ClientSession clientSession,
       List<? extends WriteModel<? extends TDocument>> requests,
       Handler<AsyncResult<BulkWriteResult>> resultHandler) {
     Future<BulkWriteResult> __future = this.bulkWrite(clientSession, requests);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -681,12 +664,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> bulkWrite(ClientSession clientSession,
+  public void bulkWrite(ClientSession clientSession,
       List<? extends WriteModel<? extends TDocument>> requests, BulkWriteOptions options,
       Handler<AsyncResult<BulkWriteResult>> resultHandler) {
     Future<BulkWriteResult> __future = this.bulkWrite(clientSession, requests, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -699,11 +681,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(TDocument document,
-      Handler<AsyncResult<InsertOneResult>> resultHandler) {
+  public void insertOne(TDocument document, Handler<AsyncResult<InsertOneResult>> resultHandler) {
     Future<InsertOneResult> __future = this.insertOne(document);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -718,11 +698,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(TDocument document,
-      InsertOneOptions options, Handler<AsyncResult<InsertOneResult>> resultHandler) {
+  public void insertOne(TDocument document, InsertOneOptions options,
+      Handler<AsyncResult<InsertOneResult>> resultHandler) {
     Future<InsertOneResult> __future = this.insertOne(document, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -737,11 +716,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(ClientSession clientSession,
-      TDocument document, Handler<AsyncResult<InsertOneResult>> resultHandler) {
+  public void insertOne(ClientSession clientSession, TDocument document,
+      Handler<AsyncResult<InsertOneResult>> resultHandler) {
     Future<InsertOneResult> __future = this.insertOne(clientSession, document);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -759,12 +737,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertOne(ClientSession clientSession,
-      TDocument document, InsertOneOptions options,
+  public void insertOne(ClientSession clientSession, TDocument document, InsertOneOptions options,
       Handler<AsyncResult<InsertOneResult>> resultHandler) {
     Future<InsertOneResult> __future = this.insertOne(clientSession, document, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -777,11 +753,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(
-      List<? extends TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler) {
+  public void insertMany(List<? extends TDocument> documents,
+      Handler<AsyncResult<InsertManyResult>> resultHandler) {
     Future<InsertManyResult> __future = this.insertMany(documents);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -797,12 +772,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(
-      List<? extends TDocument> documents, InsertManyOptions options,
+  public void insertMany(List<? extends TDocument> documents, InsertManyOptions options,
       Handler<AsyncResult<InsertManyResult>> resultHandler) {
     Future<InsertManyResult> __future = this.insertMany(documents, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -818,11 +791,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(ClientSession clientSession,
-      List<? extends TDocument> documents, Handler<AsyncResult<InsertManyResult>> resultHandler) {
+  public void insertMany(ClientSession clientSession, List<? extends TDocument> documents,
+      Handler<AsyncResult<InsertManyResult>> resultHandler) {
     Future<InsertManyResult> __future = this.insertMany(clientSession, documents);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -840,12 +812,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> insertMany(ClientSession clientSession,
-      List<? extends TDocument> documents, InsertManyOptions options,
-      Handler<AsyncResult<InsertManyResult>> resultHandler) {
+  public void insertMany(ClientSession clientSession, List<? extends TDocument> documents,
+      InsertManyOptions options, Handler<AsyncResult<InsertManyResult>> resultHandler) {
     Future<InsertManyResult> __future = this.insertMany(clientSession, documents, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -859,11 +829,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(JsonObject filter,
-      Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteOne(JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteOne(filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -879,11 +847,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(JsonObject filter,
-      DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteOne(JsonObject filter, DeleteOptions options,
+      Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteOne(filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -899,11 +866,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(ClientSession clientSession,
-      JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteOne(ClientSession clientSession, JsonObject filter,
+      Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteOne(clientSession, filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -922,11 +888,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteOne(ClientSession clientSession,
-      JsonObject filter, DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteOne(ClientSession clientSession, JsonObject filter, DeleteOptions options,
+      Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteOne(clientSession, filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -940,11 +905,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(JsonObject filter,
-      Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteMany(JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteMany(filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -960,11 +923,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(JsonObject filter,
-      DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteMany(JsonObject filter, DeleteOptions options,
+      Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteMany(filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -980,11 +942,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(ClientSession clientSession,
-      JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteMany(ClientSession clientSession, JsonObject filter,
+      Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteMany(clientSession, filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1003,11 +964,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> deleteMany(ClientSession clientSession,
-      JsonObject filter, DeleteOptions options, Handler<AsyncResult<DeleteResult>> resultHandler) {
+  public void deleteMany(ClientSession clientSession, JsonObject filter, DeleteOptions options,
+      Handler<AsyncResult<DeleteResult>> resultHandler) {
     Future<DeleteResult> __future = this.deleteMany(clientSession, filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1022,11 +982,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(JsonObject filter,
-      TDocument replacement, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void replaceOne(JsonObject filter, TDocument replacement,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(filter, replacement);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1044,12 +1003,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(JsonObject filter,
-      TDocument replacement, ReplaceOptions options,
+  public void replaceOne(JsonObject filter, TDocument replacement, ReplaceOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(filter, replacement, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1067,11 +1024,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(ClientSession clientSession,
-      JsonObject filter, TDocument replacement, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void replaceOne(ClientSession clientSession, JsonObject filter, TDocument replacement,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(clientSession, filter, replacement);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1091,12 +1047,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> replaceOne(ClientSession clientSession,
-      JsonObject filter, TDocument replacement, ReplaceOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void replaceOne(ClientSession clientSession, JsonObject filter, TDocument replacement,
+      ReplaceOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(clientSession, filter, replacement, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1112,11 +1066,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
-      JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(JsonObject filter, JsonObject update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1135,11 +1088,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
-      JsonObject update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(JsonObject filter, JsonObject update, UpdateOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1158,11 +1110,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
-      JsonObject filter, JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(ClientSession clientSession, JsonObject filter, JsonObject update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(clientSession, filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1183,12 +1134,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
-      JsonObject filter, JsonObject update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(ClientSession clientSession, JsonObject filter, JsonObject update,
+      UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1204,11 +1153,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
-      JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(JsonObject filter, JsonArray update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1227,11 +1175,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(JsonObject filter,
-      JsonArray update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(JsonObject filter, JsonArray update, UpdateOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1250,11 +1197,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
-      JsonObject filter, JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(ClientSession clientSession, JsonObject filter, JsonArray update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(clientSession, filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1275,12 +1221,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateOne(ClientSession clientSession,
-      JsonObject filter, JsonArray update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateOne(ClientSession clientSession, JsonObject filter, JsonArray update,
+      UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateOne(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1296,11 +1240,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
-      JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(JsonObject filter, JsonObject update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1319,11 +1262,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
-      JsonObject update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(JsonObject filter, JsonObject update, UpdateOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1342,11 +1284,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
-      JsonObject filter, JsonObject update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(ClientSession clientSession, JsonObject filter, JsonObject update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(clientSession, filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1367,12 +1308,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
-      JsonObject filter, JsonObject update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(ClientSession clientSession, JsonObject filter, JsonObject update,
+      UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1388,11 +1327,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
-      JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(JsonObject filter, JsonArray update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1411,11 +1349,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(JsonObject filter,
-      JsonArray update, UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(JsonObject filter, JsonArray update, UpdateOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1434,11 +1371,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
-      JsonObject filter, JsonArray update, Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(ClientSession clientSession, JsonObject filter, JsonArray update,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(clientSession, filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1459,12 +1395,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> updateMany(ClientSession clientSession,
-      JsonObject filter, JsonArray update, UpdateOptions options,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void updateMany(ClientSession clientSession, JsonObject filter, JsonArray update,
+      UpdateOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.updateMany(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1478,11 +1412,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(JsonObject filter,
-      Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndDelete(JsonObject filter, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndDelete(filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1498,11 +1430,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(JsonObject filter,
-      FindOneAndDeleteOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndDelete(JsonObject filter, FindOneAndDeleteOptions options,
+      Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndDelete(filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1518,12 +1449,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(
-      ClientSession clientSession, JsonObject filter,
+  public void findOneAndDelete(ClientSession clientSession, JsonObject filter,
       Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndDelete(clientSession, filter);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1542,12 +1471,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndDelete(
-      ClientSession clientSession, JsonObject filter, FindOneAndDeleteOptions options,
-      Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndDelete(ClientSession clientSession, JsonObject filter,
+      FindOneAndDeleteOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndDelete(clientSession, filter, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1562,11 +1489,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(JsonObject filter,
-      TDocument replacement, Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndReplace(JsonObject filter, TDocument replacement,
+      Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndReplace(filter, replacement);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1584,12 +1510,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(JsonObject filter,
-      TDocument replacement, FindOneAndReplaceOptions options,
-      Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndReplace(JsonObject filter, TDocument replacement,
+      FindOneAndReplaceOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndReplace(filter, replacement, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1607,12 +1531,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(
-      ClientSession clientSession, JsonObject filter, TDocument replacement,
-      Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndReplace(ClientSession clientSession, JsonObject filter,
+      TDocument replacement, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndReplace(clientSession, filter, replacement);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1632,12 +1554,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndReplace(
-      ClientSession clientSession, JsonObject filter, TDocument replacement,
-      FindOneAndReplaceOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndReplace(ClientSession clientSession, JsonObject filter,
+      TDocument replacement, FindOneAndReplaceOptions options,
+      Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndReplace(clientSession, filter, replacement, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1653,11 +1574,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
-      JsonObject update, Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndUpdate(JsonObject filter, JsonObject update,
+      Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1676,12 +1596,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
-      JsonObject update, FindOneAndUpdateOptions options,
-      Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndUpdate(JsonObject filter, JsonObject update,
+      FindOneAndUpdateOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1700,12 +1618,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
-      ClientSession clientSession, JsonObject filter, JsonObject update,
+  public void findOneAndUpdate(ClientSession clientSession, JsonObject filter, JsonObject update,
       Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1726,12 +1642,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
-      ClientSession clientSession, JsonObject filter, JsonObject update,
+  public void findOneAndUpdate(ClientSession clientSession, JsonObject filter, JsonObject update,
       FindOneAndUpdateOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1747,11 +1661,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
-      JsonArray update, Handler<AsyncResult<TDocument>> resultHandler) {
+  public void findOneAndUpdate(JsonObject filter, JsonArray update,
+      Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1770,12 +1683,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(JsonObject filter,
-      JsonArray update, FindOneAndUpdateOptions options,
+  public void findOneAndUpdate(JsonObject filter, JsonArray update, FindOneAndUpdateOptions options,
       Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1794,12 +1705,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
-      ClientSession clientSession, JsonObject filter, JsonArray update,
+  public void findOneAndUpdate(ClientSession clientSession, JsonObject filter, JsonArray update,
       Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1820,12 +1729,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> findOneAndUpdate(
-      ClientSession clientSession, JsonObject filter, JsonArray update,
+  public void findOneAndUpdate(ClientSession clientSession, JsonObject filter, JsonArray update,
       FindOneAndUpdateOptions options, Handler<AsyncResult<TDocument>> resultHandler) {
     Future<TDocument> __future = this.findOneAndUpdate(clientSession, filter, update, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1837,11 +1744,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> drop(
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void drop(Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.drop();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1855,11 +1760,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> drop(ClientSession clientSession,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.drop(clientSession);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1873,11 +1776,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(JsonObject key,
-      Handler<AsyncResult<String>> resultHandler) {
+  public void createIndex(JsonObject key, Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndex(key);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1893,11 +1794,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(JsonObject key,
-      IndexOptions options, Handler<AsyncResult<String>> resultHandler) {
+  public void createIndex(JsonObject key, IndexOptions options,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndex(key, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1913,11 +1813,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(ClientSession clientSession,
-      JsonObject key, Handler<AsyncResult<String>> resultHandler) {
+  public void createIndex(ClientSession clientSession, JsonObject key,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndex(clientSession, key);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1936,11 +1835,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndex(ClientSession clientSession,
-      JsonObject key, IndexOptions options, Handler<AsyncResult<String>> resultHandler) {
+  public void createIndex(ClientSession clientSession, JsonObject key, IndexOptions options,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndex(clientSession, key, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1954,11 +1852,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(List<IndexModel> indexes,
-      Handler<AsyncResult<String>> resultHandler) {
+  public void createIndexes(List<IndexModel> indexes, Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndexes(indexes);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1975,11 +1871,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(List<IndexModel> indexes,
-      CreateIndexOptions createIndexOptions, Handler<AsyncResult<String>> resultHandler) {
+  public void createIndexes(List<IndexModel> indexes, CreateIndexOptions createIndexOptions,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndexes(indexes, createIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -1995,11 +1890,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(ClientSession clientSession,
-      List<IndexModel> indexes, Handler<AsyncResult<String>> resultHandler) {
+  public void createIndexes(ClientSession clientSession, List<IndexModel> indexes,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndexes(clientSession, indexes);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2018,12 +1912,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> createIndexes(ClientSession clientSession,
-      List<IndexModel> indexes, CreateIndexOptions createIndexOptions,
-      Handler<AsyncResult<String>> resultHandler) {
+  public void createIndexes(ClientSession clientSession, List<IndexModel> indexes,
+      CreateIndexOptions createIndexOptions, Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.createIndexes(clientSession, indexes, createIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2077,11 +1969,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(String indexName,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(String indexName, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(indexName);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2095,11 +1985,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(JsonObject keys,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(JsonObject keys, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(keys);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2114,11 +2002,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(String indexName,
-      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(String indexName, DropIndexOptions dropIndexOptions,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(indexName, dropIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2134,11 +2021,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(JsonObject keys,
-      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(JsonObject keys, DropIndexOptions dropIndexOptions,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(keys, dropIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2153,11 +2039,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
-      String indexName, Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(ClientSession clientSession, String indexName,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(clientSession, indexName);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2173,11 +2058,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
-      JsonObject keys, Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(ClientSession clientSession, JsonObject keys,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(clientSession, keys);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2195,12 +2079,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
-      String indexName, DropIndexOptions dropIndexOptions,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(ClientSession clientSession, String indexName,
+      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(clientSession, indexName, dropIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2219,12 +2101,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndex(ClientSession clientSession,
-      JsonObject keys, DropIndexOptions dropIndexOptions,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndex(ClientSession clientSession, JsonObject keys,
+      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndex(clientSession, keys, dropIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2236,11 +2116,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndexes(Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndexes();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2254,11 +2132,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(
-      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndexes(DropIndexOptions dropIndexOptions,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndexes(dropIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2272,11 +2149,9 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(ClientSession clientSession,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndexes(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndexes(clientSession);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2292,11 +2167,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> dropIndexes(ClientSession clientSession,
-      DropIndexOptions dropIndexOptions, Handler<AsyncResult<Void>> resultHandler) {
+  public void dropIndexes(ClientSession clientSession, DropIndexOptions dropIndexOptions,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.dropIndexes(clientSession, dropIndexOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2309,11 +2183,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
-      MongoNamespace newCollectionNamespace, Handler<AsyncResult<Void>> resultHandler) {
+  public void renameCollection(MongoNamespace newCollectionNamespace,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.renameCollection(newCollectionNamespace);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2329,12 +2202,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
-      MongoNamespace newCollectionNamespace, RenameCollectionOptions options,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void renameCollection(MongoNamespace newCollectionNamespace,
+      RenameCollectionOptions options, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.renameCollection(newCollectionNamespace, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2350,12 +2221,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
-      ClientSession clientSession, MongoNamespace newCollectionNamespace,
+  public void renameCollection(ClientSession clientSession, MongoNamespace newCollectionNamespace,
       Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.renameCollection(clientSession, newCollectionNamespace);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -2373,12 +2242,10 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public io.vertx.mongo.client.MongoCollection<TDocument> renameCollection(
-      ClientSession clientSession, MongoNamespace newCollectionNamespace,
+  public void renameCollection(ClientSession clientSession, MongoNamespace newCollectionNamespace,
       RenameCollectionOptions options, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.renameCollection(clientSession, newCollectionNamespace, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   public MongoClientContext getClientContext() {

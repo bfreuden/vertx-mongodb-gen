@@ -449,7 +449,8 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         methodBuilder
                 .addStatement("$T __future = this." + methodName + "(" + paramNames + ")", method.returnType.vertxType)
                 .addStatement("setHandler(__future, resultHandler)")
-                .addStatement("return this");
+//                .addStatement("return this")
+        ;
 
     }
 

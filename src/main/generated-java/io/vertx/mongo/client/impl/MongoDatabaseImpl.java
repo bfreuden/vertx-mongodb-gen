@@ -146,11 +146,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase runCommand(JsonObject command,
-      Handler<AsyncResult<JsonObject>> resultHandler) {
+  public void runCommand(JsonObject command, Handler<AsyncResult<JsonObject>> resultHandler) {
     Future<JsonObject> __future = this.runCommand(command);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -165,11 +163,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase runCommand(JsonObject command,
-      ReadPreference readPreference, Handler<AsyncResult<JsonObject>> resultHandler) {
+  public void runCommand(JsonObject command, ReadPreference readPreference,
+      Handler<AsyncResult<JsonObject>> resultHandler) {
     Future<JsonObject> __future = this.runCommand(command, readPreference);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -185,11 +182,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase runCommand(ClientSession clientSession,
-      JsonObject command, Handler<AsyncResult<JsonObject>> resultHandler) {
+  public void runCommand(ClientSession clientSession, JsonObject command,
+      Handler<AsyncResult<JsonObject>> resultHandler) {
     Future<JsonObject> __future = this.runCommand(clientSession, command);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -207,12 +203,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase runCommand(ClientSession clientSession,
-      JsonObject command, ReadPreference readPreference,
-      Handler<AsyncResult<JsonObject>> resultHandler) {
+  public void runCommand(ClientSession clientSession, JsonObject command,
+      ReadPreference readPreference, Handler<AsyncResult<JsonObject>> resultHandler) {
     Future<JsonObject> __future = this.runCommand(clientSession, command, readPreference);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -224,10 +218,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase drop(Handler<AsyncResult<Void>> resultHandler) {
+  public void drop(Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.drop();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -241,11 +234,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase drop(ClientSession clientSession,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.drop(clientSession);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -313,11 +304,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createCollection(String collectionName,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void createCollection(String collectionName, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createCollection(collectionName);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -332,11 +321,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createCollection(String collectionName,
-      CreateCollectionOptions options, Handler<AsyncResult<Void>> resultHandler) {
+  public void createCollection(String collectionName, CreateCollectionOptions options,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createCollection(collectionName, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -351,11 +339,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createCollection(ClientSession clientSession,
-      String collectionName, Handler<AsyncResult<Void>> resultHandler) {
+  public void createCollection(ClientSession clientSession, String collectionName,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createCollection(clientSession, collectionName);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -373,12 +360,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createCollection(ClientSession clientSession,
-      String collectionName, CreateCollectionOptions options,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void createCollection(ClientSession clientSession, String collectionName,
+      CreateCollectionOptions options, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createCollection(clientSession, collectionName, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -394,11 +379,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createView(String viewName, String viewOn,
-      JsonArray pipeline, Handler<AsyncResult<Void>> resultHandler) {
+  public void createView(String viewName, String viewOn, JsonArray pipeline,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createView(viewName, viewOn, pipeline);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -417,12 +401,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createView(String viewName, String viewOn,
-      JsonArray pipeline, CreateViewOptions createViewOptions,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void createView(String viewName, String viewOn, JsonArray pipeline,
+      CreateViewOptions createViewOptions, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createView(viewName, viewOn, pipeline, createViewOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -441,12 +423,10 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createView(ClientSession clientSession,
-      String viewName, String viewOn, JsonArray pipeline,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void createView(ClientSession clientSession, String viewName, String viewOn,
+      JsonArray pipeline, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createView(clientSession, viewName, viewOn, pipeline);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -467,12 +447,11 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   }
 
   @Override
-  public io.vertx.mongo.client.MongoDatabase createView(ClientSession clientSession,
-      String viewName, String viewOn, JsonArray pipeline, CreateViewOptions createViewOptions,
+  public void createView(ClientSession clientSession, String viewName, String viewOn,
+      JsonArray pipeline, CreateViewOptions createViewOptions,
       Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.createView(clientSession, viewName, viewOn, pipeline, createViewOptions);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override

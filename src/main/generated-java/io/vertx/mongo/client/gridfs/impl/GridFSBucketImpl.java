@@ -129,11 +129,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadStream(String filename,
-      ReadStream<Buffer> source, Handler<AsyncResult<String>> resultHandler) {
+  public void uploadStream(String filename, ReadStream<Buffer> source,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadStream(filename, source);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -143,11 +142,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFile(String filename,
-      Handler<AsyncResult<String>> resultHandler) {
+  public void uploadFile(String filename, Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadFile(filename);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -165,12 +162,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadStream(String filename,
-      ReadStream<Buffer> source, GridFSUploadOptions options,
+  public void uploadStream(String filename, ReadStream<Buffer> source, GridFSUploadOptions options,
       Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadStream(filename, source, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -180,11 +175,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFile(String filename,
-      GridFSUploadOptions options, Handler<AsyncResult<String>> resultHandler) {
+  public void uploadFile(String filename, GridFSUploadOptions options,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadFile(filename, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -202,11 +196,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadStream(ClientSession clientSession,
-      String filename, ReadStream<Buffer> source, Handler<AsyncResult<String>> resultHandler) {
+  public void uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadStream(clientSession, filename, source);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -216,11 +209,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFile(ClientSession clientSession,
-      String filename, Handler<AsyncResult<String>> resultHandler) {
+  public void uploadFile(ClientSession clientSession, String filename,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadFile(clientSession, filename);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -240,12 +232,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadStream(ClientSession clientSession,
-      String filename, ReadStream<Buffer> source, GridFSUploadOptions options,
-      Handler<AsyncResult<String>> resultHandler) {
+  public void uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
+      GridFSUploadOptions options, Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadStream(clientSession, filename, source, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -256,11 +246,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket uploadFile(ClientSession clientSession,
-      String filename, GridFSUploadOptions options, Handler<AsyncResult<String>> resultHandler) {
+  public void uploadFile(ClientSession clientSession, String filename, GridFSUploadOptions options,
+      Handler<AsyncResult<String>> resultHandler) {
     Future<String> __future = this.uploadFile(clientSession, filename, options);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -492,11 +481,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket delete(String id,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void delete(String id, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.delete(id);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -510,11 +497,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket delete(Object id,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void delete(Object id, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.delete(id);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -530,11 +515,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket delete(ClientSession clientSession, String id,
+  public void delete(ClientSession clientSession, String id,
       Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.delete(clientSession, id);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -550,11 +534,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket delete(ClientSession clientSession, Object id,
+  public void delete(ClientSession clientSession, Object id,
       Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.delete(clientSession, id);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -569,11 +552,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket rename(String id, String newFilename,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void rename(String id, String newFilename, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.rename(id, newFilename);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -588,11 +569,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket rename(Object id, String newFilename,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void rename(Object id, String newFilename, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.rename(id, newFilename);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -609,11 +588,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket rename(ClientSession clientSession, String id,
-      String newFilename, Handler<AsyncResult<Void>> resultHandler) {
+  public void rename(ClientSession clientSession, String id, String newFilename,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.rename(clientSession, id, newFilename);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -630,11 +608,10 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket rename(ClientSession clientSession, Object id,
-      String newFilename, Handler<AsyncResult<Void>> resultHandler) {
+  public void rename(ClientSession clientSession, Object id, String newFilename,
+      Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.rename(clientSession, id, newFilename);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -646,10 +623,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket drop(Handler<AsyncResult<Void>> resultHandler) {
+  public void drop(Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.drop();
     setHandler(__future, resultHandler);
-    return this;
   }
 
   @Override
@@ -663,11 +639,9 @@ public class GridFSBucketImpl extends GridFSBucketBase {
   }
 
   @Override
-  public io.vertx.mongo.client.gridfs.GridFSBucket drop(ClientSession clientSession,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public void drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.drop(clientSession);
     setHandler(__future, resultHandler);
-    return this;
   }
 
   public MongoClientContext getClientContext() {

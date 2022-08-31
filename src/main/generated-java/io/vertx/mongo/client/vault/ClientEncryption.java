@@ -52,9 +52,8 @@ public interface ClientEncryption {
    *  </p>
    *  @param kmsProvider the KMS provider
    *  @param resultHandler an async result containing the identifier for the created data key
-   *  @return <code>this</code>
    */
-  ClientEncryption createDataKey(String kmsProvider, Handler<AsyncResult<byte[]>> resultHandler);
+  void createDataKey(String kmsProvider, Handler<AsyncResult<byte[]>> resultHandler);
 
   /**
    *  Create a data key with the given KMS provider and options.
@@ -75,9 +74,8 @@ public interface ClientEncryption {
    *  @param kmsProvider    the KMS provider
    *  @param dataKeyOptions the options for data key creation
    *  @param resultHandler an async result containing the identifier for the created data key
-   *  @return <code>this</code>
    */
-  ClientEncryption createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions,
+  void createDataKey(String kmsProvider, DataKeyOptions dataKeyOptions,
       Handler<AsyncResult<byte[]>> resultHandler);
 
   /**
@@ -99,10 +97,8 @@ public interface ClientEncryption {
    *  @param value   the value to encrypt
    *  @param options the options for data encryption
    *  @param resultHandler an async result containing the encrypted value, a BSON binary of subtype 6
-   *  @return <code>this</code>
    */
-  ClientEncryption encrypt(Object value, EncryptOptions options,
-      Handler<AsyncResult<byte[]>> resultHandler);
+  void encrypt(Object value, EncryptOptions options, Handler<AsyncResult<byte[]>> resultHandler);
 
   /**
    *  Decrypt the given value.
@@ -115,9 +111,8 @@ public interface ClientEncryption {
    *  Decrypt the given value.
    *  @param value the value to decrypt, which must be of subtype 6
    *  @param resultHandler an async result containing the decrypted value
-   *  @return <code>this</code>
    */
-  ClientEncryption decrypt(byte[] value, Handler<AsyncResult<Object>> resultHandler);
+  void decrypt(byte[] value, Handler<AsyncResult<Object>> resultHandler);
 
   void close();
 
