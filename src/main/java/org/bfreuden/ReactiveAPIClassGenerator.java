@@ -20,6 +20,7 @@ import org.bson.Document;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
@@ -27,6 +28,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
     private ArrayList<TypeName> superInterfaces;
     private TypeName wrappedType;
     private boolean isMongoClient;
+    private boolean isMongoCollection;
 
     public ReactiveAPIClassGenerator(InspectionContext context, ClassDoc classDoc) {
         super(context, classDoc);
@@ -60,6 +62,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
 
         this.superInterfaces = new ArrayList<TypeName>();
         this.isMongoClient = classDoc.qualifiedTypeName().equals(MongoClient.class.getName());
+        this.isMongoCollection = classDoc.qualifiedTypeName().equals(MongoCollection.class.getName());
         for (ClassDoc inter : classDoc.interfaces()) {
             String superClassName = inter.qualifiedTypeName();
             if (isSupportedSuperClass(superClassName)) {
@@ -266,13 +269,36 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         } else {
             typeBuilder.addField(FieldSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
             typeBuilder.addField(FieldSpec.builder(wrappedType, "wrapped").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
-            typeBuilder.addMethod(MethodSpec.constructorBuilder()
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").build())
-                    .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
-                    .addStatement("this.clientContext = clientContext")
-                    .addStatement("this.wrapped = wrapped")
-                    .build());
+            if (isMongoCollection) {
+                ParameterizedTypeName mapperType = ParameterizedTypeName.get(ClassName.get(Function.class), TypeVariableName.get("TDocument"), TypeVariableName.get("TDocument"));
+                typeBuilder.addField(FieldSpec.builder(mapperType, "inputMapper").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
+                typeBuilder.addField(FieldSpec.builder(mapperType, "outputMapper").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
+                typeBuilder.addMethod(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").build())
+                        .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
+                        .addStatement("this(clientContext, wrapped, null, null)")
+                        .build());
+                typeBuilder.addMethod(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").build())
+                        .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
+                        .addParameter(ParameterSpec.builder(mapperType, "inputMapper").build())
+                        .addParameter(ParameterSpec.builder(mapperType, "outputMapper").build())
+                        .addStatement("this.clientContext = clientContext")
+                        .addStatement("this.wrapped = wrapped")
+                        .addStatement("this.inputMapper = inputMapper")
+                        .addStatement("this.outputMapper = outputMapper")
+                        .build());
+            } else {
+                typeBuilder.addMethod(MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(ParameterSpec.builder(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext").build())
+                        .addParameter(ParameterSpec.builder(wrappedType, "wrapped").build())
+                        .addStatement("this.clientContext = clientContext")
+                        .addStatement("this.wrapped = wrapped")
+                        .build());
+            }
             typeBuilder.addMethod(MethodSpec.methodBuilder("getClientContext")
                     .addModifiers(Modifier.PUBLIC)
                     .returns(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"))
@@ -391,7 +417,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                         ParameterizedTypeName.get(ClassName.get(MongoCollection.class), ClassName.get(JsonObject.class)),
                         ClassName.get(JsonObject.class)
                 );
-                methodBuilder.addStatement("return new $T<>(this.clientContext, __wrapped)", ClassName.bestGuess("io.vertx.mongo.client.impl.MongoCollectionImpl"));
+                methodBuilder.addStatement("return new $T<>(this.clientContext, __wrapped, this.clientContext.getConfig().getInputMapper(), this.clientContext.getConfig().getOutputMapper())", ClassName.bestGuess("io.vertx.mongo.client.impl.MongoCollectionImpl"));
             } else {
                 String returnType = method.returnType.vertxType.toString();
                 String returnKeyword = "return ";
