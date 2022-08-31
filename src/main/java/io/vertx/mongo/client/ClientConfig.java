@@ -7,6 +7,9 @@ import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettingsInitializer;
 
+/**
+ * Client configuration
+ */
 @DataObject(
         generateConverter = true
 )
@@ -36,6 +39,11 @@ public class ClientConfig {
         return result;
     }
 
+    /**
+     *
+     * @param connectionString
+     * @return
+     */
     public static ClientConfig fromConnectionString(String connectionString) {
         ClientConfig result = new ClientConfig();
         result.setConnectionString(connectionString);
