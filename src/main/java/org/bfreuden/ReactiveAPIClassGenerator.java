@@ -333,8 +333,6 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                 String paramName = "__" + param.name;
                 paramNames.add(paramName);
                 methodBuilder.addStatement("$T " + paramName + " = new $T(" + param.name + ")", ClassName.get(GridFSReadStreamPublisher.class), ClassName.get(GridFSReadStreamPublisher.class));
-            } else if (param.type.isPublisher && param.type.isBinaryWriteStream) {
-                methodBuilder.addComment("// TODO implement write stream publisher");
             } else if (mapper != null) {
                 String paramName = "__" + param.name;
                 paramNames.add(paramName);
@@ -344,6 +342,16 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = %s", param.name, param.type.mongoType, null));
             } else {
                 paramNames.add(param.name);
+            }
+            String vertxTypeString = param.type.vertxType.toString();
+            //TODO hack
+            if (vertxTypeString.contains("TDocument") && !vertxTypeString.contains("NewTDocument") && !param.name.equals("clazz")) {
+                if (vertxTypeString.equals("TDocument"))
+                    methodBuilder.addStatement(String.format("%s = mapDoc(%s, inputMapper)", param.name, param.name));
+                else if (!vertxTypeString.contains("WriteModel"))
+                    methodBuilder.addStatement(String.format("%s = mapDocList(%s, inputMapper)", param.name, param.name));
+                else
+                    methodBuilder.addComment("FIXME handle mapping with inputMapper");
             }
         }
 

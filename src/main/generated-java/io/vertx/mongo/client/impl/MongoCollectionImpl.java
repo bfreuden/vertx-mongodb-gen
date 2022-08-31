@@ -605,6 +605,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       List<? extends WriteModel<? extends TDocument>> requests) {
     requireNonNull(requests, "requests is null");
     List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
+    // FIXME handle mapping with inputMapper
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__requests);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -624,6 +625,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(requests, "requests is null");
     requireNonNull(options, "options is null");
     List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
+    // FIXME handle mapping with inputMapper
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__requests, __options);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();
@@ -645,6 +647,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(requests, "requests is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
+    // FIXME handle mapping with inputMapper
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__clientSession, __requests);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -667,6 +670,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
+    // FIXME handle mapping with inputMapper
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__clientSession, __requests, __options);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();
@@ -685,6 +689,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<InsertOneResult> insertOne(TDocument document) {
     requireNonNull(document, "document is null");
+    document = mapDoc(document, inputMapper);
     Publisher<com.mongodb.client.result.InsertOneResult> __publisher = wrapped.insertOne(document);
     Promise<com.mongodb.client.result.InsertOneResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -701,6 +706,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<InsertOneResult> insertOne(TDocument document, InsertOneOptions options) {
     requireNonNull(document, "document is null");
     requireNonNull(options, "options is null");
+    document = mapDoc(document, inputMapper);
     com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.client.result.InsertOneResult> __publisher = wrapped.insertOne(document, __options);
     Promise<com.mongodb.client.result.InsertOneResult> __promise = clientContext.getVertx().promise();
@@ -720,6 +726,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(document, "document is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    document = mapDoc(document, inputMapper);
     Publisher<com.mongodb.client.result.InsertOneResult> __publisher = wrapped.insertOne(__clientSession, document);
     Promise<com.mongodb.client.result.InsertOneResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -740,6 +747,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(document, "document is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    document = mapDoc(document, inputMapper);
     com.mongodb.client.model.InsertOneOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.client.result.InsertOneResult> __publisher = wrapped.insertOne(__clientSession, document, __options);
     Promise<com.mongodb.client.result.InsertOneResult> __promise = clientContext.getVertx().promise();
@@ -757,6 +765,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public Future<InsertManyResult> insertMany(List<? extends TDocument> documents) {
     requireNonNull(documents, "documents is null");
+    documents = mapDocList(documents, inputMapper);
     Publisher<com.mongodb.client.result.InsertManyResult> __publisher = wrapped.insertMany(documents);
     Promise<com.mongodb.client.result.InsertManyResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -775,6 +784,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       InsertManyOptions options) {
     requireNonNull(documents, "documents is null");
     requireNonNull(options, "options is null");
+    documents = mapDocList(documents, inputMapper);
     com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.client.result.InsertManyResult> __publisher = wrapped.insertMany(documents, __options);
     Promise<com.mongodb.client.result.InsertManyResult> __promise = clientContext.getVertx().promise();
@@ -795,6 +805,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(documents, "documents is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    documents = mapDocList(documents, inputMapper);
     Publisher<com.mongodb.client.result.InsertManyResult> __publisher = wrapped.insertMany(__clientSession, documents);
     Promise<com.mongodb.client.result.InsertManyResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -815,6 +826,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(documents, "documents is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    documents = mapDocList(documents, inputMapper);
     com.mongodb.client.model.InsertManyOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.client.result.InsertManyResult> __publisher = wrapped.insertMany(__clientSession, documents, __options);
     Promise<com.mongodb.client.result.InsertManyResult> __promise = clientContext.getVertx().promise();
@@ -986,6 +998,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter is null");
     requireNonNull(replacement, "replacement is null");
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement);
     Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1006,6 +1019,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(replacement, "replacement is null");
     requireNonNull(options, "options is null");
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement, __options);
     Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
@@ -1028,6 +1042,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(replacement, "replacement is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement);
     Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1050,6 +1065,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement, __options);
     Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
@@ -1493,6 +1509,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(filter, "filter is null");
     requireNonNull(replacement, "replacement is null");
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1513,6 +1530,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(replacement, "replacement is null");
     requireNonNull(options, "options is null");
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass(clientContext);
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
@@ -1535,6 +1553,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(replacement, "replacement is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -1557,6 +1576,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     Bson __filter = clientContext.getConversionUtils().toBson(filter);
+    replacement = mapDoc(replacement, inputMapper);
     com.mongodb.client.model.FindOneAndReplaceOptions __options = options.toDriverClass(clientContext);
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
