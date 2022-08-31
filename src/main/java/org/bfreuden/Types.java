@@ -1,7 +1,6 @@
 package org.bfreuden;
 
 import com.mongodb.*;
-import com.mongodb.client.model.Collation;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import io.vertx.core.buffer.Buffer;
@@ -9,10 +8,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.bson.codecs.configuration.CodecRegistry;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Types {
 
@@ -23,18 +19,21 @@ public class Types {
     private static Map<String, TypeName> MAPPING2 = new HashMap<>();
     private static Set<String> IGNORED = new HashSet<>();
     private static Set<String> ACCEPTED = new HashSet<>();
+    private static Set<String> ACCEPTED_JSON_MAPPABLE = new HashSet<>();
 
 
     static {
         ACCEPTED.add(CodecRegistry.class.getName());
         ACCEPTED.add(MongoNamespace.class.getName());
-        ACCEPTED.add(ReadConcern.class.getName());
-        ACCEPTED.add(WriteConcern.class.getName());
-        ACCEPTED.add(ReadPreference.class.getName());
-        ACCEPTED.add(CreateIndexCommitQuorum.class.getName());
-        ACCEPTED.add(MongoCompressor.class.getName());
-        ACCEPTED.add(MongoCredential.class.getName());
-        ACCEPTED.add(ServerAddress.class.getName());
+
+        ACCEPTED_JSON_MAPPABLE.add(ReadConcern.class.getName());
+        ACCEPTED_JSON_MAPPABLE.add(WriteConcern.class.getName());
+        ACCEPTED_JSON_MAPPABLE.add(ReadPreference.class.getName());
+        ACCEPTED_JSON_MAPPABLE.add(CreateIndexCommitQuorum.class.getName());
+        ACCEPTED_JSON_MAPPABLE.add(MongoCompressor.class.getName());
+        ACCEPTED_JSON_MAPPABLE.add(MongoCredential.class.getName());
+        ACCEPTED_JSON_MAPPABLE.add(ServerAddress.class.getName());
+
         IGNORED.add("com.mongodb.internal.async.client.AsyncClientSession");
 
 
@@ -70,6 +69,9 @@ public class Types {
 
     public static boolean isAcceptedAsIs(String qualifiedTypeName) {
         return ACCEPTED.contains(qualifiedTypeName);
+    }
+    public static boolean isAcceptedAsIsButNeedsSerializer(String qualifiedTypeName) {
+        return ACCEPTED_JSON_MAPPABLE.contains(qualifiedTypeName);
     }
 
 

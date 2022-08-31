@@ -27,7 +27,7 @@ public abstract class APIClassGenerator {
     protected final List<MongoMethod> constructors = new ArrayList<>();
     protected LinkedHashMap<String, OptionsAPIClassGenerator.Option> optionsByName = new LinkedHashMap<>();
     protected Set<String> staticImports = new HashSet<>();
-    protected boolean generatePackageInfo = false;
+    protected String generatePackageInfoForPackage = null;
     protected boolean isDataObject;
     protected boolean publisherOption;
 
@@ -45,14 +45,14 @@ public abstract class APIClassGenerator {
             javaFile.addFileComment(Copyright.COPYRIGHT);
             javaFile.build().writeTo(genSourceDir);
         }
-        if (generatePackageInfo) {
-            String targetPackage = getTargetPackage().replace('.', '/');
+        if (generatePackageInfoForPackage != null) {
+            String targetPackage = generatePackageInfoForPackage.replace('.', '/');
             File packageInfo = new File(genSourceDir, targetPackage + "/package-info.java");
             if (!packageInfo.exists()) {
                 packageInfo.getParentFile().mkdirs();
                 FileUtils.writeLines(packageInfo, Lists.newArrayList(
-                        "@ModuleGen(name = \"" + getTargetPackage().replace('.', '-') + "\", groupPackage = \"" + getTargetPackage() + "\")",
-                        "package " + getTargetPackage() + ";",
+                        "@ModuleGen(name = \"" + generatePackageInfoForPackage.replace('.', '-') + "\", groupPackage = \"" + generatePackageInfoForPackage + "\")",
+                        "package " + generatePackageInfoForPackage + ";",
                         "",
                         "import io.vertx.codegen.annotations.ModuleGen;"
                 ));
@@ -91,6 +91,12 @@ public abstract class APIClassGenerator {
             ) {
                 containingType.mapper.setGeneric(true);
             } else if (containingType.mapper instanceof CollectionMapperGenerator) {
+                if (argumentTypes.get(0).serializerType != null) {
+                    containingType.serializerType = argumentTypes.get(0).serializerType;
+                    containingType.serializedType = argumentTypes.get(0).serializedType;
+                    containingType.serializedContainerClassName = (ClassName) containingType.mongoType;
+                    containingType.serializedOptionType = ParameterizedTypeName.get(containingType.serializedContainerClassName, containingType.serializerType);
+                }
                 MapperGenerator itemMapper = argumentTypes.get(0).mapper;
                 if (itemMapper == null)
                     containingType.mapper = null;
@@ -126,6 +132,13 @@ public abstract class APIClassGenerator {
             }
             if (context.excludedApiClasses.contains(qualifiedTypeName))
                 throw new IllegalStateException("@unsupported class@ " + qualifiedTypeName);
+            if (Types.isAcceptedAsIsButNeedsSerializer(qualifiedTypeName)) {
+                ActualType result = ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));
+                result.serializedType = result.mongoType;
+                result.serializerType = ClassName.bestGuess(mapToSerializer(qualifiedTypeName));
+                result.serializedOptionType = result.serializerType;
+                return result;
+            }
             if (Types.isAcceptedAsIs(qualifiedTypeName)) {
                 ActualType result = ActualType.fromTypeName(ClassName.bestGuess(qualifiedTypeName));
                 if (qualifiedTypeName.equals(List.class.getName()) || qualifiedTypeName.equals(Set.class.getName()))
@@ -363,10 +376,6 @@ public abstract class APIClassGenerator {
 
     protected String mapToSerializer(String packageNameOrClassName) {
         String suffix = "Serializer";
-        if (packageNameOrClassName.startsWith("java.util.List<")) {
-            suffix = "List" + suffix;
-            packageNameOrClassName = packageNameOrClassName.substring("java.util.List<".length(),  packageNameOrClassName.length() - 1);
-        }
         return mapToImplSuffix(mapPackageName(packageNameOrClassName), suffix);
     }
 
@@ -400,6 +409,10 @@ public abstract class APIClassGenerator {
         public boolean isNullable;
         public boolean isBinaryReadStream;
         public boolean isBinaryWriteStream;
+        public TypeName serializerType;
+        public ClassName serializedContainerClassName;
+        public TypeName serializedOptionType;
+        public TypeName serializedType;
         boolean toMongoEnabledType = false;
         public ActualType publishedType;
         TypeName mongoType;

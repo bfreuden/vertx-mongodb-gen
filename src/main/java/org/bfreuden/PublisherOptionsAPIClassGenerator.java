@@ -70,7 +70,7 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
             context.publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
     }
 
-    protected MethodSpec.Builder toMongoBuilder() {
+    protected MethodSpec.Builder toDriverClassBuilder() {
         boolean hasParam = Arrays.stream(classDoc.typeParameters()).count() != 0;
         ClassName publisherType = ClassName.bestGuess(classDoc.qualifiedTypeName());
         TypeName publisherTypeWithParam = ParameterizedTypeName.get(publisherType, TypeVariableName.get("TDocument"));
@@ -89,7 +89,7 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
         return toMongo;
     }
 
-    protected MethodSpec toMongo(MethodSpec.Builder toMongoBuilder) {
+    protected MethodSpec finalizeToDriverClassMethod(MethodSpec.Builder toMongoBuilder) {
         return toMongoBuilder.build();
     }
 

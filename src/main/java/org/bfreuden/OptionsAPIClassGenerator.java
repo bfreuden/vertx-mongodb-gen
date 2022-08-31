@@ -18,7 +18,6 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
     public OptionsAPIClassGenerator(InspectionContext context, ClassDoc classDoc, boolean publisherOption, boolean clientSettingsOption) {
         super(context, classDoc);
         this.clientSettingsOption = clientSettingsOption;
-        this.generatePackageInfo = true;
         this.publisherOption = publisherOption;
         this.isDataObject = classDoc.typeParameters().length == 0 && !resultBean
                 // FIXME HACK
@@ -168,10 +167,6 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
         option.mongoSetterName = mongoSetterName;
         option.setterParamName = setterParamName;
         option.type = getActualType(methodDoc, optionName, optionType, TypeLocation.PARAMETER);
-        String mongoType = option.type.mongoType.toString();
-        //FIXME hack to
-        option.isCodeGenCompatible = isDataObject && !(mongoType.startsWith("com.mongodb") && Types.isAcceptedAsIs(mongoType) ||
-                mongoType.startsWith("java.util.List<") && mongoType.substring("java.util.List<".length(),mongoType.length() - 1).startsWith("com.mongodb") && Types.isAcceptedAsIs(mongoType.substring("java.util.List<".length(),mongoType.length() - 1)));
         if (option.type.vertxType.isPrimitive())
             option.type.vertxType = option.type.vertxType.box();
         if (mongoCtorParamName != null)
@@ -203,29 +198,48 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
             return Collections.emptyList();
         if (clientSettingsOption)
             context.actualClientSettingsBuilders.add(classDoc);
-        TypeSpec.Builder type = TypeSpec.classBuilder(getTargetClassName())
+        boolean hasSerializer = isDataObject && optionsByName.values().stream().anyMatch(option -> option.type.serializerType != null);
+        String targetClass = getTargetQualifiedClassName();
+        if (hasSerializer)
+            targetClass += "Serializer";
+        String targetClassName = targetClass.substring(targetClass.lastIndexOf('.') + 1);
+        String targetPackageName = targetClass.substring(0, targetClass.lastIndexOf('.'));
+        if (hasSerializer)
+            targetPackageName = targetPackageName + ".serializers";
+        ArrayList<JavaFile.Builder> result = new ArrayList<>();
+        result.add(getOptionsClassBuilder(hasSerializer, hasSerializer, targetClassName, targetPackageName));
+//        if (hasSerializer)
+//            result.add(getOptionsClassBuilder(true, false, getTargetClassName(), getTargetPackage()));
+        return result;
+    }
+
+    private JavaFile.Builder getOptionsClassBuilder(boolean hasSerializer, boolean isSerializer, String targetClassName, String targetPackageName) {
+        currentlyGeneratedTypeName = ClassName.bestGuess(targetPackageName + "." + targetClassName);
+        currentlyGeneratedPackageName = targetPackageName;
+        TypeSpec.Builder type = TypeSpec.classBuilder(targetClassName)
                 .addModifiers(Modifier.PUBLIC);
-        String rawCommentText = classDoc.getRawCommentText();
-        if (rawCommentText != null) {
-            String[] split = rawCommentText.split("\n");
-            StringJoiner joiner = new StringJoiner("\n");
-            boolean first = true;
-            for (String line : split) {
-                if (first) {
-                    line = line.replaceAll("([Pp]ublisher|[Ii]terable)( interface)?", "Options");
-                    first = false;
+        if (!hasSerializer) {
+            String rawCommentText = classDoc.getRawCommentText();
+            if (rawCommentText != null) {
+                String[] split = rawCommentText.split("\n");
+                StringJoiner joiner = new StringJoiner("\n");
+                boolean first = true;
+                for (String line : split) {
+                    if (first) {
+                        line = line.replaceAll("([Pp]ublisher|[Ii]terable)( interface)?", "Options");
+                        first = false;
+                    }
+                    if (!line.contains("@param")) {
+                        joiner.add(line);
+                    }
                 }
-                if (!line.contains("@param")) {
-                    joiner.add(line);
-                }
+                type.addJavadoc(joiner.toString().replace("$", "$$"));
             }
-            type.addJavadoc(joiner.toString().replace("$", "$$"));
         }
-//        boolean withImpl = optionsByName.values().stream().anyMatch(option -> !option.isCodeGenCompatible);
-        inflateOptionType(type);
-        JavaFile.Builder builder = JavaFile.builder(getTargetPackage(), type.build());
+        inflateOptionType(type, hasSerializer, isSerializer);
+        JavaFile.Builder builder = JavaFile.builder(targetPackageName, type.build());
         addStaticImports(builder);
-        return Collections.singletonList(builder);
+        return builder;
     }
 
 }

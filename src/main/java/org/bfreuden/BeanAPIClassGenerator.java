@@ -17,7 +17,6 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
         super(context, classDoc);
         this.isResultOnlyOptions = true; // don't write toMongoMethod or setters
         this.resultBean = resultBean;
-        this.generatePackageInfo = !resultBean && classDoc.typeParameters().length == 0;
     }
 
     @Override
@@ -89,7 +88,7 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
                 typeBuilder.superclass(ParameterizedTypeName.get((ClassName) superClass, typeVariables.toArray(new TypeName[0])));
         }
         // write fields and getters
-        inflateOptionType(typeBuilder);
+        inflateOptionType(typeBuilder, false, false);
 
         if (constructors.size() > 1)
             typeBuilder.addField(FieldSpec.builder(TypeName.INT, "__ctorIndex").build());
