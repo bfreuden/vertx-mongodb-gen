@@ -155,6 +155,7 @@ public class BulkWriteResult {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */

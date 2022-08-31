@@ -48,7 +48,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
 
         this.classJavadoc = classDoc.getRawCommentText();
         if (this.classJavadoc != null) {
-            this.classJavadoc = classJavadoc.replace("$", "$$");
+            this.classJavadoc = sanitizeJavadoc(this.classJavadoc);
             this.classJavadoc = Arrays.stream(this.classJavadoc.split("[\\n\\r]+"))
                     .filter(s -> !s.trim().isEmpty() && !s.contains("TDocument"))
                     .collect(Collectors.joining("\n"));

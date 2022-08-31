@@ -272,6 +272,7 @@ public class ChangeStreamDocument<TDocument> {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */

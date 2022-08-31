@@ -56,6 +56,7 @@ public class DeleteResult {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */

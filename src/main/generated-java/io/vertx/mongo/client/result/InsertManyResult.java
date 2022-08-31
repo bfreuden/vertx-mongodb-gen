@@ -63,6 +63,7 @@ public class InsertManyResult {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */

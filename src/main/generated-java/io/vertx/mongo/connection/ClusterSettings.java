@@ -61,7 +61,7 @@ public class ClusterSettings {
    *  @param srvHost the SRV host name
    *  @return this
    *  @see com.mongodb.MongoClientSettings.Builder#applyConnectionString(ConnectionString)
-   *  @see ClusterSettings.Builder#applyConnectionString(ConnectionString)
+   *  @see com.mongodb.connection.ClusterSettings.Builder#applyConnectionString(ConnectionString)
    */
   public ClusterSettings setSrvHost(String srvHost) {
     this.serializer.setSrvHost(srvHost);

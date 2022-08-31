@@ -25,7 +25,7 @@ import java.lang.Boolean;
  *
  *  @mongodb.server.release 3.6
  *  @since 3.6
- *  @see ClientSession
+ *  @see io.vertx.mongo.client.ClientSession
  *  @mongodb.driver.dochub core/causal-consistency Causal Consistency
  */
 @DataObject(

@@ -90,6 +90,7 @@ public class UpdateResult {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */

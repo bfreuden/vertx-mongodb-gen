@@ -60,6 +60,7 @@ public class InsertOneResult {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */

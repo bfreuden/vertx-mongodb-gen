@@ -56,7 +56,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link ClusterSettings.Builder} block and then sets the clusterSettings.
+   *  Applies the {@link io.vertx.mongo.connection.ClusterSettings} block and then sets the clusterSettings.
    *
    *  @param block the block to apply to the ClusterSettings.
    *  @return this
@@ -77,7 +77,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link SocketSettings.Builder} block and then sets the socketSettings.
+   *  Applies the {@link SocketSettings} block and then sets the socketSettings.
    *
    *  @param block the block to apply to the SocketSettings.
    *  @return this
@@ -100,7 +100,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link ConnectionPoolSettings.Builder} block and then sets the connectionPoolSettings.
+   *  Applies the {@link ConnectionPoolSettings} block and then sets the connectionPoolSettings.
    *
    *  @param block the block to apply to the ConnectionPoolSettings.
    *  @return this
@@ -124,7 +124,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link ServerSettings.Builder} block and then sets the serverSettings.
+   *  Applies the {@link ServerSettings} block and then sets the serverSettings.
    *
    *  @param block the block to apply to the ServerSettings.
    *  @return this
@@ -147,7 +147,7 @@ public class MongoClientSettings {
   }
 
   /**
-   *  Applies the {@link SslSettings.Builder} block and then sets the sslSettings.
+   *  Applies the {@link SslSettings} block and then sets the sslSettings.
    *
    *  @param block the block to apply to the SslSettings.
    *  @return this
@@ -222,7 +222,7 @@ public class MongoClientSettings {
    *
    *  @param retryWrites sets if writes should be retried if they fail due to a network error.
    *  @return this
-   *  @see #getRetryWrites()
+   *  @see #isRetryWrites()
    *  @mongodb.server.release 3.6
    */
   public MongoClientSettings setRetryWrites(Boolean retryWrites) {
@@ -247,7 +247,7 @@ public class MongoClientSettings {
    *
    *  @param retryReads sets if reads should be retried if they fail due to a network error.
    *  @return this
-   *  @see #getRetryReads()
+   *  @see #isRetryReads()
    *  @since 3.11
    *  @mongodb.server.release 3.6
    */

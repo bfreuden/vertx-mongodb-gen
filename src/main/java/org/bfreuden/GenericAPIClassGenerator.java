@@ -147,7 +147,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("fromDriverClass")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 
-        methodBuilder.addJavadoc("@return mongo object\n@hidden");
+        methodBuilder.addJavadoc("@param from from\n@return mongo object\n@hidden");
         TypeName returnType;
         for (TypeVariableName typeVariableName: typeVariables)
             methodBuilder.addTypeVariable(typeVariableName);
@@ -567,15 +567,15 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                         line = line.replace("in the given time unit", "(in milliseconds)");
                     joiner.add(line);
                 }
-                    getterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
+                    getterBuilder.addJavadoc(sanitizeJavadoc(joiner.toString()));
             } else {
-                    getterBuilder.addJavadoc(option.mongoGetterJavadoc.replace("$", "$$"));
+                    getterBuilder.addJavadoc(sanitizeJavadoc(option.mongoGetterJavadoc));
             }
         }
         return getterBuilder;
     }
 
-    private String optionSetterName(Option option, boolean internalName) {
+    protected String optionSetterName(Option option, boolean internalName) {
         String prefix = internalName ? "__" : "";
         return prefix + "set" + option.name.substring(0, 1).toUpperCase() + option.name.substring(1);
     }
@@ -601,9 +601,9 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                         joiner.add(line);
                     }
                 }
-                setterBuilder.addJavadoc(joiner.toString().replace("$", "$$"));
+                setterBuilder.addJavadoc(sanitizeJavadoc(joiner.toString()));
             } else {
-                setterBuilder.addJavadoc(option.mongoJavadoc.replace("$", "$$"));
+                setterBuilder.addJavadoc(sanitizeJavadoc(option.mongoJavadoc));
             }
         }
         if (option.deprecated)

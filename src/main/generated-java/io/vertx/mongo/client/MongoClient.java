@@ -284,12 +284,12 @@ public interface MongoClient extends Closeable {
    *  <p>
    *  This method will not block, meaning that it may return a {@link ClusterDescription} whose {@code clusterType} is unknown
    *  and whose {@link com.mongodb.connection.ServerDescription}s are all in the connecting state.  If the application requires
-   *  notifications after the driver has connected to a member of the cluster, it should register a {@link ClusterListener} via
-   *  the {@link ClusterSettings} in {@link com.mongodb.MongoClientSettings}.
+   *  notifications after the driver has connected to a member of the cluster, it should register a {@link com.mongodb.event.ClusterListener} via
+   *  the {@link io.vertx.mongo.connection.ClusterSettings} in {@link com.mongodb.MongoClientSettings}.
    *  </p>
    *
    *  @return the current cluster description
-   *  @see ClusterSettings.Builder#addClusterListener(ClusterListener)
+   *  @see com.mongodb.connection.ClusterSettings.Builder#addClusterListener(ClusterListener)
    *  @see com.mongodb.MongoClientSettings.Builder#applyToClusterSettings(com.mongodb.Block)
    *  @since 4.1
    */

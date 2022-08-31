@@ -220,6 +220,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 .addModifiers(Modifier.PUBLIC);
         if (!hasSerializer) {
             String rawCommentText = classDoc.getRawCommentText();
+            rawCommentText = sanitizeJavadoc(rawCommentText);
             if (rawCommentText != null) {
                 String[] split = rawCommentText.split("\n");
                 StringJoiner joiner = new StringJoiner("\n");

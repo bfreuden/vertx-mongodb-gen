@@ -1,6 +1,9 @@
 package org.bfreuden;
 
 import com.google.common.collect.Lists;
+import com.mongodb.connection.ClusterSettings;
+import com.mongodb.event.ClusterListener;
+import com.mongodb.reactivestreams.client.ClientSession;
 import com.squareup.javapoet.*;
 import com.sun.javadoc.*;
 import io.vertx.core.Future;
@@ -8,6 +11,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.io.FileUtils;
 import org.bfreuden.mappers.*;
+import org.bson.BsonValue;
 import org.reactivestreams.Publisher;
 
 import java.io.File;
@@ -399,6 +403,26 @@ public abstract class APIClassGenerator {
         }
     }
 
+    private String sanitizeJavadocLine(String line) {
+        // TODO hack
+        line = line
+                .replaceAll("\\{@link ([A-Za-z]+).Builder}", "{@link $1}")
+                .replace("{@link ObjectId}", String.format("{@link %s}", org.bson.types.ObjectId.class.getName()))
+                .replace("{@link BsonValue}", String.format("{@link %s}", BsonValue.class.getName()))
+                .replace("{@link ClusterSettings}", String.format("{@link %s}", mapPackageName(ClusterSettings.class.getName())))
+                .replace("@see ClientSession", String.format("@see %s", mapPackageName(ClientSession.class.getName())))
+                .replace("{@link ClusterListener}", String.format("{@link %s}", ClusterListener.class.getName()))
+                .replace("@see ClusterSettings.", String.format("@see %s.", ClusterSettings.class.getName()))
+                .replace("#getRetryWrites", "#isRetryWrites")
+                .replace("#getRetryReads", "#isRetryReads")
+                .replace("$", "$$");
+        return line;
+    }
+
+    protected String sanitizeJavadoc(String javadoc) {
+        return this.sanitizeJavadocLine(javadoc);
+    }
+
     enum TypeLocation {
         PARAMETER,
         RETURN
@@ -472,7 +496,7 @@ public abstract class APIClassGenerator {
 
         void computeJavadocs() {
             if (mongoJavadoc != null) {
-                mongoJavadoc = mongoJavadoc.replace("$", "$$");
+                mongoJavadoc = sanitizeJavadoc(mongoJavadoc);
                 mongoJavadoc = mongoJavadoc.replace("the Publisher providing the file data", "the stream providing the file data");
                 this.vertxResultOrFutureJavadoc = this.mongoJavadoc;
                 if (returnType != null && returnType.isPublisher) {

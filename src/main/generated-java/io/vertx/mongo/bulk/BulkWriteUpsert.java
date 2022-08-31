@@ -58,6 +58,7 @@ public class BulkWriteUpsert {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */

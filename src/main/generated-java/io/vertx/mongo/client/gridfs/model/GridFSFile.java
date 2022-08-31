@@ -57,7 +57,7 @@ public class GridFSFile {
   }
 
   /**
-   *  The {@link ObjectId} for this file.
+   *  The {@link org.bson.types.ObjectId} for this file.
    *
    *  Throws a MongoGridFSException if the file id is not an ObjectId.
    *
@@ -71,7 +71,7 @@ public class GridFSFile {
   }
 
   /**
-   *  The {@link BsonValue} id for this file.
+   *  The {@link org.bson.BsonValue} id for this file.
    *
    *  @return the id for this file
    */
@@ -143,6 +143,7 @@ public class GridFSFile {
   }
 
   /**
+   * @param from from
    * @return mongo object
    * @hidden
    */
