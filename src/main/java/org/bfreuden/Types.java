@@ -25,6 +25,7 @@ public class Types {
     static {
         ACCEPTED.add(CodecRegistry.class.getName());
         ACCEPTED.add(MongoNamespace.class.getName());
+        ACCEPTED.add(TransactionOptions.class.getName());
 
         ACCEPTED_JSON_MAPPABLE.add(ReadConcern.class.getName());
         ACCEPTED_JSON_MAPPABLE.add(WriteConcern.class.getName());

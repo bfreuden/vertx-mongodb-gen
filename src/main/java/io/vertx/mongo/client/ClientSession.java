@@ -15,10 +15,10 @@
 //
 package io.vertx.mongo.client;
 
+import com.mongodb.TransactionOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.mongo.TransactionOptions;
 import java.lang.Void;
 
 /**
@@ -46,11 +46,11 @@ public interface ClientSession {
   boolean notifyMessageSent();
 
   /**
-   * Gets the transaction options.  Only call this method of the session has an active transaction
+   *  Gets the transaction options.  Only call this method of the session has an active transaction
    *
-   * @return the transaction options
+   *  @return the transaction options
    */
-  com.mongodb.TransactionOptions getTransactionOptions();
+  TransactionOptions getTransactionOptions();
 
   /**
    *  Start a transaction in the context of this session with default transaction options. A transaction can not be started if there is

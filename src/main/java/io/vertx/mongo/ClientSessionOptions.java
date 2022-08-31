@@ -15,6 +15,7 @@
 //
 package io.vertx.mongo;
 
+import com.mongodb.TransactionOptions;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import java.lang.Boolean;
@@ -121,7 +122,7 @@ public class ClientSessionOptions {
       builder.causallyConsistent(this.causallyConsistent);
     }
     if (this.defaultTransactionOptions != null) {
-      builder.defaultTransactionOptions(this.defaultTransactionOptions.toDriverClass());
+      builder.defaultTransactionOptions(this.defaultTransactionOptions);
     }
   }
 }

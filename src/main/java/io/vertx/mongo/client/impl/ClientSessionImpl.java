@@ -18,12 +18,12 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.TransactionOptions;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.mongo.TransactionOptions;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
 import java.lang.Override;
@@ -51,7 +51,7 @@ public class ClientSessionImpl extends ClientSessionBase {
   }
 
   @Override
-  public com.mongodb.TransactionOptions getTransactionOptions() {
+  public TransactionOptions getTransactionOptions() {
     return wrapped.getTransactionOptions();
   }
 
@@ -63,8 +63,7 @@ public class ClientSessionImpl extends ClientSessionBase {
   @Override
   public void startTransaction(TransactionOptions transactionOptions) {
     requireNonNull(transactionOptions, "transactionOptions is null");
-    com.mongodb.TransactionOptions __transactionOptions = transactionOptions.toDriverClass();
-    wrapped.startTransaction(__transactionOptions);
+    wrapped.startTransaction(transactionOptions);
   }
 
   @Override
