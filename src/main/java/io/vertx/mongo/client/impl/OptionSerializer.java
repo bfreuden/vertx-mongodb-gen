@@ -1,8 +1,6 @@
 package io.vertx.mongo.client.impl;
 
-import com.mongodb.ServerAddress;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ServerAddressSerializer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +33,8 @@ public abstract class OptionSerializer<T> {
     public abstract JsonObject toJson();
 
     public static <V, S extends OptionSerializer<V>> List<S> toSerializerList(List<V> list, Class<S> serializerClass, Class<V> objectClass) {
+        if (list == null)
+            return null;
         ArrayList<S> result = new ArrayList<>(list.size());
         for (V item : list) {
             try {
@@ -49,6 +49,8 @@ public abstract class OptionSerializer<T> {
     }
 
     public static  <V, S extends OptionSerializer<V>> List<V> fromSerializerList(List<S> list) {
+        if (list == null)
+            return null;
         ArrayList<V> result = new ArrayList<>(list.size());
         for (S serializer : list) {
             result.add(serializer.value);

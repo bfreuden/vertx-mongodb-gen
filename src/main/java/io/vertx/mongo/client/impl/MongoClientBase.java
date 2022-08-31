@@ -10,7 +10,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.core.shareddata.Shareable;
 import io.vertx.mongo.AutoEncryptionSettings;
-import io.vertx.mongo.MongoClientSettingsConverter;
 import io.vertx.mongo.MongoClientSettingsInitializer;
 import io.vertx.mongo.client.ClientConfig;
 import io.vertx.mongo.client.MongoClient;

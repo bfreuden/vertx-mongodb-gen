@@ -69,7 +69,7 @@ public class CreateIndexOptionsSerializer {
   }
 
   public CreateIndexCommitQuorumSerializer getCommitQuorum() {
-    return new CreateIndexCommitQuorumSerializer(this.commitQuorum);
+    return this.commitQuorum == null ? null : new CreateIndexCommitQuorumSerializer(this.commitQuorum);
   }
 
   /**

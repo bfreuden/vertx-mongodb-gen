@@ -21,112 +21,30 @@ import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.connection.ClusterSettings;
 import io.vertx.mongo.connection.ConnectionPoolSettings;
 import io.vertx.mongo.connection.ServerSettings;
 import io.vertx.mongo.connection.SocketSettings;
 import io.vertx.mongo.connection.SslSettings;
-import io.vertx.mongo.impl.MongoCompressorListSerializer;
-import io.vertx.mongo.impl.MongoCredentialSerializer;
-import io.vertx.mongo.impl.ReadConcernSerializer;
-import io.vertx.mongo.impl.ReadPreferenceSerializer;
-import io.vertx.mongo.impl.WriteConcernSerializer;
+import io.vertx.mongo.serializers.MongoClientSettingsSerializer;
 import java.lang.Boolean;
 import java.lang.String;
 import java.util.List;
 
-/**
- *  Various settings to control the behavior of a {@code MongoClient}.
- *
- *  @since 3.7
- */
-@DataObject(
-    generateConverter = true
-)
+@DataObject
 public class MongoClientSettings {
-  /**
-   * the block to apply to the ClusterSettings.
-   */
-  private ClusterSettings clusterSettings;
-
-  /**
-   * the block to apply to the SocketSettings.
-   */
-  private SocketSettings socketSettings;
-
-  /**
-   * the block to apply to the ConnectionPoolSettings.
-   */
-  private ConnectionPoolSettings connectionPoolSettings;
-
-  /**
-   * the block to apply to the ServerSettings.
-   */
-  private ServerSettings serverSettings;
-
-  /**
-   * the block to apply to the SslSettings.
-   */
-  private SslSettings sslSettings;
-
-  /**
-   * read preference
-   */
-  private ReadPreferenceSerializer readPreference;
-
-  /**
-   * the write concern
-   */
-  private WriteConcernSerializer writeConcern;
-
-  /**
-   * sets if writes should be retried if they fail due to a network error.
-   */
-  private Boolean retryWrites;
-
-  /**
-   * sets if reads should be retried if they fail due to a network error.
-   */
-  private Boolean retryReads;
-
-  /**
-   * the read concern
-   */
-  private ReadConcernSerializer readConcern;
-
-  /**
-   * the credential
-   */
-  private MongoCredentialSerializer credential;
-
-  /**
-   * the logical name of the application using this MongoClient.  It may be null.
-   */
-  private String applicationName;
-
-  /**
-   * the list of compressors to request
-   */
-  private MongoCompressorListSerializer compressorList;
-
-  /**
-   * the auto-encryption settings
-   */
-  private AutoEncryptionSettings autoEncryptionSettings;
+  private MongoClientSettingsSerializer serializer = new MongoClientSettingsSerializer();
 
   public MongoClientSettings() {
   }
 
   public MongoClientSettings(JsonObject json) {
-    MongoClientSettingsConverter.fromJson(json, this);
+    serializer = new MongoClientSettingsSerializer(json);
   }
 
   public JsonObject toJson() {
-    JsonObject result = new JsonObject();
-    MongoClientSettingsConverter.toJson(this, result);
-    return result;
+    return serializer.toJson();
   }
 
   /**
@@ -134,9 +52,7 @@ public class MongoClientSettings {
    * @hidden
    */
   public com.mongodb.MongoClientSettings toDriverClass() {
-    com.mongodb.MongoClientSettings.Builder builder = com.mongodb.MongoClientSettings.builder();
-    initializeDriverBuilderClass(builder);
-    return builder.build();
+    return this.serializer.toDriverClass();
   }
 
   /**
@@ -147,7 +63,7 @@ public class MongoClientSettings {
    *  @see MongoClientSettings#getClusterSettings()
    */
   public MongoClientSettings setClusterSettings(ClusterSettings block) {
-    this.clusterSettings = block;
+    this.serializer.setClusterSettings(block);
     return this;
   }
 
@@ -157,7 +73,7 @@ public class MongoClientSettings {
    *  @return the cluster settings
    */
   public ClusterSettings getClusterSettings() {
-    return clusterSettings;
+    return this.serializer.getClusterSettings();
   }
 
   /**
@@ -168,7 +84,7 @@ public class MongoClientSettings {
    *  @see MongoClientSettings#getSocketSettings()
    */
   public MongoClientSettings setSocketSettings(SocketSettings block) {
-    this.socketSettings = block;
+    this.serializer.setSocketSettings(block);
     return this;
   }
 
@@ -180,7 +96,7 @@ public class MongoClientSettings {
    *  @see SocketSettings
    */
   public SocketSettings getSocketSettings() {
-    return socketSettings;
+    return this.serializer.getSocketSettings();
   }
 
   /**
@@ -191,7 +107,7 @@ public class MongoClientSettings {
    *  @see MongoClientSettings#getConnectionPoolSettings()
    */
   public MongoClientSettings setConnectionPoolSettings(ConnectionPoolSettings block) {
-    this.connectionPoolSettings = block;
+    this.serializer.setConnectionPoolSettings(block);
     return this;
   }
 
@@ -204,7 +120,7 @@ public class MongoClientSettings {
    *  @see ConnectionPoolSettings
    */
   public ConnectionPoolSettings getConnectionPoolSettings() {
-    return connectionPoolSettings;
+    return this.serializer.getConnectionPoolSettings();
   }
 
   /**
@@ -215,7 +131,7 @@ public class MongoClientSettings {
    *  @see MongoClientSettings#getServerSettings()
    */
   public MongoClientSettings setServerSettings(ServerSettings block) {
-    this.serverSettings = block;
+    this.serializer.setServerSettings(block);
     return this;
   }
 
@@ -227,7 +143,7 @@ public class MongoClientSettings {
    *  @see ServerSettings
    */
   public ServerSettings getServerSettings() {
-    return serverSettings;
+    return this.serializer.getServerSettings();
   }
 
   /**
@@ -238,7 +154,7 @@ public class MongoClientSettings {
    *  @see MongoClientSettings#getSslSettings()
    */
   public MongoClientSettings setSslSettings(SslSettings block) {
-    this.sslSettings = block;
+    this.serializer.setSslSettings(block);
     return this;
   }
 
@@ -248,7 +164,7 @@ public class MongoClientSettings {
    *  @return the SSL settings
    */
   public SslSettings getSslSettings() {
-    return sslSettings;
+    return this.serializer.getSslSettings();
   }
 
   /**
@@ -258,29 +174,8 @@ public class MongoClientSettings {
    *  @return this
    *  @see MongoClientSettings#getReadPreference()
    */
-  @GenIgnore
   public MongoClientSettings setReadPreference(ReadPreference readPreference) {
-    if (readPreference == null) {
-      this.readPreference = null;
-    } else if (this.readPreference == null) {
-      this.readPreference = new ReadPreferenceSerializer(readPreference);
-    } else {
-      this.readPreference.setValue(readPreference);
-    }
-    return this;
-  }
-
-  /**
-   *  Sets the read preference.
-   *
-   *  @param readPreference read preference
-   *  @return this
-   *  @see MongoClientSettings#getReadPreference()
-   *
-   * @hidden
-   */
-  public MongoClientSettings setReadPreference(ReadPreferenceSerializer readPreference) {
-    this.readPreference = readPreference;
+    this.serializer.__setReadPreference(readPreference);
     return this;
   }
 
@@ -292,27 +187,8 @@ public class MongoClientSettings {
    *  @return the read preference
    *  @see ReadPreference#primary()
    */
-  @GenIgnore
-  public ReadPreference getMongoReadPreference() {
-    if (this.readPreference == null) {
-      return null;
-    } else {
-      return readPreference.getValue();
-    }
-  }
-
-  /**
-   *  The read preference to use for queries, map-reduce, aggregation, and count.
-   *
-   *  <p>Default is {@code ReadPreference.primary()}.</p>
-   *
-   *  @return the read preference
-   *  @see ReadPreference#primary()
-   *
-   * @hidden
-   */
-  public ReadPreferenceSerializer getReadPreference() {
-    return readPreference;
+  public ReadPreference getReadPreference() {
+    return this.serializer.__getReadPreference();
   }
 
   /**
@@ -322,29 +198,8 @@ public class MongoClientSettings {
    *  @return this
    *  @see MongoClientSettings#getWriteConcern()
    */
-  @GenIgnore
   public MongoClientSettings setWriteConcern(WriteConcern writeConcern) {
-    if (writeConcern == null) {
-      this.writeConcern = null;
-    } else if (this.writeConcern == null) {
-      this.writeConcern = new WriteConcernSerializer(writeConcern);
-    } else {
-      this.writeConcern.setValue(writeConcern);
-    }
-    return this;
-  }
-
-  /**
-   *  Sets the write concern.
-   *
-   *  @param writeConcern the write concern
-   *  @return this
-   *  @see MongoClientSettings#getWriteConcern()
-   *
-   * @hidden
-   */
-  public MongoClientSettings setWriteConcern(WriteConcernSerializer writeConcern) {
-    this.writeConcern = writeConcern;
+    this.serializer.__setWriteConcern(writeConcern);
     return this;
   }
 
@@ -356,27 +211,8 @@ public class MongoClientSettings {
    *  @return the write concern
    *  @see WriteConcern#ACKNOWLEDGED
    */
-  @GenIgnore
-  public WriteConcern getMongoWriteConcern() {
-    if (this.writeConcern == null) {
-      return null;
-    } else {
-      return writeConcern.getValue();
-    }
-  }
-
-  /**
-   *  The write concern to use.
-   *
-   *  <p>Default is {@code WriteConcern.ACKNOWLEDGED}.</p>
-   *
-   *  @return the write concern
-   *  @see WriteConcern#ACKNOWLEDGED
-   *
-   * @hidden
-   */
-  public WriteConcernSerializer getWriteConcern() {
-    return writeConcern;
+  public WriteConcern getWriteConcern() {
+    return this.serializer.__getWriteConcern();
   }
 
   /**
@@ -390,7 +226,7 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.6
    */
   public MongoClientSettings setRetryWrites(Boolean retryWrites) {
-    this.retryWrites = retryWrites;
+    this.serializer.setRetryWrites(retryWrites);
     return this;
   }
 
@@ -403,7 +239,7 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.6
    */
   public Boolean isRetryWrites() {
-    return retryWrites;
+    return this.serializer.isRetryWrites();
   }
 
   /**
@@ -416,7 +252,7 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.6
    */
   public MongoClientSettings setRetryReads(Boolean retryReads) {
-    this.retryReads = retryReads;
+    this.serializer.setRetryReads(retryReads);
     return this;
   }
 
@@ -428,7 +264,7 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.6
    */
   public Boolean isRetryReads() {
-    return retryReads;
+    return this.serializer.isRetryReads();
   }
 
   /**
@@ -439,30 +275,8 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.2
    *  @mongodb.driver.manual reference/readConcern/ Read Concern
    */
-  @GenIgnore
   public MongoClientSettings setReadConcern(ReadConcern readConcern) {
-    if (readConcern == null) {
-      this.readConcern = null;
-    } else if (this.readConcern == null) {
-      this.readConcern = new ReadConcernSerializer(readConcern);
-    } else {
-      this.readConcern.setValue(readConcern);
-    }
-    return this;
-  }
-
-  /**
-   *  Sets the read concern.
-   *
-   *  @param readConcern the read concern
-   *  @return this
-   *  @mongodb.server.release 3.2
-   *  @mongodb.driver.manual reference/readConcern/ Read Concern
-   *
-   * @hidden
-   */
-  public MongoClientSettings setReadConcern(ReadConcernSerializer readConcern) {
-    this.readConcern = readConcern;
+    this.serializer.__setReadConcern(readConcern);
     return this;
   }
 
@@ -473,26 +287,8 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.2
    *  @mongodb.driver.manual reference/readConcern/ Read Concern
    */
-  @GenIgnore
-  public ReadConcern getMongoReadConcern() {
-    if (this.readConcern == null) {
-      return null;
-    } else {
-      return readConcern.getValue();
-    }
-  }
-
-  /**
-   *  The read concern to use.
-   *
-   *  @return the read concern
-   *  @mongodb.server.release 3.2
-   *  @mongodb.driver.manual reference/readConcern/ Read Concern
-   *
-   * @hidden
-   */
-  public ReadConcernSerializer getReadConcern() {
-    return readConcern;
+  public ReadConcern getReadConcern() {
+    return this.serializer.__getReadConcern();
   }
 
   /**
@@ -501,28 +297,8 @@ public class MongoClientSettings {
    *  @param credential the credential
    *  @return this
    */
-  @GenIgnore
   public MongoClientSettings setCredential(MongoCredential credential) {
-    if (credential == null) {
-      this.credential = null;
-    } else if (this.credential == null) {
-      this.credential = new MongoCredentialSerializer(credential);
-    } else {
-      this.credential.setValue(credential);
-    }
-    return this;
-  }
-
-  /**
-   *  Sets the credential.
-   *
-   *  @param credential the credential
-   *  @return this
-   *
-   * @hidden
-   */
-  public MongoClientSettings setCredential(MongoCredentialSerializer credential) {
-    this.credential = credential;
+    this.serializer.__setCredential(credential);
     return this;
   }
 
@@ -531,24 +307,8 @@ public class MongoClientSettings {
    *
    *  @return the credential, which may be null
    */
-  @GenIgnore
-  public MongoCredential getMongoCredential() {
-    if (this.credential == null) {
-      return null;
-    } else {
-      return credential.getValue();
-    }
-  }
-
-  /**
-   *  Gets the credential.
-   *
-   *  @return the credential, which may be null
-   *
-   * @hidden
-   */
-  public MongoCredentialSerializer getCredential() {
-    return credential;
+  public MongoCredential getCredential() {
+    return this.serializer.__getCredential();
   }
 
   /**
@@ -562,7 +322,7 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.4
    */
   public MongoClientSettings setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
+    this.serializer.setApplicationName(applicationName);
     return this;
   }
 
@@ -576,7 +336,7 @@ public class MongoClientSettings {
    *  @mongodb.server.release 3.4
    */
   public String getApplicationName() {
-    return applicationName;
+    return this.serializer.getApplicationName();
   }
 
   /**
@@ -588,45 +348,13 @@ public class MongoClientSettings {
    *  @see #getCompressorList()
    *  @mongodb.server.release 3.4
    */
-  @GenIgnore
   public MongoClientSettings setCompressorList(List<MongoCompressor> compressorList) {
-    if (compressorList == null) {
-      this.compressorList = null;
-    } else if (this.compressorList == null) {
-      this.compressorList = new MongoCompressorListSerializer(compressorList);
-    } else {
-      this.compressorList.setValue(compressorList);
-    }
+    this.serializer.__setCompressorList(compressorList);
     return this;
   }
 
-  /**
-   *  Sets the compressors to use for compressing messages to the server. The driver will use the first compressor in the list
-   *  that the server is configured to support.
-   *
-   *  @param compressorList the list of compressors to request
-   *  @return this
-   *  @see #getCompressorList()
-   *  @mongodb.server.release 3.4
-   *
-   * @hidden
-   */
-  public MongoClientSettings setCompressorList(MongoCompressorListSerializer compressorList) {
-    this.compressorList = compressorList;
-    return this;
-  }
-
-  @GenIgnore
-  public List<MongoCompressor> getMongoCompressorList() {
-    if (this.compressorList == null) {
-      return null;
-    } else {
-      return compressorList.getValue();
-    }
-  }
-
-  public MongoCompressorListSerializer getCompressorList() {
-    return compressorList;
+  public List<MongoCompressor> getCompressorList() {
+    return this.serializer.__getCompressorList();
   }
 
   /**
@@ -639,7 +367,7 @@ public class MongoClientSettings {
    */
   public MongoClientSettings setAutoEncryptionSettings(
       AutoEncryptionSettings autoEncryptionSettings) {
-    this.autoEncryptionSettings = autoEncryptionSettings;
+    this.serializer.setAutoEncryptionSettings(autoEncryptionSettings);
     return this;
   }
 
@@ -670,7 +398,7 @@ public class MongoClientSettings {
    *  @since 3.11
    */
   public AutoEncryptionSettings getAutoEncryptionSettings() {
-    return autoEncryptionSettings;
+    return this.serializer.getAutoEncryptionSettings();
   }
 
   /**
@@ -678,47 +406,6 @@ public class MongoClientSettings {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.MongoClientSettings.Builder builder) {
-    if (this.clusterSettings != null) {
-      builder.applyToClusterSettings(_builder -> clusterSettings.initializeDriverBuilderClass(_builder));
-    }
-    if (this.socketSettings != null) {
-      builder.applyToSocketSettings(_builder -> socketSettings.initializeDriverBuilderClass(_builder));
-    }
-    if (this.connectionPoolSettings != null) {
-      builder.applyToConnectionPoolSettings(_builder -> connectionPoolSettings.initializeDriverBuilderClass(_builder));
-    }
-    if (this.serverSettings != null) {
-      builder.applyToServerSettings(_builder -> serverSettings.initializeDriverBuilderClass(_builder));
-    }
-    if (this.sslSettings != null) {
-      builder.applyToSslSettings(_builder -> sslSettings.initializeDriverBuilderClass(_builder));
-    }
-    if (this.readPreference != null && this.readPreference.getValue() != null) {
-      builder.readPreference(this.readPreference.getValue());
-    }
-    if (this.writeConcern != null && this.writeConcern.getValue() != null) {
-      builder.writeConcern(this.writeConcern.getValue());
-    }
-    if (this.retryWrites != null) {
-      builder.retryWrites(this.retryWrites);
-    }
-    if (this.retryReads != null) {
-      builder.retryReads(this.retryReads);
-    }
-    if (this.readConcern != null && this.readConcern.getValue() != null) {
-      builder.readConcern(this.readConcern.getValue());
-    }
-    if (this.credential != null && this.credential.getValue() != null) {
-      builder.credential(this.credential.getValue());
-    }
-    if (this.applicationName != null) {
-      builder.applicationName(this.applicationName);
-    }
-    if (this.compressorList != null && this.compressorList.getValue() != null) {
-      builder.compressorList(this.compressorList.getValue());
-    }
-    if (this.autoEncryptionSettings != null) {
-      builder.autoEncryptionSettings(this.autoEncryptionSettings.toDriverClass());
-    }
+    this.serializer.initializeDriverBuilderClass(builder);
   }
 }

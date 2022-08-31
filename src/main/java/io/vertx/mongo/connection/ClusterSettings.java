@@ -19,69 +19,25 @@ import com.mongodb.ServerAddress;
 import com.mongodb.connection.ClusterConnectionMode;
 import com.mongodb.connection.ClusterType;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ServerAddressListSerializer;
+import io.vertx.mongo.connection.serializers.ClusterSettingsSerializer;
 import java.lang.Long;
 import java.lang.String;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-/**
- *  Settings for the cluster.
- *
- *  @since 3.0
- */
-@DataObject(
-    generateConverter = true
-)
+@DataObject
 public class ClusterSettings {
-  /**
-   * the SRV host name
-   */
-  private String srvHost;
-
-  /**
-   * the seed list of hosts
-   */
-  private ServerAddressListSerializer hosts;
-
-  /**
-   * the cluster connection mode
-   */
-  private ClusterConnectionMode mode;
-
-  /**
-   * the required replica set name.
-   */
-  private String requiredReplicaSetName;
-
-  /**
-   * the required cluster type
-   */
-  private ClusterType requiredClusterType;
-
-  /**
-   * the acceptable latency difference, in milliseconds, which must be &gt;= 0
-   */
-  private Long localThreshold;
-
-  /**
-   * the timeout
-   */
-  private Long serverSelectionTimeout;
+  private ClusterSettingsSerializer serializer = new ClusterSettingsSerializer();
 
   public ClusterSettings() {
   }
 
   public ClusterSettings(JsonObject json) {
-    ClusterSettingsConverter.fromJson(json, this);
+    serializer = new ClusterSettingsSerializer(json);
   }
 
   public JsonObject toJson() {
-    JsonObject result = new JsonObject();
-    ClusterSettingsConverter.toJson(this, result);
-    return result;
+    return serializer.toJson();
   }
 
   /**
@@ -89,9 +45,7 @@ public class ClusterSettings {
    * @hidden
    */
   public com.mongodb.connection.ClusterSettings toDriverClass() {
-    com.mongodb.connection.ClusterSettings.Builder builder = com.mongodb.connection.ClusterSettings.builder();
-    initializeDriverBuilderClass(builder);
-    return builder.build();
+    return this.serializer.toDriverClass();
   }
 
   /**
@@ -110,7 +64,7 @@ public class ClusterSettings {
    *  @see ClusterSettings.Builder#applyConnectionString(ConnectionString)
    */
   public ClusterSettings setSrvHost(String srvHost) {
-    this.srvHost = srvHost;
+    this.serializer.setSrvHost(srvHost);
     return this;
   }
 
@@ -120,7 +74,7 @@ public class ClusterSettings {
    *  @since 3.10
    */
   public String getSrvHost() {
-    return srvHost;
+    return this.serializer.getSrvHost();
   }
 
   /**
@@ -129,42 +83,13 @@ public class ClusterSettings {
    *  @param hosts the seed list of hosts
    *  @return this
    */
-  @GenIgnore
   public ClusterSettings setHosts(List<ServerAddress> hosts) {
-    if (hosts == null) {
-      this.hosts = null;
-    } else if (this.hosts == null) {
-      this.hosts = new ServerAddressListSerializer(hosts);
-    } else {
-      this.hosts.setValue(hosts);
-    }
+    this.serializer.__setHosts(hosts);
     return this;
   }
 
-  /**
-   *  Sets the hosts for the cluster. Any duplicate server addresses are removed from the list.
-   *
-   *  @param hosts the seed list of hosts
-   *  @return this
-   *
-   * @hidden
-   */
-  public ClusterSettings setHosts(ServerAddressListSerializer hosts) {
-    this.hosts = hosts;
-    return this;
-  }
-
-  @GenIgnore
-  public List<ServerAddress> getMongoHosts() {
-    if (this.hosts == null) {
-      return null;
-    } else {
-      return hosts.getValue();
-    }
-  }
-
-  public ServerAddressListSerializer getHosts() {
-    return hosts;
+  public List<ServerAddress> getHosts() {
+    return this.serializer.__getHosts();
   }
 
   /**
@@ -174,7 +99,7 @@ public class ClusterSettings {
    *  @return this;
    */
   public ClusterSettings setMode(ClusterConnectionMode mode) {
-    this.mode = mode;
+    this.serializer.setMode(mode);
     return this;
   }
 
@@ -184,7 +109,7 @@ public class ClusterSettings {
    *  @return the mode
    */
   public ClusterConnectionMode getMode() {
-    return mode;
+    return this.serializer.getMode();
   }
 
   /**
@@ -194,7 +119,7 @@ public class ClusterSettings {
    *  @return this
    */
   public ClusterSettings setRequiredReplicaSetName(String requiredReplicaSetName) {
-    this.requiredReplicaSetName = requiredReplicaSetName;
+    this.serializer.setRequiredReplicaSetName(requiredReplicaSetName);
     return this;
   }
 
@@ -204,7 +129,7 @@ public class ClusterSettings {
    *  @return the required replica set name
    */
   public String getRequiredReplicaSetName() {
-    return requiredReplicaSetName;
+    return this.serializer.getRequiredReplicaSetName();
   }
 
   /**
@@ -214,7 +139,7 @@ public class ClusterSettings {
    *  @return this
    */
   public ClusterSettings setRequiredClusterType(ClusterType requiredClusterType) {
-    this.requiredClusterType = requiredClusterType;
+    this.serializer.setRequiredClusterType(requiredClusterType);
     return this;
   }
 
@@ -224,7 +149,7 @@ public class ClusterSettings {
    *  @return the required cluster type
    */
   public ClusterType getRequiredClusterType() {
-    return requiredClusterType;
+    return this.serializer.getRequiredClusterType();
   }
 
   /**
@@ -236,7 +161,7 @@ public class ClusterSettings {
    *  @since 3.7
    */
   public ClusterSettings setLocalThreshold(Long localThreshold) {
-    this.localThreshold = localThreshold;
+    this.serializer.setLocalThreshold(localThreshold);
     return this;
   }
 
@@ -258,7 +183,7 @@ public class ClusterSettings {
    *  @mongodb.driver.manual reference/program/mongos/#cmdoption--localThreshold Local Threshold
    */
   public Long getLocalThreshold() {
-    return localThreshold;
+    return this.serializer.getLocalThreshold();
   }
 
   /**
@@ -272,7 +197,7 @@ public class ClusterSettings {
    *  @return this
    */
   public ClusterSettings setServerSelectionTimeout(Long serverSelectionTimeout) {
-    this.serverSelectionTimeout = serverSelectionTimeout;
+    this.serializer.setServerSelectionTimeout(serverSelectionTimeout);
     return this;
   }
 
@@ -286,7 +211,7 @@ public class ClusterSettings {
    *  @return the timeout (in milliseconds)
    */
   public Long getServerSelectionTimeout() {
-    return serverSelectionTimeout;
+    return this.serializer.getServerSelectionTimeout();
   }
 
   /**
@@ -294,26 +219,6 @@ public class ClusterSettings {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.connection.ClusterSettings.Builder builder) {
-    if (this.srvHost != null) {
-      builder.srvHost(this.srvHost);
-    }
-    if (this.hosts != null && this.hosts.getValue() != null) {
-      builder.hosts(this.hosts.getValue());
-    }
-    if (this.mode != null) {
-      builder.mode(this.mode);
-    }
-    if (this.requiredReplicaSetName != null) {
-      builder.requiredReplicaSetName(this.requiredReplicaSetName);
-    }
-    if (this.requiredClusterType != null) {
-      builder.requiredClusterType(this.requiredClusterType);
-    }
-    if (this.localThreshold != null) {
-      builder.localThreshold(this.localThreshold, TimeUnit.MILLISECONDS);
-    }
-    if (this.serverSelectionTimeout != null) {
-      builder.serverSelectionTimeout(this.serverSelectionTimeout, TimeUnit.MILLISECONDS);
-    }
+    this.serializer.initializeDriverBuilderClass(builder);
   }
 }

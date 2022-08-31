@@ -73,7 +73,7 @@ public class TransactionOptionsSerializer {
   }
 
   public ReadConcernSerializer getReadConcern() {
-    return new ReadConcernSerializer(this.readConcern);
+    return this.readConcern == null ? null : new ReadConcernSerializer(this.readConcern);
   }
 
   public TransactionOptionsSerializer __setWriteConcern(WriteConcern writeConcern) {
@@ -91,7 +91,7 @@ public class TransactionOptionsSerializer {
   }
 
   public WriteConcernSerializer getWriteConcern() {
-    return new WriteConcernSerializer(this.writeConcern);
+    return this.writeConcern == null ? null : new WriteConcernSerializer(this.writeConcern);
   }
 
   public TransactionOptionsSerializer __setReadPreference(ReadPreference readPreference) {
@@ -109,7 +109,7 @@ public class TransactionOptionsSerializer {
   }
 
   public ReadPreferenceSerializer getReadPreference() {
-    return new ReadPreferenceSerializer(this.readPreference);
+    return this.readPreference == null ? null : new ReadPreferenceSerializer(this.readPreference);
   }
 
   public TransactionOptionsSerializer setMaxCommitTime(Long maxCommitTime) {

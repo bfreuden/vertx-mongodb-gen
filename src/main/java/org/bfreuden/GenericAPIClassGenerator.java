@@ -334,36 +334,42 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         }
     }
 
-    protected MethodSpec.Builder toDriverClassBuilder() {
+    protected MethodSpec.Builder toDriverClassOrInitDriverBuilderClassMethod(boolean isDelegatingClass) {
         MethodSpec.Builder toMongo;
+        String methodName;
+        String params = "";
         if (hasBuilder) {
-            toMongo = MethodSpec.methodBuilder("initializeDriverBuilderClass")
+            params = "builder";
+            toMongo = MethodSpec.methodBuilder(methodName="initializeDriverBuilderClass")
                     .addJavadoc("@param builder MongoDB driver builder\n@hidden")
                     .addParameter(ClassName.bestGuess(classDoc.qualifiedTypeName() + ".Builder"), "builder")
                     .addModifiers(Modifier.PUBLIC);
         } else {
-            toMongo = MethodSpec.methodBuilder("toDriverClass")
+            toMongo = MethodSpec.methodBuilder(methodName="toDriverClass")
                     .addJavadoc("@return MongoDB driver object\n@hidden")
                     .addModifiers(Modifier.PUBLIC)
                     .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
         }
-        List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
-        StringJoiner ctorParams = new StringJoiner(", ");
-        for (Option option : requiredOptions) {
-            toMongo
-                    .beginControlFlow("if (this." + option.name + " == null)")
-                    .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
-                    .endControlFlow();
-            if (option.withTimeUnit || option.type.toMongoEnabledType)
-                throw new IllegalStateException("not implemented");
-            ctorParams.add("this." +option.name);
-        }
-        if (hasBuilder) {
-            configurableName = "builder";
-//            toMongo.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+        if (isDelegatingClass) {
+            toMongo.addStatement((params.isEmpty() ? "return " : "") + ("this.serializer." + methodName + "(" + params + ")"));
         } else {
-            configurableName = "result";
-            toMongo.addStatement("$T result = new $T(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+            List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
+            StringJoiner ctorParams = new StringJoiner(", ");
+            for (Option option : requiredOptions) {
+                toMongo
+                        .beginControlFlow("if (this." + option.name + " == null)")
+                        .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
+                        .endControlFlow();
+                if (option.withTimeUnit || option.type.toMongoEnabledType)
+                    throw new IllegalStateException("not implemented");
+                ctorParams.add("this." +option.name);
+            }
+            if (hasBuilder) {
+                configurableName = "builder";
+            } else {
+                configurableName = "result";
+                toMongo.addStatement("$T result = new $T(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+            }
         }
         return toMongo;
     }
@@ -392,76 +398,98 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         return toMongoBuilder.build();
     }
 
-    protected void inflateOptionType(TypeSpec.Builder type, boolean hasSerializer, boolean isSerializer) {
+    protected void inflateOptionType(TypeSpec.Builder type, boolean hasSerializer, boolean isSerializer, String delegateClassName) {
+        boolean isDelegatingClass = hasSerializer && !isSerializer;
         if (isDataObject) {
             generatePackageInfoForPackage = currentlyGeneratedPackageName;
             AnnotationSpec.Builder annotationBuilder = AnnotationSpec.builder(DataObject.class);
-            if (!hasSerializer || isSerializer)
+            if (!isDelegatingClass)
                 annotationBuilder.addMember("generateConverter", CodeBlock.of("true"));
             type.addAnnotation(annotationBuilder.build());
             type.addMethod(MethodSpec.constructorBuilder()
                     .addModifiers(Modifier.PUBLIC).build());
-            type.addMethod(MethodSpec.constructorBuilder()
+            MethodSpec.Builder jsonCtorBuilder = MethodSpec.constructorBuilder()
                     .addModifiers(Modifier.PUBLIC)
-                    .addParameter(ClassName.get(JsonObject.class), "json")
-                    .addStatement("$T.fromJson(json, this)", ClassName.bestGuess(currentlyGeneratedTypeName + "Converter")).build());
-            type.addMethod(MethodSpec.methodBuilder("toJson")
+                    .addParameter(ClassName.get(JsonObject.class), "json");
+            if (isDelegatingClass)
+                jsonCtorBuilder.addStatement("serializer = new $T(json)", ClassName.bestGuess(delegateClassName));
+            else
+                jsonCtorBuilder.addStatement("$T.fromJson(json, this)", ClassName.bestGuess(currentlyGeneratedTypeName + "Converter"));
+            type.addMethod(jsonCtorBuilder.build());
+            MethodSpec.Builder toJsonMethodBuilder = MethodSpec.methodBuilder("toJson")
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(ClassName.get(JsonObject.class))
-                    .addStatement("$T result = new $T()", ClassName.get(JsonObject.class), ClassName.get(JsonObject.class))
-                    .addStatement("$T.toJson(this, result)", ClassName.bestGuess(currentlyGeneratedTypeName + "Converter"))
-                    .addStatement("return result")
-                    .build());
+                    .returns(ClassName.get(JsonObject.class));
+            if (isDelegatingClass) {
+                toJsonMethodBuilder.addStatement("return serializer.toJson()");
+            } else {
+                toJsonMethodBuilder
+                        .addStatement("$T result = new $T()", ClassName.get(JsonObject.class), ClassName.get(JsonObject.class))
+                        .addStatement("$T.toJson(this, result)", ClassName.bestGuess(currentlyGeneratedTypeName + "Converter"))
+                        .addStatement("return result");
+            }
+            type.addMethod(toJsonMethodBuilder.build());
         }
-        MethodSpec.Builder toDriverClassMethod = toDriverClassBuilder();
+        MethodSpec.Builder toDriverClassOrInitDriverBuilderClassMethod = toDriverClassOrInitDriverBuilderClassMethod(isDelegatingClass);
         if (hasBuilder) {
             MethodSpec.Builder toMongo2 = MethodSpec.methodBuilder("toDriverClass")
                     .addModifiers(Modifier.PUBLIC)
                     .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
             if (!isSerializer)
                 toMongo2.addJavadoc("@return MongoDB driver object\n@hidden");
-            StringJoiner ctorParams = new StringJoiner(", ");
-            List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
-            for (Option option : requiredOptions) {
-                toMongo2
-                        .beginControlFlow("if (this." + option.name + " == null)")
-                        .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
-                        .endControlFlow();
-                if (option.withTimeUnit || option.type.toMongoEnabledType)
-                    throw new IllegalStateException("not implemented");
-                ctorParams.add("this." +option.name);
+            if (isDelegatingClass) {
+                toMongo2.addStatement("return this.serializer.toDriverClass()");
+            } else {
+                StringJoiner ctorParams = new StringJoiner(", ");
+                List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
+                for (Option option : requiredOptions) {
+                    toMongo2
+                            .beginControlFlow("if (this." + option.name + " == null)")
+                            .addStatement("throw new IllegalArgumentException($S)", option.name + " is mandatory")
+                            .endControlFlow();
+                    if (option.withTimeUnit || option.type.toMongoEnabledType)
+                        throw new IllegalStateException("not implemented");
+                    ctorParams.add("this." +option.name);
+                }
+                toMongo2.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
+                toMongo2.addStatement("initializeDriverBuilderClass(builder)");
+                toMongo2.addStatement("return builder.build()");
             }
-            toMongo2.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
-            toMongo2.addStatement("initializeDriverBuilderClass(builder)");
-            toMongo2.addStatement("return builder.build()");
             type.addMethod(toMongo2.build());
         }
-        for (Option option: optionsByName.values()) {
-            if (!isResultOnlyOptions)
-                addOptionToMongoBuilder(toDriverClassMethod, option);
-            // write field
-            FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.type.vertxType, option.name).addModifiers(Modifier.PRIVATE);
-            if (option.mongoJavadoc != null && !isSerializer) {
-                // FIXME javadoc hack
-                option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "setHint(JsonObject)");
-                Optional<String> firstParam = Arrays.stream(option.mongoJavadoc.split("\n+")).filter(it -> it.contains("@param")).findFirst();
-                if (firstParam.isPresent()) {
-                    String paramLine = firstParam.get();
-                    paramLine = paramLine.substring(paramLine.indexOf("@param") + 6).trim();
-                    paramLine = paramLine.substring(paramLine.indexOf(' ') + 1);
-                    fieldBuilder.addJavadoc(CodeBlock.of(paramLine));
-                }
-            }
+        if (isDelegatingClass) {
+            ClassName type1 = ClassName.bestGuess(delegateClassName);
+            FieldSpec.Builder fieldBuilder = FieldSpec.builder(type1, "serializer")
+                    .initializer("new $T()", type1)
+                    .addModifiers(Modifier.PRIVATE);
             type.addField(fieldBuilder.build());
+        }
+        for (Option option: optionsByName.values()) {
+            if (!isDelegatingClass) {
+                if (!isResultOnlyOptions)
+                    addOptionToMongoBuilder(toDriverClassOrInitDriverBuilderClassMethod, option);
+                // write field
+                FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.type.vertxType, option.name).addModifiers(Modifier.PRIVATE);
+                if (option.mongoJavadoc != null && !isSerializer) {
+                    // FIXME javadoc hack
+                    option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "setHint(JsonObject)");
+                    Optional<String> firstParam = Arrays.stream(option.mongoJavadoc.split("\n+")).filter(it -> it.contains("@param")).findFirst();
+                    if (firstParam.isPresent()) {
+                        String paramLine = firstParam.get();
+                        paramLine = paramLine.substring(paramLine.indexOf("@param") + 6).trim();
+                        paramLine = paramLine.substring(paramLine.indexOf(' ') + 1);
+                        fieldBuilder.addJavadoc(CodeBlock.of(paramLine));
+                    }
+                }
+                type.addField(fieldBuilder.build());
+            }
             boolean internalName = option.type.serializerType != null && isSerializer;
-            boolean delegateToSerializer = option.type.serializerType != null && hasSerializer && !isSerializer;
             if (option.mongoSetterName != null) {
                 // TODO sometimes the setter name is not really good (block)
                 {
                     MethodSpec.Builder setterBuilder = optionSetterBuilder(option, !isSerializer, internalName)
                             .addParameter(option.type.vertxType, option.setterParamName);
-                    if (delegateToSerializer) {
-                        setterBuilder.addStatement("this.serializer." + optionSetterName(option, true) + "(" + option.setterParamName + ")");
+                    if (isDelegatingClass) {
+                        setterBuilder.addStatement("this.serializer." + optionSetterName(option, option.type.serializerType != null) + "(" + option.setterParamName + ")");
                     } else {
                         setterBuilder.addStatement("this." + option.name + " = " + option.setterParamName);
                     }
@@ -482,8 +510,8 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             {
                 MethodSpec.Builder getterBuilder = optionGetterBuilder(option, !isSerializer, internalName)
                         .returns(option.type.vertxType);
-                if (delegateToSerializer) {
-                    getterBuilder.addStatement("return this.serializer." + optionGetterName(option, true));
+                if (isDelegatingClass) {
+                    getterBuilder.addStatement("return this.serializer." + optionGetterName(option, option.type.serializerType != null) + "()");
                 } else {
                     getterBuilder.addStatement("return " + option.name);
                 }
@@ -493,7 +521,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 MethodSpec.Builder getterBuilder = optionGetterBuilder(option, false, false)
                         .returns(option.type.serializedOptionType);
                 if (option.type.serializedContainerClassName == null)
-                    getterBuilder.addStatement(String.format("return new $T(this.%s)", option.name), option.type.serializerType);
+                    getterBuilder.addStatement(String.format("return this.%s == null ? null : new $T(this.%s)", option.name, option.name), option.type.serializerType);
                 else
                     getterBuilder.addStatement(String.format("return $T.toSerializerList(this.%s, $T.class, $T.class)", option.name),
                             ClassName.get(OptionSerializer.class),
@@ -504,8 +532,10 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             }
 
         }
-        if (!isResultOnlyOptions)
-            type.addMethod(finalizeToDriverClassMethod(toDriverClassMethod));
+        if (isDelegatingClass)
+            type.addMethod(toDriverClassOrInitDriverBuilderClassMethod.build());
+        else if (!isResultOnlyOptions)
+            type.addMethod(finalizeToDriverClassMethod(toDriverClassOrInitDriverBuilderClassMethod));
     }
 
     private String optionGetterName(Option option, boolean internalName) {

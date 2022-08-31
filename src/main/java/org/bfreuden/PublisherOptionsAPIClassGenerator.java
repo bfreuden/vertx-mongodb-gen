@@ -70,7 +70,8 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
             context.publisherOptionsClasses.put(classDoc.qualifiedTypeName(), getTargetPackage() + "." + getTargetClassName());
     }
 
-    protected MethodSpec.Builder toDriverClassBuilder() {
+    @Override
+    protected MethodSpec.Builder toDriverClassOrInitDriverBuilderClassMethod(boolean isDelegatingClass) {
         boolean hasParam = Arrays.stream(classDoc.typeParameters()).count() != 0;
         ClassName publisherType = ClassName.bestGuess(classDoc.qualifiedTypeName());
         TypeName publisherTypeWithParam = ParameterizedTypeName.get(publisherType, TypeVariableName.get("TDocument"));

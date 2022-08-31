@@ -19,59 +19,23 @@ import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import io.vertx.codegen.annotations.DataObject;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
-import io.vertx.mongo.impl.ReadConcernSerializer;
-import io.vertx.mongo.impl.ReadPreferenceSerializer;
-import io.vertx.mongo.impl.WriteConcernSerializer;
+import io.vertx.mongo.serializers.TransactionOptionsSerializer;
 import java.lang.Long;
-import java.util.concurrent.TimeUnit;
 
-/**
- *  Options to apply to transactions. The default values for the options depend on context.  For options specified per-transaction, the
- *  default values come from the default transaction options.  For the default transaction options themselves, the default values come from
- *  the MongoClient on which the session was started.
- *
- *  @see com.mongodb.session.ClientSession
- *  @see ClientSessionOptions
- *  @since 3.8
- *  @mongodb.server.release 4.0
- */
-@DataObject(
-    generateConverter = true
-)
+@DataObject
 public class TransactionOptions {
-  /**
-   * the read concern
-   */
-  private ReadConcernSerializer readConcern;
-
-  /**
-   * the write concern, which must be acknowledged
-   */
-  private WriteConcernSerializer writeConcern;
-
-  /**
-   * the read preference, which currently must be primary. This restriction may be relaxed in future versions.
-   */
-  private ReadPreferenceSerializer readPreference;
-
-  /**
-   * the max commit time, which must be either null or greater than zero, in the given time unit
-   */
-  private Long maxCommitTime;
+  private TransactionOptionsSerializer serializer = new TransactionOptionsSerializer();
 
   public TransactionOptions() {
   }
 
   public TransactionOptions(JsonObject json) {
-    TransactionOptionsConverter.fromJson(json, this);
+    serializer = new TransactionOptionsSerializer(json);
   }
 
   public JsonObject toJson() {
-    JsonObject result = new JsonObject();
-    TransactionOptionsConverter.toJson(this, result);
-    return result;
+    return serializer.toJson();
   }
 
   /**
@@ -79,9 +43,7 @@ public class TransactionOptions {
    * @hidden
    */
   public com.mongodb.TransactionOptions toDriverClass() {
-    com.mongodb.TransactionOptions.Builder builder = com.mongodb.TransactionOptions.builder();
-    initializeDriverBuilderClass(builder);
-    return builder.build();
+    return this.serializer.toDriverClass();
   }
 
   /**
@@ -90,28 +52,8 @@ public class TransactionOptions {
    *  @param readConcern the read concern
    *  @return this
    */
-  @GenIgnore
   public TransactionOptions setReadConcern(ReadConcern readConcern) {
-    if (readConcern == null) {
-      this.readConcern = null;
-    } else if (this.readConcern == null) {
-      this.readConcern = new ReadConcernSerializer(readConcern);
-    } else {
-      this.readConcern.setValue(readConcern);
-    }
-    return this;
-  }
-
-  /**
-   *  Sets the read concern.
-   *
-   *  @param readConcern the read concern
-   *  @return this
-   *
-   * @hidden
-   */
-  public TransactionOptions setReadConcern(ReadConcernSerializer readConcern) {
-    this.readConcern = readConcern;
+    this.serializer.__setReadConcern(readConcern);
     return this;
   }
 
@@ -120,24 +62,8 @@ public class TransactionOptions {
    *
    *  @return the read concern
    */
-  @GenIgnore
-  public ReadConcern getMongoReadConcern() {
-    if (this.readConcern == null) {
-      return null;
-    } else {
-      return readConcern.getValue();
-    }
-  }
-
-  /**
-   *  Gets the read concern.
-   *
-   *  @return the read concern
-   *
-   * @hidden
-   */
-  public ReadConcernSerializer getReadConcern() {
-    return readConcern;
+  public ReadConcern getReadConcern() {
+    return this.serializer.__getReadConcern();
   }
 
   /**
@@ -146,28 +72,8 @@ public class TransactionOptions {
    *  @param writeConcern the write concern, which must be acknowledged
    *  @return this
    */
-  @GenIgnore
   public TransactionOptions setWriteConcern(WriteConcern writeConcern) {
-    if (writeConcern == null) {
-      this.writeConcern = null;
-    } else if (this.writeConcern == null) {
-      this.writeConcern = new WriteConcernSerializer(writeConcern);
-    } else {
-      this.writeConcern.setValue(writeConcern);
-    }
-    return this;
-  }
-
-  /**
-   *  Sets the write concern.
-   *
-   *  @param writeConcern the write concern, which must be acknowledged
-   *  @return this
-   *
-   * @hidden
-   */
-  public TransactionOptions setWriteConcern(WriteConcernSerializer writeConcern) {
-    this.writeConcern = writeConcern;
+    this.serializer.__setWriteConcern(writeConcern);
     return this;
   }
 
@@ -176,24 +82,8 @@ public class TransactionOptions {
    *
    *  @return the write concern
    */
-  @GenIgnore
-  public WriteConcern getMongoWriteConcern() {
-    if (this.writeConcern == null) {
-      return null;
-    } else {
-      return writeConcern.getValue();
-    }
-  }
-
-  /**
-   *  Gets the write concern.
-   *
-   *  @return the write concern
-   *
-   * @hidden
-   */
-  public WriteConcernSerializer getWriteConcern() {
-    return writeConcern;
+  public WriteConcern getWriteConcern() {
+    return this.serializer.__getWriteConcern();
   }
 
   /**
@@ -202,28 +92,8 @@ public class TransactionOptions {
    *  @param readPreference the read preference, which currently must be primary. This restriction may be relaxed in future versions.
    *  @return this
    */
-  @GenIgnore
   public TransactionOptions setReadPreference(ReadPreference readPreference) {
-    if (readPreference == null) {
-      this.readPreference = null;
-    } else if (this.readPreference == null) {
-      this.readPreference = new ReadPreferenceSerializer(readPreference);
-    } else {
-      this.readPreference.setValue(readPreference);
-    }
-    return this;
-  }
-
-  /**
-   *  Sets the read preference.
-   *
-   *  @param readPreference the read preference, which currently must be primary. This restriction may be relaxed in future versions.
-   *  @return this
-   *
-   * @hidden
-   */
-  public TransactionOptions setReadPreference(ReadPreferenceSerializer readPreference) {
-    this.readPreference = readPreference;
+    this.serializer.__setReadPreference(readPreference);
     return this;
   }
 
@@ -232,24 +102,8 @@ public class TransactionOptions {
    *
    *  @return the write concern
    */
-  @GenIgnore
-  public ReadPreference getMongoReadPreference() {
-    if (this.readPreference == null) {
-      return null;
-    } else {
-      return readPreference.getValue();
-    }
-  }
-
-  /**
-   *  Gets the read preference.
-   *
-   *  @return the write concern
-   *
-   * @hidden
-   */
-  public ReadPreferenceSerializer getReadPreference() {
-    return readPreference;
+  public ReadPreference getReadPreference() {
+    return this.serializer.__getReadPreference();
   }
 
   /**
@@ -261,7 +115,7 @@ public class TransactionOptions {
    *  @since 3.11
    */
   public TransactionOptions setMaxCommitTime(Long maxCommitTime) {
-    this.maxCommitTime = maxCommitTime;
+    this.serializer.setMaxCommitTime(maxCommitTime);
     return this;
   }
 
@@ -274,7 +128,7 @@ public class TransactionOptions {
    *  @since 3.11
    */
   public Long getMaxCommitTime() {
-    return maxCommitTime;
+    return this.serializer.getMaxCommitTime();
   }
 
   /**
@@ -282,17 +136,6 @@ public class TransactionOptions {
    * @hidden
    */
   public void initializeDriverBuilderClass(com.mongodb.TransactionOptions.Builder builder) {
-    if (this.readConcern != null && this.readConcern.getValue() != null) {
-      builder.readConcern(this.readConcern.getValue());
-    }
-    if (this.writeConcern != null && this.writeConcern.getValue() != null) {
-      builder.writeConcern(this.writeConcern.getValue());
-    }
-    if (this.readPreference != null && this.readPreference.getValue() != null) {
-      builder.readPreference(this.readPreference.getValue());
-    }
-    if (this.maxCommitTime != null) {
-      builder.maxCommitTime(this.maxCommitTime, TimeUnit.MILLISECONDS);
-    }
+    this.serializer.initializeDriverBuilderClass(builder);
   }
 }

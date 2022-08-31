@@ -207,13 +207,13 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
         if (hasSerializer)
             targetPackageName = targetPackageName + ".serializers";
         ArrayList<JavaFile.Builder> result = new ArrayList<>();
-        result.add(getOptionsClassBuilder(hasSerializer, hasSerializer, targetClassName, targetPackageName));
-//        if (hasSerializer)
-//            result.add(getOptionsClassBuilder(true, false, getTargetClassName(), getTargetPackage()));
+        result.add(getOptionsClassBuilder(hasSerializer, hasSerializer, targetClassName, targetPackageName, null));
+        if (hasSerializer)
+            result.add(getOptionsClassBuilder(true, false, getTargetClassName(), getTargetPackage(), targetPackageName + "." + targetClassName));
         return result;
     }
 
-    private JavaFile.Builder getOptionsClassBuilder(boolean hasSerializer, boolean isSerializer, String targetClassName, String targetPackageName) {
+    private JavaFile.Builder getOptionsClassBuilder(boolean hasSerializer, boolean isSerializer, String targetClassName, String targetPackageName, String delegateClassName) {
         currentlyGeneratedTypeName = ClassName.bestGuess(targetPackageName + "." + targetClassName);
         currentlyGeneratedPackageName = targetPackageName;
         TypeSpec.Builder type = TypeSpec.classBuilder(targetClassName)
@@ -236,7 +236,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
                 type.addJavadoc(joiner.toString().replace("$", "$$"));
             }
         }
-        inflateOptionType(type, hasSerializer, isSerializer);
+        inflateOptionType(type, hasSerializer, isSerializer, delegateClassName);
         JavaFile.Builder builder = JavaFile.builder(targetPackageName, type.build());
         addStaticImports(builder);
         return builder;

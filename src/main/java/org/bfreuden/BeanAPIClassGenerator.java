@@ -88,7 +88,7 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
                 typeBuilder.superclass(ParameterizedTypeName.get((ClassName) superClass, typeVariables.toArray(new TypeName[0])));
         }
         // write fields and getters
-        inflateOptionType(typeBuilder, false, false);
+        inflateOptionType(typeBuilder, false, false, null);
 
         if (constructors.size() > 1)
             typeBuilder.addField(FieldSpec.builder(TypeName.INT, "__ctorIndex").build());

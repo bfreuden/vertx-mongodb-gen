@@ -150,7 +150,7 @@ public class MongoClientSettingsSerializer {
   }
 
   public ReadPreferenceSerializer getReadPreference() {
-    return new ReadPreferenceSerializer(this.readPreference);
+    return this.readPreference == null ? null : new ReadPreferenceSerializer(this.readPreference);
   }
 
   public MongoClientSettingsSerializer __setWriteConcern(WriteConcern writeConcern) {
@@ -168,7 +168,7 @@ public class MongoClientSettingsSerializer {
   }
 
   public WriteConcernSerializer getWriteConcern() {
-    return new WriteConcernSerializer(this.writeConcern);
+    return this.writeConcern == null ? null : new WriteConcernSerializer(this.writeConcern);
   }
 
   public MongoClientSettingsSerializer setRetryWrites(Boolean retryWrites) {
@@ -204,7 +204,7 @@ public class MongoClientSettingsSerializer {
   }
 
   public ReadConcernSerializer getReadConcern() {
-    return new ReadConcernSerializer(this.readConcern);
+    return this.readConcern == null ? null : new ReadConcernSerializer(this.readConcern);
   }
 
   public MongoClientSettingsSerializer __setCredential(MongoCredential credential) {
@@ -222,7 +222,7 @@ public class MongoClientSettingsSerializer {
   }
 
   public MongoCredentialSerializer getCredential() {
-    return new MongoCredentialSerializer(this.credential);
+    return this.credential == null ? null : new MongoCredentialSerializer(this.credential);
   }
 
   public MongoClientSettingsSerializer setApplicationName(String applicationName) {
