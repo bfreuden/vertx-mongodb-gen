@@ -76,7 +76,11 @@ import java.lang.Long;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.Void;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
@@ -85,10 +89,18 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   protected final MongoClientContext clientContext;
 
   protected final MongoCollection<TDocument> wrapped;
+  protected final Function<TDocument, TDocument> inputMapper;
+  protected final Function<TDocument, TDocument> outputMapper;
 
   public MongoCollectionImpl(MongoClientContext clientContext, MongoCollection<TDocument> wrapped) {
+    this(clientContext, wrapped, null, null);
+  }
+
+  public MongoCollectionImpl(MongoClientContext clientContext, MongoCollection<TDocument> wrapped, Function<TDocument, TDocument> inputMapper, Function<TDocument, TDocument> outputMapper) {
     this.clientContext = clientContext;
     this.wrapped = wrapped;
+    this.inputMapper = inputMapper;
+    this.outputMapper = outputMapper;
   }
 
   @Override

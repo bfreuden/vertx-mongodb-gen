@@ -23,6 +23,7 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscription;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class PublisherAdapter<T> implements ReadStream<T> {
 
@@ -32,6 +33,7 @@ public class PublisherAdapter<T> implements ReadStream<T> {
 
     private final Context context;
     private final Publisher<T> publisher;
+    private final Function<T, T> mapper;
     private final InboundBuffer<T> internalQueue;
     private final int batchSize;
 
@@ -43,10 +45,15 @@ public class PublisherAdapter<T> implements ReadStream<T> {
     private Subscription subscription;
 
     public PublisherAdapter(Context context, Publisher<T> publisher, int batchSize) {
+        this(context, publisher, null, batchSize);
+    }
+
+    public PublisherAdapter(Context context, Publisher<T> publisher, Function<T, T> mapper, int batchSize) {
         Objects.requireNonNull(context, "context is null");
         Objects.requireNonNull(publisher, "publisher is null");
         this.context = context;
         this.publisher = publisher;
+        this.mapper = mapper;
         this.batchSize = batchSize > 0 ? batchSize : 256;
         internalQueue = new InboundBuffer<T>(context);
         state = State.IDLE;
@@ -148,7 +155,12 @@ public class PublisherAdapter<T> implements ReadStream<T> {
             }
             receivedNotDelivered--;
         }
-        handler.handle(item);
+        try {
+            handler.handle(mapper == null ? item : mapper.apply(item));
+        } catch (Throwable error) {
+            handleException(error);
+            return;
+        }
         State s;
         boolean requestMore;
         synchronized (this) {

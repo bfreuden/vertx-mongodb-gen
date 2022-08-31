@@ -22,30 +22,58 @@ import org.reactivestreams.Subscription;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class ListResultSubscriber<T> implements Subscriber<T> {
 
     private final List<T> received = new ArrayList<>();
     private final MongoClientContext clientContext;
     private final Promise<List<T>> promise;
+    private final Function<T, T> mapper;
     private final int maxItems;
     private Subscription subscription;
     private boolean completed;
 
-    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise) {
+//    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise) {
+//        Objects.requireNonNull(clientContext, "clientContext is null");
+//        Objects.requireNonNull(promise, "promise is null");
+//        this.clientContext = clientContext;
+//        this.promise = promise;
+//        this.maxItems = -1;
+//        this.mapper = null;
+//    }
+//
+//    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise, int maxItems) {
+//        Objects.requireNonNull(clientContext, "clientContext is null");
+//        Objects.requireNonNull(promise, "promise is null");
+//        if (maxItems < 0)
+//            throw new IllegalArgumentException("maxItems must be non-negative");
+//        this.clientContext = clientContext;
+//        this.promise = promise;
+//        this.maxItems = maxItems;
+//        this.mapper = null;
+//    }
+
+    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise, Function<T, T> mapper) {
         Objects.requireNonNull(clientContext, "clientContext is null");
         Objects.requireNonNull(promise, "promise is null");
+        // commented-out on purpose
+        // Objects.requireNonNull(mapper, "mapper is null");
         this.clientContext = clientContext;
+        this.mapper = mapper;
         this.promise = promise;
         this.maxItems = -1;
     }
 
-    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise, int maxItems) {
+    public ListResultSubscriber(MongoClientContext clientContext, Promise<List<T>> promise, Function<T, T> mapper, int maxItems) {
         Objects.requireNonNull(clientContext, "clientContext is null");
         Objects.requireNonNull(promise, "promise is null");
+        // commented-out on purpose
+        // Objects.requireNonNull(mapper, "mapper is null");
         if (maxItems < 0)
             throw new IllegalArgumentException("maxItems must be non-negative");
         this.clientContext = clientContext;
+        this.mapper = mapper;
         this.promise = promise;
         this.maxItems = maxItems;
     }
@@ -58,7 +86,13 @@ public class ListResultSubscriber<T> implements Subscriber<T> {
 
     @Override
     public void onNext(T t) {
-        received.add(t);
+        try {
+            received.add(mapper == null ? t : mapper.apply(t));
+        } catch (Throwable error) {
+            subscription.cancel();
+            promise.fail(error);
+            return;
+        }
         if (maxItems != -1 && received.size() >= maxItems) {
             completed = true;
             subscription.cancel();

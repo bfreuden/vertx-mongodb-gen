@@ -20,12 +20,14 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class SingleResultSubscriber<T> implements Subscriber<T> {
 
     private T received;
     protected final MongoClientContext clientContext;
     private final Promise<T> promise;
+    private final Function<T, T> mapper;
     private Subscription subscription;
     private boolean completed;
 
@@ -34,6 +36,17 @@ public class SingleResultSubscriber<T> implements Subscriber<T> {
         Objects.requireNonNull(promise, "promise is null");
         this.clientContext = clientContext;
         this.promise = promise;
+        this.mapper = null;
+    }
+
+    public SingleResultSubscriber(MongoClientContext clientContext, Promise<T> promise, Function<T, T> mapper) {
+        Objects.requireNonNull(clientContext, "clientContext is null");
+        Objects.requireNonNull(promise, "promise is null");
+        // commented-out on purpose
+        // Objects.requireNonNull(mapper, "mapper is null");
+        this.clientContext = clientContext;
+        this.promise = promise;
+        this.mapper = mapper;
     }
 
     @Override
@@ -49,7 +62,12 @@ public class SingleResultSubscriber<T> implements Subscriber<T> {
             completed = true;
             subscription.cancel();
             clientContext.getContext().runOnContext(ar -> {
-                promise.complete(received);
+                try {
+                    promise.complete(mapper == null ? received : mapper.apply(received));
+                } catch (Throwable error) {
+                    promise.fail(error);
+                    subscription.cancel();
+                }
             });
         }
     }
@@ -65,7 +83,7 @@ public class SingleResultSubscriber<T> implements Subscriber<T> {
     public void onComplete() {
         if (!completed) {
             clientContext.getContext().runOnContext(ar -> {
-                promise.complete(received);
+                promise.complete(null);
             });
         }
     }

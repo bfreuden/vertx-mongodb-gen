@@ -7,6 +7,8 @@ import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettingsInitializer;
 
+import java.util.function.Function;
+
 /**
  * Client configuration
  */
@@ -140,4 +142,11 @@ public class ClientConfig {
         return this.initializer;
     }
 
+    public Function<JsonObject, JsonObject> getInputMapper() {
+        return null;
+    }
+
+    public Function<JsonObject, JsonObject> getOutputMapper() {
+        return null;
+    }
 }

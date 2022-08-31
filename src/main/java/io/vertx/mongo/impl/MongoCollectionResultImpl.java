@@ -6,6 +6,7 @@ import io.vertx.mongo.MongoCollectionResult;
 import org.reactivestreams.Publisher;
 
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class MongoCollectionResultImpl<TDocument> extends MongoResultImpl<TDocument> implements MongoCollectionResult<TDocument> {
@@ -32,6 +33,31 @@ public class MongoCollectionResultImpl<TDocument> extends MongoResultImpl<TDocum
 
     public MongoCollectionResultImpl(Supplier<Publisher<Void>> toCollectionPublisher, MongoClientContext clientContext, Publisher<TDocument> publisher, Supplier<Publisher<TDocument>> firstPublisher, int batchSize) {
         super(clientContext, publisher, firstPublisher, batchSize);
+        Objects.requireNonNull(toCollectionPublisher, "toCollectionPublisher is null");
+        this.toCollectionPublisher = toCollectionPublisher;
+    }
+
+
+    public MongoCollectionResultImpl(Supplier<Publisher<Void>> toCollectionPublisher, MongoClientContext clientContext, Publisher<TDocument> publisher, Function<TDocument, TDocument> mapper) {
+        super(clientContext, publisher, mapper);
+        Objects.requireNonNull(toCollectionPublisher, "toCollectionPublisher is null");
+        this.toCollectionPublisher = toCollectionPublisher;
+    }
+
+    public MongoCollectionResultImpl(Supplier<Publisher<Void>> toCollectionPublisher, MongoClientContext clientContext, Publisher<TDocument> publisher, Function<TDocument, TDocument> mapper, int batchSize) {
+        super(clientContext, publisher, mapper, batchSize);
+        Objects.requireNonNull(toCollectionPublisher, "toCollectionPublisher is null");
+        this.toCollectionPublisher = toCollectionPublisher;
+    }
+
+    public MongoCollectionResultImpl(Supplier<Publisher<Void>> toCollectionPublisher, MongoClientContext clientContext, Publisher<TDocument> publisher, Function<TDocument, TDocument> mapper, Supplier<Publisher<TDocument>> firstPublisher) {
+        super(clientContext, publisher, mapper, firstPublisher);
+        Objects.requireNonNull(toCollectionPublisher, "toCollectionPublisher is null");
+        this.toCollectionPublisher = toCollectionPublisher;
+    }
+
+    public MongoCollectionResultImpl(Supplier<Publisher<Void>> toCollectionPublisher, MongoClientContext clientContext, Publisher<TDocument> publisher, Function<TDocument, TDocument> mapper, Supplier<Publisher<TDocument>> firstPublisher, int batchSize) {
+        super(clientContext, publisher, mapper, firstPublisher, batchSize);
         Objects.requireNonNull(toCollectionPublisher, "toCollectionPublisher is null");
         this.toCollectionPublisher = toCollectionPublisher;
     }
