@@ -18,7 +18,7 @@ public class GridFSDownloadResultImpl extends MongoResultImpl<Buffer> implements
     private final GridFSDownloadPublisher gridFSPublisher;
 
     public GridFSDownloadResultImpl(MongoClientContext clientContext, GridFSDownloadPublisher gridFSPublisher) {
-        super(clientContext, new MappingPublisher<>(gridFSPublisher, ConversionUtilsImpl.INSTANCE::toBuffer));
+        super(clientContext, new MappingPublisher<>(gridFSPublisher, clientContext.getConversionUtils()::toBuffer));
         this.gridFSPublisher =  gridFSPublisher;
     }
 

@@ -35,7 +35,6 @@ public abstract class MongoClientBase implements MongoClient {
     private final MongoHolder holder;
     protected final MongoClientContext clientContext;
     protected final com.mongodb.reactivestreams.client.MongoClient wrapped;
-    private final CodecRegistry codecRegistry;
 
     protected MongoClientBase(Vertx vertx, ClientConfig config, String dataSourceName) {
         Objects.requireNonNull(vertx);
@@ -43,10 +42,9 @@ public abstract class MongoClientBase implements MongoClient {
         Objects.requireNonNull(dataSourceName);
         this.vertx = (VertxInternal) vertx;
         this.creatingContext = this.vertx.getOrCreateContext();
-        this.clientContext = new MongoClientContext(this.vertx, creatingContext, config);
         this.holder = lookupHolder(dataSourceName);
+        this.clientContext = new MongoClientContext(this.vertx, creatingContext, this.holder.codecRegistry, config);
         this.wrapped = holder.mongo(config);
-        this.codecRegistry = holder.codecRegistry;
         creatingContext.addCloseHook(this);
     }
 

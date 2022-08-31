@@ -15,17 +15,10 @@
 //
 package io.vertx.mongo.impl;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.VertxInternal;
-import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.ClientConfig;
-import org.bson.codecs.*;
-import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-
-import java.util.function.Function;
 
 public final class MongoClientContext {
 
@@ -33,11 +26,11 @@ public final class MongoClientContext {
     private final ContextInternal context;
     private final ClientConfig config;
     private final ConversionUtils conversionUtils;
-    public MongoClientContext(VertxInternal vertx, ContextInternal context, ClientConfig config) {
+    public MongoClientContext(VertxInternal vertx, ContextInternal context, CodecRegistry codecRegistry, ClientConfig config) {
         this.vertx = vertx;
         this.context = context;
         this.config = config;
-        conversionUtils = ConversionUtilsImpl.INSTANCE;
+        conversionUtils = new ConversionUtilsImpl(codecRegistry, config.getInputMapper(), config.getOutputMapper());
     }
 
     public VertxInternal getVertx() {
