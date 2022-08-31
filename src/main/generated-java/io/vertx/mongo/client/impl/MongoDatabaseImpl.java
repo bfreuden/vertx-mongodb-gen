@@ -607,7 +607,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     return clientContext;
   }
 
-  public MongoDatabase toDriverClass() {
+  public MongoDatabase toDriverClass(MongoClientContext clientContext) {
     return wrapped;
   }
 }

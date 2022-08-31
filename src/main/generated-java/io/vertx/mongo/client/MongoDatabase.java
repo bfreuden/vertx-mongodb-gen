@@ -628,5 +628,5 @@ public interface MongoDatabase {
    * @return mongo object
    * @hidden
    */
-  com.mongodb.reactivestreams.client.MongoDatabase toDriverClass();
+  com.mongodb.reactivestreams.client.MongoDatabase toDriverClass(MongoClientContext clientContext);
 }

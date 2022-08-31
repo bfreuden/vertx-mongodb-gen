@@ -44,11 +44,11 @@ import java.lang.Void;
  */
 public interface GridFSBucket {
   static GridFSBucket create(MongoDatabase database) {
-    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass()));
+    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass(((MongoDatabaseImpl)database).getClientContext())));
   }
 
   static GridFSBucket create(MongoDatabase database, String bucketName) {
-    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass(), bucketName));
+    return new GridFSBucketImpl(((MongoDatabaseImpl)database).getClientContext(), GridFSBuckets.create(database.toDriverClass(((MongoDatabaseImpl)database).getClientContext()), bucketName));
   }
 
   /**
