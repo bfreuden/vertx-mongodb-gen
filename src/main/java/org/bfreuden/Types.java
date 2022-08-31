@@ -1,6 +1,7 @@
 package org.bfreuden;
 
 import com.mongodb.*;
+import com.mongodb.connection.ClusterDescription;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import io.vertx.core.buffer.Buffer;
@@ -26,6 +27,7 @@ public class Types {
         ACCEPTED.add(CodecRegistry.class.getName());
         ACCEPTED.add(MongoNamespace.class.getName());
         ACCEPTED.add(TransactionOptions.class.getName());
+        ACCEPTED.add(ClusterDescription.class.getName());
 
         ACCEPTED_JSON_MAPPABLE.add(ReadConcern.class.getName());
         ACCEPTED_JSON_MAPPABLE.add(WriteConcern.class.getName());

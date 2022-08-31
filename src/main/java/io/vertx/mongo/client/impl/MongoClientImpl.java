@@ -18,6 +18,7 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
+import com.mongodb.connection.ClusterDescription;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.ListDatabasesPublisher;
 import io.vertx.core.AsyncResult;
@@ -37,7 +38,6 @@ import io.vertx.mongo.client.ListDatabasesOptions;
 import io.vertx.mongo.client.MongoClient;
 import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
-import io.vertx.mongo.connection.ClusterDescription;
 import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.MappingPublisher;
 import io.vertx.mongo.impl.MongoResultImpl;
@@ -259,8 +259,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
 
   @Override
   public ClusterDescription getClusterDescription() {
-    com.mongodb.connection.ClusterDescription __result = wrapped.getClusterDescription();
-    return ClusterDescription.fromDriverClass(__result);
+    return wrapped.getClusterDescription();
   }
 
   public com.mongodb.reactivestreams.client.MongoClient toDriverClass() {

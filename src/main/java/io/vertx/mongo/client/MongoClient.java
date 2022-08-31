@@ -15,6 +15,7 @@
 //
 package io.vertx.mongo.client;
 
+import com.mongodb.connection.ClusterDescription;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Closeable;
 import io.vertx.core.Future;
@@ -26,7 +27,6 @@ import io.vertx.mongo.ClientSessionOptions;
 import io.vertx.mongo.MongoResult;
 import io.vertx.mongo.client.impl.MongoClientImpl;
 import io.vertx.mongo.client.model.changestream.ChangeStreamDocument;
-import io.vertx.mongo.connection.ClusterDescription;
 import java.lang.String;
 import java.lang.Void;
 import java.util.UUID;
