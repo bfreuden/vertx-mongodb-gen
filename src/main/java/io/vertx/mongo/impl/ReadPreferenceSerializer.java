@@ -18,7 +18,12 @@ public class ReadPreferenceSerializer extends OptionSerializer<ReadPreference> {
 
     @Override
     protected void fromJson(JsonObject jsonValue) {
-        throw new IllegalStateException("not implemented");
+        if (jsonValue.size() != 1)
+            throw new IllegalStateException("not implemented");
+        String mode = jsonValue.getString("mode");
+        if (mode == null)
+            throw new IllegalStateException("not implemented");
+        this.value = ReadPreference.valueOf(mode);
     }
 
     @Override

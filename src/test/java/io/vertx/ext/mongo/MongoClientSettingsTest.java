@@ -1,5 +1,6 @@
 package io.vertx.ext.mongo;
 
+import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettings;
@@ -15,8 +16,10 @@ public class MongoClientSettingsTest {
 
     @Test
     public void basicTest() {
-        // build a real object
+        // build a real object including com.mongodb.ReadPreference and com.mongodb.ServerAddress
+        // mongo driver objects that we don't want to converter into a data object
         MongoClientSettings settings = new MongoClientSettings()
+                .setReadPreference(ReadPreference.nearest())
                 .setClusterSettings(new ClusterSettings()
                         .setHosts(Collections.singletonList(new ServerAddress("localhost", 27018))));
         // serialize to json for further usage
@@ -27,5 +30,6 @@ public class MongoClientSettingsTest {
         assertNotNull(settings2.getClusterSettings().getHosts());
         assertEquals(1, settings2.getClusterSettings().getHosts().size());
         assertEquals("localhost:27018", settings2.getClusterSettings().getHosts().get(0).toString());
+        assertEquals(ReadPreference.nearest(), settings2.getReadPreference());
     }
 }
