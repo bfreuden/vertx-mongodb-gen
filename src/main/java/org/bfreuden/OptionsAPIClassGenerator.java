@@ -20,7 +20,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
         this.clientSettingsOption = clientSettingsOption;
         this.publisherOption = publisherOption;
         this.isDataObject = classDoc.typeParameters().length == 0 && !resultBean
-                // FIXME HACK
+                // TODO HACK
                 && !classDoc.name().equals("EncryptOptions");
     }
 

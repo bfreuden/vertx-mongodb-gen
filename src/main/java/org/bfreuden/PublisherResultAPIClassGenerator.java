@@ -46,7 +46,7 @@ public class PublisherResultAPIClassGenerator extends APIClassGenerator {
         List<MethodDoc> methods = new ArrayList<>(Arrays.stream(classDoc.methods())
                 .filter(m -> !m.name().equals("toString"))
                 .filter(m -> !m.name().equals("hashCode"))
-                .filter(m -> !m.name().equals("withDocumentClass")) // FIXME
+                .filter(m -> !m.name().equals("withDocumentClass")) // TODO ??
                 .filter(m -> !m.name().equals("equals"))
                 .filter(m -> !m.returnType().qualifiedTypeName().equals(classDoc.qualifiedTypeName())) // ignore fluent setters
                 .collect(Collectors.toList()));

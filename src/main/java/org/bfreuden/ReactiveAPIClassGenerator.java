@@ -355,7 +355,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                         TypeName publisherType = ParameterizedTypeName.get(method.returnType.publisherClassName, ClassName.get(JsonObject.class));
                         paramNames.add("$T.class");
                         methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", publisherType, ClassName.get(JsonObject.class));
-                        // FIXME HACK
+                        // TODO HACK for change streams?
                         TypeName mapperFirstParam;
                         if (method.returnType.publishedType.mongoType.toString().contains("ChangeStream")) {
                             mapperFirstParam = ParameterizedTypeName.get(ClassName.get(ChangeStreamDocument.class), ClassName.get(JsonObject.class));

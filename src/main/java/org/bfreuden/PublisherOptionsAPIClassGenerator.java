@@ -38,11 +38,11 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
         List<MethodDoc> methods = new ArrayList<>(Arrays.stream(classDoc.methods())
                 .filter(m -> !m.name().equals("toString"))
                 .filter(m -> !m.name().equals("hashCode"))
-                .filter(m -> !m.name().equals("getGridFSFile")) // FIXME do something more generic for publishers
-                .filter(m -> !m.name().equals("withDocumentClass")) // FIXME do something more generic for publishers
-                .filter(m -> !m.name().equals("toCollection")) // FIXME do something more generic for publishers
-                .filter(m -> !m.name().equals("getId")) // FIXME do something more generic for publishers
-                .filter(m -> !m.name().equals("getObjectId")) // FIXME do something more generic for publishers
+                .filter(m -> !m.name().equals("getGridFSFile")) // TODO do something more generic for publishers
+                .filter(m -> !m.name().equals("withDocumentClass")) // TODO do something more generic for publishers
+                .filter(m -> !m.name().equals("toCollection")) // TODO do something more generic for publishers
+                .filter(m -> !m.name().equals("getId")) // FIXME this method is missing in the generated classes
+                .filter(m -> !m.name().equals("getObjectId")) // FIXME this method is missing in the generated classes
                 .filter(m -> !m.name().equals("equals"))
                 .collect(Collectors.toList()));
 

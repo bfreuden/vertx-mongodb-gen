@@ -470,7 +470,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                 // write field
                 FieldSpec.Builder fieldBuilder = FieldSpec.builder(option.type.vertxType, option.name).addModifiers(Modifier.PRIVATE);
                 if (option.mongoJavadoc != null && !isSerializer) {
-                    // FIXME javadoc hack
+                    // TODO javadoc hack
                     option.mongoJavadoc = option.mongoJavadoc.replace("hint(Bson)", "setHint(JsonObject)");
                     Optional<String> firstParam = Arrays.stream(option.mongoJavadoc.split("\n+")).filter(it -> it.contains("@param")).findFirst();
                     if (firstParam.isPresent()) {

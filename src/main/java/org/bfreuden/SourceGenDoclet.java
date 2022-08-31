@@ -133,7 +133,7 @@ public class SourceGenDoclet {
     private static void generateMainSources(File genSourceDir, InspectionContext inspectionContext, Graph<String, DefaultEdge> graph) throws IOException {
 
         String sourceSet = "/";
-        // FIXME hardcoded?
+        // TODO hardcoded?
 //        inspectionContext.optionsApiClasses.remove("com.mongodb.TransactionOptions");
 //        inspectionContext.builderClasses.remove("com.mongodb.TransactionOptions.Builder");
 
@@ -296,7 +296,7 @@ public class SourceGenDoclet {
     }
 
     private static Graph<String, DefaultEdge> sugGraphFrom(Graph<String, DefaultEdge> graph, String... startVertices) {
-        //FIXME in the end there might be missing edges between the connected components of start vertices
+        //TODO in the end there might be missing edges between the connected components of start vertices
         Set<String> vertices = new HashSet<>();
         Set<DefaultEdge> edges = new HashSet<>();
         for (String vertex: startVertices) {
