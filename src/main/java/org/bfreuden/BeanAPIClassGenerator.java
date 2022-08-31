@@ -134,6 +134,7 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
 
     private void addToMongoMethod(TypeSpec.Builder typeBuilder) {
         MethodSpec.Builder toMongo = MethodSpec.methodBuilder("toDriverClass")
+                .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                 .addJavadoc("@return MongoDB driver object\n@hidden")
                 .addModifiers(Modifier.PUBLIC);
         TypeName returnType;

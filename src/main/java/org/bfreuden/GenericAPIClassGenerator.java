@@ -145,6 +145,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
 
     protected MethodSpec.Builder fromDriverClassBuilder() {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("fromDriverClass")
+                .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 
         methodBuilder.addJavadoc("@param from from\n@return mongo object\n@hidden");
@@ -342,16 +343,21 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
             params = "builder";
             toMongo = MethodSpec.methodBuilder(methodName="initializeDriverBuilderClass")
                     .addJavadoc("@param builder MongoDB driver builder\n@hidden")
+                    .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                     .addParameter(ClassName.bestGuess(classDoc.qualifiedTypeName() + ".Builder"), "builder")
                     .addModifiers(Modifier.PUBLIC);
         } else {
             toMongo = MethodSpec.methodBuilder(methodName="toDriverClass")
+                    .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                     .addJavadoc("@return MongoDB driver object\n@hidden")
                     .addModifiers(Modifier.PUBLIC)
                     .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
         }
         if (isDelegatingClass) {
-            toMongo.addStatement((params.isEmpty() ? "return " : "") + ("this.serializer." + methodName + "(" + params + ")"));
+            if (params.isEmpty())
+                toMongo.addStatement("return this.serializer." + methodName + "(clientContext)");
+            else
+                toMongo.addStatement("this.serializer." + methodName + "(clientContext, " + params + ")");
         } else {
             List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
             StringJoiner ctorParams = new StringJoiner(", ");
@@ -381,9 +387,9 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         if (option.withTimeUnit) {
             toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ", $T.MILLISECONDS)", TimeUnit.class);
         } else if (option.isBlock) {
-            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(_builder -> " + option.name + ".initializeDriverBuilderClass(_builder))");
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(_builder -> " + option.name + ".initializeDriverBuilderClass(clientContext, _builder))");
         } else if (option.type.toMongoEnabledType) {
-            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".toDriverClass())");
+            toMongoBuilder.addStatement(configurableName + "." + option.mongoSetterName + "(this." + option.name + ".toDriverClass(clientContext))");
         } else if (option.type.mapper != null) {
             toMongoBuilder.addStatement(option.type.mapper.asStatementFromExpression(configurableName + "." + option.mongoSetterName + "(%s)", "this." + option.name));
         } else {
@@ -432,12 +438,13 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
         MethodSpec.Builder toDriverClassOrInitDriverBuilderClassMethod = toDriverClassOrInitDriverBuilderClassMethod(isDelegatingClass);
         if (hasBuilder) {
             MethodSpec.Builder toMongo2 = MethodSpec.methodBuilder("toDriverClass")
+                    .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                     .addModifiers(Modifier.PUBLIC)
                     .returns(ClassName.bestGuess(classDoc.qualifiedTypeName()));
             if (!isSerializer)
                 toMongo2.addJavadoc("@return MongoDB driver object\n@hidden");
             if (isDelegatingClass) {
-                toMongo2.addStatement("return this.serializer.toDriverClass()");
+                toMongo2.addStatement("return this.serializer.toDriverClass(clientContext)");
             } else {
                 StringJoiner ctorParams = new StringJoiner(", ");
                 List<Option> requiredOptions = optionsByName.values().stream().filter(it -> it.mandatory).collect(Collectors.toList());
@@ -451,7 +458,7 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     ctorParams.add("this." +option.name);
                 }
                 toMongo2.addStatement("$T builder = $T.builder(" + ctorParams + ")", ClassName.bestGuess(classDoc.qualifiedTypeName()+".Builder"), ClassName.bestGuess(classDoc.qualifiedTypeName()));
-                toMongo2.addStatement("initializeDriverBuilderClass(builder)");
+                toMongo2.addStatement("initializeDriverBuilderClass(clientContext, builder)");
                 toMongo2.addStatement("return builder.build()");
             }
             type.addMethod(toMongo2.build());

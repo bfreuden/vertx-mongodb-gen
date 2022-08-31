@@ -81,7 +81,7 @@ public class ConversionUtilsGenerator {
     void generateSource(File baseDir) throws IOException {
         TypeSpec.Builder conversionUtils = TypeSpec
                 .interfaceBuilder("ConversionUtils")
-                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                .addModifiers(Modifier.PUBLIC)
                 .addJavadoc("@hidden");
         List<String> sorted = conversions.values().stream().sorted().collect(Collectors.toList());
         TreeSet<String> methodNames = new TreeSet<>(sorted);

@@ -77,6 +77,7 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
         TypeName publisherTypeWithParam = ParameterizedTypeName.get(publisherType, TypeVariableName.get("TDocument"));
         String paramDoc = hasParam ? "@param <TDocument> document class\n" : "";
         MethodSpec.Builder toMongo = MethodSpec.methodBuilder("initializePublisher")
+                .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                 .addJavadoc("@param publisher MongoDB driver publisher\n" + paramDoc + "@hidden")
                 .addParameter(ParameterSpec.builder(hasParam ? publisherTypeWithParam : publisherType, "publisher").build())
                 .addModifiers(Modifier.PUBLIC)

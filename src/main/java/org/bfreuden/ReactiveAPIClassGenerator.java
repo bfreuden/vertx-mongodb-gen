@@ -195,10 +195,12 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     .addParameter(ClassName.bestGuess("io.vertx.mongo.client.MongoDatabase"), "database")
                     .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
                     .returns(fluentReturnType)
-                    .addStatement("return new $T((($T)database).getClientContext(), $T.create(database.toDriverClass()))",
+                    .addStatement("return new $T((($T)database).getClientContext(), $T.create(database.toDriverClass((($T)database).getClientContext())))",
+
                             ClassName.bestGuess("io.vertx.mongo.client.gridfs.impl.GridFSBucketImpl"),
                             ClassName.bestGuess("io.vertx.mongo.client.impl.MongoDatabaseImpl"),
-                            ClassName.get(GridFSBuckets.class)
+                            ClassName.get(GridFSBuckets.class),
+                            ClassName.bestGuess("io.vertx.mongo.client.impl.MongoDatabaseImpl")
                     )
                     .build());
             typeBuilder.addMethod(MethodSpec.methodBuilder("create")
@@ -206,10 +208,11 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     .addParameter(ClassName.get(String.class), "bucketName")
                     .addModifiers(Modifier.STATIC, Modifier.PUBLIC)
                     .returns(fluentReturnType)
-                    .addStatement("return new $T((($T)database).getClientContext(), $T.create(database.toDriverClass(), bucketName))",
+                    .addStatement("return new $T((($T)database).getClientContext(), $T.create(database.toDriverClass((($T)database).getClientContext()), bucketName))",
                             ClassName.bestGuess("io.vertx.mongo.client.gridfs.impl.GridFSBucketImpl"),
                             ClassName.bestGuess("io.vertx.mongo.client.impl.MongoDatabaseImpl"),
-                            ClassName.get(GridFSBuckets.class)
+                            ClassName.get(GridFSBuckets.class),
+                            ClassName.bestGuess("io.vertx.mongo.client.impl.MongoDatabaseImpl")
                     )
                     .build());
         }
@@ -218,6 +221,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
 
         typeBuilder.addMethod(
                 MethodSpec.methodBuilder("toDriverClass")
+                        .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                         .addJavadoc("@return mongo object\n@hidden")
                         .addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC)
                         .returns(wrappedType)
@@ -277,6 +281,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         }
         typeBuilder.addMethod(
                 MethodSpec.methodBuilder("toDriverClass")
+                        .addParameter(ClassName.bestGuess("io.vertx.mongo.impl.MongoClientContext"), "clientContext")
                         .addModifiers(Modifier.PUBLIC)
                         .returns(wrappedType)
                         .addStatement("return wrapped")
@@ -409,7 +414,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
             publisherVarName = publisherVarNames[0];
         if (currentMethodHasPublisherOptions) {
             String optionsParamName = method.returnType.publisherClassName.toString().endsWith("GridFSDownloadPublisher") ? "controlOptions" : "options";
-            methodBuilder.addStatement(String.format("%s.initializePublisher(%s)", optionsParamName, "__publisher"));
+            methodBuilder.addStatement(String.format("%s.initializePublisher(clientContext, %s)", optionsParamName, "__publisher"));
         }
         InspectionContext.PublisherDesc publisherDesc = context.publisherDescriptions.get(method.returnType.publisherClassName.toString());
         ClassName resultClassName = ClassName.bestGuess("io.vertx.mongo.MongoResult");

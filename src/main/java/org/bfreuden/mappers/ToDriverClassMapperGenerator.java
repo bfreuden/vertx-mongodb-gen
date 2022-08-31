@@ -7,7 +7,7 @@ public class ToDriverClassMapperGenerator extends MapperGenerator {
     @Override
     public CodeBlockSource getExpressionSource(String value) {
         return new CodeBlockSource(
-                String.format(value.indexOf(' ') != -1 ? "(%s).toDriverClass()" : "%s.toDriverClass()", value),
+                String.format(value.indexOf(' ') != -1 ? "(%s).toDriverClass(clientContext)" : "%s.toDriverClass(clientContext)", value),
                 Collections.emptyList()
         );
     }
@@ -15,7 +15,7 @@ public class ToDriverClassMapperGenerator extends MapperGenerator {
     @Override
     public CodeBlockSource getMapperSource() {
         return new CodeBlockSource(
-                "_item -> _item.toDriverClass()",
+                "_item -> _item.toDriverClass(clientContext)",
                 Collections.emptyList()
         );
     }

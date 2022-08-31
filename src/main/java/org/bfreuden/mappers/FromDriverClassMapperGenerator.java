@@ -15,7 +15,7 @@ public class FromDriverClassMapperGenerator extends MapperGenerator {
     @Override
     public CodeBlockSource getExpressionSource(String value) {
         return new CodeBlockSource(
-                String.format("$T.fromDriverClass(%s)", value),
+                String.format("$T.fromDriverClass(clientContext, %s)", value),
                 Collections.singletonList(vertxTypeName)
         );
     }
@@ -23,7 +23,7 @@ public class FromDriverClassMapperGenerator extends MapperGenerator {
     @Override
     public CodeBlockSource getMapperSource() {
         return new CodeBlockSource(
-                "$T::fromDriverClass",
+                "_item -> $T.fromDriverClass(clientContext, _item)",
                 Collections.singletonList(vertxTypeName)
         );
     }
