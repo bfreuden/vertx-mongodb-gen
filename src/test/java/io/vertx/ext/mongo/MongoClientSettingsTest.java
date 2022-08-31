@@ -26,7 +26,9 @@ public class MongoClientSettingsTest {
         // serialize to json for further usage
         JsonObject jsonSettings = settings.toJson();
         System.out.println(jsonSettings);
+        // de-serialize from json
         MongoClientSettings settings2 = new MongoClientSettings(jsonSettings);
+        // check that no value is lost
         assertNotNull(settings2.getClusterSettings());
         assertNotNull(settings2.getClusterSettings().getHosts());
         assertEquals(1, settings2.getClusterSettings().getHosts().size());
