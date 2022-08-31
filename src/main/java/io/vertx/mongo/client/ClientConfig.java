@@ -1,15 +1,11 @@
 package io.vertx.mongo.client;
 
-import com.mongodb.AutoEncryptionSettings;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.connection.*;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettingsInitializer;
-
-import java.util.function.Consumer;
 
 @DataObject(
         generateConverter = true
