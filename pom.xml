@@ -115,6 +115,7 @@
                         <configuration>
                             <sources>
                                 <source>${project.build.directory}/generated-sources</source>
+                                <source>src/main/generated-java</source>
                             </sources>
                         </configuration>
                     </execution>

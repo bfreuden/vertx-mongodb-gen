@@ -84,7 +84,7 @@ public class SourceGenDoclet {
                 System.out.println("https://mongodb.github.io/mongo-java-driver/4.1/apidocs/mongodb-driver-core/" +clazz.replace('.', '/') + ".html");
 
         }
-        File genSourceDir = new File("src/main/java");
+        File genSourceDir = new File("src/main/generated-java");
 
         generateMainSources(genSourceDir, inspectionContext, graphNoInit);
 
