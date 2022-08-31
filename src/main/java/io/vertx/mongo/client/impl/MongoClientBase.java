@@ -43,8 +43,8 @@ public abstract class MongoClientBase implements MongoClient {
         this.vertx = (VertxInternal) vertx;
         this.creatingContext = this.vertx.getOrCreateContext();
         this.holder = lookupHolder(dataSourceName);
-        this.clientContext = new MongoClientContext(this.vertx, creatingContext, this.holder.codecRegistry, config);
         this.wrapped = holder.mongo(config);
+        this.clientContext = new MongoClientContext(this.vertx, creatingContext, this.holder.codecRegistry, this.holder.config);
         creatingContext.addCloseHook(this);
     }
 
@@ -95,6 +95,7 @@ public abstract class MongoClientBase implements MongoClient {
         Runnable closeRunner;
         int refCount = 1;
         CodecRegistry codecRegistry;
+        ClientConfig config;
 
         MongoHolder(Runnable closeRunner) {
             this.closeRunner = closeRunner;
@@ -109,6 +110,8 @@ public abstract class MongoClientBase implements MongoClient {
 
         synchronized com.mongodb.reactivestreams.client.MongoClient mongo(ClientConfig config) {
             if (mongo == null) {
+                config.initializeMappers();
+                this.config = config;
                 if (config.getMongoSettings() != null) {
                     mongo = MongoClients.create(config.getMongoSettings());
                     codecRegistry = config.getMongoSettings().getCodecRegistry();
@@ -118,7 +121,8 @@ public abstract class MongoClientBase implements MongoClient {
                             CodecRegistries.fromRegistries(
                                     commonCodecRegistry,
                                     CodecRegistries.fromCodecs(
-                                            new JsonObjectCodec(new JsonObject().put("useObjectId", config.isUseObjectIds()))
+                                            new JsonObjectCodec(new JsonObject().put("useObjectId", true))
+//                                            new JsonObjectCodec(new JsonObject().put("useObjectId", config.isUseObjectIds()))
                                     )
                             )
                     );

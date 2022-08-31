@@ -6,6 +6,8 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettingsInitializer;
+import io.vertx.mongo.ObjectIdInputMapper;
+import io.vertx.mongo.ObjectIdOutputMapper;
 
 import java.util.function.Function;
 
@@ -23,6 +25,8 @@ public class ClientConfig {
     private boolean useObjectIds = false;
     private io.vertx.mongo.MongoClientSettings settings;
     private final MongoClientSettingsInitializer initializer = new MongoClientSettingsInitializer();
+    private Function<JsonObject, JsonObject> inputMapper;
+    private Function<JsonObject, JsonObject> outputMapper;
 
     public ClientConfig() {}
 
@@ -143,10 +147,20 @@ public class ClientConfig {
     }
 
     public Function<JsonObject, JsonObject> getInputMapper() {
-        return null;
+        return useObjectIds ? null : new ObjectIdInputMapper();
     }
 
     public Function<JsonObject, JsonObject> getOutputMapper() {
-        return null;
+        return useObjectIds ? null : new ObjectIdOutputMapper();
+    }
+
+    /**
+     * @hidden
+     */
+    public void initializeMappers() {
+        if (!useObjectIds) {
+            this.inputMapper = new ObjectIdInputMapper();
+            this.outputMapper = new ObjectIdOutputMapper();
+        }
     }
 }

@@ -372,6 +372,15 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                 }
 
                 methodBuilder.addStatement("__publisher.subscribe(new $T<>(clientContext, __promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
+                String publishedTypeString = method.returnType.publishedType.toString();
+                if (publishedTypeString.contains("TDocument")) {
+                    if (publishedTypeString.equals("TDocument"))
+                        methodBuilder.addComment("FIXME single map document");
+                    else
+                        methodBuilder.addComment("FIXME single map something based on document");
+                } else if (publishedTypeString.equals(JsonObject.class.getName())) {
+                    methodBuilder.addComment("FIXME single map JsonObject");
+                }
                 if (method.returnType.publishedType.mapper == null) {
                     methodBuilder.addStatement("return __promise.future()");
                 } else {
@@ -460,6 +469,15 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
             resultParamNames.add(String.format("%s::%s", publisherVarName, publisherDesc.toCollectionMethodName));
         resultParamNames.add("clientContext");
         resultParamNames.add(publisherVarName);
+        String publishedTypeString = method.returnType.publishedType.vertxType.toString();
+        if (publishedTypeString.contains("TDocument")) {
+            if (publishedTypeString.equals("TDocument"))
+                resultParamNames.add("outputMapper");
+            else
+                resultParamNames.add("outputMapper");
+        } else if (publishedTypeString.equals(JsonObject.class.getName())) {
+            resultParamNames.add("clientContext.getConfig().getOutputMapper()");
+        }
         if (publisherDesc != null && publisherDesc.firstMethodName != null)
             resultParamNames.add(String.format("%s::%s", publisherVarName, publisherDesc.firstMethodName));
         String publisherParamBracket = method.returnType.vertxType instanceof ParameterizedTypeName ? "<>" : "";

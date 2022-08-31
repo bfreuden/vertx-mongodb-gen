@@ -255,7 +255,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   @Override
   public MongoResult<JsonObject> listCollections() {
     ListCollectionsPublisher<JsonObject> __publisher = wrapped.listCollections(JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
   }
 
   @Override
@@ -264,9 +264,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first, __batchSize);
     } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
     }
   }
 
@@ -275,7 +275,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     ListCollectionsPublisher<JsonObject> __publisher = wrapped.listCollections(__clientSession, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
   }
 
   @Override
@@ -287,9 +287,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first, __batchSize);
     } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
     }
   }
 
@@ -558,7 +558,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(pipeline, "pipeline is null");
     List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__pipeline, JsonObject.class);
-    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
   }
 
   @Override
@@ -569,9 +569,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
-      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first, __batchSize);
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first, __batchSize);
     } else {
-      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
     }
   }
 
@@ -583,7 +583,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
     AggregatePublisher<JsonObject> __publisher = wrapped.aggregate(__clientSession, __pipeline, JsonObject.class);
-    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+    return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
   }
 
   @Override
@@ -597,9 +597,9 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
-      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first, __batchSize);
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first, __batchSize);
     } else {
-      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, __publisher::first);
+      return new MongoCollectionResultImpl<>(__publisher::toCollection, clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
     }
   }
 

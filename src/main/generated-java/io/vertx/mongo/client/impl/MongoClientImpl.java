@@ -86,7 +86,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<JsonObject> listDatabases() {
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
   }
 
   @Override
@@ -95,9 +95,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first, __batchSize);
     } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
     }
   }
 
@@ -106,7 +106,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(clientSession, "clientSession is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
     ListDatabasesPublisher<JsonObject> __publisher = wrapped.listDatabases(__clientSession, JsonObject.class);
-    return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+    return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
   }
 
   @Override
@@ -118,9 +118,9 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     options.initializePublisher(clientContext, __publisher);
     Integer __batchSize = options.getBatchSize();
     if (__batchSize != null) {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first, __batchSize);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first, __batchSize);
     } else {
-      return new MongoResultImpl<>(clientContext, __publisher, __publisher::first);
+      return new MongoResultImpl<>(clientContext, __publisher, clientContext.getConfig().getOutputMapper(), __publisher::first);
     }
   }
 

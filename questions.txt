@@ -16,9 +16,12 @@ squash some package names like model?
 FIXME:
 implement Serializer classes
 implement all ConversionUtilsImpl methods
+handle JsonArray to JsonArray mapping in conversionUtils for pipelines
+handle WriteModel mapping
 
 TODO:
 EncryptOptions not data object
+conversion utils contains unused methods
 implement Serializer classes
 implement all ConversionUtilsImpl methods
 possibility to post configure databases, collections, updateoptions, etc...

@@ -32,7 +32,8 @@ public class ConversionUtilsImpl implements ConversionUtils {
         this.inputMapper = inputMapper;
         this.outputMapper = outputMapper;
         this.jsonObjectCodec = codecRegistry.get(JsonObject.class);
-        this.documentCodec = codecRegistry.get(Document.class);
+        // FIXME
+        this.documentCodec = null;//codecRegistry.get(Document.class);
     }
 
     @Override
