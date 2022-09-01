@@ -28,12 +28,12 @@ implement Serializer classes
 implement all ConversionUtilsImpl methods
 possibility to post configure databases, collections, updateoptions, etc...
 rename package from io.vertx.mongo to io.vertx.ext.mongo
-support a kind of automatic mapping of dates (prevent having to deal with $date objects)
-json-based clientsetting
+support a kind of automatic mapping of dates (prevent having to deal with $date objects) => should be possible with input and output mappers
 split the project in 2: generation + client
 automate (maven) the download of mongo sources to run the doclet
 add mongodriverinformation when creating mongoclient
 missing data of gridfs upload publisher : getId() & getObjectId()
+  see if it makes sense right now without them
 add convenience methods:
  - dropdatabase(name)
  - dropcollection(name)
@@ -46,7 +46,10 @@ review unit tests and make a diff
 client encryption should return Buffer instead of Byte
 builder method + config for client encryption
 add @links to the mongo javadoc for each method
+rename useObjectId mode to mapObjectId mode
 
 migration:
 batch size always hardcoded to 1 when unspecified
 update don't return the new doc by default
+with useObjectId=false you can no longer create an _id with an "foo" value because it will be converted
+to an object id under the hood.
