@@ -352,6 +352,12 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     methodBuilder.addStatement(String.format("%s = mapDocList(%s, inputMapper)", param.name, param.name));
                 else
                     methodBuilder.addComment("FIXME handle mapping with inputMapper");
+            } else if (vertxTypeString.contains("JsonArray") && param.type.mapper == null) {
+                // should not happen
+                methodBuilder.addComment("FIXME handle JsonArray mapping");
+            } else if (vertxTypeString.contains("JsonObject") && param.type.mapper == null) {
+                // should not happen
+                methodBuilder.addComment("FIXME handle JsonObject mapping");
             }
         }
 
