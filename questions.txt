@@ -18,6 +18,7 @@ implement Serializer classes
 implement all ConversionUtilsImpl methods
 handle JsonArray to JsonArray mapping in conversionUtils for pipelines
 handle WriteModel mapping
+handle mapping of oid in InsertResult etc...
 
 TODO:
 EncryptOptions not data object
