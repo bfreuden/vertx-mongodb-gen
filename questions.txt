@@ -17,8 +17,11 @@ FIXME:
 implement Serializer classes
 implement all ConversionUtilsImpl methods
 handle mapping of oid in InsertResult etc...
+handle mapping of oid in ChangeStreamDocument
+
 
 TODO:
+rename gridfs hardocded function names caused by missing objectid class that exists now
 EncryptOptions not data object
 conversion utils contains unused methods
 implement Serializer classes
