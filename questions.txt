@@ -43,7 +43,6 @@ add convenience methods:
  - save (= replace + no need to provide the id)
  - get gridfs bucket from database
 review unit tests and make a diff
-install a replicaset to test watch methods
 client encryption should return Buffer instead of Byte
 builder method + config for client encryption
 add @links to the mongo javadoc for each method
