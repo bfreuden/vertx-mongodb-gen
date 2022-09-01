@@ -122,7 +122,7 @@ public class DataKeyOptions {
       result.keyAltNames(this.keyAltNames);
     }
     if (this.masterKey != null) {
-      result.masterKey(clientContext.getConversionUtils().toBsonDocument(this.masterKey));
+      result.masterKey(clientContext.getMapper().toBsonDocument(this.masterKey));
     }
     return result;
   }

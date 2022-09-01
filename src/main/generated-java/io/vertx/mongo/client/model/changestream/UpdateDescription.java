@@ -74,7 +74,7 @@ public class UpdateDescription {
       result.removedFieldsException = ex;
     }
     try {
-      result.updatedFields = clientContext.getConversionUtils().toJsonObject(from.getUpdatedFields());
+      result.updatedFields = clientContext.getMapper().toJsonObject(from.getUpdatedFields());
     } catch (Exception ex) {
       result.updatedFieldsException = ex;
     }

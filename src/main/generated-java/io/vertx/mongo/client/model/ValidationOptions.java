@@ -131,7 +131,7 @@ public class ValidationOptions {
       MongoClientContext clientContext) {
     com.mongodb.client.model.ValidationOptions result = new com.mongodb.client.model.ValidationOptions();
     if (this.validator != null) {
-      result.validator(clientContext.getConversionUtils().toBson(this.validator));
+      result.validator(clientContext.getMapper().toBson(this.validator));
     }
     if (this.validationLevel != null) {
       result.validationLevel(this.validationLevel);

@@ -154,7 +154,7 @@ public class ListDatabasesOptions {
       publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
     }
     if (this.filter != null) {
-      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
+      publisher.filter(clientContext.getMapper().toBson(this.filter));
     }
     if (this.nameOnly != null) {
       publisher.nameOnly(this.nameOnly);

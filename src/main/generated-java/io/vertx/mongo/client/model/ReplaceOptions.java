@@ -196,7 +196,7 @@ public class ReplaceOptions {
       result.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.hint != null) {
-      result.hint(clientContext.getConversionUtils().toBson(this.hint));
+      result.hint(clientContext.getMapper().toBson(this.hint));
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);

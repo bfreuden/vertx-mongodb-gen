@@ -137,21 +137,21 @@ public class UpdateManyModel<T> extends WriteModel<T> {
   public com.mongodb.client.model.UpdateManyModel<T> toDriverClass(
       MongoClientContext clientContext) {
     if (__ctorIndex == 0) {
-      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
-      Bson __update = clientContext.getConversionUtils().toBson(this.update);
+      Bson __filter = clientContext.getMapper().toBson(this.filter);
+      Bson __update = clientContext.getMapper().toBson(this.update);
       return new com.mongodb.client.model.UpdateManyModel<T>(__filter, __update);
     } else if (__ctorIndex == 1) {
-      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
-      Bson __update = clientContext.getConversionUtils().toBson(this.update);
+      Bson __filter = clientContext.getMapper().toBson(this.filter);
+      Bson __update = clientContext.getMapper().toBson(this.update);
       com.mongodb.client.model.UpdateOptions __options = this.options.toDriverClass(clientContext);
       return new com.mongodb.client.model.UpdateManyModel<T>(__filter, __update, __options);
     } else if (__ctorIndex == 2) {
-      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
-      List<? extends Bson> __updatePipeline = clientContext.getConversionUtils().toBsonList(this.updatePipeline);
+      Bson __filter = clientContext.getMapper().toBson(this.filter);
+      List<? extends Bson> __updatePipeline = clientContext.getMapper().toBsonList(this.updatePipeline);
       return new com.mongodb.client.model.UpdateManyModel<T>(__filter, __updatePipeline);
     } else if (__ctorIndex == 3) {
-      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
-      List<? extends Bson> __updatePipeline = clientContext.getConversionUtils().toBsonList(this.updatePipeline);
+      Bson __filter = clientContext.getMapper().toBson(this.filter);
+      List<? extends Bson> __updatePipeline = clientContext.getMapper().toBsonList(this.updatePipeline);
       com.mongodb.client.model.UpdateOptions __options = this.options.toDriverClass(clientContext);
       return new com.mongodb.client.model.UpdateManyModel<T>(__filter, __updatePipeline, __options);
     } else {

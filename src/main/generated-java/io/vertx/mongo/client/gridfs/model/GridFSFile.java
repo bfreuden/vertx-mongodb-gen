@@ -152,12 +152,12 @@ public class GridFSFile {
     requireNonNull(from, "from is null");
     GridFSFile result = new GridFSFile();
     try {
-      result.objectId = clientContext.getConversionUtils().toString(from.getObjectId());
+      result.objectId = clientContext.getMapper().toString(from.getObjectId());
     } catch (Exception ex) {
       result.objectIdException = ex;
     }
     try {
-      result.id = clientContext.getConversionUtils().toObject(from.getId());
+      result.id = clientContext.getMapper().toObject(from.getId());
     } catch (Exception ex) {
       result.idException = ex;
     }
@@ -182,7 +182,7 @@ public class GridFSFile {
       result.uploadDateException = ex;
     }
     try {
-      result.metadata = clientContext.getConversionUtils().toJsonObject(from.getMetadata());
+      result.metadata = clientContext.getMapper().toJsonObject(from.getMetadata());
     } catch (Exception ex) {
       result.metadataException = ex;
     }

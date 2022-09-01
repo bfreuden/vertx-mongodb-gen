@@ -230,10 +230,10 @@ public class UpdateOptions {
       result.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.arrayFilters != null) {
-      result.arrayFilters(clientContext.getConversionUtils().toBsonList(this.arrayFilters));
+      result.arrayFilters(clientContext.getMapper().toBsonList(this.arrayFilters));
     }
     if (this.hint != null) {
-      result.hint(clientContext.getConversionUtils().toBson(this.hint));
+      result.hint(clientContext.getMapper().toBson(this.hint));
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);

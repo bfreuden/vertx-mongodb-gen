@@ -402,13 +402,13 @@ public class MapReduceOptions {
       publisher.finalizeFunction(this.finalizeFunction);
     }
     if (this.scope != null) {
-      publisher.scope(clientContext.getConversionUtils().toBson(this.scope));
+      publisher.scope(clientContext.getMapper().toBson(this.scope));
     }
     if (this.sort != null) {
-      publisher.sort(clientContext.getConversionUtils().toBson(this.sort));
+      publisher.sort(clientContext.getMapper().toBson(this.sort));
     }
     if (this.filter != null) {
-      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
+      publisher.filter(clientContext.getMapper().toBson(this.filter));
     }
     if (this.limit != null) {
       publisher.limit(this.limit);

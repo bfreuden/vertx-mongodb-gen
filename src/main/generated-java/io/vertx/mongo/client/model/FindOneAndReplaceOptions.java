@@ -298,10 +298,10 @@ public class FindOneAndReplaceOptions {
       MongoClientContext clientContext) {
     com.mongodb.client.model.FindOneAndReplaceOptions result = new com.mongodb.client.model.FindOneAndReplaceOptions();
     if (this.projection != null) {
-      result.projection(clientContext.getConversionUtils().toBson(this.projection));
+      result.projection(clientContext.getMapper().toBson(this.projection));
     }
     if (this.sort != null) {
-      result.sort(clientContext.getConversionUtils().toBson(this.sort));
+      result.sort(clientContext.getMapper().toBson(this.sort));
     }
     if (this.upsert != null) {
       result.upsert(this.upsert);
@@ -319,7 +319,7 @@ public class FindOneAndReplaceOptions {
       result.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.hint != null) {
-      result.hint(clientContext.getConversionUtils().toBson(this.hint));
+      result.hint(clientContext.getMapper().toBson(this.hint));
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);

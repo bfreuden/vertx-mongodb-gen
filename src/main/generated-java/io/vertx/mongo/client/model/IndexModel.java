@@ -72,10 +72,10 @@ public class IndexModel {
    */
   public com.mongodb.client.model.IndexModel toDriverClass(MongoClientContext clientContext) {
     if (__ctorIndex == 0) {
-      Bson __keys = clientContext.getConversionUtils().toBson(this.keys);
+      Bson __keys = clientContext.getMapper().toBson(this.keys);
       return new com.mongodb.client.model.IndexModel(__keys);
     } else if (__ctorIndex == 1) {
-      Bson __keys = clientContext.getConversionUtils().toBson(this.keys);
+      Bson __keys = clientContext.getMapper().toBson(this.keys);
       com.mongodb.client.model.IndexOptions __options = this.options.toDriverClass(clientContext);
       return new com.mongodb.client.model.IndexModel(__keys, __options);
     } else {

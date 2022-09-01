@@ -251,7 +251,7 @@ public class CreateCollectionOptions {
       result.sizeInBytes(this.sizeInBytes);
     }
     if (this.storageEngineOptions != null) {
-      result.storageEngineOptions(clientContext.getConversionUtils().toBson(this.storageEngineOptions));
+      result.storageEngineOptions(clientContext.getMapper().toBson(this.storageEngineOptions));
     }
     if (this.indexOptionDefaults != null) {
       result.indexOptionDefaults(this.indexOptionDefaults.toDriverClass(clientContext));

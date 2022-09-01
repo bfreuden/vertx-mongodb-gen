@@ -76,10 +76,10 @@ public class DeleteManyModel<T> extends WriteModel<T> {
   public com.mongodb.client.model.DeleteManyModel<T> toDriverClass(
       MongoClientContext clientContext) {
     if (__ctorIndex == 0) {
-      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
+      Bson __filter = clientContext.getMapper().toBson(this.filter);
       return new com.mongodb.client.model.DeleteManyModel<T>(__filter);
     } else if (__ctorIndex == 1) {
-      Bson __filter = clientContext.getConversionUtils().toBson(this.filter);
+      Bson __filter = clientContext.getMapper().toBson(this.filter);
       com.mongodb.client.model.DeleteOptions __options = this.options.toDriverClass(clientContext);
       return new com.mongodb.client.model.DeleteManyModel<T>(__filter, __options);
     } else {

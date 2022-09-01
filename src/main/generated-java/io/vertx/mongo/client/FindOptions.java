@@ -502,7 +502,7 @@ public class FindOptions {
   public <TDocument> void initializePublisher(MongoClientContext clientContext,
       FindPublisher<TDocument> publisher) {
     if (this.filter != null) {
-      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
+      publisher.filter(clientContext.getMapper().toBson(this.filter));
     }
     if (this.limit != null) {
       publisher.limit(this.limit);
@@ -517,10 +517,10 @@ public class FindOptions {
       publisher.maxAwaitTime(this.maxAwaitTime, TimeUnit.MILLISECONDS);
     }
     if (this.projection != null) {
-      publisher.projection(clientContext.getConversionUtils().toBson(this.projection));
+      publisher.projection(clientContext.getMapper().toBson(this.projection));
     }
     if (this.sort != null) {
-      publisher.sort(clientContext.getConversionUtils().toBson(this.sort));
+      publisher.sort(clientContext.getMapper().toBson(this.sort));
     }
     if (this.noCursorTimeout != null) {
       publisher.noCursorTimeout(this.noCursorTimeout);
@@ -541,16 +541,16 @@ public class FindOptions {
       publisher.comment(this.comment);
     }
     if (this.hint != null) {
-      publisher.hint(clientContext.getConversionUtils().toBson(this.hint));
+      publisher.hint(clientContext.getMapper().toBson(this.hint));
     }
     if (this.hintString != null) {
       publisher.hintString(this.hintString);
     }
     if (this.max != null) {
-      publisher.max(clientContext.getConversionUtils().toBson(this.max));
+      publisher.max(clientContext.getMapper().toBson(this.max));
     }
     if (this.min != null) {
-      publisher.min(clientContext.getConversionUtils().toBson(this.min));
+      publisher.min(clientContext.getMapper().toBson(this.min));
     }
     if (this.returnKey != null) {
       publisher.returnKey(this.returnKey);

@@ -74,7 +74,7 @@ public class InsertOneResult {
       result.acknowledgedException = ex;
     }
     try {
-      result.insertedId = clientContext.getConversionUtils().toObject(from.getInsertedId());
+      result.insertedId = clientContext.getMapper().toObject(from.getInsertedId());
     } catch (Exception ex) {
       result.insertedIdException = ex;
     }

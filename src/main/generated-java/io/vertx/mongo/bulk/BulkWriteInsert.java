@@ -72,7 +72,7 @@ public class BulkWriteInsert {
       result.indexException = ex;
     }
     try {
-      result.id = clientContext.getConversionUtils().toObject(from.getId());
+      result.id = clientContext.getMapper().toObject(from.getId());
     } catch (Exception ex) {
       result.idException = ex;
     }

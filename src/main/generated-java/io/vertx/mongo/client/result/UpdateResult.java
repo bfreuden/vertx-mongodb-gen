@@ -114,7 +114,7 @@ public class UpdateResult {
       result.modifiedCountException = ex;
     }
     try {
-      result.upsertedId = clientContext.getConversionUtils().toObject(from.getUpsertedId());
+      result.upsertedId = clientContext.getMapper().toObject(from.getUpsertedId());
     } catch (Exception ex) {
       result.upsertedIdException = ex;
     }

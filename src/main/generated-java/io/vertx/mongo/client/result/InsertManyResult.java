@@ -77,7 +77,7 @@ public class InsertManyResult {
       result.acknowledgedException = ex;
     }
     try {
-      result.insertedIds = CollectionsConversionUtils.mapValues(from.getInsertedIds(), clientContext.getConversionUtils()::toObject);
+      result.insertedIds = CollectionsConversionUtils.mapValues(from.getInsertedIds(), clientContext.getMapper()::toObject);
     } catch (Exception ex) {
       result.insertedIdsException = ex;
     }

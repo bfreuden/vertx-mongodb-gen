@@ -43,7 +43,7 @@ public final class MongoClientContext {
     public ClientConfig getConfig() {
         return config;
     }
-    public ConversionUtils getConversionUtils() {
+    public ConversionUtils getMapper() {
         return conversionUtils;
     }
 }

@@ -126,7 +126,7 @@ public class DistinctOptions {
   public <TDocument> void initializePublisher(MongoClientContext clientContext,
       DistinctPublisher<TDocument> publisher) {
     if (this.filter != null) {
-      publisher.filter(clientContext.getConversionUtils().toBson(this.filter));
+      publisher.filter(clientContext.getMapper().toBson(this.filter));
     }
     if (this.maxTime != null) {
       publisher.maxTime(this.maxTime, TimeUnit.MILLISECONDS);

@@ -240,7 +240,7 @@ public class AggregateOptions {
       publisher.comment(this.comment);
     }
     if (this.hint != null) {
-      publisher.hint(clientContext.getConversionUtils().toBson(this.hint));
+      publisher.hint(clientContext.getMapper().toBson(this.hint));
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);

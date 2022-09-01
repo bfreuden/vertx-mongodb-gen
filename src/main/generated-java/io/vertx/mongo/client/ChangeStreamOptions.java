@@ -204,13 +204,13 @@ public class ChangeStreamOptions {
       publisher.fullDocument(this.fullDocument);
     }
     if (this.resumeAfter != null) {
-      publisher.resumeAfter(clientContext.getConversionUtils().toBsonDocument(this.resumeAfter));
+      publisher.resumeAfter(clientContext.getMapper().toBsonDocument(this.resumeAfter));
     }
     if (this.startAtOperationTime != null) {
-      publisher.startAtOperationTime(clientContext.getConversionUtils().toBsonTimestamp(this.startAtOperationTime));
+      publisher.startAtOperationTime(clientContext.getMapper().toBsonTimestamp(this.startAtOperationTime));
     }
     if (this.startAfter != null) {
-      publisher.startAfter(clientContext.getConversionUtils().toBsonDocument(this.startAfter));
+      publisher.startAfter(clientContext.getMapper().toBsonDocument(this.startAfter));
     }
     if (this.maxAwaitTime != null) {
       publisher.maxAwaitTime(this.maxAwaitTime, TimeUnit.MILLISECONDS);

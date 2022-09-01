@@ -15,7 +15,7 @@ public class ConversionUtilsMapperGenerator extends MapperGenerator {
     @Override
     public CodeBlockSource getExpressionSource(String value) {
         return new CodeBlockSource(
-            String.format("clientContext.getConversionUtils().%s(%s)", conversionMethod, value),
+            String.format("clientContext.getMapper().%s(%s)", conversionMethod, value),
             Collections.emptyList()
         );
     }
@@ -23,7 +23,7 @@ public class ConversionUtilsMapperGenerator extends MapperGenerator {
     @Override
     public CodeBlockSource getMapperSource() {
         return new CodeBlockSource(
-            String.format("clientContext.getConversionUtils()::%s", conversionMethod),
+            String.format("clientContext.getMapper()::%s", conversionMethod),
                 Collections.emptyList()
         );
     }

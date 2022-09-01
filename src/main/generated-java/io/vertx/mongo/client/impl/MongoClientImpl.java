@@ -147,7 +147,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   @Override
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
+    List<? extends Bson> __pipeline = clientContext.getMapper().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__pipeline, JsonObject.class);
     MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
@@ -157,7 +157,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
   public MongoResult<ChangeStreamDocument<JsonObject>> watch(JsonArray pipeline,
       ChangeStreamOptions options) {
     requireNonNull(pipeline, "pipeline is null");
-    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
+    List<? extends Bson> __pipeline = clientContext.getMapper().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__pipeline, JsonObject.class);
     MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     options.initializePublisher(clientContext, __publisher);
@@ -200,7 +200,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
-    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
+    List<? extends Bson> __pipeline = clientContext.getMapper().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, __pipeline, JsonObject.class);
     MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     return new MongoResultImpl<>(clientContext, __mappingPublisher, __mappingPublisher::first);
@@ -212,7 +212,7 @@ public class MongoClientImpl extends MongoClientBase implements Closeable {
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(pipeline, "pipeline is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
-    List<? extends Bson> __pipeline = clientContext.getConversionUtils().toBsonList(pipeline);
+    List<? extends Bson> __pipeline = clientContext.getMapper().toBsonList(pipeline);
     ChangeStreamPublisher<JsonObject> __publisher = wrapped.watch(__clientSession, __pipeline, JsonObject.class);
     MappingPublisher<com.mongodb.client.model.changestream.ChangeStreamDocument<JsonObject>, ChangeStreamDocument<JsonObject>> __mappingPublisher = new MappingPublisher<>(__publisher, _item -> ChangeStreamDocument.fromDriverClass(clientContext, _item));
     options.initializePublisher(clientContext, __publisher);

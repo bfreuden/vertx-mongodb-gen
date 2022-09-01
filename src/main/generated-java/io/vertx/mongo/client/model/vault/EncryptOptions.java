@@ -107,7 +107,7 @@ public class EncryptOptions {
     }
     com.mongodb.client.model.vault.EncryptOptions result = new com.mongodb.client.model.vault.EncryptOptions(this.algorithm);
     if (this.keyId != null) {
-      result.keyId(clientContext.getConversionUtils().toBsonBinary(this.keyId));
+      result.keyId(clientContext.getMapper().toBsonBinary(this.keyId));
     }
     if (this.keyAltName != null) {
       result.keyAltName(this.keyAltName);

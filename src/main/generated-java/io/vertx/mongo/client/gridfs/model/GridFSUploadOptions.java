@@ -107,7 +107,7 @@ public class GridFSUploadOptions {
       result.chunkSizeBytes(this.chunkSizeBytes);
     }
     if (this.metadata != null) {
-      result.metadata(clientContext.getConversionUtils().toDocument(this.metadata));
+      result.metadata(clientContext.getMapper().toDocument(this.metadata));
     }
     return result;
   }

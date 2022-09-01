@@ -214,7 +214,7 @@ public class CountOptions {
   public com.mongodb.client.model.CountOptions toDriverClass(MongoClientContext clientContext) {
     com.mongodb.client.model.CountOptions result = new com.mongodb.client.model.CountOptions();
     if (this.hint != null) {
-      result.hint(clientContext.getConversionUtils().toBson(this.hint));
+      result.hint(clientContext.getMapper().toBson(this.hint));
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);

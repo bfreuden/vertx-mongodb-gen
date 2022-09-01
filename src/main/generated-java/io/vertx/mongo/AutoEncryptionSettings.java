@@ -174,7 +174,7 @@ public class AutoEncryptionSettings {
       builder.keyVaultNamespace(this.keyVaultNamespace);
     }
     if (this.schemaMap != null) {
-      builder.schemaMap(CollectionsConversionUtils.mapValues(this.schemaMap, clientContext.getConversionUtils()::toBsonDocument));
+      builder.schemaMap(CollectionsConversionUtils.mapValues(this.schemaMap, clientContext.getMapper()::toBsonDocument));
     }
     if (this.bypassAutoEncryption != null) {
       builder.bypassAutoEncryption(this.bypassAutoEncryption);

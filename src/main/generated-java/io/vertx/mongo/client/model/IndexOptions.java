@@ -616,7 +616,7 @@ public class IndexOptions {
       result.version(this.version);
     }
     if (this.weights != null) {
-      result.weights(clientContext.getConversionUtils().toBson(this.weights));
+      result.weights(clientContext.getMapper().toBson(this.weights));
     }
     if (this.defaultLanguage != null) {
       result.defaultLanguage(this.defaultLanguage);
@@ -643,16 +643,16 @@ public class IndexOptions {
       result.bucketSize(this.bucketSize);
     }
     if (this.storageEngine != null) {
-      result.storageEngine(clientContext.getConversionUtils().toBson(this.storageEngine));
+      result.storageEngine(clientContext.getMapper().toBson(this.storageEngine));
     }
     if (this.partialFilterExpression != null) {
-      result.partialFilterExpression(clientContext.getConversionUtils().toBson(this.partialFilterExpression));
+      result.partialFilterExpression(clientContext.getMapper().toBson(this.partialFilterExpression));
     }
     if (this.collation != null) {
       result.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.wildcardProjection != null) {
-      result.wildcardProjection(clientContext.getConversionUtils().toBson(this.wildcardProjection));
+      result.wildcardProjection(clientContext.getMapper().toBson(this.wildcardProjection));
     }
     if (this.hidden != null) {
       result.hidden(this.hidden);

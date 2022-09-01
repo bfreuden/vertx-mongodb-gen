@@ -282,7 +282,7 @@ public class ChangeStreamDocument<TDocument> {
     requireNonNull(from, "from is null");
     ChangeStreamDocument<TDocument> result = new ChangeStreamDocument<TDocument>();
     try {
-      result.resumeToken = clientContext.getConversionUtils().toJsonObject(from.getResumeToken());
+      result.resumeToken = clientContext.getMapper().toJsonObject(from.getResumeToken());
     } catch (Exception ex) {
       result.resumeTokenException = ex;
     }
@@ -292,7 +292,7 @@ public class ChangeStreamDocument<TDocument> {
       result.namespaceException = ex;
     }
     try {
-      result.namespaceDocument = clientContext.getConversionUtils().toJsonObject(from.getNamespaceDocument());
+      result.namespaceDocument = clientContext.getMapper().toJsonObject(from.getNamespaceDocument());
     } catch (Exception ex) {
       result.namespaceDocumentException = ex;
     }
@@ -302,7 +302,7 @@ public class ChangeStreamDocument<TDocument> {
       result.destinationNamespaceException = ex;
     }
     try {
-      result.destinationNamespaceDocument = clientContext.getConversionUtils().toJsonObject(from.getDestinationNamespaceDocument());
+      result.destinationNamespaceDocument = clientContext.getMapper().toJsonObject(from.getDestinationNamespaceDocument());
     } catch (Exception ex) {
       result.destinationNamespaceDocumentException = ex;
     }
@@ -317,12 +317,12 @@ public class ChangeStreamDocument<TDocument> {
       result.fullDocumentException = ex;
     }
     try {
-      result.documentKey = clientContext.getConversionUtils().toJsonObject(from.getDocumentKey());
+      result.documentKey = clientContext.getMapper().toJsonObject(from.getDocumentKey());
     } catch (Exception ex) {
       result.documentKeyException = ex;
     }
     try {
-      result.clusterTime = clientContext.getConversionUtils().toLong(from.getClusterTime());
+      result.clusterTime = clientContext.getMapper().toLong(from.getClusterTime());
     } catch (Exception ex) {
       result.clusterTimeException = ex;
     }
@@ -337,12 +337,12 @@ public class ChangeStreamDocument<TDocument> {
       result.updateDescriptionException = ex;
     }
     try {
-      result.txnNumber = clientContext.getConversionUtils().toLong(from.getTxnNumber());
+      result.txnNumber = clientContext.getMapper().toLong(from.getTxnNumber());
     } catch (Exception ex) {
       result.txnNumberException = ex;
     }
     try {
-      result.lsid = clientContext.getConversionUtils().toJsonObject(from.getLsid());
+      result.lsid = clientContext.getMapper().toJsonObject(from.getLsid());
     } catch (Exception ex) {
       result.lsidException = ex;
     }

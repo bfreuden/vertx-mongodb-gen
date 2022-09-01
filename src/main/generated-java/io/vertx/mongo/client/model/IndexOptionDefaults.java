@@ -77,7 +77,7 @@ public class IndexOptionDefaults {
       MongoClientContext clientContext) {
     com.mongodb.client.model.IndexOptionDefaults result = new com.mongodb.client.model.IndexOptionDefaults();
     if (this.storageEngine != null) {
-      result.storageEngine(clientContext.getConversionUtils().toBson(this.storageEngine));
+      result.storageEngine(clientContext.getMapper().toBson(this.storageEngine));
     }
     return result;
   }
