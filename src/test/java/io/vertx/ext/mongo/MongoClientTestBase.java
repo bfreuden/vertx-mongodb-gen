@@ -274,7 +274,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     mongoDatabase.createCollection(collection, onSuccess(res -> {
       MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
       JsonObject doc = createDoc();
-      String genID = TestUtils.randomAlphaString(100);
+      Object genID = randomObjectId();
       doc.put("_id", genID);
       coll.insertOne(doc, onSuccess(res2 -> {
         assertDocumentWithIdIsPresent(collection, genID);
@@ -387,7 +387,6 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //  }
 //
 
-  //TODO was better in previous mongo client? no need to create the object id by hand
   @Test
   public void testInsertAlreadyExists() throws Exception {
     String collection = randomCollection();
@@ -439,7 +438,6 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   }
 
 
-  //TODO was better in previous mongo client? no need to create the object id by hand
   @Test
   public void testInsertWithNestedListMap() throws Exception {
     Map<String, Object> map = new HashMap<>();
@@ -468,16 +466,16 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   }
 
 
-  //FIXME why is it expected? assertNull(id.getInsertedId());
   @Test
   public void testInsertRetrieve() throws Exception {
     String collection = randomCollection();
     mongoDatabase.createCollection(collection, onSuccess(res -> {
       MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
       JsonObject doc = createDoc();
-      String genID = TestUtils.randomAlphaString(100);
+      Object genID = randomObjectId();
       doc.put("_id", genID);
       coll.insertOne(doc, onSuccess(id -> {
+        //FIXME? why is it expected? assertNull(id.getInsertedId());
 //        assertNull(id.getInsertedId()); // was this before
         assertNotNull(id.getInsertedId());
         coll.find(new JsonObject()).first().onSuccess(retrieved -> {
@@ -489,8 +487,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-  //TODO was better in previous mongo client? no need to create the object id by hand
-  // now I understand the notion of save vs insert...
+  // TODO save is not implemented yet, so use replace
   @Test
   public void testSave() throws Exception {
     String collection = randomCollection();
@@ -502,7 +499,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
         doc.put("_id", resultToId(res2));
         doc.put("newField", "sheep");
         // Save again - it should update
-        coll.replaceOne(idFilter(doc.getJsonObject("_id")), doc, onSuccess(res3 -> {
+        coll.replaceOne(idFilter(doc.getValue("_id")), doc, onSuccess(res3 -> {
           assertNull(res3.getUpsertedId());
           coll.find(new JsonObject()).first().onSuccess(res4 -> {
             assertEquals("sheep", res4.getString("newField"));
@@ -515,21 +512,41 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   }
 
   private JsonObject resultToIdFilter(InsertOneResult res) {
-    JsonObject value = resultToId(res);
-    return idFilter(value);
+    Object insertedId = resultToId(res);
+    return new JsonObject().put("_id", insertedId);
   }
 
-  private <T> JsonObject idFilter(T value) {
+  private Object randomObjectId() {
+    // FIXME? regression: before it was possible to use any string
+    // but with the new mode useObjectId=false mode, they are mapped to an ObjectId anyway.
+    // Note that creating string ids with is working on useObjectId=true mode.
+    // TODO check that it is because it really means a string id.
+//    String random = TestUtils.randomAlphaString(20);
+    String random = new ObjectId().toHexString();
+    if (useObjectId) {
+      return new JsonObject().put(JsonObjectCodec.OID_FIELD, random);
+    } else {
+      return random;
+    }
+  }
+
+  private Object resultToId(InsertOneResult res) {
+    Object insertedId = res.getInsertedId();
+    if (useObjectId) {
+      assertTrue(insertedId instanceof JsonObject);
+    } else {
+      assertTrue(insertedId instanceof String);
+    }
+    return insertedId;
+  }
+
+  private JsonObject idFilter(Object value) {
+    if (useObjectId) {
+      assertTrue(value instanceof JsonObject || value instanceof Map);
+    } else {
+      assertTrue(value instanceof String);
+    }
     return new JsonObject().put("_id", value);
-  }
-
-  private JsonObject resultToId(InsertOneResult res2) {
-    Object insertedId = res2.getInsertedId();
-    return getId(insertedId);
-  }
-
-  private <T> JsonObject getId(T insertedId) {
-    return new JsonObject().put(JsonObjectCodec.OID_FIELD, insertedId);
   }
 
   @Test
@@ -622,6 +639,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
+  // TODO save is not implemented yet, so use replace
   @Test
   public void testSaveWithOptions() throws Exception {
     String collection = randomCollection();
@@ -1037,11 +1055,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
           assertEquals(1, list.size());
           JsonObject result = list.get(0);
           Object id_value = result.getValue("_id");
-          if (id_value instanceof JsonObject) {
-            assertEquals(id, ((JsonObject) id_value).getString(JsonObjectCodec.OID_FIELD));
-          } else {
-            assertEquals(id, id_value);
-          }
+          assertEquals(id, id_value);
           result.remove("_id");
           replacement.remove("_id"); // id won't be there for event bus
           assertEquals(replacement, result);
@@ -1072,11 +1086,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
           assertEquals(1, list.size());
           JsonObject result = list.get(0);
           Object id_value = result.getValue("_id");
-          if (id_value instanceof JsonObject) {
-            assertEquals(id, ((JsonObject) id_value).getString(JsonObjectCodec.OID_FIELD));
-          } else {
-            assertEquals(id, id_value);
-          }
+          assertEquals(id, id_value);
           result.remove("_id");
           replacement.remove("_id"); // id won't be there for event bus
           assertEquals(replacement, result);
@@ -1133,7 +1143,8 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       assertNotNull(res.getInsertedId());
       JsonObject replacement = createDoc();
       replacement.put("replacement", true);
-      coll.replaceOne(new JsonObject().put("_id", "foo"), replacement, new ReplaceOptions().setUpsert(true), onSuccess(v -> {
+      Object upsertTestId = randomObjectId();
+      coll.replaceOne(new JsonObject().put("_id", upsertTestId), replacement, new ReplaceOptions().setUpsert(true), onSuccess(v -> {
         coll.find().all(onSuccess(list -> {
           assertNotNull(list);
           assertEquals(2, list.size());
@@ -1156,7 +1167,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   public void testReplaceUpsertWithMongoClientUpdateResult() {
     String collection = randomCollection();
     JsonObject doc = createDoc();
-    String upsertTestId = "foo";
+    Object upsertTestId = randomObjectId();
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.insertOne(doc, onSuccess(id -> {
       assertNotNull(id);
@@ -1201,11 +1212,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
           assertNotNull(list);
           assertEquals(1, list.size());
           Object id_value = list.get(0).getValue("_id");
-          if (id_value instanceof JsonObject) {
-            assertEquals(id, ((JsonObject) id_value).getString(JsonObjectCodec.OID_FIELD));
-          } else {
-            assertEquals(id, id_value);
-          }
+          assertEquals(id, id_value);
           testComplete();
         }));
       }));
@@ -1233,11 +1240,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
           assertNotNull(list);
           assertEquals(1, list.size());
           Object id_value = list.get(0).getValue("_id");
-          if (id_value instanceof JsonObject) {
-            assertEquals(id, ((JsonObject) id_value).getString(JsonObjectCodec.OID_FIELD));
-          } else {
-            assertEquals(id, id_value);
-          }
+          assertEquals(id, id_value);
           testComplete();
         }));
       }));
@@ -1253,19 +1256,12 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.insertOne(createDoc(), onSuccess(res -> {
       Object id = res.getInsertedId();
-      if (useObjectId) {
-        JsonObject docIdToBeUpdatedObjectId = new JsonObject().put(JsonObjectCodec.OID_FIELD, id);
-        updateDataBasedOnId(collection, docIdToBeUpdatedObjectId);
-      } else {
-        String docIdToBeUpdatedString = (String) id;
-        updateDataBasedOnId(collection, docIdToBeUpdatedString);
-      }
-
+      updateDataBasedOnId(collection, id);
     }));
     await();
   }
 
-  private <T> void updateDataBasedOnId(String collection, T docIdToBeUpdated) {
+  private void updateDataBasedOnId(String collection, Object docIdToBeUpdated) {
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.updateOne(idFilter(docIdToBeUpdated), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")), onSuccess(res -> {
       coll.find(idFilter(docIdToBeUpdated)).first(onSuccess(doc -> {
@@ -1282,18 +1278,12 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.insertOne(createDoc(), onSuccess(res -> {
       Object id = res.getInsertedId();
-      if (useObjectId) {
-        JsonObject docIdToBeUpdatedObjectId = new JsonObject().put(JsonObjectCodec.OID_FIELD, id);
-        updateDataBasedOnIdWithMongoClientUpdateResult(collection, docIdToBeUpdatedObjectId);
-      } else {
-        String docIdToBeUpdatedString = (String)id;
-        updateDataBasedOnIdWithMongoClientUpdateResult(collection, docIdToBeUpdatedString);
-      }
+      updateDataBasedOnIdWithMongoClientUpdateResult(collection, id);
     }));
     await();
   }
 
-  private <T> void updateDataBasedOnIdWithMongoClientUpdateResult(String collection, T id) {
+  private <T> void updateDataBasedOnIdWithMongoClientUpdateResult(String collection, Object id) {
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.updateOne(idFilter(id), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")), onSuccess(res -> {
       assertEquals(1, res.getModifiedCount());
@@ -1361,7 +1351,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   @Test
   public void testUpdateMongoClientUpdateResultUpsertIdResponse() throws Exception {
     String collection = randomCollection();
-    String upsertedId = TestUtils.randomAlphaString(20);
+    Object upsertedId = randomObjectId();
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.insertOne(createDoc(), onSuccess(res1 -> {
       coll.updateOne(idFilter(upsertedId), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")),
@@ -1382,13 +1372,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.insertOne(createDoc(), onSuccess(res -> {
       Object id = res.getInsertedId();
-      if (useObjectId) {
-        JsonObject docIdToBeUpdatedObjectId = new JsonObject().put(JsonObjectCodec.OID_FIELD, id);
-        updateWithOptionWithMongoClientUpdateResultBasedOnIdAcknowledged(collection, docIdToBeUpdatedObjectId);
-      } else {
-        String docIdToBeUpdatedString = (String)id;
-        updateWithOptionWithMongoClientUpdateResultBasedOnIdAcknowledged(collection, docIdToBeUpdatedString);
-      }
+      updateWithOptionWithMongoClientUpdateResultBasedOnIdAcknowledged(collection, id);
     }));
     await();
   }
@@ -1406,7 +1390,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
   @Test
   public void testMongoClientUpdateResultUnacknowledge() throws Exception {
     String collection = randomCollection();
-    String upsertedId = TestUtils.randomAlphaString(20);
+    Object upsertedId = randomObjectId();
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection).withWriteConcern(UNACKNOWLEDGED);
     coll.insertOne(createDoc(), onSuccess(id -> {
       coll.updateOne(new JsonObject().put("_id", upsertedId), new JsonObject().put("$set", new JsonObject().put("foo", "fooed")), onSuccess(res -> {
@@ -1764,10 +1748,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
       Object id = res.getInsertedId();
       JsonObject update = new JsonObject().put("$set", new JsonObject().put("foo", "foobar"));
       JsonObject filter = new JsonObject();
-      if (useObjectId)
-        filter.put("_id", new JsonObject().put(JsonObjectCodec.OID_FIELD, id));
-      else
-        filter.put("_id", id);
+      filter.put("_id", id);
       coll.bulkWrite(List.of(new UpdateOneModel<>(filter, update)),
         onSuccess(bulkResult -> {
           assertEquals(1, bulkResult.getModifiedCount());

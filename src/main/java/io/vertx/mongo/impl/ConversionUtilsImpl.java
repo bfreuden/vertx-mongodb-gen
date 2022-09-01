@@ -27,12 +27,14 @@ public class ConversionUtilsImpl implements ConversionUtils {
     private final DecoderContext decoderContext = DecoderContext.builder().build();
     private final Codec<JsonObject> jsonObjectCodec;
     private final Codec<Document> documentCodec;
+    private final boolean useObjectIds;
 
-    public ConversionUtilsImpl(CodecRegistry codecRegistry, Function<JsonObject, JsonObject> inputMapper, Function<JsonObject, JsonObject> outputMapper) {
+    public ConversionUtilsImpl(CodecRegistry codecRegistry, boolean useObjectIds, Function<JsonObject, JsonObject> inputMapper, Function<JsonObject, JsonObject> outputMapper) {
         this.codecRegistry = codecRegistry;
         this.inputMapper = inputMapper;
         this.outputMapper = outputMapper;
         this.jsonObjectCodec = codecRegistry.get(JsonObject.class);
+        this.useObjectIds = useObjectIds;
         // FIXME
         this.documentCodec = null;//codecRegistry.get(Document.class);
     }
@@ -144,9 +146,7 @@ public class ConversionUtilsImpl implements ConversionUtils {
             return null;
         if (from instanceof BsonObjectId) {
             String hexString = ((BsonObjectId) from).getValue().toHexString();
-            return hexString;
-//            return new JsonObject().put(JsonObjectCodec.OID_FIELD, hexString);
-//            return ;
+            return useObjectIds ? new JsonObject().put(JsonObjectCodec.OID_FIELD, hexString) : hexString;
         } else if (from instanceof BsonString) {
             return ((BsonString)from).getValue();
         } else if (from instanceof BsonInt64) {
@@ -159,12 +159,20 @@ public class ConversionUtilsImpl implements ConversionUtils {
     }
 
     @Override
-    public ObjectId toObjectId(String from) {
-        return new ObjectId(from);
+    public ObjectId toObjectId(io.vertx.mongo.ObjectId from) {
+        return useObjectIds ? new ObjectId(from.getOid().getString(JsonObjectCodec.OID_FIELD)) : new ObjectId(from.getHexString());
     }
 
     @Override
-    public String toString(ObjectId from) {
-        return from.toHexString();
+    public io.vertx.mongo.ObjectId toObjectId(ObjectId from) {
+        return getVertxObjectId(from.toHexString());
     }
+
+    private io.vertx.mongo.ObjectId getVertxObjectId(String hexString) {
+        if (useObjectIds)
+            return new io.vertx.mongo.ObjectId(new JsonObject().put(JsonObjectCodec.OID_FIELD, hexString));
+        else
+            return new io.vertx.mongo.ObjectId(hexString);
+    }
+
 }

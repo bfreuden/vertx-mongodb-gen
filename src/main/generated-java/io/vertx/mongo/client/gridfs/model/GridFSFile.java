@@ -18,6 +18,7 @@ package io.vertx.mongo.client.gridfs.model;
 import static java.util.Objects.requireNonNull;
 
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.ObjectId;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.Object;
@@ -25,7 +26,7 @@ import java.lang.String;
 import java.util.Date;
 
 public class GridFSFile {
-  private String objectId;
+  private ObjectId objectId;
 
   private Object id;
 
@@ -63,7 +64,7 @@ public class GridFSFile {
    *
    *  @return the id for this file.
    */
-  public String getObjectId() {
+  public ObjectId getObjectId() {
     if (objectIdException != null)  {
       throw new RuntimeException(objectIdException);
     }
@@ -152,7 +153,7 @@ public class GridFSFile {
     requireNonNull(from, "from is null");
     GridFSFile result = new GridFSFile();
     try {
-      result.objectId = clientContext.getMapper().toString(from.getObjectId());
+      result.objectId = clientContext.getMapper().toObjectId(from.getObjectId());
     } catch (Exception ex) {
       result.objectIdException = ex;
     }

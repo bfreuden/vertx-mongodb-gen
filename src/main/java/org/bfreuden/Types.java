@@ -56,7 +56,7 @@ public class Types {
         MAPPING2.put("org.bson.conversions.Bson", ClassName.get(JsonObject.class));
         ACCEPTED.add("java.lang.String");
         MAPPING2.put("org.bson.ByteBuf", TypeName.get(byte[].class));
-        MAPPING2.put("org.bson.types.ObjectId", ClassName.get(String.class)); // really?
+        MAPPING2.put("org.bson.types.ObjectId", ClassName.bestGuess("io.vertx.mongo.ObjectId"));
         ACCEPTED.add("java.util.Date");
         MAPPING2.put("org.bson.BsonValue", ClassName.get(Object.class)); // really?
         MAPPING2.put("org.bson.BsonArray", ClassName.get(JsonArray.class));

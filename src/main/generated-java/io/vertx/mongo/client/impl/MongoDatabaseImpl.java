@@ -131,7 +131,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(collectionName, "collectionName is null");
     requireNonNull(clazz, "clazz is null");
     com.mongodb.reactivestreams.client.MongoCollection<TDocument> __result = wrapped.getCollection(collectionName, clazz);
-    return new MongoCollectionImpl<>(clientContext, __result);
+    return new MongoCollectionImpl<>(clientContext, __result, null, null);
   }
 
   @Override

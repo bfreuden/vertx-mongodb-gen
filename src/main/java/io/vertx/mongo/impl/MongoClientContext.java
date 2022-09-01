@@ -30,7 +30,7 @@ public final class MongoClientContext {
         this.vertx = vertx;
         this.context = context;
         this.config = config;
-        conversionUtils = new ConversionUtilsImpl(codecRegistry, config.getInputMapper(), config.getOutputMapper());
+        conversionUtils = new ConversionUtilsImpl(codecRegistry, config.isUseObjectIds(), config.getInputMapper(), config.getOutputMapper());
     }
 
     public VertxInternal getVertx() {

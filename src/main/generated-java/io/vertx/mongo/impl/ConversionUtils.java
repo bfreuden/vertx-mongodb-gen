@@ -20,7 +20,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.lang.Long;
 import java.lang.Object;
-import java.lang.String;
 import java.nio.ByteBuffer;
 import java.util.List;
 import org.bson.BsonBinary;
@@ -70,7 +69,7 @@ public interface ConversionUtils {
 
   Object toObject(BsonValue from);
 
-  ObjectId toObjectId(String from);
+  ObjectId toObjectId(io.vertx.mongo.ObjectId from);
 
-  String toString(ObjectId from);
+  io.vertx.mongo.ObjectId toObjectId(ObjectId from);
 }

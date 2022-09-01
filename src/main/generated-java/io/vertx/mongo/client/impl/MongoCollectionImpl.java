@@ -146,7 +146,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       CodecRegistry codecRegistry) {
     requireNonNull(codecRegistry, "codecRegistry is null");
     MongoCollection<TDocument> __result = wrapped.withCodecRegistry(codecRegistry);
-    return new MongoCollectionImpl<>(clientContext, __result);
+    return new MongoCollectionImpl<>(clientContext, __result, inputMapper, outputMapper);
   }
 
   @Override
@@ -154,7 +154,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       ReadPreference readPreference) {
     requireNonNull(readPreference, "readPreference is null");
     MongoCollection<TDocument> __result = wrapped.withReadPreference(readPreference);
-    return new MongoCollectionImpl<>(clientContext, __result);
+    return new MongoCollectionImpl<>(clientContext, __result, inputMapper, outputMapper);
   }
 
   @Override
@@ -162,14 +162,14 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       WriteConcern writeConcern) {
     requireNonNull(writeConcern, "writeConcern is null");
     MongoCollection<TDocument> __result = wrapped.withWriteConcern(writeConcern);
-    return new MongoCollectionImpl<>(clientContext, __result);
+    return new MongoCollectionImpl<>(clientContext, __result, inputMapper, outputMapper);
   }
 
   @Override
   public io.vertx.mongo.client.MongoCollection<TDocument> withReadConcern(ReadConcern readConcern) {
     requireNonNull(readConcern, "readConcern is null");
     MongoCollection<TDocument> __result = wrapped.withReadConcern(readConcern);
-    return new MongoCollectionImpl<>(clientContext, __result);
+    return new MongoCollectionImpl<>(clientContext, __result, inputMapper, outputMapper);
   }
 
   @Override

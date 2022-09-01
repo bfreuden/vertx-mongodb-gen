@@ -26,19 +26,71 @@ import io.vertx.core.Context;
 import java.util.function.BiConsumer;
 
 public class MongoClientSettingsInitializer {
+  private BiConsumer<Context, ConnectionPoolSettings.Builder> ConnectionPoolSettingsInitializer;
+
+  private BiConsumer<Context, SocketSettings.Builder> SocketSettingsInitializer;
+
+  private BiConsumer<Context, MongoClientSettings.Builder> MongoClientSettingsInitializer;
+
+  private BiConsumer<Context, ClusterSettings.Builder> ClusterSettingsInitializer;
+
+  private BiConsumer<Context, AutoEncryptionSettings.Builder> AutoEncryptionSettingsInitializer;
+
   private BiConsumer<Context, ServerSettings.Builder> ServerSettingsInitializer;
 
   private BiConsumer<Context, SslSettings.Builder> SslSettingsInitializer;
 
-  private BiConsumer<Context, MongoClientSettings.Builder> MongoClientSettingsInitializer;
+  public MongoClientSettingsInitializer initializeConnectionPoolSettingsWith(
+      BiConsumer<Context, ConnectionPoolSettings.Builder> initializer) {
+    this.ConnectionPoolSettingsInitializer = initializer;
+    return this;
+  }
 
-  private BiConsumer<Context, ConnectionPoolSettings.Builder> ConnectionPoolSettingsInitializer;
+  public BiConsumer<Context, ConnectionPoolSettings.Builder> getConnectionPoolSettingsInitializer(
+      ) {
+    return this.ConnectionPoolSettingsInitializer;
+  }
 
-  private BiConsumer<Context, AutoEncryptionSettings.Builder> AutoEncryptionSettingsInitializer;
+  public MongoClientSettingsInitializer initializeSocketSettingsWith(
+      BiConsumer<Context, SocketSettings.Builder> initializer) {
+    this.SocketSettingsInitializer = initializer;
+    return this;
+  }
 
-  private BiConsumer<Context, SocketSettings.Builder> SocketSettingsInitializer;
+  public BiConsumer<Context, SocketSettings.Builder> getSocketSettingsInitializer() {
+    return this.SocketSettingsInitializer;
+  }
 
-  private BiConsumer<Context, ClusterSettings.Builder> ClusterSettingsInitializer;
+  public MongoClientSettingsInitializer initializeMongoClientSettingsWith(
+      BiConsumer<Context, MongoClientSettings.Builder> initializer) {
+    this.MongoClientSettingsInitializer = initializer;
+    return this;
+  }
+
+  public BiConsumer<Context, MongoClientSettings.Builder> getMongoClientSettingsInitializer() {
+    return this.MongoClientSettingsInitializer;
+  }
+
+  public MongoClientSettingsInitializer initializeClusterSettingsWith(
+      BiConsumer<Context, ClusterSettings.Builder> initializer) {
+    this.ClusterSettingsInitializer = initializer;
+    return this;
+  }
+
+  public BiConsumer<Context, ClusterSettings.Builder> getClusterSettingsInitializer() {
+    return this.ClusterSettingsInitializer;
+  }
+
+  public MongoClientSettingsInitializer initializeAutoEncryptionSettingsWith(
+      BiConsumer<Context, AutoEncryptionSettings.Builder> initializer) {
+    this.AutoEncryptionSettingsInitializer = initializer;
+    return this;
+  }
+
+  public BiConsumer<Context, AutoEncryptionSettings.Builder> getAutoEncryptionSettingsInitializer(
+      ) {
+    return this.AutoEncryptionSettingsInitializer;
+  }
 
   public MongoClientSettingsInitializer initializeServerSettingsWith(
       BiConsumer<Context, ServerSettings.Builder> initializer) {
@@ -58,57 +110,5 @@ public class MongoClientSettingsInitializer {
 
   public BiConsumer<Context, SslSettings.Builder> getSslSettingsInitializer() {
     return this.SslSettingsInitializer;
-  }
-
-  public MongoClientSettingsInitializer initializeMongoClientSettingsWith(
-      BiConsumer<Context, MongoClientSettings.Builder> initializer) {
-    this.MongoClientSettingsInitializer = initializer;
-    return this;
-  }
-
-  public BiConsumer<Context, MongoClientSettings.Builder> getMongoClientSettingsInitializer() {
-    return this.MongoClientSettingsInitializer;
-  }
-
-  public MongoClientSettingsInitializer initializeConnectionPoolSettingsWith(
-      BiConsumer<Context, ConnectionPoolSettings.Builder> initializer) {
-    this.ConnectionPoolSettingsInitializer = initializer;
-    return this;
-  }
-
-  public BiConsumer<Context, ConnectionPoolSettings.Builder> getConnectionPoolSettingsInitializer(
-      ) {
-    return this.ConnectionPoolSettingsInitializer;
-  }
-
-  public MongoClientSettingsInitializer initializeAutoEncryptionSettingsWith(
-      BiConsumer<Context, AutoEncryptionSettings.Builder> initializer) {
-    this.AutoEncryptionSettingsInitializer = initializer;
-    return this;
-  }
-
-  public BiConsumer<Context, AutoEncryptionSettings.Builder> getAutoEncryptionSettingsInitializer(
-      ) {
-    return this.AutoEncryptionSettingsInitializer;
-  }
-
-  public MongoClientSettingsInitializer initializeSocketSettingsWith(
-      BiConsumer<Context, SocketSettings.Builder> initializer) {
-    this.SocketSettingsInitializer = initializer;
-    return this;
-  }
-
-  public BiConsumer<Context, SocketSettings.Builder> getSocketSettingsInitializer() {
-    return this.SocketSettingsInitializer;
-  }
-
-  public MongoClientSettingsInitializer initializeClusterSettingsWith(
-      BiConsumer<Context, ClusterSettings.Builder> initializer) {
-    this.ClusterSettingsInitializer = initializer;
-    return this;
-  }
-
-  public BiConsumer<Context, ClusterSettings.Builder> getClusterSettingsInitializer() {
-    return this.ClusterSettingsInitializer;
   }
 }

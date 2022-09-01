@@ -465,7 +465,12 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                 if (returnType.equals("void") || returnType.equals("java.lang.Void"))
                     returnKeyword = "";
                 if (method.returnType.mapper == null) {
+                    if (method.vertxName.equals("withDocumentClass") && isMongoCollection) {
+                        //TODO HACK
+                        methodBuilder.addStatement(returnKeyword + "wrapped." + method.mongoName +  "(clientContext, __result)");
+                    } else {
                         methodBuilder.addStatement(returnKeyword + "wrapped." + method.mongoName +  "(" + paramNames + ")");
+                    }
                 } else {
                     methodBuilder.addStatement("$T __result = wrapped." + method.mongoName +  "(" + paramNames + ")", method.returnType.mongoType);
                     methodBuilder.addStatement(method.returnType.mapper.asStatementFromExpression(returnKeyword + "%s", "__result"));

@@ -45,7 +45,10 @@ public class MongoClientNoObjectIdTest extends MongoTestBase {
     MongoCollection<JsonObject> mappedColl = mappedMongoDatabase.getCollection(collection);
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     JsonObject doc = new JsonObject().put("name", "john");
-    mappedColl.insertOne(doc, onSuccess(id -> {
+    mappedColl.insertOne(doc, onSuccess(res -> {
+      Object insertedId = res.getInsertedId();
+      // object ids are mapped to string
+//      assertTrue(insertedId instanceof String);
       mappedColl.find(doc).first(onSuccess(resultDoc -> {
         Object _id = resultDoc.getValue("_id");
         // object ids are mapped to string

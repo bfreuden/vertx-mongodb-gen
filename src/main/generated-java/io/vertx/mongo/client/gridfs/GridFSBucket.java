@@ -26,6 +26,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.mongo.MongoResult;
+import io.vertx.mongo.ObjectId;
 import io.vertx.mongo.client.ClientSession;
 import io.vertx.mongo.client.MongoDatabase;
 import io.vertx.mongo.client.gridfs.impl.GridFSBucketImpl;
@@ -133,7 +134,7 @@ public interface GridFSBucket {
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
-  Future<String> uploadStream(String filename, ReadStream<Buffer> source);
+  Future<ObjectId> uploadStream(String filename, ReadStream<Buffer> source);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -147,7 +148,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   void uploadStream(String filename, ReadStream<Buffer> source,
-      Handler<AsyncResult<String>> resultHandler);
+      Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -160,7 +161,7 @@ public interface GridFSBucket {
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
-  Future<String> uploadFile(String filename);
+  Future<ObjectId> uploadFile(String filename);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -173,7 +174,7 @@ public interface GridFSBucket {
    *  @param resultHandler an async result with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
-  void uploadFile(String filename, Handler<AsyncResult<String>> resultHandler);
+  void uploadFile(String filename, Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -187,7 +188,7 @@ public interface GridFSBucket {
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
-  Future<String> uploadStream(String filename, ReadStream<Buffer> source,
+  Future<ObjectId> uploadStream(String filename, ReadStream<Buffer> source,
       GridFSUploadOptions options);
 
   /**
@@ -203,7 +204,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   void uploadStream(String filename, ReadStream<Buffer> source, GridFSUploadOptions options,
-      Handler<AsyncResult<String>> resultHandler);
+      Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -217,7 +218,7 @@ public interface GridFSBucket {
    *  @return a future with a single element, the ObjectId of the uploaded file.
    *  @since 1.13
    */
-  Future<String> uploadFile(String filename, GridFSUploadOptions options);
+  Future<ObjectId> uploadFile(String filename, GridFSUploadOptions options);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -232,7 +233,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   void uploadFile(String filename, GridFSUploadOptions options,
-      Handler<AsyncResult<String>> resultHandler);
+      Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -247,7 +248,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<String> uploadStream(ClientSession clientSession, String filename,
+  Future<ObjectId> uploadStream(ClientSession clientSession, String filename,
       ReadStream<Buffer> source);
 
   /**
@@ -264,7 +265,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   void uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
-      Handler<AsyncResult<String>> resultHandler);
+      Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -279,7 +280,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<String> uploadFile(ClientSession clientSession, String filename);
+  Future<ObjectId> uploadFile(ClientSession clientSession, String filename);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -295,7 +296,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   void uploadFile(ClientSession clientSession, String filename,
-      Handler<AsyncResult<String>> resultHandler);
+      Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -311,7 +312,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<String> uploadStream(ClientSession clientSession, String filename,
+  Future<ObjectId> uploadStream(ClientSession clientSession, String filename,
       ReadStream<Buffer> source, GridFSUploadOptions options);
 
   /**
@@ -329,7 +330,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   void uploadStream(ClientSession clientSession, String filename, ReadStream<Buffer> source,
-      GridFSUploadOptions options, Handler<AsyncResult<String>> resultHandler);
+      GridFSUploadOptions options, Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Uploads the contents of the given {@code Publisher} to a GridFS bucket.
@@ -345,7 +346,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  Future<String> uploadFile(ClientSession clientSession, String filename,
+  Future<ObjectId> uploadFile(ClientSession clientSession, String filename,
       GridFSUploadOptions options);
 
   /**
@@ -363,7 +364,7 @@ public interface GridFSBucket {
    *  @since 1.13
    */
   void uploadFile(ClientSession clientSession, String filename, GridFSUploadOptions options,
-      Handler<AsyncResult<String>> resultHandler);
+      Handler<AsyncResult<ObjectId>> resultHandler);
 
   /**
    *  Downloads the contents of the stored file specified by {@code id} into the {@code Publisher}.
@@ -371,7 +372,7 @@ public interface GridFSBucket {
    *  @return a result with a single element, representing the amount of data written
    *  @since 1.13
    */
-  GridFSDownloadResult downloadByObjectId(String id);
+  GridFSDownloadResult downloadByObjectId(ObjectId id);
 
   /**
    *  Downloads the contents of the stored file specified by {@code id} into the {@code Publisher}.
@@ -380,7 +381,7 @@ public interface GridFSBucket {
    *  @return a result with a single element, representing the amount of data written
    *  @since 1.13
    */
-  GridFSDownloadResult downloadByObjectId(String id, GridFSDownloadControlOptions controlOptions);
+  GridFSDownloadResult downloadByObjectId(ObjectId id, GridFSDownloadControlOptions controlOptions);
 
   /**
    *  Downloads the contents of the stored file specified by {@code filename} into the {@code Publisher}.
@@ -430,7 +431,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSDownloadResult downloadByObjectId(ClientSession clientSession, String id);
+  GridFSDownloadResult downloadByObjectId(ClientSession clientSession, ObjectId id);
 
   /**
    *  Downloads the contents of the stored file specified by {@code id} into the {@code Publisher}.
@@ -441,7 +442,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.13
    */
-  GridFSDownloadResult downloadByObjectId(ClientSession clientSession, String id,
+  GridFSDownloadResult downloadByObjectId(ClientSession clientSession, ObjectId id,
       GridFSDownloadControlOptions controlOptions);
 
   /**
@@ -603,14 +604,14 @@ public interface GridFSBucket {
    *  @param id       the ObjectId of the file to be deleted
    *  @return a future with a single element, representing that the file has been deleted
    */
-  Future<Void> delete(String id);
+  Future<Void> delete(ObjectId id);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
    *  @param id       the ObjectId of the file to be deleted
    *  @param resultHandler an async result with a single element, representing that the file has been deleted
    */
-  void delete(String id, Handler<AsyncResult<Void>> resultHandler);
+  void delete(ObjectId id, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -634,7 +635,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  Future<Void> delete(ClientSession clientSession, String id);
+  Future<Void> delete(ClientSession clientSession, ObjectId id);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -644,7 +645,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  void delete(ClientSession clientSession, String id, Handler<AsyncResult<Void>> resultHandler);
+  void delete(ClientSession clientSession, ObjectId id, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Given a {@code id}, delete this stored file's files collection document and associated chunks from a GridFS bucket.
@@ -672,7 +673,7 @@ public interface GridFSBucket {
    *  @param newFilename the new filename for the file
    *  @return a future with a single element, representing that the file has been renamed
    */
-  Future<Void> rename(String id, String newFilename);
+  Future<Void> rename(ObjectId id, String newFilename);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -680,7 +681,7 @@ public interface GridFSBucket {
    *  @param newFilename the new filename for the file
    *  @param resultHandler an async result with a single element, representing that the file has been renamed
    */
-  void rename(String id, String newFilename, Handler<AsyncResult<Void>> resultHandler);
+  void rename(ObjectId id, String newFilename, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -707,7 +708,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  Future<Void> rename(ClientSession clientSession, String id, String newFilename);
+  Future<Void> rename(ClientSession clientSession, ObjectId id, String newFilename);
 
   /**
    *  Renames the stored file with the specified {@code id}.
@@ -718,7 +719,7 @@ public interface GridFSBucket {
    *  @mongodb.server.release 3.6
    *  @since 1.7
    */
-  void rename(ClientSession clientSession, String id, String newFilename,
+  void rename(ClientSession clientSession, ObjectId id, String newFilename,
       Handler<AsyncResult<Void>> resultHandler);
 
   /**
