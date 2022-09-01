@@ -6,8 +6,8 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettingsInitializer;
-import io.vertx.mongo.ObjectIdInputMapper;
-import io.vertx.mongo.ObjectIdOutputMapper;
+import io.vertx.mongo.impl.ObjectIdInputMapper;
+import io.vertx.mongo.impl.ObjectIdOutputMapper;
 
 import java.util.function.Function;
 
