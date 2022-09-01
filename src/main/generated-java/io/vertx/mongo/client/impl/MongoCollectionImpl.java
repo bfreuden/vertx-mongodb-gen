@@ -1435,7 +1435,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__filter);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1453,7 +1457,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__filter, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1472,7 +1480,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__clientSession, __filter);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1494,7 +1506,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndDelete(__clientSession, __filter, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1513,7 +1529,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1535,7 +1555,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__filter, replacement, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1557,7 +1581,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1581,7 +1609,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndReplace(__clientSession, __filter, replacement, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1601,7 +1633,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1623,7 +1659,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1645,7 +1685,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1669,7 +1713,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1688,7 +1736,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1710,7 +1762,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__filter, __update, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1732,7 +1788,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override
@@ -1756,7 +1816,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     Publisher<TDocument> __publisher = wrapped.findOneAndUpdate(__clientSession, __filter, __update, __options);
     Promise<TDocument> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (outputMapper == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(outputMapper);
+    }
   }
 
   @Override

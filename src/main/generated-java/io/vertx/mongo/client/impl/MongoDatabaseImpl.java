@@ -141,7 +141,11 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     Publisher<JsonObject> __publisher = wrapped.runCommand(__command, JsonObject.class);
     Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (clientContext.getConfig().getOutputMapper() == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(clientContext.getConfig().getOutputMapper());
+    }
   }
 
   @Override
@@ -158,7 +162,11 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     Publisher<JsonObject> __publisher = wrapped.runCommand(__command, readPreference, JsonObject.class);
     Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (clientContext.getConfig().getOutputMapper() == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(clientContext.getConfig().getOutputMapper());
+    }
   }
 
   @Override
@@ -177,7 +185,11 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, JsonObject.class);
     Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (clientContext.getConfig().getOutputMapper() == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(clientContext.getConfig().getOutputMapper());
+    }
   }
 
   @Override
@@ -198,7 +210,11 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     Publisher<JsonObject> __publisher = wrapped.runCommand(__clientSession, __command, readPreference, JsonObject.class);
     Promise<JsonObject> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
-    return __promise.future();
+    if (clientContext.getConfig().getOutputMapper() == null) {
+      return __promise.future();
+    } else {
+      return __promise.future().map(clientContext.getConfig().getOutputMapper());
+    }
   }
 
   @Override

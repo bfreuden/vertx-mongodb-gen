@@ -372,19 +372,36 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                 }
 
                 methodBuilder.addStatement("__publisher.subscribe(new $T<>(clientContext, __promise))", ClassName.bestGuess("io.vertx.mongo.impl.SingleResultSubscriber"));
-                String publishedTypeString = method.returnType.publishedType.toString();
+                String publishedTypeString = method.returnType.publishedType.vertxType.toString();
+                String mapper = null;
+                String mapperCall = null;
                 if (publishedTypeString.contains("TDocument")) {
-                    if (publishedTypeString.equals("TDocument"))
-                        methodBuilder.addComment("FIXME single map document");
-                    else
+                    if (publishedTypeString.equals("TDocument")) {
+                        mapper = "outputMapper";
+                        mapperCall = ".map(outputMapper)";
+                    } else {
                         methodBuilder.addComment("FIXME single map something based on document");
+                    }
                 } else if (publishedTypeString.equals(JsonObject.class.getName())) {
-                    methodBuilder.addComment("FIXME single map JsonObject");
+                    mapper = "clientContext.getConfig().getOutputMapper()";
+                    mapperCall = ".map(clientContext.getConfig().getOutputMapper())";
+                }
+                if (mapperCall != null) {
+                    methodBuilder.beginControlFlow(String.format("if (%s == null)", mapper));
                 }
                 if (method.returnType.publishedType.mapper == null) {
                     methodBuilder.addStatement("return __promise.future()");
                 } else {
                     methodBuilder.addStatement(method.returnType.publishedType.mapper.asStatementFromLambdaOrMethodRef("return __promise.future().map(%s)"));
+                }
+                if (mapperCall != null) {
+                    methodBuilder.nextControlFlow("else");
+                    if (method.returnType.publishedType.mapper == null) {
+                        methodBuilder.addStatement("return __promise.future()" + mapperCall);
+                    } else {
+                        methodBuilder.addStatement(method.returnType.publishedType.mapper.asStatementFromLambdaOrMethodRef("return __promise.future().map(%s)" + mapperCall));
+                    }
+                    methodBuilder.endControlFlow();
                 }
             } else if (method.returnType.vertxType.equals(method.returnType.mongoType)) {
                 methodBuilder.addStatement("$T __publisher = wrapped." + method.mongoName +  "(" + paramNames + ")", method.returnType.mongoType);
