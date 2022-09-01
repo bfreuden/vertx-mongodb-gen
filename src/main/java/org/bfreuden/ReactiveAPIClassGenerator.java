@@ -334,12 +334,16 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                 paramNames.add(paramName);
                 methodBuilder.addStatement("$T " + paramName + " = new $T(" + param.name + ")", ClassName.get(GridFSReadStreamPublisher.class), ClassName.get(GridFSReadStreamPublisher.class));
             } else if (mapper != null) {
+                String originalParamName = param.name;
+                //TODO hack
+                if (method.vertxName.equals("bulkWrite") && param.name.equals("requests"))
+                    originalParamName = String.format("((List<? extends WriteModel<TDocument>>)%s)", param.name);
                 String paramName = "__" + param.name;
                 paramNames.add(paramName);
                 if (param.type.isNullable)
-                    methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = " + param.name +" == null ? null : %s", param.name, param.type.mongoType, null));
+                    methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = " + param.name +" == null ? null : %s", originalParamName, param.type.mongoType, null));
                 else
-                    methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = %s", param.name, param.type.mongoType, null));
+                    methodBuilder.addStatement(mapper.asStatementFromExpression("$T " + paramName + " = %s", originalParamName, param.type.mongoType, null));
             } else {
                 paramNames.add(param.name);
             }
@@ -350,8 +354,6 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                     methodBuilder.addStatement(String.format("%s = mapDoc(%s, inputMapper)", param.name, param.name));
                 else if (!vertxTypeString.contains("WriteModel"))
                     methodBuilder.addStatement(String.format("%s = mapDocList(%s, inputMapper)", param.name, param.name));
-                else
-                    methodBuilder.addComment("FIXME handle mapping with inputMapper");
             } else if (vertxTypeString.contains("JsonArray") && param.type.mapper == null) {
                 // should not happen
                 methodBuilder.addComment("FIXME handle JsonArray mapping");
@@ -360,7 +362,6 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                 methodBuilder.addComment("FIXME handle JsonObject mapping");
             }
         }
-
         if (method.returnType.isPublisher) {
             if (method.returnType.singlePublisher) {
                 // special mapping case that can be handled by the mongo driver (Document to JsonObject) because we have the codec

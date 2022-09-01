@@ -48,8 +48,9 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 
     if (!documentHasId(json)) {
       String value = generateHexObjectId();
-      if (useObjectId) json.put(ID_FIELD, new JsonObject().put(OID_FIELD, value));
-      else json.put(ID_FIELD, value);
+      json.put(ID_FIELD, new JsonObject().put(OID_FIELD, value));
+//      if (useObjectId) json.put(ID_FIELD, new JsonObject().put(OID_FIELD, value));
+//      else json.put(ID_FIELD, value);
     }
     return json;
   }
@@ -176,7 +177,8 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
 
   @Override
   protected Object readObjectId(BsonReader reader, DecoderContext ctx) {
-    return new JsonObject().put(OID_FIELD, reader.readObjectId().toHexString());
+    String hexString = reader.readObjectId().toHexString();
+    return useObjectId ? new JsonObject().put(OID_FIELD, hexString) : hexString;
   }
 
   @Override

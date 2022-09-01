@@ -11,6 +11,7 @@ public class ObjectIdOutputMapper implements Function<JsonObject, JsonObject> {
 
     @Override
     public JsonObject apply(JsonObject json) {
+//        return json;
         if (json == null)
             return null;
         Object _id = json.getValue("_id");

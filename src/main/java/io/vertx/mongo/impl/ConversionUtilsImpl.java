@@ -3,6 +3,7 @@ package io.vertx.mongo.impl;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.mongo.impl.codec.json.JsonObjectCodec;
 import org.bson.*;
 import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
@@ -142,7 +143,10 @@ public class ConversionUtilsImpl implements ConversionUtils {
         if (from == null)
             return null;
         if (from instanceof BsonObjectId) {
-            return ((BsonObjectId)from).getValue().toHexString();
+            String hexString = ((BsonObjectId) from).getValue().toHexString();
+            return hexString;
+//            return new JsonObject().put(JsonObjectCodec.OID_FIELD, hexString);
+//            return ;
         } else if (from instanceof BsonString) {
             return ((BsonString)from).getValue();
         } else if (from instanceof BsonInt64) {

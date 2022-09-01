@@ -19,6 +19,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.util.List;
+import java.util.function.Function;
 import org.bson.conversions.Bson;
 
 public class UpdateManyModel<T> extends WriteModel<T> {
@@ -134,8 +135,8 @@ public class UpdateManyModel<T> extends WriteModel<T> {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.UpdateManyModel<T> toDriverClass(
-      MongoClientContext clientContext) {
+  public com.mongodb.client.model.UpdateManyModel<T> toDriverClass(MongoClientContext clientContext,
+      Function<T, T> inputMapper) {
     if (__ctorIndex == 0) {
       Bson __filter = clientContext.getMapper().toBson(this.filter);
       Bson __update = clientContext.getMapper().toBson(this.update);

@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.mongo.impl.MongoClientContext;
+import java.util.function.Function;
 
 public abstract class WriteModel<T> {
   /**
@@ -23,5 +24,5 @@ public abstract class WriteModel<T> {
    * @hidden
    */
   public abstract com.mongodb.client.model.WriteModel<T> toDriverClass(
-      MongoClientContext clientContext);
+      MongoClientContext clientContext, Function<T, T> inputMapper);
 }

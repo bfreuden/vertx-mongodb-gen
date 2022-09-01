@@ -5,6 +5,7 @@ import com.sun.javadoc.*;
 
 import javax.lang.model.element.Modifier;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -138,10 +139,18 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
                 .addJavadoc("@return MongoDB driver object\n@hidden")
                 .addModifiers(Modifier.PUBLIC);
         TypeName returnType;
+        String typeVariableName = null;
         if (typeVariables.isEmpty())
             returnType = ClassName.bestGuess(classDoc.qualifiedTypeName());
-        else
+        else {
+            typeVariableName = typeVariables.get(0).toString();
             returnType = ParameterizedTypeName.get(ClassName.bestGuess(classDoc.qualifiedTypeName()), typeVariables.toArray(new TypeName[0]));
+            toMongo.addParameter(
+                    ParameterizedTypeName.get(
+                            ClassName.get(Function.class),
+                            TypeVariableName.get(typeVariableName),
+                            TypeVariableName.get(typeVariableName)), "inputMapper");
+        }
         toMongo.returns(returnType);
         if (optionsByName.isEmpty()) {
             typeBuilder.addModifiers(Modifier.ABSTRACT);
@@ -163,6 +172,8 @@ public class BeanAPIClassGenerator extends GenericAPIClassGenerator {
                 if (option.type.mapper != null) {
                     ctorParams.add("__" + option.name);
                     toMongo.addStatement(option.type.mapper.asStatementFromExpression("$T __" + option.name + " = %s", "this." + option.name, option.type.mongoType, null));
+                } else if (option.type.vertxType.toString().equals(typeVariableName)) {
+                    ctorParams.add(String.format("inputMapper == null ? this.%s : inputMapper.apply(this.%s)", option.name, option.name));
                 } else {
                     ctorParams.add("this." + option.name);
                 }

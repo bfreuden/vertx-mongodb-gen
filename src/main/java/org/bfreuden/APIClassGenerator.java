@@ -216,7 +216,8 @@ public abstract class APIClassGenerator {
                     else if (location == TypeLocation.RETURN) {
                         actualType.mapper = new FromDriverClassMapperGenerator(actualType.vertxType);
                     } else {
-                        actualType.mapper =new ToDriverClassMapperGenerator();
+                        boolean needsInputMapper = argumentOfParameterizedType != null && !argumentOfParameterizedType.isEmpty();
+                        actualType.mapper = new ToDriverClassMapperGenerator(needsInputMapper);
                     }
                     return actualType;
                 }

@@ -604,8 +604,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public Future<BulkWriteResult> bulkWrite(
       List<? extends WriteModel<? extends TDocument>> requests) {
     requireNonNull(requests, "requests is null");
-    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
-    // FIXME handle mapping with inputMapper
+    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(((List<? extends WriteModel<TDocument>>)requests), _item -> _item.toDriverClass(clientContext, inputMapper));
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__requests);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -624,8 +623,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
       BulkWriteOptions options) {
     requireNonNull(requests, "requests is null");
     requireNonNull(options, "options is null");
-    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
-    // FIXME handle mapping with inputMapper
+    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(((List<? extends WriteModel<TDocument>>)requests), _item -> _item.toDriverClass(clientContext, inputMapper));
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__requests, __options);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();
@@ -646,8 +644,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(clientSession, "clientSession is null");
     requireNonNull(requests, "requests is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
-    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
-    // FIXME handle mapping with inputMapper
+    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(((List<? extends WriteModel<TDocument>>)requests), _item -> _item.toDriverClass(clientContext, inputMapper));
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__clientSession, __requests);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();
     __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
@@ -669,8 +666,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     requireNonNull(requests, "requests is null");
     requireNonNull(options, "options is null");
     com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
-    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(requests, _item -> _item.toDriverClass(clientContext));
-    // FIXME handle mapping with inputMapper
+    List<? extends com.mongodb.client.model.WriteModel<? extends TDocument>> __requests = CollectionsConversionUtils.mapItems(((List<? extends WriteModel<TDocument>>)requests), _item -> _item.toDriverClass(clientContext, inputMapper));
     com.mongodb.client.model.BulkWriteOptions __options = options.toDriverClass(clientContext);
     Publisher<com.mongodb.bulk.BulkWriteResult> __publisher = wrapped.bulkWrite(__clientSession, __requests, __options);
     Promise<com.mongodb.bulk.BulkWriteResult> __promise = clientContext.getVertx().promise();

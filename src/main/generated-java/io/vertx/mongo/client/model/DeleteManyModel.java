@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
+import java.util.function.Function;
 import org.bson.conversions.Bson;
 
 public class DeleteManyModel<T> extends WriteModel<T> {
@@ -73,8 +74,8 @@ public class DeleteManyModel<T> extends WriteModel<T> {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.DeleteManyModel<T> toDriverClass(
-      MongoClientContext clientContext) {
+  public com.mongodb.client.model.DeleteManyModel<T> toDriverClass(MongoClientContext clientContext,
+      Function<T, T> inputMapper) {
     if (__ctorIndex == 0) {
       Bson __filter = clientContext.getMapper().toBson(this.filter);
       return new com.mongodb.client.model.DeleteManyModel<T>(__filter);

@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model;
 
 import io.vertx.mongo.impl.MongoClientContext;
+import java.util.function.Function;
 
 public class InsertOneModel<T> extends WriteModel<T> {
   private T document;
@@ -42,8 +43,8 @@ public class InsertOneModel<T> extends WriteModel<T> {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.InsertOneModel<T> toDriverClass(
-      MongoClientContext clientContext) {
-    return new com.mongodb.client.model.InsertOneModel<T>(this.document);
+  public com.mongodb.client.model.InsertOneModel<T> toDriverClass(MongoClientContext clientContext,
+      Function<T, T> inputMapper) {
+    return new com.mongodb.client.model.InsertOneModel<T>(inputMapper == null ? this.document : inputMapper.apply(this.document));
   }
 }

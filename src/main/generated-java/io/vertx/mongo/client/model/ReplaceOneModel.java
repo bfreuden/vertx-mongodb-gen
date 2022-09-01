@@ -17,6 +17,7 @@ package io.vertx.mongo.client.model;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
+import java.util.function.Function;
 import org.bson.conversions.Bson;
 
 public class ReplaceOneModel<T> extends WriteModel<T> {
@@ -87,15 +88,15 @@ public class ReplaceOneModel<T> extends WriteModel<T> {
    * @return MongoDB driver object
    * @hidden
    */
-  public com.mongodb.client.model.ReplaceOneModel<T> toDriverClass(
-      MongoClientContext clientContext) {
+  public com.mongodb.client.model.ReplaceOneModel<T> toDriverClass(MongoClientContext clientContext,
+      Function<T, T> inputMapper) {
     if (__ctorIndex == 0) {
       Bson __filter = clientContext.getMapper().toBson(this.filter);
-      return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, this.replacement);
+      return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, inputMapper == null ? this.replacement : inputMapper.apply(this.replacement));
     } else if (__ctorIndex == 1) {
       Bson __filter = clientContext.getMapper().toBson(this.filter);
       com.mongodb.client.model.ReplaceOptions __replaceOptions = this.replaceOptions.toDriverClass(clientContext);
-      return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, this.replacement, __replaceOptions);
+      return new com.mongodb.client.model.ReplaceOneModel<T>(__filter, inputMapper == null ? this.replacement : inputMapper.apply(this.replacement), __replaceOptions);
     } else {
       throw new IllegalArgumentException("unknown constructor");
     }
