@@ -22,6 +22,7 @@ FIXME:
 implement Serializer classes
 implement all ConversionUtilsImpl methods
 recursively map all Strings to ObjectIds in an input document object
+replaceOne: assert idprovider != null + provided id != null
 
 TODO:
 missing class javadoc for bean (result + model) classes
