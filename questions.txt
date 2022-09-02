@@ -1,15 +1,19 @@
 
 InsertOneResult has an insertedId with an Object type?
+    => OK
 FindOption setSort -> sort
     => setSort because vertx codegen won't work with sort
 Promise.promise() vs vertx.promise()?
 handler async result functions fluent or void?
+    => void (less confusing)
 create an ObjectID class?
+    => done
 don't ignore <TResult> Class<TResult> methods?
   maybe create a VersatileMongoCollection interface with them?
 force batch size to 1 in mongoresult when not provided?
   because the mongo driver will probably choose a good batch size anyway and actually batch them in the publisher?
 really support objectid=false?
+    => for the moment oids are mapped, but it could be possible to have string oids
 gridfs updloadFile methods don't allow to set a "target" filename?
 squash some package names like model?
 
