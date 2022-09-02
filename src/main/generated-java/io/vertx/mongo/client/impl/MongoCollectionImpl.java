@@ -90,9 +90,11 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   protected final Function<TDocument, TDocument> inputMapper;
 
   protected final Function<TDocument, TDocument> outputMapper;
-  private final Class<TDocument> clazz;
 
-  public MongoCollectionImpl(MongoClientContext clientContext, MongoCollection<TDocument> wrapped, Class<TDocument> clazz) {
+  protected final Class<TDocument> clazz;
+
+  public MongoCollectionImpl(MongoClientContext clientContext, MongoCollection<TDocument> wrapped,
+      Class<TDocument> clazz) {
     this.clientContext = clientContext;
     this.wrapped = wrapped;
     this.clazz = clazz;

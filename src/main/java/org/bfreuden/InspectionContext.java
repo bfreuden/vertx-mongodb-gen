@@ -15,7 +15,7 @@ public class InspectionContext {
 
     public HashSet<String> isolatedApiClasses;
     public HashSet<String> linkedApiClasses;
-    public HashSet<ClassDoc> actualClientSettingsBuilders = new HashSet<>();
+    public LinkedHashSet<ClassDoc> actualClientSettingsBuilders = new LinkedHashSet<>();
 
     public static class PublisherDesc {
         ClassName resultClassName;

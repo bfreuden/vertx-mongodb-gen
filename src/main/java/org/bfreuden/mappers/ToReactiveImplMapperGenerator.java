@@ -16,7 +16,7 @@ public class ToReactiveImplMapperGenerator extends MapperGenerator {
 
     @Override
     public CodeBlockSource getExpressionSource(String value) {
-        String additionalParams = isMongoCollection ? ", inputMapper, outputMapper)" : ")";
+        String additionalParams = isMongoCollection ? ", clazz)" : ")";
         return new CodeBlockSource(
                 String.format("new $T%s(clientContext, %s" + additionalParams, genericBrackets, value),
                 Collections.singletonList(implTypeName)
@@ -25,7 +25,7 @@ public class ToReactiveImplMapperGenerator extends MapperGenerator {
 
     @Override
     public CodeBlockSource getMapperSource() {
-        String additionalParams = isMongoCollection ? ", inputMapper, outputMapper)" : ")";
+        String additionalParams = isMongoCollection ? ", clazz)" : ")";
         return new CodeBlockSource(
                 String.format("_reactive -> new $T%s(clientContext, _reactive" + additionalParams, genericBrackets),
                 Collections.singletonList(implTypeName)
