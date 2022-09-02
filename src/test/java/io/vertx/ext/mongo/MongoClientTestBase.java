@@ -38,7 +38,6 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 
   protected MongoClient mongoClient;
   protected MongoDatabase mongoDatabase;
-  protected boolean useObjectId;//since this class will be inherited by other tests, some tests will toggle useObjectId in their client config. This will keep trakc of it and run the affected test accordingly.
 
   @Test
   public void testCreateAndGetCollection() throws Exception {
@@ -624,15 +623,20 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     ObjectId objectId = new ObjectId();
 
     JsonObject doc = new JsonObject();
-    doc.put("otherId", new JsonObject().put(JsonObjectCodec.OID_FIELD, objectId.toHexString()));
+    // FIXME difference with test of the previous version: now we're inserting a string (randomObjectId()) in useObjectId = false
+//    doc.put("otherId", new JsonObject().put(JsonObjectCodec.OID_FIELD, objectId.toHexString()));
+    Object randomObjectId = randomObjectId();
+    doc.put("otherId", randomObjectId);
 
     MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
     coll.insertOne(doc, onSuccess(res -> {
       assertNotNull(res.getInsertedId());
       coll.find(resultToIdFilter(res)).first().onSuccess(result -> {
         assertNotNull(result);
-        assertNotNull(result.getJsonObject("otherId").getString(JsonObjectCodec.OID_FIELD));
-        assertEquals(objectId.toHexString(), result.getJsonObject("otherId").getString(JsonObjectCodec.OID_FIELD));
+//        assertNotNull(result.getJsonObject("otherId").getString(JsonObjectCodec.OID_FIELD));
+        assertNotNull(result.getValue("otherId"));
+//        assertEquals(randomObjectId, result.getJsonObject("otherId"));
+        assertEquals(randomObjectId, result.getValue("otherId"));
         testComplete();
       });
     }));

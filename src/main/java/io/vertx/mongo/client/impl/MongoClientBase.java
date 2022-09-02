@@ -121,8 +121,8 @@ public abstract class MongoClientBase implements MongoClient {
                             CodecRegistries.fromRegistries(
                                     commonCodecRegistry,
                                     CodecRegistries.fromCodecs(
-                                            new JsonObjectCodec(new JsonObject().put("useObjectId", true))
-//                                            new JsonObjectCodec(new JsonObject().put("useObjectId", config.isUseObjectIds()))
+//                                            new JsonObjectCodec(new JsonObject().put("useObjectId", true))
+                                            new JsonObjectCodec(new JsonObject().put("useObjectId", config.isUseObjectIds()))
                                     )
                             )
                     );

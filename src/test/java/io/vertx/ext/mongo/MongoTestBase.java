@@ -46,6 +46,8 @@ import java.util.function.Function;
  */
 public abstract class MongoTestBase extends VertxTestBase {
 
+  protected boolean useObjectId;//since this class will be inherited by other tests, some tests will toggle useObjectId in their client config. This will keep trakc of it and run the affected test accordingly.
+
   protected static String getConnectionString() {
     return getProperty("connection_string");
   }
@@ -151,6 +153,7 @@ public abstract class MongoTestBase extends VertxTestBase {
   }
 
   protected JsonObject createDoc() {
+    String hexString = new ObjectId().toHexString();
     return new JsonObject()
       .put("foo", "bar")
       .put("num", 123)
@@ -168,8 +171,8 @@ public abstract class MongoTestBase extends VertxTestBase {
           .put("wib", "wob")))
       .put("date", new JsonObject()
         .put("$date", "2015-05-30T22:50:02Z"))
-      .put("object_id", new JsonObject()
-        .put("$oid", new ObjectId().toHexString()))
+      .put("object_id", useObjectId ? new JsonObject()
+        .put("$oid", hexString) : hexString) // FIXME? small variation with previous client
       .put("other", new JsonObject()
         .put("quux", "flib")
         .put("myarr", new JsonArray()

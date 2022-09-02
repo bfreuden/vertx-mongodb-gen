@@ -16,8 +16,6 @@ squash some package names like model?
 FIXME:
 implement Serializer classes
 implement all ConversionUtilsImpl methods
-handle mapping of oid in InsertResult etc...
-handle mapping of oid in ChangeStreamDocument
 
 
 TODO:
