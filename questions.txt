@@ -19,6 +19,7 @@ implement all ConversionUtilsImpl methods
 recursively map all Strings to ObjectIds in an input document object
 
 TODO:
+missing class javadoc for bean (result + model) classes
 rename gridfs hardocded function names caused by missing objectid class that exists now
 EncryptOptions not data object
 conversion utils contains unused methods
