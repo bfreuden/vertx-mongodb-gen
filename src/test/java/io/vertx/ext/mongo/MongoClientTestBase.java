@@ -511,12 +511,12 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-  private JsonObject resultToIdFilter(InsertOneResult res) {
+  protected JsonObject resultToIdFilter(InsertOneResult res) {
     Object insertedId = resultToId(res);
     return new JsonObject().put("_id", insertedId);
   }
 
-  private Object randomObjectId() {
+  protected Object randomObjectId() {
     // FIXME? regression: before it was possible to use any string
     // but with the new mode useObjectId=false mode, they are mapped to an ObjectId anyway.
     // Note that creating string ids with is working on useObjectId=true mode.
@@ -530,7 +530,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     }
   }
 
-  private Object resultToId(InsertOneResult res) {
+  protected Object resultToId(InsertOneResult res) {
     Object insertedId = res.getInsertedId();
     if (useObjectId) {
       assertTrue(insertedId instanceof JsonObject);
@@ -540,11 +540,11 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     return insertedId;
   }
 
-  private JsonObject idFilter(Object value) {
+  protected JsonObject idFilter(Object value) {
     if (useObjectId) {
-      assertTrue(value instanceof JsonObject || value instanceof Map);
+      assertTrue("when useObjectId=true, _id is expected to be a JsonObject", value instanceof JsonObject || value instanceof Map);
     } else {
-      assertTrue(value instanceof String);
+      assertTrue("when useObjectId=false, _id is expected to be a String", value instanceof String);
     }
     return new JsonObject().put("_id", value);
   }

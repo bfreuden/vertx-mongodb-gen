@@ -35,8 +35,7 @@ public class MongoClientTest extends MongoClientTestBase {
   public void setUp() throws Exception {
     super.setUp();
     ClientConfig config = getConfig();
-    useObjectId = false;
-    config.useObjectIds(false);
+    config.useObjectIds(useObjectId = false);
     mongoClient = MongoClient.create(vertx, config);
     mongoDatabase = mongoClient.getDatabase(getDatabaseName());
     CountDownLatch latch = new CountDownLatch(1);
@@ -50,6 +49,7 @@ public class MongoClientTest extends MongoClientTestBase {
     super.tearDown();
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testCreateCollectionWithOptions() {
     String expectedLocale = "de_AT";
@@ -68,6 +68,7 @@ public class MongoClientTest extends MongoClientTestBase {
     )));
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testFindBatch() throws Exception {
     testFindBatch(3000, (latch, stream) -> {
@@ -80,6 +81,7 @@ public class MongoClientTest extends MongoClientTestBase {
     });
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testFindBatchResumePause() throws Exception {
     testFindBatch(3000, (latch, stream) -> {
@@ -100,6 +102,7 @@ public class MongoClientTest extends MongoClientTestBase {
     });
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testFindBatchFetch() throws Exception {
     testFindBatch(3000, (latch, stream) -> {
@@ -121,6 +124,7 @@ public class MongoClientTest extends MongoClientTestBase {
     });
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testFindSmallBatchResumePauseOneByOne() throws Exception {
     testFindBatch(10, (latch, stream) -> {
@@ -139,6 +143,7 @@ public class MongoClientTest extends MongoClientTestBase {
     });
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testFindSmallBatchFetchOneByOne() throws Exception {
     testFindBatch(10, (latch, stream) -> {
@@ -158,6 +163,7 @@ public class MongoClientTest extends MongoClientTestBase {
     });
   }
 
+  //TODO move to the MongoClientTestBase
   private void testFindBatch(int numDocs, BiFunction<CountDownLatch, ReadStream<JsonObject>, List<String>> checker) throws Exception {
     AtomicReference<ReadStream<JsonObject>> streamReference = new AtomicReference<>();
 
@@ -181,8 +187,8 @@ public class MongoClientTest extends MongoClientTestBase {
     // Make sure stream handlers can be set to null after closing
     streamReference.get().handler(null).exceptionHandler(null).endHandler(null);
   }
-//
-//
+
+  // TODO resurrect those tests
 //  @Test
 //  public void testUpsertCreatesHexIfRecordDoesNotExist() throws Exception {
 //    upsertDoc(randomCollection(), createDoc(), null, IGNORE -> {
@@ -219,7 +225,8 @@ public class MongoClientTest extends MongoClientTestBase {
 //      }));
 //    await();
 //  }
-//
+
+//TODO move to the MongoClientTestBase
   @Test
   public void testAggregate() throws Exception {
     final int numDocs = 1000;
@@ -243,6 +250,7 @@ public class MongoClientTest extends MongoClientTestBase {
     assertEquals(111, count.longValue());
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testAggregateWithOptions() throws Exception {
     AggregateOptions aggregateOptions = new AggregateOptions();
@@ -267,6 +275,7 @@ public class MongoClientTest extends MongoClientTestBase {
     awaitLatch(endLatch);
   }
 
+  //TODO move to the MongoClientTestBase
   @Test
   public void testWatch() throws Exception {
     final JsonArray operationTypes = new JsonArray(Arrays.asList("insert", "update", "replace", "delete"));
@@ -303,6 +312,8 @@ public class MongoClientTest extends MongoClientTestBase {
               case INSERT:
                 //FIXME it is an ObjectId even if useObjectId=false
                 Object id = fullDocument.getValue("_id");
+//                JsonObject filter = new JsonObject().put("_id", fullDocument.getValue("_id"));
+                JsonObject filter = idFilter(id);
                 assertNotNull(id);
                 if (watchedDocumentId.compareAndSet(null, id)) {
                   vertx.cancelTimer(timerId);
@@ -313,7 +324,6 @@ public class MongoClientTest extends MongoClientTestBase {
                   JsonObject updateField = new JsonObject().put("fieldToUpdate", "updatedValue");
                   coll.updateOne(query, new JsonObject().put("$set", updateField), onSuccess(update -> {
                     //TODO save not implemented
-                    JsonObject filter = new JsonObject().put("_id", fullDocument.getValue("_id"));
                     coll.replaceOne(filter, fullDocument.put("fieldToReplace", "replacedValue"));
                   }));
                 } else {
@@ -342,7 +352,7 @@ public class MongoClientTest extends MongoClientTestBase {
     awaitLatch(latch);
     streamReference.get().handler(null);
   }
-//
+
 //  private void upsertDoc(String collection, JsonObject docToInsert, String expectedId, Consumer<JsonObject> doneFunction) {
 //    JsonObject insertStatement = new JsonObject()
 //      .put("$setOnInsert", docToInsert);

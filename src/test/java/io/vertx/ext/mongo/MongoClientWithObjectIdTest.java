@@ -12,8 +12,7 @@ public class MongoClientWithObjectIdTest extends MongoClientTestBase {
   public void setUp() throws Exception {
     super.setUp();
     ClientConfig config = getConfig();
-    config.useObjectIds(true);
-    useObjectId = true;
+    config.useObjectIds(useObjectId = true);
     mongoClient = MongoClient.create(vertx, config);
     mongoDatabase = mongoClient.getDatabase(getDatabaseName());
     CountDownLatch latch = new CountDownLatch(1);
