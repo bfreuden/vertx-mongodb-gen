@@ -28,7 +28,7 @@ import java.util.Objects;
 public abstract class MongoClientBase implements MongoClient {
 
     private final static CodecRegistry commonCodecRegistry = CodecRegistries.fromCodecs(new StringCodec(), new IntegerCodec(),
-            new BooleanCodec(), new DoubleCodec(), new LongCodec(), new BsonDocumentCodec());
+            new BooleanCodec(), new DoubleCodec(), new LongCodec(), new BsonDocumentCodec(), new BsonObjectIdCodec());
     private static final String DS_LOCAL_MAP_NAME = "__vertx.MongoClientBase.datasources";
     private final VertxInternal vertx;
     private final ContextInternal creatingContext;

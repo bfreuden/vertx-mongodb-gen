@@ -655,7 +655,8 @@ public abstract class MongoClientTestBase extends MongoTestBase {
         doc.put("_id", resultToId(id));
         doc.put("newField", "sheep");
         // Save again - it should update
-        coll.replaceOne(resultToIdFilter(id), doc, onSuccess(id2 -> {
+        resultToIdFilter(id);
+        coll.replaceOne(doc, onSuccess(id2 -> {
           // TODO no longer applicable?
           //assertNull(id2.getInsertedId());
           coll.find().first(onSuccess(res2 -> {

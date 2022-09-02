@@ -80,6 +80,18 @@ public class ConversionUtilsImpl implements ConversionUtils {
 
     @Override
     public BsonValue toBsonValue(Object from) {
+        return toBsonValueInternal(from);
+    }
+
+    public static BsonValue toBsonValueInternal(Object from) {
+        if (from instanceof String)
+            return new BsonString((String) from);
+        else if (from instanceof JsonObject) {
+            JsonObject json = (JsonObject) from;
+            String hexString = json.getString("$oid");
+            if (json.size() == 1 && hexString != null)
+                return new BsonObjectId(new ObjectId(hexString));
+        }
         //FIXME
         throw new IllegalStateException("not implemented");
     }

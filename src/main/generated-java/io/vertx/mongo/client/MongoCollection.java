@@ -1137,6 +1137,25 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Replace a document in the collection according to the specified arguments.
+   *  <p>The filter will be based on the id of the provided document</p>
+   *  @param replacement the replacement document
+   *  @return a future with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   */
+  Future<UpdateResult> replaceOne(TDocument replacement);
+
+  /**
+   *  Replace a document in the collection according to the specified arguments.
+   *  <p>The filter will be based on the id of the provided document</p>
+   *  @param replacement the replacement document
+   *  @param resultHandler an async result with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   */
+  void replaceOne(TDocument replacement,
+      Handler<AsyncResult<UpdateResult>> resultHandler);
+
+  /**
+   *  Replace a document in the collection according to the specified arguments.
    *  @param filter      the query filter to apply the the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the replace operation

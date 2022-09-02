@@ -18,10 +18,8 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
-import com.mongodb.MongoNamespace;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.WriteConcern;
+import com.mongodb.*;
+import com.mongodb.client.model.Filters;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import com.mongodb.reactivestreams.client.FindPublisher;
@@ -78,6 +76,8 @@ import java.lang.String;
 import java.lang.Void;
 import java.util.List;
 import java.util.function.Function;
+
+import org.bson.BsonValue;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.reactivestreams.Publisher;
@@ -90,6 +90,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   protected final Function<TDocument, TDocument> inputMapper;
 
   protected final Function<TDocument, TDocument> outputMapper;
+  protected final Function<TDocument, BsonValue> idProvider;
 
   protected final Class<TDocument> clazz;
 
@@ -100,6 +101,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     this.clazz = clazz;
     this.inputMapper = clientContext.getConfig().getInputDocumentMapper(clazz);
     this.outputMapper = clientContext.getConfig().getOutputDocumentMapper(clazz);
+    this.idProvider = clientContext.getConfig().getDocumentIdProvider(clazz);
   }
 
   @Override
@@ -1004,6 +1006,26 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public void replaceOne(JsonObject filter, TDocument replacement,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(filter, replacement);
+    setHandler(__future, resultHandler);
+  }
+
+
+
+  @Override
+  public Future<UpdateResult> replaceOne(TDocument replacement) {
+    requireNonNull(replacement, "replacement is null");
+    Bson __filter = Filters.eq(idProvider.apply(replacement));
+    replacement = mapDoc(replacement, inputMapper);
+    Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement);
+    Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(_item -> UpdateResult.fromDriverClass(clientContext, _item));
+  }
+
+  @Override
+  public void replaceOne(TDocument replacement,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
+    Future<UpdateResult> __future = this.replaceOne(replacement);
     setHandler(__future, resultHandler);
   }
 

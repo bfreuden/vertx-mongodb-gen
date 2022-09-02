@@ -6,8 +6,12 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.MongoClientSettingsInitializer;
+import io.vertx.mongo.client.impl.JsonObjectIdProvider;
+import io.vertx.mongo.impl.ConversionUtilsImpl;
 import io.vertx.mongo.impl.ObjectIdInputMapper;
 import io.vertx.mongo.impl.ObjectIdOutputMapper;
+import org.bson.BsonValue;
+import org.bson.conversions.Bson;
 
 import java.util.function.Function;
 
@@ -27,6 +31,7 @@ public class ClientConfig {
     private final MongoClientSettingsInitializer initializer = new MongoClientSettingsInitializer();
     private Function<JsonObject, JsonObject> inputMapper;
     private Function<JsonObject, JsonObject> outputMapper;
+    private Function<JsonObject, BsonValue> jsonObjectIdProvider;
 
     public ClientConfig() {}
 
@@ -174,5 +179,12 @@ public class ClientConfig {
             this.inputMapper = new ObjectIdInputMapper();
             this.outputMapper = new ObjectIdOutputMapper();
         }
+        this.jsonObjectIdProvider = new JsonObjectIdProvider(useObjectIds);
+    }
+
+    public <TDocument> Function<TDocument, BsonValue> getDocumentIdProvider(Class<TDocument> clazz) {
+        if (clazz.equals(JsonObject.class))
+            return (Function<TDocument, BsonValue>) this.jsonObjectIdProvider;
+        return null;
     }
 }
