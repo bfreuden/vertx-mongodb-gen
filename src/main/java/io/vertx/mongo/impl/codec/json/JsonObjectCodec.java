@@ -49,6 +49,9 @@ public class JsonObjectCodec extends AbstractJsonCodec<JsonObject, JsonArray> im
     if (!documentHasId(json)) {
       String value = generateHexObjectId();
       json.put(ID_FIELD, new JsonObject().put(OID_FIELD, value));
+      // what's the point of useObjectId in the previous client exactly?
+      // Here we're generating an id: so it means the user doesn't want to provide its own id.
+      // But we storing it as a string where an ObjectId would be much more efficient!
 //      if (useObjectId) json.put(ID_FIELD, new JsonObject().put(OID_FIELD, value));
 //      else json.put(ID_FIELD, value);
     }
