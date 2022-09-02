@@ -25,12 +25,11 @@ recursively map all Strings to ObjectIds in an input document object
 replaceOne: assert idprovider != null + provided id != null
 
 TODO:
+missing methods from the Session base class (maybe others as well?)
 missing class javadoc for bean (result + model) classes
 rename gridfs hardocded function names caused by missing objectid class that exists now
-EncryptOptions not data object
+EncryptOptions not data object (because of byte[])
 conversion utils contains unused methods
-implement Serializer classes
-implement all ConversionUtilsImpl methods
 possibility to post configure databases, collections, updateoptions, etc...
 rename package from io.vertx.mongo to io.vertx.ext.mongo
 support a kind of automatic mapping of dates (prevent having to deal with $date objects) => should be possible with input and output mappers
@@ -45,7 +44,7 @@ add convenience methods:
  - createAndGetCollection
  - MongoCollection.acknowledged()
  - MongoCollection.unacknowledged()
- - save (= insertOne if no id or replaceOne if id provided)
+ - save ? (= insertOne if no id or replaceOne if id provided)
  - get gridfs bucket from database
 review unit tests and make a diff
 client encryption should return Buffer instead of Byte
