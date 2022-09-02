@@ -13,6 +13,7 @@ import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
 import io.vertx.mongo.client.impl.OptionSerializer;
 import org.bfreuden.mappers.ConversionUtilsMapperGenerator;
+import org.bfreuden.mappers.DocumentIdFilterGenerator;
 import org.reactivestreams.Publisher;
 
 import javax.lang.model.element.Modifier;
@@ -273,6 +274,8 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     for (TypeVariableName variable : method.typeVariables)
                         methodBuilder.addTypeVariable(variable);
                     for (MongoMethodParameter param : methodWriteConfig.params) {
+                        if (param.type.mapper instanceof DocumentIdFilterGenerator)
+                            continue;
                         ParameterSpec.Builder builder = ParameterSpec.builder(param.type.vertxType, param.name);
                         if (param.type.isNullable)
                             builder.addAnnotation(Nullable.class);
@@ -296,6 +299,8 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     for (TypeVariableName variable : method.typeVariables)
                         handlerMethodBuilder.addTypeVariable(variable);
                     for (MongoMethodParameter param : methodWriteConfig.params) {
+                        if (param.type.mapper instanceof DocumentIdFilterGenerator)
+                            continue;
                         handlerMethodBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
                     }
                     handlerMethodBuilder.addParameter(ParameterSpec.builder(ParameterizedTypeName.get(ClassName.get(Handler.class), ParameterizedTypeName.get(ClassName.get(AsyncResult.class), method.returnType.publishedType.vertxType)), "resultHandler").build());
@@ -316,6 +321,8 @@ public abstract class GenericAPIClassGenerator extends APIClassGenerator {
                     for (TypeVariableName variable : method.typeVariables)
                         methodWithOptionsBuilder.addTypeVariable(variable);
                     for (MongoMethodParameter param : methodWriteConfig.params) {
+                        if (param.type.mapper instanceof DocumentIdFilterGenerator)
+                            continue;
                         methodWithOptionsBuilder.addParameter(ParameterSpec.builder(param.type.vertxType, param.name).build());
                     }
                     String optionsClass = context.publisherOptionsClasses.get(method.returnType.publisherClassName.toString());

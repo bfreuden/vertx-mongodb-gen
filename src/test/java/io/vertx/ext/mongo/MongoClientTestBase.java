@@ -313,20 +313,21 @@ public abstract class MongoClientTestBase extends MongoTestBase {
 //    await();
 //  }
 //
-  @Test
-  public void testSavePreexistingLongID() throws Exception {
-    String collection = randomCollection();
-    mongoDatabase.createCollection(collection, onSuccess(res -> {
-      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
-      JsonObject doc = createDoc();
-      Long genID = TestUtils.randomLong();
-      doc.put("_id", genID);
-      coll.insertOne(doc, onSuccess(res2 -> {
-        assertDocumentWithIdIsPresent(collection, genID);
-      }));
-    }));
-    await();
-  }
+  // TODO save not implemented yet
+//  @Test
+//  public void testSavePreexistingLongID() throws Exception {
+//    String collection = randomCollection();
+//    mongoDatabase.createCollection(collection, onSuccess(res -> {
+//      MongoCollection<JsonObject> coll = mongoDatabase.getCollection(collection);
+//      JsonObject doc = createDoc();
+//      Long genID = TestUtils.randomLong();
+//      doc.put("_id", genID);
+//      coll.saveOne(doc, onSuccess(res2 -> {
+//        assertDocumentWithIdIsPresent(collection, genID);
+//      }));
+//    }));
+//    await();
+//  }
 
   // TODO returned id is org.bson.RawBsonDocument
 //  @Test
@@ -368,7 +369,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-  // TODO returned id is org.bson.RawBsonDocument
+  // TODO returned id is org.bson.RawBsonDocument and save doesn't return an id
 //  @Test
 //  public void testSavePreexistingObjectID() throws Exception {
 //    String collection = randomCollection();
@@ -486,7 +487,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-  // TODO save is not implemented yet, so use replace
+  // TODO save not implemented: duplicate test with save
   @Test
   public void testSave() throws Exception {
     String collection = randomCollection();
@@ -498,7 +499,8 @@ public abstract class MongoClientTestBase extends MongoTestBase {
         doc.put("_id", resultToId(res2));
         doc.put("newField", "sheep");
         // Save again - it should update
-        coll.replaceOne(idFilter(doc.getValue("_id")), doc, onSuccess(res3 -> {
+        idFilter(doc.getValue("_id"));
+        coll.replaceOne(doc, onSuccess(res3 -> {
           assertNull(res3.getUpsertedId());
           coll.find(new JsonObject()).first().onSuccess(res4 -> {
             assertEquals("sheep", res4.getString("newField"));
@@ -643,7 +645,7 @@ public abstract class MongoClientTestBase extends MongoTestBase {
     await();
   }
 
-  // TODO save is not implemented yet, so use replace
+  // TODO save not implemented: duplicate test with save
   @Test
   public void testSaveWithOptions() throws Exception {
     String collection = randomCollection();

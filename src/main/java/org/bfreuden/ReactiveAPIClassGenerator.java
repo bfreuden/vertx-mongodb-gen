@@ -15,7 +15,9 @@ import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.gridfs.impl.GridFSReadStreamPublisher;
 import io.vertx.mongo.impl.MappingPublisher;
+import org.bfreuden.mappers.DocumentIdFilterGenerator;
 import org.bfreuden.mappers.MapperGenerator;
+import org.bson.BsonValue;
 import org.bson.Document;
 
 import javax.lang.model.element.Modifier;
@@ -93,6 +95,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
         for (MethodDoc methodDoc : classDoc.methods()) {
             if (isMongoClient && methodDoc.name().equals("close"))
                 continue;
+            //FIXME no longer relevant?
             if (classDoc.qualifiedTypeName().equals(GridFSBucket.class.getName()) &&
                     methodDoc.name().equals("downloadToPublisher") &&
                     methodDoc.getRawCommentText().contains("custom id")
@@ -104,8 +107,25 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
             MongoMethod method = analyzeMethod(methodDoc);
             if (method != null)
                 methods.add(method);
+            if (methodDoc.name().equals("replaceOne")) {
+                // generate methods without filters
+                MongoMethod methodNoFilter = analyzeMethod(methodDoc);
+                Optional<MongoMethodParameter> filter = methodNoFilter.params.stream().filter(p -> p.name.equals("filter")).findFirst();
+                if (filter.isEmpty())
+                    throw new IllegalStateException("can't find the filter param");
+                Optional<MongoMethodParameter> replacement = methodNoFilter.params.stream().filter(p -> p.name.equals("replacement")).findFirst();
+                if (replacement.isEmpty())
+                    throw new IllegalStateException("can't find the replacement param");
+//                methodNoFilter.vertxName = "saveOne";
+                methodNoFilter.mongoJavadoc = methodDoc.getRawCommentText();
+                methodNoFilter.mongoJavadoc = methodNoFilter.mongoJavadoc.replaceAll("@param +filter[^\n]+", "");
+                methodNoFilter.mongoJavadoc = methodNoFilter.mongoJavadoc.replace("according to the specified arguments.", "according to the specified arguments.<p>The filter will be based on the id of the provided document</p>");
+                methodNoFilter.computeJavadocs();
+                MongoMethodParameter mongoMethodParameter = filter.get();
+                mongoMethodParameter.type.mapper = new DocumentIdFilterGenerator();
+                methods.add(methodNoFilter);
+            }
         }
-
     }
 
 
@@ -271,8 +291,10 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
             typeBuilder.addField(FieldSpec.builder(wrappedType, "wrapped").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
             if (isMongoCollection) {
                 ParameterizedTypeName mapperType = ParameterizedTypeName.get(ClassName.get(Function.class), TypeVariableName.get("TDocument"), TypeVariableName.get("TDocument"));
+                ParameterizedTypeName docIdMapperType = ParameterizedTypeName.get(ClassName.get(Function.class), TypeVariableName.get("TDocument"), ClassName.get(BsonValue.class));
                 typeBuilder.addField(FieldSpec.builder(mapperType, "inputMapper").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
                 typeBuilder.addField(FieldSpec.builder(mapperType, "outputMapper").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
+                typeBuilder.addField(FieldSpec.builder(docIdMapperType, "idProvider").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
                 ParameterizedTypeName clazzType = ParameterizedTypeName.get(ClassName.get(Class.class), TypeVariableName.get("TDocument"));
                 typeBuilder.addField(FieldSpec.builder(clazzType, "clazz").addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
                 typeBuilder.addMethod(MethodSpec.constructorBuilder()
@@ -285,6 +307,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
                         .addStatement("this.clazz = clazz")
                         .addStatement("this.inputMapper = clientContext.getConfig().getInputDocumentMapper(clazz)")
                         .addStatement("this.outputMapper = clientContext.getConfig().getOutputDocumentMapper(clazz)")
+                        .addStatement("this.idProvider = clientContext.getConfig().getDocumentIdProvider(clazz)")
                         .build());
             } else {
                 typeBuilder.addMethod(MethodSpec.constructorBuilder()
@@ -317,7 +340,7 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
 
     private void implementMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
         for (MongoMethodParameter param : method.params) {
-            if (!param.type.vertxType.isPrimitive() && !param.type.isNullable) {
+            if (!param.type.vertxType.isPrimitive() && !param.type.isNullable && !(param.type.mapper instanceof DocumentIdFilterGenerator)) {
                 staticImports.add("java.util.Objects.requireNonNull");
                 methodBuilder.addStatement("requireNonNull(" + param.name + ", $S)", param.name + " is null");
             }
@@ -520,9 +543,12 @@ public class ReactiveAPIClassGenerator extends GenericAPIClassGenerator {
 
     private void implementHandlerMethod(MongoMethod method, MethodSpec.Builder methodBuilder) {
         StringJoiner paramNames = new StringJoiner(", ");
-        for (MongoMethodParameter param : method.params)
+        for (MongoMethodParameter param : method.params) {
+            if (param.type.mapper instanceof DocumentIdFilterGenerator)
+                continue;
             if (!currentMethodIsNoStream || !param.type.vertxType.toString().contains("Stream"))
                 paramNames.add(param.name);
+        }
         staticImports.add("io.vertx.mongo.impl.Utils.setHandler");
         String methodName = method.vertxName;
         if (currentMethodIsNoStream)

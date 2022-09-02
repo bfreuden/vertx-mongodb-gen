@@ -18,7 +18,10 @@ package io.vertx.mongo.client.impl;
 import static io.vertx.mongo.impl.Utils.setHandler;
 import static java.util.Objects.requireNonNull;
 
-import com.mongodb.*;
+import com.mongodb.MongoNamespace;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.model.Filters;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
@@ -76,7 +79,6 @@ import java.lang.String;
 import java.lang.Void;
 import java.util.List;
 import java.util.function.Function;
-
 import org.bson.BsonValue;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
@@ -90,6 +92,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   protected final Function<TDocument, TDocument> inputMapper;
 
   protected final Function<TDocument, TDocument> outputMapper;
+
   protected final Function<TDocument, BsonValue> idProvider;
 
   protected final Class<TDocument> clazz;
@@ -1009,8 +1012,6 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
     setHandler(__future, resultHandler);
   }
 
-
-
   @Override
   public Future<UpdateResult> replaceOne(TDocument replacement) {
     requireNonNull(replacement, "replacement is null");
@@ -1023,8 +1024,7 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
-  public void replaceOne(TDocument replacement,
-      Handler<AsyncResult<UpdateResult>> resultHandler) {
+  public void replaceOne(TDocument replacement, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(replacement);
     setHandler(__future, resultHandler);
   }
@@ -1052,6 +1052,26 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   }
 
   @Override
+  public Future<UpdateResult> replaceOne(TDocument replacement, ReplaceOptions options) {
+    requireNonNull(replacement, "replacement is null");
+    requireNonNull(options, "options is null");
+    Bson __filter = Filters.eq(idProvider.apply(replacement));
+    replacement = mapDoc(replacement, inputMapper);
+    com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass(clientContext);
+    Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__filter, replacement, __options);
+    Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(_item -> UpdateResult.fromDriverClass(clientContext, _item));
+  }
+
+  @Override
+  public void replaceOne(TDocument replacement, ReplaceOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
+    Future<UpdateResult> __future = this.replaceOne(replacement, options);
+    setHandler(__future, resultHandler);
+  }
+
+  @Override
   public Future<UpdateResult> replaceOne(ClientSession clientSession, JsonObject filter,
       TDocument replacement) {
     requireNonNull(clientSession, "clientSession is null");
@@ -1070,6 +1090,26 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public void replaceOne(ClientSession clientSession, JsonObject filter, TDocument replacement,
       Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(clientSession, filter, replacement);
+    setHandler(__future, resultHandler);
+  }
+
+  @Override
+  public Future<UpdateResult> replaceOne(ClientSession clientSession, TDocument replacement) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(replacement, "replacement is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    Bson __filter = Filters.eq(idProvider.apply(replacement));
+    replacement = mapDoc(replacement, inputMapper);
+    Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement);
+    Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(_item -> UpdateResult.fromDriverClass(clientContext, _item));
+  }
+
+  @Override
+  public void replaceOne(ClientSession clientSession, TDocument replacement,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
+    Future<UpdateResult> __future = this.replaceOne(clientSession, replacement);
     setHandler(__future, resultHandler);
   }
 
@@ -1094,6 +1134,29 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   public void replaceOne(ClientSession clientSession, JsonObject filter, TDocument replacement,
       ReplaceOptions options, Handler<AsyncResult<UpdateResult>> resultHandler) {
     Future<UpdateResult> __future = this.replaceOne(clientSession, filter, replacement, options);
+    setHandler(__future, resultHandler);
+  }
+
+  @Override
+  public Future<UpdateResult> replaceOne(ClientSession clientSession, TDocument replacement,
+      ReplaceOptions options) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(replacement, "replacement is null");
+    requireNonNull(options, "options is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    Bson __filter = Filters.eq(idProvider.apply(replacement));
+    replacement = mapDoc(replacement, inputMapper);
+    com.mongodb.client.model.ReplaceOptions __options = options.toDriverClass(clientContext);
+    Publisher<com.mongodb.client.result.UpdateResult> __publisher = wrapped.replaceOne(__clientSession, __filter, replacement, __options);
+    Promise<com.mongodb.client.result.UpdateResult> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future().map(_item -> UpdateResult.fromDriverClass(clientContext, _item));
+  }
+
+  @Override
+  public void replaceOne(ClientSession clientSession, TDocument replacement, ReplaceOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler) {
+    Future<UpdateResult> __future = this.replaceOne(clientSession, replacement, options);
     setHandler(__future, resultHandler);
   }
 

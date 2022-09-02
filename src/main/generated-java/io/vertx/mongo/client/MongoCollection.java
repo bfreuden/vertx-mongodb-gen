@@ -1136,8 +1136,8 @@ public interface MongoCollection<TDocument> {
       Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
-   *  Replace a document in the collection according to the specified arguments.
-   *  <p>The filter will be based on the id of the provided document</p>
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  
    *  @param replacement the replacement document
    *  @return a future with a single element the UpdateResult
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
@@ -1145,14 +1145,13 @@ public interface MongoCollection<TDocument> {
   Future<UpdateResult> replaceOne(TDocument replacement);
 
   /**
-   *  Replace a document in the collection according to the specified arguments.
-   *  <p>The filter will be based on the id of the provided document</p>
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  
    *  @param replacement the replacement document
    *  @param resultHandler an async result with a single element the UpdateResult
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
    */
-  void replaceOne(TDocument replacement,
-      Handler<AsyncResult<UpdateResult>> resultHandler);
+  void replaceOne(TDocument replacement, Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
    *  Replace a document in the collection according to the specified arguments.
@@ -1175,6 +1174,29 @@ public interface MongoCollection<TDocument> {
    *  @since 1.8
    */
   void replaceOne(JsonObject filter, TDocument replacement, ReplaceOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler);
+
+  /**
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  
+   *  @param replacement the replacement document
+   *  @param options     the options to apply to the replace operation
+   *  @return a future with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   *  @since 1.8
+   */
+  Future<UpdateResult> replaceOne(TDocument replacement, ReplaceOptions options);
+
+  /**
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  
+   *  @param replacement the replacement document
+   *  @param options     the options to apply to the replace operation
+   *  @param resultHandler an async result with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   *  @since 1.8
+   */
+  void replaceOne(TDocument replacement, ReplaceOptions options,
       Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
@@ -1204,6 +1226,31 @@ public interface MongoCollection<TDocument> {
       Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  @param clientSession the client session with which to associate this operation
+   *  
+   *  @param replacement the replacement document
+   *  @return a future with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  Future<UpdateResult> replaceOne(ClientSession clientSession, TDocument replacement);
+
+  /**
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  @param clientSession the client session with which to associate this operation
+   *  
+   *  @param replacement the replacement document
+   *  @param resultHandler an async result with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   *  @mongodb.server.release 3.6
+   *  @since 1.7
+   */
+  void replaceOne(ClientSession clientSession, TDocument replacement,
+      Handler<AsyncResult<UpdateResult>> resultHandler);
+
+  /**
    *  Replace a document in the collection according to the specified arguments.
    *  @param clientSession the client session with which to associate this operation
    *  @param filter      the query filter to apply the the replace operation
@@ -1230,6 +1277,34 @@ public interface MongoCollection<TDocument> {
    */
   void replaceOne(ClientSession clientSession, JsonObject filter, TDocument replacement,
       ReplaceOptions options, Handler<AsyncResult<UpdateResult>> resultHandler);
+
+  /**
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  @param clientSession the client session with which to associate this operation
+   *  
+   *  @param replacement the replacement document
+   *  @param options     the options to apply to the replace operation
+   *  @return a future with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   *  @mongodb.server.release 3.6
+   *  @since 1.8
+   */
+  Future<UpdateResult> replaceOne(ClientSession clientSession, TDocument replacement,
+      ReplaceOptions options);
+
+  /**
+   *  Replace a document in the collection according to the specified arguments.<p>The filter will be based on the id of the provided document</p>
+   *  @param clientSession the client session with which to associate this operation
+   *  
+   *  @param replacement the replacement document
+   *  @param options     the options to apply to the replace operation
+   *  @param resultHandler an async result with a single element the UpdateResult
+   *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
+   *  @mongodb.server.release 3.6
+   *  @since 1.8
+   */
+  void replaceOne(ClientSession clientSession, TDocument replacement, ReplaceOptions options,
+      Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
    *  Update a single document in the collection according to the specified arguments.

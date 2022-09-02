@@ -16,7 +16,7 @@ squash some package names like model?
 FIXME:
 implement Serializer classes
 implement all ConversionUtilsImpl methods
-
+recursively map all Strings to ObjectIds in an input document object
 
 TODO:
 rename gridfs hardocded function names caused by missing objectid class that exists now
@@ -38,7 +38,7 @@ add convenience methods:
  - createAndGetCollection
  - MongoCollection.acknowledged()
  - MongoCollection.unacknowledged()
- - save (= replace + no need to provide the id)
+ - save (= insertOne if no id or replaceOne if id provided)
  - get gridfs bucket from database
 review unit tests and make a diff
 client encryption should return Buffer instead of Byte
@@ -49,5 +49,4 @@ rename useObjectId mode to mapObjectId mode
 migration:
 batch size always hardcoded to 1 when unspecified
 update don't return the new doc by default
-with useObjectId=false you can no longer create an _id with an "foo" value because it will be converted
-to an object id under the hood.
+with useObjectId=false you can no longer create an _id with an "foo" value because it will be converted to an object id under the hood.
