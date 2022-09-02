@@ -154,6 +154,18 @@ public class ClientConfig {
         return useObjectIds ? null : new ObjectIdOutputMapper();
     }
 
+    public <TDocument> Function<TDocument,TDocument> getInputDocumentMapper(Class<TDocument> clazz) {
+        if (clazz.equals(JsonObject.class))
+            return (Function<TDocument, TDocument>) getInputMapper();
+        return null;
+    }
+
+    public <TDocument> Function<TDocument, TDocument> getOutputDocumentMapper(Class<TDocument> clazz) {
+        if (clazz.equals(JsonObject.class))
+            return (Function<TDocument, TDocument>) getOutputMapper();
+        return null;
+    }
+
     /**
      * @hidden
      */

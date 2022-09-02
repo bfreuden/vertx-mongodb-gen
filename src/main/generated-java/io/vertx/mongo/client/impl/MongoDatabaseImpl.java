@@ -122,7 +122,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
   public MongoCollection<JsonObject> getCollection(String collectionName) {
     requireNonNull(collectionName, "collectionName is null");
     com.mongodb.reactivestreams.client.MongoCollection<JsonObject> __wrapped = wrapped.getCollection(collectionName, JsonObject.class);
-    return new MongoCollectionImpl<>(this.clientContext, __wrapped, this.clientContext.getConfig().getInputMapper(), this.clientContext.getConfig().getOutputMapper());
+    return new MongoCollectionImpl<>(this.clientContext, __wrapped, JsonObject.class);
   }
 
   @Override
@@ -131,7 +131,7 @@ public class MongoDatabaseImpl extends MongoDatabaseBase {
     requireNonNull(collectionName, "collectionName is null");
     requireNonNull(clazz, "clazz is null");
     com.mongodb.reactivestreams.client.MongoCollection<TDocument> __result = wrapped.getCollection(collectionName, clazz);
-    return new MongoCollectionImpl<>(clientContext, __result, null, null);
+    return new MongoCollectionImpl<>(clientContext, __result, clazz);
   }
 
   @Override

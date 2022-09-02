@@ -20,6 +20,8 @@ import io.vertx.core.impl.VertxInternal;
 import io.vertx.mongo.client.ClientConfig;
 import org.bson.codecs.configuration.CodecRegistry;
 
+import java.util.function.Function;
+
 public final class MongoClientContext {
 
     private final VertxInternal vertx;
@@ -46,4 +48,5 @@ public final class MongoClientContext {
     public ConversionUtils getMapper() {
         return conversionUtils;
     }
+
 }
