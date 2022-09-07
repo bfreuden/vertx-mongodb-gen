@@ -48,6 +48,7 @@ public class PublisherResultAPIClassGenerator extends APIClassGenerator {
                 .filter(m -> !m.name().equals("hashCode"))
                 .filter(m -> !m.name().equals("withDocumentClass")) // TODO ??
                 .filter(m -> !m.name().equals("equals"))
+                .filter(m -> !m.name().equals("explain")) //FIXME handle explain in AggregatePublisher and FindPublisher
                 .filter(m -> !m.returnType().qualifiedTypeName().equals(classDoc.qualifiedTypeName())) // ignore fluent setters
                 .collect(Collectors.toList()));
 

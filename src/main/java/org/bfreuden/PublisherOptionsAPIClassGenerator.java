@@ -43,6 +43,7 @@ public class PublisherOptionsAPIClassGenerator extends OptionsAPIClassGenerator 
                 .filter(m -> !m.name().equals("toCollection")) // TODO do something more generic for publishers
                 .filter(m -> !m.name().equals("getId")) // FIXME this method is missing in the generated classes
                 .filter(m -> !m.name().equals("getObjectId")) // FIXME this method is missing in the generated classes
+                .filter(m -> !m.name().equals("explain")) // FIXME this method is missing in the generated classes
                 .filter(m -> !m.name().equals("equals"))
                 .collect(Collectors.toList()));
 

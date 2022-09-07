@@ -68,6 +68,19 @@ public abstract class APIClassGenerator {
 
     private ActualType getActualType2(ExecutableMemberDoc methodDoc, String name, Type type, TypeLocation location, List<ActualType> argumentOfParameterizedType) {
         if (type.isPrimitive()) {
+            if (type.toString().equals("byte[]")) {
+                TypeName mapped2 = Types.getMapped2(type.toString());
+                if (mapped2 != null) {
+                    ActualType result = ActualType.fromMappedTypeName(ArrayTypeName.of(TypeName.BYTE), mapped2);
+                    String conversionMethod;
+                    if (location == TypeLocation.PARAMETER)
+                        conversionMethod = context.conversionUtilsGenerator.addConversion(result.vertxType, result.mongoType);
+                    else
+                        conversionMethod = context.conversionUtilsGenerator.addConversion(result.mongoType, result.vertxType);
+                    result.mapper = new ConversionUtilsMapperGenerator(conversionMethod);
+                    return result;
+                }
+            }
             try {
                 Field field = TypeName.class.getField(type.toString().toUpperCase());
                 return ActualType.fromTypeName((TypeName) field.get(null));

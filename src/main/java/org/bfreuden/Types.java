@@ -9,6 +9,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.bson.codecs.configuration.CodecRegistry;
 
+import java.time.Instant;
 import java.util.*;
 
 public class Types {
@@ -38,9 +39,11 @@ public class Types {
         ACCEPTED_JSON_MAPPABLE.add(ServerAddress.class.getName());
 
         IGNORED.add("com.mongodb.internal.async.client.AsyncClientSession");
-
+        IGNORED.add("com.mongodb.RequestContext");
+        IGNORED.add("com.mongodb.reactivestreams.client.ReactiveContextProvider");
 
         MAPPING2.put("org.bson.Document", ClassName.get(JsonObject.class));
+        MAPPING2.put("org.bson.BsonDateTime", ClassName.get(Instant.class));
         ACCEPTED.add("java.lang.Integer");
         ACCEPTED.add("java.net.InetAddress");
         ACCEPTED.add("java.lang.Long");
@@ -51,6 +54,7 @@ public class Types {
 //        mapping.put("org.bson.UuidRepresentation", ""); // https://mongodb.github.io/mongo-java-driver/3.5/javadoc/org/bson/UuidRepresentation.html
         ACCEPTED.add("java.lang.Throwable");
         ACCEPTED.add("java.lang.Double");
+        MAPPING2.put("byte[]", ClassName.get(Buffer.class));
         MAPPING2.put("java.nio.ByteBuffer", ClassName.get(Buffer.class));
         MAPPING2.put("org.bson.BsonDocument", ClassName.get(JsonObject.class));
         MAPPING2.put("org.bson.conversions.Bson", ClassName.get(JsonObject.class));

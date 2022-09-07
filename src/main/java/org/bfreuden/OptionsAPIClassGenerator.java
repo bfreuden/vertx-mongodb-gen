@@ -106,6 +106,8 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
         for (MethodDoc setter: setters) {
             try {
                 methods.remove(setter);
+                if (setter.name().equals("comment") && setter.parameters().length == 1 && setter.parameters()[0].type().toString().equals(String.class.getName()))
+                    continue;
                 Parameter parameter = setter.parameters()[0];
                 String setterParamName = parameter.name();
                 Type optionType = parameter.type();
@@ -173,7 +175,7 @@ public class OptionsAPIClassGenerator extends GenericAPIClassGenerator {
             option.mandatory = true;
         Optional<MethodDoc> maybeGetter = methods.stream()
                 .filter(m -> m.parameters().length == 0 || option.withTimeUnit && m.parameters().length == 1 && m.parameters()[0].type().qualifiedTypeName().equals(TimeUnit.class.getName()))
-                .filter(m -> m.returnType().equals(optionType) || m.returnType().qualifiedTypeName().equals("java.lang.Boolean") && optionType.qualifiedTypeName().equals("boolean")|| option.name.equals("arrayFilters") && m.name().equals("getArrayFilters")|| option.name.equals("keyAltNames") && m.name().equals("getKeyAltNames"))
+                .filter(m -> m.returnType().toString().equals(optionType.toString()) || m.returnType().qualifiedTypeName().equals("java.lang.Boolean") && optionType.qualifiedTypeName().equals("boolean")|| option.name.equals("arrayFilters") && m.name().equals("getArrayFilters")|| option.name.equals("keyAltNames") && m.name().equals("getKeyAltNames"))
                 .filter(m -> m.name().equals("get" + option.name.toUpperCase().charAt(0) + option.name.substring(1)) || m.name().equals("is" + option.name.toUpperCase().charAt(0) + option.name.substring(1)))
                 .findFirst();
         if (maybeGetter.isPresent()) {

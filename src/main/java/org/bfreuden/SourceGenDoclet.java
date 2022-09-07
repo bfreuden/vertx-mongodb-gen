@@ -141,11 +141,13 @@ public class SourceGenDoclet {
         inspectionContext.builderClasses.add("com.mongodb.client.model.Collation.Builder");
         inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation.Builder");
         inspectionContext.otherApiClasses.remove("com.mongodb.client.model.Collation");
+        inspectionContext.otherApiClasses.remove("com.mongodb.client.model.changestream.TruncatedArray");
 
 //        inspectionContext.otherApiClasses.add("com.mongodb.TransactionOptions");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteInsert");
         inspectionContext.resultApiClasses.add("com.mongodb.bulk.BulkWriteUpsert");
         inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.UpdateDescription");
+        inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.TruncatedArray");
         inspectionContext.resultApiClasses.add("com.mongodb.client.model.changestream.ChangeStreamDocument");
         inspectionContext.resultApiClasses.add("com.mongodb.client.gridfs.model.GridFSFile");
 
@@ -361,7 +363,8 @@ public class SourceGenDoclet {
 
 
     public static void main(String[] args) {
-        File sourcePath = new File("merged-sources");
+//        File sourcePath = new File("merged-sources");
+        File sourcePath = new File("merged-sources-4.7.1");
 
         com.sun.tools.javadoc.Main.execute(SourceGenDoclet.class.getClassLoader(),
                 "-doclet",
