@@ -21,6 +21,7 @@ import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
+import java.lang.Object;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,6 +54,11 @@ public class ListDatabasesOptions {
    * the batch size
    */
   private Integer batchSize;
+
+  /**
+   * the comment
+   */
+  private Object comment;
 
   /**
    *  Sets the maximum execution time on the server for this operation.
@@ -126,7 +132,7 @@ public class ListDatabasesOptions {
   /**
    *  Sets the number of documents to return per batch.
    *
-   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine grained
+   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine-grained
    *  control over the underlying cursor.</p>
    *
    *  @param batchSize the batch size
@@ -141,6 +147,23 @@ public class ListDatabasesOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public ListDatabasesOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  public Object getComment() {
+    return comment;
   }
 
   /**
@@ -164,6 +187,9 @@ public class ListDatabasesOptions {
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);
+    }
+    if (this.comment != null) {
+      publisher.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
   }
 }

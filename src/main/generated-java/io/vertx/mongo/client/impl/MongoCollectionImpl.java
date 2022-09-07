@@ -48,6 +48,7 @@ import io.vertx.mongo.client.model.BulkWriteOptions;
 import io.vertx.mongo.client.model.CountOptions;
 import io.vertx.mongo.client.model.CreateIndexOptions;
 import io.vertx.mongo.client.model.DeleteOptions;
+import io.vertx.mongo.client.model.DropCollectionOptions;
 import io.vertx.mongo.client.model.DropIndexOptions;
 import io.vertx.mongo.client.model.EstimatedDocumentCountOptions;
 import io.vertx.mongo.client.model.FindOneAndDeleteOptions;
@@ -1937,6 +1938,43 @@ public class MongoCollectionImpl<TDocument> extends MongoCollectionBase<TDocumen
   @Override
   public void drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler) {
     Future<Void> __future = this.drop(clientSession);
+    setHandler(__future, resultHandler);
+  }
+
+  @Override
+  public Future<Void> drop(DropCollectionOptions dropCollectionOptions) {
+    requireNonNull(dropCollectionOptions, "dropCollectionOptions is null");
+    com.mongodb.client.model.DropCollectionOptions __dropCollectionOptions = dropCollectionOptions.toDriverClass(clientContext);
+    Publisher<Void> __publisher = wrapped.drop(__dropCollectionOptions);
+    Promise<Void> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future();
+  }
+
+  @Override
+  public void drop(DropCollectionOptions dropCollectionOptions,
+      Handler<AsyncResult<Void>> resultHandler) {
+    Future<Void> __future = this.drop(dropCollectionOptions);
+    setHandler(__future, resultHandler);
+  }
+
+  @Override
+  public Future<Void> drop(ClientSession clientSession,
+      DropCollectionOptions dropCollectionOptions) {
+    requireNonNull(clientSession, "clientSession is null");
+    requireNonNull(dropCollectionOptions, "dropCollectionOptions is null");
+    com.mongodb.reactivestreams.client.ClientSession __clientSession = clientSession.toDriverClass(clientContext);
+    com.mongodb.client.model.DropCollectionOptions __dropCollectionOptions = dropCollectionOptions.toDriverClass(clientContext);
+    Publisher<Void> __publisher = wrapped.drop(__clientSession, __dropCollectionOptions);
+    Promise<Void> __promise = clientContext.getVertx().promise();
+    __publisher.subscribe(new SingleResultSubscriber<>(clientContext, __promise));
+    return __promise.future();
+  }
+
+  @Override
+  public void drop(ClientSession clientSession, DropCollectionOptions dropCollectionOptions,
+      Handler<AsyncResult<Void>> resultHandler) {
+    Future<Void> __future = this.drop(clientSession, dropCollectionOptions);
     setHandler(__future, resultHandler);
   }
 

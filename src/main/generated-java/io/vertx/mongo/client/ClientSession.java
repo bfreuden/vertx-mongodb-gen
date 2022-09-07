@@ -20,6 +20,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.mongo.impl.MongoClientContext;
+import java.lang.Object;
 import java.lang.Void;
 
 /**
@@ -45,6 +46,15 @@ public interface ClientSession {
    *  @since 4.0
    */
   boolean notifyMessageSent();
+
+  /**
+   *  Notify the client session that command execution is being initiated. This should be called before server selection occurs.
+   *  <p>
+   *  For internal use only
+   *  </p>
+   *  @param operation the operation
+   */
+  void notifyOperationInitiated(Object operation);
 
   /**
    *  Gets the transaction options.  Only call this method of the session has an active transaction

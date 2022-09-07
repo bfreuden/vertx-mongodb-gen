@@ -19,6 +19,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
+import java.lang.Object;
 
 /**
  *  The options to apply to an operation that inserts multiple documents into a collection.
@@ -40,6 +41,11 @@ public class InsertManyOptions {
    * If true, allows the write to opt-out of document level validation.
    */
   private Boolean bypassDocumentValidation;
+
+  /**
+   * the comment
+   */
+  private Object comment;
 
   public InsertManyOptions() {
   }
@@ -69,7 +75,7 @@ public class InsertManyOptions {
    *  Gets whether the documents should be inserted in the order provided, stopping on the first failed insertion. The default is true.
    *  If false, the server will attempt to insert all the documents regardless of an failures.
    *
-   *  @return whether the the documents should be inserted in order
+   *  @return whether the documents should be inserted in order
    */
   public Boolean isOrdered() {
     return ordered;
@@ -77,6 +83,8 @@ public class InsertManyOptions {
 
   /**
    *  Sets the bypass document level validation flag.
+   *
+   *  <p>For bulk operations use: {@link BulkWriteOptions#bypassDocumentValidation(Boolean)}</p>
    *
    *  @param bypassDocumentValidation If true, allows the write to opt-out of document level validation.
    *  @return this
@@ -89,7 +97,7 @@ public class InsertManyOptions {
   }
 
   /**
-   *  Gets the the bypass document level validation flag
+   *  Gets the bypass document level validation flag
    *
    *  @return the bypass document level validation flag
    *  @since 3.2
@@ -97,6 +105,30 @@ public class InsertManyOptions {
    */
   public Boolean isBypassDocumentValidation() {
     return bypassDocumentValidation;
+  }
+
+  /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  <p>For bulk operations use: {@link BulkWriteOptions#comment(BsonValue)}</p>
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public InsertManyOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  /**
+   *  @return the comment for this operation. A null value means no comment is set.
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public Object getComment() {
+    return comment;
   }
 
   /**
@@ -111,6 +143,9 @@ public class InsertManyOptions {
     }
     if (this.bypassDocumentValidation != null) {
       result.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    if (this.comment != null) {
+      result.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
     return result;
   }

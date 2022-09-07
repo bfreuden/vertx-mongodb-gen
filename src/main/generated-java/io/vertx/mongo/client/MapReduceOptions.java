@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  *  Options for map reduce.
  *
  *  @since 1.0
+ *  @deprecated Superseded by aggregate
  */
 public class MapReduceOptions {
   /**
@@ -371,7 +372,7 @@ public class MapReduceOptions {
   /**
    *  Sets the number of documents to return per batch.
    *
-   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine grained
+   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine-grained
    *  control over the underlying cursor.</p>
    *
    *  @param batchSize the batch size

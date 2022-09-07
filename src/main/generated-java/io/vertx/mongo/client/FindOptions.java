@@ -24,6 +24,7 @@ import java.lang.Boolean;
 import java.lang.Deprecated;
 import java.lang.Integer;
 import java.lang.Long;
+import java.lang.Object;
 import java.lang.String;
 import java.util.concurrent.TimeUnit;
 
@@ -96,7 +97,7 @@ public class FindOptions {
   /**
    * the comment
    */
-  private String comment;
+  private Object comment;
 
   /**
    * the hint
@@ -107,6 +108,11 @@ public class FindOptions {
    * the name of the index which should be used for the operation
    */
   private String hintString;
+
+  /**
+   * for find operation or null
+   */
+  private JsonObject let;
 
   /**
    * the max
@@ -343,18 +349,23 @@ public class FindOptions {
   }
 
   /**
-   *  Sets the comment to the query. A null value means no comment is set.
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  <p>The comment can be any valid BSON type for server versions 4.4 and above.
+   *  Server versions between 3.6 and 4.2 only support string as comment,
+   *  and providing a non-string type will result in a server-side error.
    *
    *  @param comment the comment
    *  @return this
-   *  @since 1.6
+   *  @since 4.6
+   *  @mongodb.server.release 3.6
    */
-  public FindOptions setComment(String comment) {
+  public FindOptions setComment(Object comment) {
     this.comment = comment;
     return this;
   }
 
-  public String getComment() {
+  public Object getComment() {
     return comment;
   }
 
@@ -388,6 +399,26 @@ public class FindOptions {
 
   public String getHintString() {
     return hintString;
+  }
+
+  /**
+   *  Add top-level variables to the operation. A null value means no variables are set.
+   *
+   *  <p>Allows for improved command readability by separating the variables from the query text.</p>
+   *
+   *  @param variables for find operation or null
+   *  @return this
+   *  @mongodb.driver.manual reference/command/find/
+   *  @mongodb.server.release 5.0
+   *  @since 4.6
+   */
+  public FindOptions setLet(JsonObject variables) {
+    this.let = variables;
+    return this;
+  }
+
+  public JsonObject getLet() {
+    return let;
   }
 
   /**
@@ -457,7 +488,7 @@ public class FindOptions {
   /**
    *  Sets the number of documents to return per batch.
    *
-   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine grained
+   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine-grained
    *  control over the underlying cursor.</p>
    *
    *  @param batchSize the batch size
@@ -538,13 +569,16 @@ public class FindOptions {
       publisher.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.comment != null) {
-      publisher.comment(this.comment);
+      publisher.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
     if (this.hint != null) {
       publisher.hint(clientContext.getMapper().toBson(this.hint));
     }
     if (this.hintString != null) {
       publisher.hintString(this.hintString);
+    }
+    if (this.let != null) {
+      publisher.let(clientContext.getMapper().toBson(this.let));
     }
     if (this.max != null) {
       publisher.max(clientContext.getMapper().toBson(this.max));

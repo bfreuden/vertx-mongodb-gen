@@ -21,8 +21,10 @@ import io.vertx.core.json.JsonObject;
 import java.lang.Long;
 import java.lang.Object;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.List;
 import org.bson.BsonBinary;
+import org.bson.BsonDateTime;
 import org.bson.BsonDocument;
 import org.bson.BsonInt64;
 import org.bson.BsonTimestamp;
@@ -39,6 +41,8 @@ public interface ConversionUtils {
 
   BsonBinary toBsonBinary(byte[] from);
 
+  BsonDateTime toBsonDateTime(Instant from);
+
   BsonDocument toBsonDocument(JsonObject from);
 
   BsonInt64 toBsonInt64(Long from);
@@ -53,9 +57,13 @@ public interface ConversionUtils {
 
   byte[] toByteArray(BsonBinary from);
 
+  byte[] toByteArray(Buffer from);
+
   ByteBuffer toByteBuffer(Buffer from);
 
   Document toDocument(JsonObject from);
+
+  Instant toInstant(BsonDateTime from);
 
   JsonObject toJsonObject(Bson from);
 

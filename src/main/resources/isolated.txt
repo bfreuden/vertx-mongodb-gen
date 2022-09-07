@@ -2,9 +2,11 @@ com.mongodb.ClientSessionOptions
 com.mongodb.ClientSessionOptions.Builder
 com.mongodb.CreateIndexCommitQuorum
 com.mongodb.CursorType
+com.mongodb.ExplainVerbosity
 com.mongodb.MongoNamespace
 com.mongodb.ReadConcern
 com.mongodb.ReadPreference
+com.mongodb.RequestContext
 com.mongodb.TransactionOptions
 com.mongodb.TransactionOptions.Builder
 com.mongodb.WriteConcern
@@ -15,6 +17,8 @@ com.mongodb.client.gridfs.model.GridFSDownloadOptions
 com.mongodb.client.gridfs.model.GridFSFile
 com.mongodb.client.gridfs.model.GridFSUploadOptions
 com.mongodb.client.model.BulkWriteOptions
+com.mongodb.client.model.ChangeStreamPreAndPostImagesOptions
+com.mongodb.client.model.ClusteredIndexOptions
 com.mongodb.client.model.Collation
 com.mongodb.client.model.Collation.Builder
 com.mongodb.client.model.CollationAlternate
@@ -28,6 +32,7 @@ com.mongodb.client.model.CreateViewOptions
 com.mongodb.client.model.DeleteManyModel
 com.mongodb.client.model.DeleteOneModel
 com.mongodb.client.model.DeleteOptions
+com.mongodb.client.model.DropCollectionOptions
 com.mongodb.client.model.DropIndexOptions
 com.mongodb.client.model.EstimatedDocumentCountOptions
 com.mongodb.client.model.FindOneAndDeleteOptions
@@ -44,6 +49,8 @@ com.mongodb.client.model.RenameCollectionOptions
 com.mongodb.client.model.ReplaceOneModel
 com.mongodb.client.model.ReplaceOptions
 com.mongodb.client.model.ReturnDocument
+com.mongodb.client.model.TimeSeriesGranularity
+com.mongodb.client.model.TimeSeriesOptions
 com.mongodb.client.model.UpdateManyModel
 com.mongodb.client.model.UpdateOneModel
 com.mongodb.client.model.UpdateOptions
@@ -53,10 +60,14 @@ com.mongodb.client.model.ValidationOptions
 com.mongodb.client.model.WriteModel
 com.mongodb.client.model.changestream.ChangeStreamDocument
 com.mongodb.client.model.changestream.FullDocument
+com.mongodb.client.model.changestream.FullDocumentBeforeChange
 com.mongodb.client.model.changestream.OperationType
+com.mongodb.client.model.changestream.TruncatedArray
 com.mongodb.client.model.changestream.UpdateDescription
 com.mongodb.client.model.vault.DataKeyOptions
 com.mongodb.client.model.vault.EncryptOptions
+com.mongodb.client.model.vault.RewrapManyDataKeyOptions
+com.mongodb.client.model.vault.RewrapManyDataKeyResult
 com.mongodb.client.result.DeleteResult
 com.mongodb.client.result.InsertManyResult
 com.mongodb.client.result.InsertOneResult
@@ -70,6 +81,7 @@ com.mongodb.reactivestreams.client.ListCollectionsPublisher
 com.mongodb.reactivestreams.client.ListDatabasesPublisher
 com.mongodb.reactivestreams.client.ListIndexesPublisher
 com.mongodb.reactivestreams.client.MapReducePublisher
+com.mongodb.reactivestreams.client.ReactiveContextProvider
 com.mongodb.reactivestreams.client.gridfs.GridFSDownloadPublisher
 com.mongodb.reactivestreams.client.gridfs.GridFSFindPublisher
 com.mongodb.reactivestreams.client.gridfs.GridFSUploadPublisher

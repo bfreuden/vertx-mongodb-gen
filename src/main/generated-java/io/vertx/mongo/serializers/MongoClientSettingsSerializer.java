@@ -24,6 +24,8 @@ import com.mongodb.WriteConcern;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.AutoEncryptionSettings;
+import io.vertx.mongo.ContextProvider;
+import io.vertx.mongo.ServerApi;
 import io.vertx.mongo.client.impl.OptionSerializer;
 import io.vertx.mongo.connection.ClusterSettings;
 import io.vertx.mongo.connection.ConnectionPoolSettings;
@@ -70,7 +72,11 @@ public class MongoClientSettingsSerializer {
 
   private List<MongoCompressor> compressorList;
 
+  private ServerApi serverApi;
+
   private AutoEncryptionSettings autoEncryptionSettings;
+
+  private ContextProvider contextProvider;
 
   public MongoClientSettingsSerializer() {
   }
@@ -254,6 +260,15 @@ public class MongoClientSettingsSerializer {
     return OptionSerializer.toSerializerList(this.compressorList, MongoCompressorSerializer.class, MongoCompressor.class);
   }
 
+  public MongoClientSettingsSerializer setServerApi(ServerApi serverApi) {
+    this.serverApi = serverApi;
+    return this;
+  }
+
+  public ServerApi getServerApi() {
+    return serverApi;
+  }
+
   public MongoClientSettingsSerializer setAutoEncryptionSettings(
       AutoEncryptionSettings autoEncryptionSettings) {
     this.autoEncryptionSettings = autoEncryptionSettings;
@@ -262,6 +277,15 @@ public class MongoClientSettingsSerializer {
 
   public AutoEncryptionSettings getAutoEncryptionSettings() {
     return autoEncryptionSettings;
+  }
+
+  public MongoClientSettingsSerializer setContextProvider(ContextProvider contextProvider) {
+    this.contextProvider = contextProvider;
+    return this;
+  }
+
+  public ContextProvider getContextProvider() {
+    return contextProvider;
   }
 
   /**
@@ -309,8 +333,14 @@ public class MongoClientSettingsSerializer {
     if (this.compressorList != null) {
       builder.compressorList(this.compressorList);
     }
+    if (this.serverApi != null) {
+      builder.serverApi(this.serverApi.toDriverClass(clientContext));
+    }
     if (this.autoEncryptionSettings != null) {
       builder.autoEncryptionSettings(this.autoEncryptionSettings.toDriverClass(clientContext));
+    }
+    if (this.contextProvider != null) {
+      builder.contextProvider(this.contextProvider.toDriverClass(clientContext));
     }
   }
 }

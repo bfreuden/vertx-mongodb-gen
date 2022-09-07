@@ -26,6 +26,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.SingleResultSubscriber;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.Void;
 import org.reactivestreams.Publisher;
@@ -48,6 +49,12 @@ public class ClientSessionImpl extends ClientSessionBase {
   @Override
   public boolean notifyMessageSent() {
     return wrapped.notifyMessageSent();
+  }
+
+  @Override
+  public void notifyOperationInitiated(Object operation) {
+    requireNonNull(operation, "operation is null");
+    wrapped.notifyOperationInitiated(operation);
   }
 
   @Override

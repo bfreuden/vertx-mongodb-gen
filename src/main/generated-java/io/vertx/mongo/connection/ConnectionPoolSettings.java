@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 )
 public class ConnectionPoolSettings {
   /**
-   * the maximum number of connections in the pool.
+   * the maximum number of connections in the pool; if 0, then there is no limit.
    */
   private Integer maxSize;
 
@@ -66,6 +66,11 @@ public class ConnectionPoolSettings {
    */
   private Long maintenanceFrequency;
 
+  /**
+   * The maximum number of connections a pool may be establishing concurrently. Must be positive.
+   */
+  private Integer maxConnecting;
+
   public ConnectionPoolSettings() {
   }
 
@@ -96,7 +101,7 @@ public class ConnectionPoolSettings {
    *
    *  <p>Default is 100.</p>
    *
-   *  @param maxSize the maximum number of connections in the pool.
+   *  @param maxSize the maximum number of connections in the pool; if 0, then there is no limit.
    *  @return this
    */
   public ConnectionPoolSettings setMaxSize(Integer maxSize) {
@@ -110,7 +115,7 @@ public class ConnectionPoolSettings {
    *
    *  <p>Default is 100.</p>
    *
-   *  @return the maximum number of connections in the pool.
+   *  @return the maximum number of connections in the pool; if 0, then there is no limit.
    */
   public Integer getMaxSize() {
     return maxSize;
@@ -251,6 +256,34 @@ public class ConnectionPoolSettings {
   }
 
   /**
+   *  The maximum number of connections a pool may be establishing concurrently.
+   *
+   *  @param maxConnecting The maximum number of connections a pool may be establishing concurrently. Must be positive.
+   *  @return {@code this}.
+   *  @see ConnectionPoolSettings#getMaxConnecting()
+   *  @since 4.4
+   */
+  public ConnectionPoolSettings setMaxConnecting(Integer maxConnecting) {
+    this.maxConnecting = maxConnecting;
+    return this;
+  }
+
+  /**
+   *  The maximum number of connections a pool may be establishing concurrently.
+   *  Establishment of a connection is a part of its life cycle
+   *  starting after a {@link ConnectionCreatedEvent} and ending before a {@link ConnectionReadyEvent}.
+   *  <p>
+   *  Default is 2.</p>
+   *
+   *  @return The maximum number of connections a pool may be establishing concurrently.
+   *  @see Builder#maxConnecting(int)
+   *  @since 4.4
+   */
+  public Integer getMaxConnecting() {
+    return maxConnecting;
+  }
+
+  /**
    * @param builder MongoDB driver builder
    * @hidden
    */
@@ -276,6 +309,9 @@ public class ConnectionPoolSettings {
     }
     if (this.maintenanceFrequency != null) {
       builder.maintenanceFrequency(this.maintenanceFrequency, TimeUnit.MILLISECONDS);
+    }
+    if (this.maxConnecting != null) {
+      builder.maxConnecting(this.maxConnecting);
     }
   }
 }

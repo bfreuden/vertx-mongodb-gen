@@ -19,6 +19,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Long;
+import java.lang.Object;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,6 +36,11 @@ public class EstimatedDocumentCountOptions {
    *  the max time
    */
   private Long maxTime;
+
+  /**
+   * the comment
+   */
+  private Object comment;
 
   public EstimatedDocumentCountOptions() {
   }
@@ -70,6 +76,28 @@ public class EstimatedDocumentCountOptions {
   }
 
   /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.7
+   *  @mongodb.server.release 4.4
+   */
+  public EstimatedDocumentCountOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  /**
+   *  @return the comment for this operation. A null value means no comment is set.
+   *  @since 4.7
+   *  @mongodb.server.release 4.4
+   */
+  public Object getComment() {
+    return comment;
+  }
+
+  /**
    * @return MongoDB driver object
    * @hidden
    */
@@ -78,6 +106,9 @@ public class EstimatedDocumentCountOptions {
     com.mongodb.client.model.EstimatedDocumentCountOptions result = new com.mongodb.client.model.EstimatedDocumentCountOptions();
     if (this.maxTime != null) {
       result.maxTime(this.maxTime, TimeUnit.MILLISECONDS);
+    }
+    if (this.comment != null) {
+      result.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
     return result;
   }

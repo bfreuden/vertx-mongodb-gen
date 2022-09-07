@@ -39,6 +39,11 @@ public class ClientSessionOptions {
   private Boolean causallyConsistent;
 
   /**
+   * true for snapshot reads, false otherwise
+   */
+  private Boolean snapshot;
+
+  /**
    * the default transaction options to use for all transactions on this session,
    */
   private TransactionOptions defaultTransactionOptions;
@@ -90,6 +95,37 @@ public class ClientSessionOptions {
   }
 
   /**
+   *  Sets whether read operations using the session should share the same snapshot.
+   *
+   *  <p>
+   *  The default value is unset, in which case the driver will use the global default value, which is currently false.
+   *  </p>
+   *
+   *  @param snapshot true for snapshot reads, false otherwise
+   *  @return this
+   *  @since 4.3
+   *  @mongodb.server.release 5.0
+   *  @mongodb.driver.manual  reference/read-concern-snapshot/#read-concern-and-atclustertime Snapshot reads
+   */
+  public ClientSessionOptions setSnapshot(Boolean snapshot) {
+    this.snapshot = snapshot;
+    return this;
+  }
+
+  /**
+   *  Whether read operations using this session should all share the same snapshot.
+   *
+   *  @return whether read operations using this session should all share the same snapshot. A null value indicates to use the global
+   *  default, which is false.
+   *  @since 4.3
+   *  @mongodb.server.release 5.0
+   *  @mongodb.driver.manual  reference/read-concern-snapshot/#read-concern-and-atclustertime Snapshot reads
+   */
+  public Boolean isSnapshot() {
+    return snapshot;
+  }
+
+  /**
    *  Sets whether operations using the session should causally consistent with each other.
    *
    *  @param defaultTransactionOptions the default transaction options to use for all transactions on this session,
@@ -122,6 +158,9 @@ public class ClientSessionOptions {
       com.mongodb.ClientSessionOptions.Builder builder) {
     if (this.causallyConsistent != null) {
       builder.causallyConsistent(this.causallyConsistent);
+    }
+    if (this.snapshot != null) {
+      builder.snapshot(this.snapshot);
     }
     if (this.defaultTransactionOptions != null) {
       builder.defaultTransactionOptions(this.defaultTransactionOptions);

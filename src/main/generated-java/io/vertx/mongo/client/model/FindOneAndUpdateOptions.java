@@ -22,6 +22,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Long;
+import java.lang.Object;
 import java.lang.String;
 import java.util.concurrent.TimeUnit;
 
@@ -84,6 +85,16 @@ public class FindOneAndUpdateOptions {
    * the name of the index which should be used for the operation
    */
   private String hintString;
+
+  /**
+   * the comment
+   */
+  private Object comment;
+
+  /**
+   * for the operation or null
+   */
+  private JsonObject let;
 
   public FindOneAndUpdateOptions() {
   }
@@ -218,7 +229,7 @@ public class FindOneAndUpdateOptions {
   }
 
   /**
-   *  Gets the the bypass document level validation flag
+   *  Gets the bypass document level validation flag
    *
    *  @return the bypass document level validation flag
    *  @since 3.2
@@ -322,6 +333,54 @@ public class FindOneAndUpdateOptions {
   }
 
   /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public FindOneAndUpdateOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  /**
+   *  @return the comment for this operation. A null value means no comment is set.
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public Object getComment() {
+    return comment;
+  }
+
+  /**
+   *  Add top-level variables for the operation
+   *
+   *  <p>Allows for improved command readability by separating the variables from the query text.
+   *
+   *  @param variables for the operation or null
+   *  @return this
+   *  @mongodb.server.release 5.0
+   *  @since 4.6
+   */
+  public FindOneAndUpdateOptions setLet(JsonObject variables) {
+    this.let = variables;
+    return this;
+  }
+
+  /**
+   *  Add top-level variables to the operation
+   *
+   *  @return the top level variables if set or null.
+   *  @mongodb.server.release 5.0
+   *  @since 4.6
+   */
+  public JsonObject getLet() {
+    return let;
+  }
+
+  /**
    * @return MongoDB driver object
    * @hidden
    */
@@ -357,6 +416,12 @@ public class FindOneAndUpdateOptions {
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);
+    }
+    if (this.comment != null) {
+      result.comment(clientContext.getMapper().toBsonValue(this.comment));
+    }
+    if (this.let != null) {
+      result.let(clientContext.getMapper().toBson(this.let));
     }
     return result;
   }

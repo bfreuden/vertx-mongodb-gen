@@ -49,6 +49,10 @@ import java.util.Map;
  *  <p>
  *  Automatic encryption requires the authenticated user to have the listCollections privilege action.
  *  </p>
+ *  <p>
+ *  Supplying an {@code encryptedFieldsMap} provides more security than relying on an encryptedFields obtained from the server.
+ *  It protects against a malicious server advertising false encryptedFields.
+ *  </p>
  *
  *  @since 3.11
  */
@@ -70,6 +74,16 @@ public class AutoEncryptionSettings {
    * whether auto-encryption should be bypassed
    */
   private Boolean bypassAutoEncryption;
+
+  /**
+   * the mapping of the collection namespace to the encryptedFields
+   */
+  private Map<String, JsonObject> encryptedFieldsMap;
+
+  /**
+   * whether query analysis should be bypassed
+   */
+  private Boolean bypassQueryAnalysis;
 
   public AutoEncryptionSettings() {
   }
@@ -112,7 +126,7 @@ public class AutoEncryptionSettings {
    *  <p>
    *  The key vault namespace refers to a collection that contains all data keys used for encryption and decryption (aka the key vault
    *  collection). Data keys are stored as documents in a special MongoDB collection. Data keys are protected with encryption by a KMS
-   *  provider (AWS KMS or a local master key).
+   *  provider (AWS, Azure, GCP KMS or a local master key).
    *  </p>
    *
    *  @return the key vault namespace, which may not be null
@@ -133,6 +147,29 @@ public class AutoEncryptionSettings {
     return this;
   }
 
+  /**
+   *  Gets the map of namespace to local JSON schema.
+   *  <p>
+   *  Automatic encryption is configured with an "encrypt" field in a collection's JSONSchema. By default, a collection's JSONSchema is
+   *  periodically polled with the listCollections command. But a JSONSchema may be specified locally with the schemaMap option.
+   *  </p>
+   *  <p>
+   *  The key into the map is the full namespace of the collection, which is {@code &lt;database name>.&lt;collection name>}.  For
+   *  example, if the database name is {@code "test"} and the collection name is {@code "users"}, then the namesspace is
+   *  {@code "test.users"}.
+   *  </p>
+   *  <p>
+   *  Supplying a schemaMap provides more security than relying on JSON Schemas obtained from the server. It protects against a
+   *  malicious server advertising a false JSON Schema, which could trick the client into sending unencrypted data that should be
+   *  encrypted.
+   *  </p>
+   *  <p>
+   *  Schemas supplied in the schemaMap only apply to configuring automatic encryption for client side encryption. Other validation
+   *  rules in the JSON schema will not be enforced by the driver and will result in an error.
+   *  </p>
+   *
+   *  @return map of namespace to local JSON schema
+   */
   public Map<String, JsonObject> getSchemaMap() {
     return schemaMap;
   }
@@ -165,6 +202,74 @@ public class AutoEncryptionSettings {
   }
 
   /**
+   *  Maps a collection namespace to an encryptedFields.
+   *
+   *  <p><strong>Note:</strong> only applies to queryable encryption.
+   *  Automatic encryption in queryable encryption is configured with the encryptedFields.</p>
+   *  <p>If a collection is present in both the {@code encryptedFieldsMap} and {@link #schemaMap}, the driver will error.</p>
+   *  <p>If a collection is present on the {@code encryptedFieldsMap}, the behavior of {@code collection.createCollection()} and
+   *  {@code collection.drop()} is altered.</p>
+   *
+   *  <p>If a collection is not present on the {@code encryptedFieldsMap} a server-side collection {@code encryptedFieldsMap} may be
+   *  used by the driver.
+   *
+   *  @param encryptedFieldsMap the mapping of the collection namespace to the encryptedFields
+   *  @return this
+   *  @since 4.7
+   */
+  public AutoEncryptionSettings setEncryptedFieldsMap(Map<String, JsonObject> encryptedFieldsMap) {
+    this.encryptedFieldsMap = encryptedFieldsMap;
+    return this;
+  }
+
+  /**
+   *  Gets the mapping of a collection namespace to encryptedFields.
+   *
+   *  <p><strong>Note:</strong> only applies to Queryable Encryption.
+   *  Automatic encryption in Queryable Encryption is configured with the encryptedFields.</p>
+   *  <p>If a collection is present in both the {@code encryptedFieldsMap} and {@link #schemaMap}, the driver will error.</p>
+   *  <p>If a collection is present on the {@code encryptedFieldsMap}, the behavior of {@code collection.createCollection()} and
+   *  {@code collection.drop()} is altered.</p>
+   *
+   *  <p>If a collection is not present on the {@code encryptedFieldsMap} a server-side collection {@code encryptedFieldsMap} may be
+   *  used by the driver.</p>
+   *
+   *  @return the mapping of the collection namespaces to encryptedFields
+   *  @since 4.7
+   */
+  public Map<String, JsonObject> getEncryptedFieldsMap() {
+    return encryptedFieldsMap;
+  }
+
+  /**
+   *  Enable or disable automatic analysis of outgoing commands.
+   *
+   *  <p>Set bypassQueryAnalysis to true to use explicit encryption on indexed fields
+   *  without the MongoDB Enterprise Advanced licensed crypt shared library.</p>
+   *
+   *  @param bypassQueryAnalysis whether query analysis should be bypassed
+   *  @return this
+   *  @since 4.7
+   */
+  public AutoEncryptionSettings setBypassQueryAnalysis(Boolean bypassQueryAnalysis) {
+    this.bypassQueryAnalysis = bypassQueryAnalysis;
+    return this;
+  }
+
+  /**
+   *  Gets whether automatic analysis of outgoing commands is set.
+   *
+   *  <p>Set bypassQueryAnalysis to true to use explicit encryption on indexed fields
+   *  without the MongoDB Enterprise Advanced licensed crypt shared library.</p>
+   *
+   *  @return true if query analysis should be bypassed
+   *  @since 4.7
+   */
+  public Boolean isBypassQueryAnalysis() {
+    return bypassQueryAnalysis;
+  }
+
+  /**
    * @param builder MongoDB driver builder
    * @hidden
    */
@@ -178,6 +283,12 @@ public class AutoEncryptionSettings {
     }
     if (this.bypassAutoEncryption != null) {
       builder.bypassAutoEncryption(this.bypassAutoEncryption);
+    }
+    if (this.encryptedFieldsMap != null) {
+      builder.encryptedFieldsMap(CollectionsConversionUtils.mapValues(this.encryptedFieldsMap, clientContext.getMapper()::toBsonDocument));
+    }
+    if (this.bypassQueryAnalysis != null) {
+      builder.bypassQueryAnalysis(this.bypassQueryAnalysis);
     }
   }
 }

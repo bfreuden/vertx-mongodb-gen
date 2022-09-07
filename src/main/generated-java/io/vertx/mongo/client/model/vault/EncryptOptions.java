@@ -16,6 +16,7 @@
 package io.vertx.mongo.client.model.vault;
 
 import io.vertx.mongo.impl.MongoClientContext;
+import java.lang.Long;
 import java.lang.String;
 
 /**
@@ -37,8 +38,24 @@ public class EncryptOptions {
   private String keyAltName;
 
   /**
-   *  Gets the encryption algorithm, which must be either "AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic" or
-   *  "AEAD_AES_256_CBC_HMAC_SHA_512-Random".
+   * the contention factor, which must be {@code >= 0} or null.
+   */
+  private Long contentionFactor;
+
+  /**
+   * the query type
+   */
+  private String queryType;
+
+  /**
+   *  Gets the encryption algorithm, which must be either:
+   *
+   *  <ul>
+   *      <li>AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic</li>
+   *      <li>AEAD_AES_256_CBC_HMAC_SHA_512-Random</li>
+   *      <li>Indexed</li>
+   *      <li>Unindexed</li>
+   *  </ul>
    *
    *  @return the encryption algorithm
    */
@@ -97,6 +114,57 @@ public class EncryptOptions {
   }
 
   /**
+   *  The contention factor.
+   *
+   *  <p>It is an error to set contentionFactor when algorithm is not "Indexed".
+   *  @param contentionFactor the contention factor, which must be {@code >= 0} or null.
+   *  @return this
+   *  @since 4.7
+   */
+  public EncryptOptions setContentionFactor(Long contentionFactor) {
+    this.contentionFactor = contentionFactor;
+    return this;
+  }
+
+  /**
+   *  Gets the contention factor.
+   *
+   *  @see #contentionFactor(Long)
+   *  @return the contention factor
+   *  @since 4.7
+   */
+  public Long getContentionFactor() {
+    return contentionFactor;
+  }
+
+  /**
+   *  The QueryType.
+   *
+   *  <p>Currently, we support only "equality" queryType.</p>
+   *  <p>It is an error to set queryType when the algorithm is not "Indexed".</p>
+   *
+   *  @param queryType the query type
+   *  @return this
+   *  @since 4.7
+   */
+  public EncryptOptions setQueryType(String queryType) {
+    this.queryType = queryType;
+    return this;
+  }
+
+  /**
+   *  Gets the QueryType.
+   *
+   *  <p>Currently, we support only "equality" queryType.</p>
+   *  @see #queryType(String)
+   *  @return the queryType or null
+   *  @since 4.7
+   */
+  public String getQueryType() {
+    return queryType;
+  }
+
+  /**
    * @return MongoDB driver object
    * @hidden
    */
@@ -111,6 +179,12 @@ public class EncryptOptions {
     }
     if (this.keyAltName != null) {
       result.keyAltName(this.keyAltName);
+    }
+    if (this.contentionFactor != null) {
+      result.contentionFactor(this.contentionFactor);
+    }
+    if (this.queryType != null) {
+      result.queryType(this.queryType);
     }
     return result;
   }

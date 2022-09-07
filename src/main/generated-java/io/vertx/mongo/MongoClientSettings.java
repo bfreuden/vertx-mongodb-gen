@@ -354,12 +354,57 @@ public class MongoClientSettings {
     return this;
   }
 
+  /**
+   *  Gets the compressors to use for compressing messages to the server. The driver will use the first compressor in the list
+   *  that the server is configured to support.
+   *
+   *  <p>Default is the empty list.</p>
+   *
+   *  @return the compressors
+   *  @mongodb.server.release 3.4
+   */
   public List<MongoCompressor> getCompressorList() {
     return this.serializer.__getCompressorList();
   }
 
   /**
+   *  Sets the server API to use when sending commands to the server.
+   *  <p>
+   *  This is required for some MongoDB deployments.
+   *  </p>
+   *
+   *  @param serverApi the server API, which may not be null
+   *  @return this
+   *  @since 4.3
+   */
+  public MongoClientSettings setServerApi(ServerApi serverApi) {
+    this.serializer.setServerApi(serverApi);
+    return this;
+  }
+
+  /**
+   *  Gets the server API to use when sending commands to the server.
+   *
+   *  @return the server API, which may be null
+   *  @since 4.3
+   */
+  public ServerApi getServerApi() {
+    return this.serializer.getServerApi();
+  }
+
+  /**
    *  Sets the auto-encryption settings
+   *
+   *  A separate, internal {@code MongoClient} is created if any of the following are true:
+   *
+   *  <ul>
+   *     <li>{@code AutoEncryptionSettings.keyVaultClient} is not passed</li>
+   *     <li>{@code AutoEncryptionSettings.bypassAutomaticEncryption} is {@code false}</li>
+   *  </ul>
+   *
+   *  If an internal {@code MongoClient} is created, it is configured with the same
+   *  options as the parent {@code MongoClient} except {@code minPoolSize} is set to {@code 0}
+   *  and {@code AutoEncryptionSettings} is omitted.
    *
    *  @param autoEncryptionSettings the auto-encryption settings
    *  @return this
@@ -392,7 +437,8 @@ public class MongoClientSettings {
    *  Automatic encryption requires the authenticated user to have the listCollections privilege action.
    *  </p>
    *  <p>
-   *  Note: support for client side encryption is in beta.  Backwards-breaking changes may be made before the final release.
+   *  Supplying an {@code encryptedFieldsMap} provides more security than relying on an encryptedFields obtained from the server.
+   *  It protects against a malicious server advertising false encryptedFields.
    *  </p>
    *
    *  @return the auto-encryption settings, which may be null
@@ -400,6 +446,35 @@ public class MongoClientSettings {
    */
   public AutoEncryptionSettings getAutoEncryptionSettings() {
     return this.serializer.getAutoEncryptionSettings();
+  }
+
+  /**
+   *  Sets the context provider
+   *
+   *  <p>
+   *  When used with the synchronous driver, this must be an instance of {@code com.mongodb.client.SynchronousContextProvider}.
+   *  When used with the reactive streams driver, this must be an instance of
+   *  {@code com.mongodb.reactivestreams.client.ReactiveContextProvider}.
+   *
+   *  </p>
+   *
+   *  @param contextProvider the context provider
+   *  @return this
+   *  @since 4.4
+   */
+  public MongoClientSettings setContextProvider(ContextProvider contextProvider) {
+    this.serializer.setContextProvider(contextProvider);
+    return this;
+  }
+
+  /**
+   *  Get the context provider
+   *
+   *  @return the context provider
+   *  @since 4.4
+   */
+  public ContextProvider getContextProvider() {
+    return this.serializer.getContextProvider();
   }
 
   /**

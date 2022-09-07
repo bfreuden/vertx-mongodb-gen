@@ -21,6 +21,7 @@ import io.vertx.mongo.client.model.Collation;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
+import java.lang.Object;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,6 +49,11 @@ public class DistinctOptions {
    * the batch size
    */
   private Integer batchSize;
+
+  /**
+   * the comment
+   */
+  private Object comment;
 
   /**
    *  Sets the query filter to apply to the query.
@@ -101,7 +107,7 @@ public class DistinctOptions {
   /**
    *  Sets the number of documents to return per batch.
    *
-   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine grained
+   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine-grained
    *  control over the underlying cursor.</p>
    *
    *  @param batchSize the batch size
@@ -116,6 +122,23 @@ public class DistinctOptions {
 
   public Integer getBatchSize() {
     return batchSize;
+  }
+
+  /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public DistinctOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  public Object getComment() {
+    return comment;
   }
 
   /**
@@ -136,6 +159,9 @@ public class DistinctOptions {
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);
+    }
+    if (this.comment != null) {
+      publisher.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
   }
 }

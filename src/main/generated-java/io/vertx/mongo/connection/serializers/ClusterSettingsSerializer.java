@@ -24,6 +24,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.impl.OptionSerializer;
 import io.vertx.mongo.impl.MongoClientContext;
 import io.vertx.mongo.impl.ServerAddressSerializer;
+import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
 import java.util.List;
@@ -34,6 +35,10 @@ import java.util.concurrent.TimeUnit;
 )
 public class ClusterSettingsSerializer {
   private String srvHost;
+
+  private Integer srvMaxHosts;
+
+  private String srvServiceName;
 
   private List<ServerAddress> hosts;
 
@@ -73,6 +78,24 @@ public class ClusterSettingsSerializer {
 
   public String getSrvHost() {
     return srvHost;
+  }
+
+  public ClusterSettingsSerializer setSrvMaxHosts(Integer srvMaxHosts) {
+    this.srvMaxHosts = srvMaxHosts;
+    return this;
+  }
+
+  public Integer getSrvMaxHosts() {
+    return srvMaxHosts;
+  }
+
+  public ClusterSettingsSerializer setSrvServiceName(String srvServiceName) {
+    this.srvServiceName = srvServiceName;
+    return this;
+  }
+
+  public String getSrvServiceName() {
+    return srvServiceName;
   }
 
   public ClusterSettingsSerializer __setHosts(List<ServerAddress> hosts) {
@@ -146,6 +169,12 @@ public class ClusterSettingsSerializer {
       ClusterSettings.Builder builder) {
     if (this.srvHost != null) {
       builder.srvHost(this.srvHost);
+    }
+    if (this.srvMaxHosts != null) {
+      builder.srvMaxHosts(this.srvMaxHosts);
+    }
+    if (this.srvServiceName != null) {
+      builder.srvServiceName(this.srvServiceName);
     }
     if (this.hosts != null) {
       builder.hosts(this.hosts);

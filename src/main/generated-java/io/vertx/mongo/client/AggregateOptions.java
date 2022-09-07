@@ -22,6 +22,7 @@ import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
+import java.lang.Object;
 import java.lang.String;
 import java.util.concurrent.TimeUnit;
 
@@ -59,12 +60,22 @@ public class AggregateOptions {
   /**
    * the comment
    */
-  private String comment;
+  private Object comment;
 
   /**
    * the hint
    */
   private JsonObject hint;
+
+  /**
+   * the name of the index which should be used for the operation
+   */
+  private String hintString;
+
+  /**
+   * the variables
+   */
+  private JsonObject let;
 
   /**
    * the batch size
@@ -161,19 +172,23 @@ public class AggregateOptions {
   }
 
   /**
-   *  Sets the comment to the aggregation. A null value means no comment is set.
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  <p>The comment can be any valid BSON type for server versions 4.4 and above.
+   *  Server versions between 3.6 and 4.2 only support string as comment,
+   *  and providing a non-string type will result in a server-side error.
    *
    *  @param comment the comment
    *  @return this
+   *  @since 4.6
    *  @mongodb.server.release 3.6
-   *  @since 1.7
    */
-  public AggregateOptions setComment(String comment) {
+  public AggregateOptions setComment(Object comment) {
     this.comment = comment;
     return this;
   }
 
-  public String getComment() {
+  public Object getComment() {
     return comment;
   }
 
@@ -195,9 +210,50 @@ public class AggregateOptions {
   }
 
   /**
+   *  Sets the hint for which index to use. A null value means no hint is set.
+   *
+   *  <p>Note: If {@link AggregatePublisher#setHint(JsonObject)} is set that will be used instead of any hint string.</p>
+   *
+   *  @param hint the name of the index which should be used for the operation
+   *  @return this
+   *  @since 4.4
+   */
+  public AggregateOptions setHintString(String hint) {
+    this.hintString = hint;
+    return this;
+  }
+
+  public String getHintString() {
+    return hintString;
+  }
+
+  /**
+   *  Add top-level variables to the aggregation.
+   *  <p>
+   *  For MongoDB 5.0+, the aggregate command accepts a {@code let} option. This option is a document consisting of zero or more
+   *  fields representing variables that are accessible to the aggregation pipeline.  The key is the name of the variable and the value is
+   *  a constant in the aggregate expression language. Each parameter name is then usable to access the value of the corresponding
+   *  expression with the "$$" syntax within aggregate expression contexts which may require the use of $expr or a pipeline.
+   *  </p>
+   *
+   *  @param variables the variables
+   *  @return this
+   *  @since 4.3
+   *  @mongodb.server.release 5.0
+   */
+  public AggregateOptions setLet(JsonObject variables) {
+    this.let = variables;
+    return this;
+  }
+
+  public JsonObject getLet() {
+    return let;
+  }
+
+  /**
    *  Sets the number of documents to return per batch.
    *
-   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine grained
+   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine-grained
    *  control over the underlying cursor.</p>
    *
    *  @param batchSize the batch size
@@ -237,10 +293,16 @@ public class AggregateOptions {
       publisher.collation(this.collation.toDriverClass(clientContext));
     }
     if (this.comment != null) {
-      publisher.comment(this.comment);
+      publisher.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
     if (this.hint != null) {
       publisher.hint(clientContext.getMapper().toBson(this.hint));
+    }
+    if (this.hintString != null) {
+      publisher.hintString(this.hintString);
+    }
+    if (this.let != null) {
+      publisher.let(clientContext.getMapper().toBson(this.let));
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);

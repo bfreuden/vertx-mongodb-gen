@@ -22,6 +22,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.connection.serializers.ClusterSettingsSerializer;
 import io.vertx.mongo.impl.MongoClientContext;
+import java.lang.Integer;
 import java.lang.Long;
 import java.lang.String;
 import java.util.List;
@@ -79,6 +80,70 @@ public class ClusterSettings {
   }
 
   /**
+   *  Sets the maximum number of hosts to connect to when using SRV protocol.
+   *
+   *  @param srvMaxHosts the maximum number of hosts to connect to when using SRV protocol
+   *  @return this
+   *  @since 4.4
+   */
+  public ClusterSettings setSrvMaxHosts(Integer srvMaxHosts) {
+    this.serializer.setSrvMaxHosts(srvMaxHosts);
+    return this;
+  }
+
+  /**
+   *  Gets the maximum number of hosts to connect to when using SRV protocol.
+   *
+   *  @return the maximum number of hosts to connect to when using SRV protocol.  Defaults to null.
+   *  @since 4.4
+   */
+  public Integer getSrvMaxHosts() {
+    return this.serializer.getSrvMaxHosts();
+  }
+
+  /**
+   *  Sets the SRV service name.
+   *
+   *  <p>
+   *  The SRV resource record (<a href="https://www.rfc-editor.org/rfc/rfc2782">RFC 2782</a>)
+   *  service name, which is limited to 15 characters
+   *  (<a href="https://www.rfc-editor.org/rfc/rfc6335#section-5.1">RFC 6335 section 5.1</a>).
+   *  If specified, it is combined with the single host name specified by
+   *  {@link #getHosts()} as follows: {@code _srvServiceName._tcp.hostName}. The combined string is an SRV resource record
+   *  name (<a href="https://www.rfc-editor.org/rfc/rfc1035#section-2.3.1">RFC 1035 section 2.3.1</a>), which is limited to 255
+   *  characters (<a href="https://www.rfc-editor.org/rfc/rfc1035#section-2.3.4">RFC 1035 section 2.3.4</a>).
+   *  </p>
+   *
+   *  @param srvServiceName the SRV service name
+   *  @return this
+   *  @since 4.5
+   */
+  public ClusterSettings setSrvServiceName(String srvServiceName) {
+    this.serializer.setSrvServiceName(srvServiceName);
+    return this;
+  }
+
+  /**
+   *  Gets the SRV service name.
+   *
+   *  <p>
+   *  The SRV resource record (<a href="https://www.rfc-editor.org/rfc/rfc2782">RFC 2782</a>)
+   *  service name, which is limited to 15 characters
+   *  (<a href="https://www.rfc-editor.org/rfc/rfc6335#section-5.1">RFC 6335 section 5.1</a>).
+   *  If specified, it is combined with the single host name specified by
+   *  {@link #getHosts()} as follows: {@code _srvServiceName._tcp.hostName}. The combined string is an SRV resource record
+   *  name (<a href="https://www.rfc-editor.org/rfc/rfc1035#section-2.3.1">RFC 1035 section 2.3.1</a>), which is limited to 255
+   *  characters (<a href="https://www.rfc-editor.org/rfc/rfc1035#section-2.3.4">RFC 1035 section 2.3.4</a>).
+   *  </p>
+   *
+   *  @return the SRV service name, which defaults to {@code "mongodb"}
+   *  @since 4.5
+   */
+  public String getSrvServiceName() {
+    return this.serializer.getSrvServiceName();
+  }
+
+  /**
    *  Sets the hosts for the cluster. Any duplicate server addresses are removed from the list.
    *
    *  @param hosts the seed list of hosts
@@ -89,6 +154,11 @@ public class ClusterSettings {
     return this;
   }
 
+  /**
+   *  Gets the seed list of hosts for the cluster.
+   *
+   *  @return the seed list of hosts
+   */
   public List<ServerAddress> getHosts() {
     return this.serializer.__getHosts();
   }

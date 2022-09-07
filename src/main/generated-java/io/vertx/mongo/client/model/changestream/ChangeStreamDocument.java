@@ -24,6 +24,7 @@ import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Exception;
 import java.lang.Long;
 import java.lang.String;
+import java.time.Instant;
 
 public class ChangeStreamDocument<TDocument> {
   private JsonObject resumeToken;
@@ -40,9 +41,13 @@ public class ChangeStreamDocument<TDocument> {
 
   private TDocument fullDocument;
 
+  private TDocument fullDocumentBeforeChange;
+
   private JsonObject documentKey;
 
   private Long clusterTime;
+
+  private String operationTypeString;
 
   private OperationType operationType;
 
@@ -51,6 +56,12 @@ public class ChangeStreamDocument<TDocument> {
   private Long txnNumber;
 
   private JsonObject lsid;
+
+  private Instant wallTime;
+
+  private JsonObject extraElements;
+
+  int __ctorIndex;
 
   private Exception resumeTokenException;
 
@@ -66,9 +77,13 @@ public class ChangeStreamDocument<TDocument> {
 
   private Exception fullDocumentException;
 
+  private Exception fullDocumentBeforeChangeException;
+
   private Exception documentKeyException;
 
   private Exception clusterTimeException;
+
+  private Exception operationTypeStringException;
 
   private Exception operationTypeException;
 
@@ -77,6 +92,10 @@ public class ChangeStreamDocument<TDocument> {
   private Exception txnNumberException;
 
   private Exception lsidException;
+
+  private Exception wallTimeException;
+
+  private Exception extraElementsException;
 
   private ChangeStreamDocument() {
   }
@@ -111,7 +130,7 @@ public class ChangeStreamDocument<TDocument> {
   }
 
   /**
-   *  Returns the namespace cocument, derived from the "ns" field in a change stream document.
+   *  Returns the namespace document, derived from the "ns" field in a change stream document.
    *
    *  The namespace document is a BsonDocument containing the values associated with a MongoNamespace. The
    *  'db' key refers to the database name and the 'coll' key refers to the collection name.
@@ -176,7 +195,30 @@ public class ChangeStreamDocument<TDocument> {
   }
 
   /**
-   *  Returns the fullDocument
+   *  Returns the fullDocument.
+   *
+   *  <p>
+   *  Always present for operations of type {@link OperationType#INSERT} and {@link OperationType#REPLACE}. Also present for operations
+   *  of type {@link OperationType#UPDATE} if the user has specified {@link FullDocument#UPDATE_LOOKUP} for the {@code fullDocument}
+   *  option when creating the change stream.
+   *  </p>
+   *
+   *  <p>
+   *  For operations of type {@link OperationType#INSERT} and {@link OperationType#REPLACE}, the value will contain the document being
+   *  inserted or the new version of the document that is replacing the existing document, respectively.
+   *  </p>
+   *
+   *  <p>
+   *  For operations of type {@link OperationType#UPDATE}, the value will contain a copy of the full version of the document from some
+   *  point after the update occurred. If the document was deleted since the updated happened, the value may be null.
+   *  </p>
+   *
+   *  <p>
+   *  Contains the point-in-time post-image of the modified document if the post-image is available and either
+   *  {@link FullDocument#REQUIRED} or {@link FullDocument#WHEN_AVAILABLE} was specified for the {@code fullDocument} option when
+   *  creating the change stream. A post-image is always available for {@link OperationType#INSERT} and {@link OperationType#REPLACE}
+   *  events.
+   *  </p>
    *
    *  @return the fullDocument
    */
@@ -185,6 +227,27 @@ public class ChangeStreamDocument<TDocument> {
       throw new RuntimeException(fullDocumentException);
     }
     return fullDocument;
+  }
+
+  /**
+   *  Returns the fullDocument before change
+   *
+   *  <p>
+   *  Contains the pre-image of the modified or deleted document if the pre-image is available for the change event and either
+   *  {@link FullDocumentBeforeChange#REQUIRED} or {@link FullDocumentBeforeChange#WHEN_AVAILABLE} was specified for the
+   *  {@code fullDocumentBeforeChange} option when creating the change stream. If {@link FullDocumentBeforeChange#WHEN_AVAILABLE} was
+   *  specified but the pre-image is unavailable, the value will be null.
+   *  </p>
+   *
+   *  @return the fulDocument before change
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  public TDocument getFullDocumentBeforeChange() {
+    if (fullDocumentBeforeChangeException != null)  {
+      throw new RuntimeException(fullDocumentBeforeChangeException);
+    }
+    return fullDocumentBeforeChange;
   }
 
   /**
@@ -217,6 +280,26 @@ public class ChangeStreamDocument<TDocument> {
       throw new RuntimeException(clusterTimeException);
     }
     return clusterTime;
+  }
+
+  /**
+   *  Returns the operation type as a string.
+   *
+   *  <p>
+   *  This method is useful when using a driver release that has not yet been updated to include a newer operation type in the
+   *  {@link OperationType} enum.  In that case, {@link #getOperationType()} will return {@link OperationType#OTHER} and this method can
+   *  be used to retrieve the actual operation type as a string value.
+   *  </p>
+   *
+   *  @return the operation type as a string
+   *  @since 4.6
+   *  @see #getOperationType()
+   */
+  public String getOperationTypeString() {
+    if (operationTypeStringException != null)  {
+      throw new RuntimeException(operationTypeStringException);
+    }
+    return operationTypeString;
   }
 
   /**
@@ -272,6 +355,33 @@ public class ChangeStreamDocument<TDocument> {
   }
 
   /**
+   *  The wall time of the server at the moment the change occurred.
+   *
+   *  @return The wall time of the server at the moment the change occurred.
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  public Instant getWallTime() {
+    if (wallTimeException != null)  {
+      throw new RuntimeException(wallTimeException);
+    }
+    return wallTime;
+  }
+
+  /**
+   *  Any extra elements that are part of the change stream document but not otherwise mapped to fields.
+   *
+   *  @return Any extra elements that are part of the change stream document but not otherwise mapped to fields.
+   *  @since 4.7
+   */
+  public JsonObject getExtraElements() {
+    if (extraElementsException != null)  {
+      throw new RuntimeException(extraElementsException);
+    }
+    return extraElements;
+  }
+
+  /**
    * @param from from
    * @return mongo object
    * @hidden
@@ -317,6 +427,11 @@ public class ChangeStreamDocument<TDocument> {
       result.fullDocumentException = ex;
     }
     try {
+      result.fullDocumentBeforeChange = from.getFullDocumentBeforeChange();
+    } catch (Exception ex) {
+      result.fullDocumentBeforeChangeException = ex;
+    }
+    try {
       result.documentKey = clientContext.getMapper().toJsonObject(from.getDocumentKey());
     } catch (Exception ex) {
       result.documentKeyException = ex;
@@ -325,6 +440,11 @@ public class ChangeStreamDocument<TDocument> {
       result.clusterTime = clientContext.getMapper().toLong(from.getClusterTime());
     } catch (Exception ex) {
       result.clusterTimeException = ex;
+    }
+    try {
+      result.operationTypeString = from.getOperationTypeString();
+    } catch (Exception ex) {
+      result.operationTypeStringException = ex;
     }
     try {
       result.operationType = from.getOperationType();
@@ -345,6 +465,16 @@ public class ChangeStreamDocument<TDocument> {
       result.lsid = clientContext.getMapper().toJsonObject(from.getLsid());
     } catch (Exception ex) {
       result.lsidException = ex;
+    }
+    try {
+      result.wallTime = clientContext.getMapper().toInstant(from.getWallTime());
+    } catch (Exception ex) {
+      result.wallTimeException = ex;
+    }
+    try {
+      result.extraElements = clientContext.getMapper().toJsonObject(from.getExtraElements());
+    } catch (Exception ex) {
+      result.extraElementsException = ex;
     }
     return result;
   }

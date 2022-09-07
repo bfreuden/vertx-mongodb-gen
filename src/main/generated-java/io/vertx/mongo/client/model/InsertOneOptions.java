@@ -19,6 +19,7 @@ import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
+import java.lang.Object;
 
 /**
  *  The options to apply to an operation that inserts a single document into a collection.
@@ -37,6 +38,11 @@ public class InsertOneOptions {
    */
   private Boolean bypassDocumentValidation;
 
+  /**
+   * the comment
+   */
+  private Object comment;
+
   public InsertOneOptions() {
   }
 
@@ -53,6 +59,8 @@ public class InsertOneOptions {
   /**
    *  Sets the bypass document level validation flag.
    *
+   *  <p>For bulk operations use: {@link BulkWriteOptions#bypassDocumentValidation(Boolean)}</p>
+   *
    *  @param bypassDocumentValidation If true, allows the write to opt-out of document level validation.
    *  @return this
    */
@@ -62,12 +70,36 @@ public class InsertOneOptions {
   }
 
   /**
-   *  Gets the the bypass document level validation flag
+   *  Gets the bypass document level validation flag
    *
    *  @return the bypass document level validation flag
    */
   public Boolean isBypassDocumentValidation() {
     return bypassDocumentValidation;
+  }
+
+  /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  <p>For bulk operations use: {@link BulkWriteOptions#comment(BsonValue)}</p>
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public InsertOneOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  /**
+   *  @return the comment for this operation. A null value means no comment is set.
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public Object getComment() {
+    return comment;
   }
 
   /**
@@ -78,6 +110,9 @@ public class InsertOneOptions {
     com.mongodb.client.model.InsertOneOptions result = new com.mongodb.client.model.InsertOneOptions();
     if (this.bypassDocumentValidation != null) {
       result.bypassDocumentValidation(this.bypassDocumentValidation);
+    }
+    if (this.comment != null) {
+      result.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
     return result;
   }

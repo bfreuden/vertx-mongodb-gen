@@ -1,11 +1,14 @@
 com.mongodb.Block
 com.mongodb.ConnectionString
+com.mongodb.ContextProvider
 com.mongodb.MongoCompressor
 com.mongodb.MongoCredential
 com.mongodb.ReadConcern
 com.mongodb.ReadPreference
 com.mongodb.ReadPreferenceHedgeOptions
+com.mongodb.RequestContext
 com.mongodb.ServerAddress
+com.mongodb.ServerApi
 com.mongodb.Tag
 com.mongodb.TagSet
 com.mongodb.TaggableReadPreference
@@ -23,5 +26,6 @@ com.mongodb.connection.StreamFactory
 com.mongodb.connection.StreamFactoryFactory
 com.mongodb.connection.TlsChannelStreamFactoryFactory
 com.mongodb.connection.TopologyVersion
+com.mongodb.reactivestreams.client.ReactiveContextProvider
 com.mongodb.selector.CompositeServerSelector
 com.mongodb.selector.ServerSelector

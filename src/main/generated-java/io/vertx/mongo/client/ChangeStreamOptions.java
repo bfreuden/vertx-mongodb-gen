@@ -16,12 +16,15 @@
 package io.vertx.mongo.client;
 
 import com.mongodb.client.model.changestream.FullDocument;
+import com.mongodb.client.model.changestream.FullDocumentBeforeChange;
 import com.mongodb.reactivestreams.client.ChangeStreamPublisher;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.client.model.Collation;
 import io.vertx.mongo.impl.MongoClientContext;
+import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.Long;
+import java.lang.Object;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,6 +38,11 @@ public class ChangeStreamOptions {
    * the fullDocument
    */
   private FullDocument fullDocument;
+
+  /**
+   * the fullDocumentBeforeChange
+   */
+  private FullDocumentBeforeChange fullDocumentBeforeChange;
 
   /**
    * the resume token
@@ -67,6 +75,16 @@ public class ChangeStreamOptions {
   private Integer batchSize;
 
   /**
+   * the comment
+   */
+  private Object comment;
+
+  /**
+   * true to include expanded events
+   */
+  private Boolean showExpandedEvents;
+
+  /**
    *  Sets the fullDocument value.
    *
    *  @param fullDocument the fullDocument
@@ -79,6 +97,24 @@ public class ChangeStreamOptions {
 
   public FullDocument getFullDocument() {
     return fullDocument;
+  }
+
+  /**
+   *  Sets the fullDocumentBeforeChange value.
+   *
+   *  @param fullDocumentBeforeChange the fullDocumentBeforeChange
+   *  @return this
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  public ChangeStreamOptions setFullDocumentBeforeChange(
+      FullDocumentBeforeChange fullDocumentBeforeChange) {
+    this.fullDocumentBeforeChange = fullDocumentBeforeChange;
+    return this;
+  }
+
+  public FullDocumentBeforeChange getFullDocumentBeforeChange() {
+    return fullDocumentBeforeChange;
   }
 
   /**
@@ -176,7 +212,7 @@ public class ChangeStreamOptions {
   /**
    *  Sets the number of documents to return per batch.
    *
-   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine grained
+   *  <p>Overrides the {@link org.reactivestreams.Subscription#request(long)} value for setting the batch size, allowing for fine-grained
    *  control over the underlying cursor.</p>
    *
    *  @param batchSize the batch size
@@ -194,6 +230,46 @@ public class ChangeStreamOptions {
   }
 
   /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  <p>The comment can be any valid BSON type for server versions 4.4 and above.
+   *  Server versions between 3.6 and 4.2 only support string as comment,
+   *  and providing a non-string type will result in a server-side error.
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 3.6
+   */
+  public ChangeStreamOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  public Object getComment() {
+    return comment;
+  }
+
+  /**
+   *  Sets whether to include expanded change stream events, which are:
+   *  createIndexes, dropIndexes, modify, create, shardCollection,
+   *  reshardCollection, refineCollectionShardKey. False by default.
+   *
+   *  @param showExpandedEvents true to include expanded events
+   *  @return this
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  public ChangeStreamOptions setShowExpandedEvents(Boolean showExpandedEvents) {
+    this.showExpandedEvents = showExpandedEvents;
+    return this;
+  }
+
+  public Boolean isShowExpandedEvents() {
+    return showExpandedEvents;
+  }
+
+  /**
    * @param publisher MongoDB driver publisher
    * @param <TDocument> document class
    * @hidden
@@ -202,6 +278,9 @@ public class ChangeStreamOptions {
       ChangeStreamPublisher<TDocument> publisher) {
     if (this.fullDocument != null) {
       publisher.fullDocument(this.fullDocument);
+    }
+    if (this.fullDocumentBeforeChange != null) {
+      publisher.fullDocumentBeforeChange(this.fullDocumentBeforeChange);
     }
     if (this.resumeAfter != null) {
       publisher.resumeAfter(clientContext.getMapper().toBsonDocument(this.resumeAfter));
@@ -220,6 +299,12 @@ public class ChangeStreamOptions {
     }
     if (this.batchSize != null) {
       publisher.batchSize(this.batchSize);
+    }
+    if (this.comment != null) {
+      publisher.comment(clientContext.getMapper().toBsonValue(this.comment));
+    }
+    if (this.showExpandedEvents != null) {
+      publisher.showExpandedEvents(this.showExpandedEvents);
     }
   }
 }

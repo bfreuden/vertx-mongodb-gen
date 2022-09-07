@@ -31,6 +31,7 @@ import io.vertx.mongo.client.model.BulkWriteOptions;
 import io.vertx.mongo.client.model.CountOptions;
 import io.vertx.mongo.client.model.CreateIndexOptions;
 import io.vertx.mongo.client.model.DeleteOptions;
+import io.vertx.mongo.client.model.DropCollectionOptions;
 import io.vertx.mongo.client.model.DropIndexOptions;
 import io.vertx.mongo.client.model.EstimatedDocumentCountOptions;
 import io.vertx.mongo.client.model.FindOneAndDeleteOptions;
@@ -152,31 +153,47 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Gets an estimate of the count of documents in a collection using collection metadata.
+   *  <p>
+   *  Implementation note: this method is implemented using the MongoDB server's count command
+   *  </p>
    *  @return a future with a single element indicating the estimated number of documents
    *  @since 1.9
+   *  @mongodb.driver.manual manual/reference/command/count/#behavior
    */
   Future<Long> estimatedDocumentCount();
 
   /**
    *  Gets an estimate of the count of documents in a collection using collection metadata.
+   *  <p>
+   *  Implementation note: this method is implemented using the MongoDB server's count command
+   *  </p>
    *  @param resultHandler an async result with a single element indicating the estimated number of documents
    *  @since 1.9
+   *  @mongodb.driver.manual manual/reference/command/count/#behavior
    */
   void estimatedDocumentCount(Handler<AsyncResult<Long>> resultHandler);
 
   /**
    *  Gets an estimate of the count of documents in a collection using collection metadata.
+   *  <p>
+   *  Implementation note: this method is implemented using the MongoDB server's count command
+   *  </p>
    *  @param options the options describing the count
    *  @return a future with a single element indicating the estimated number of documents
    *  @since 1.9
+   *  @mongodb.driver.manual manual/reference/command/count/#behavior
    */
   Future<Long> estimatedDocumentCount(EstimatedDocumentCountOptions options);
 
   /**
    *  Gets an estimate of the count of documents in a collection using collection metadata.
+   *  <p>
+   *  Implementation note: this method is implemented using the MongoDB server's count command
+   *  </p>
    *  @param options the options describing the count
    *  @param resultHandler an async result with a single element indicating the estimated number of documents
    *  @since 1.9
+   *  @mongodb.driver.manual manual/reference/command/count/#behavior
    */
   void estimatedDocumentCount(EstimatedDocumentCountOptions options,
       Handler<AsyncResult<Long>> resultHandler);
@@ -657,6 +674,7 @@ public interface MongoCollection<TDocument> {
    *  @param reduceFunction A JavaScript function that "reduces" to a single object all the values associated with a particular key.
    *  @return an result containing the result of the map-reduce operation
    *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
+   *  @deprecated Superseded by aggregate
    */
   MongoCollectionResult<TDocument> mapReduce(String mapFunction, String reduceFunction);
 
@@ -667,6 +685,7 @@ public interface MongoCollection<TDocument> {
    *  @param options options
    *  @return an result containing the result of the map-reduce operation
    *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
+   *  @deprecated Superseded by aggregate
    */
   MongoCollectionResult<TDocument> mapReduce(String mapFunction, String reduceFunction,
       MapReduceOptions options);
@@ -680,6 +699,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
    *  @mongodb.server.release 3.6
    *  @since 1.7
+   *  @deprecated Superseded by aggregate
    */
   MongoCollectionResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction);
@@ -694,6 +714,7 @@ public interface MongoCollection<TDocument> {
    *  @mongodb.driver.manual reference/command/mapReduce/ map-reduce
    *  @mongodb.server.release 3.6
    *  @since 1.7
+   *  @deprecated Superseded by aggregate
    */
   MongoCollectionResult<TDocument> mapReduce(ClientSession clientSession, String mapFunction,
       String reduceFunction, MapReduceOptions options);
@@ -955,7 +976,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    */
   Future<DeleteResult> deleteOne(JsonObject filter);
@@ -963,7 +984,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    */
   void deleteOne(JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler);
@@ -971,7 +992,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @since 1.5
@@ -981,7 +1002,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @since 1.5
@@ -993,7 +1014,7 @@ public interface MongoCollection<TDocument> {
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1004,7 +1025,7 @@ public interface MongoCollection<TDocument> {
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1016,7 +1037,7 @@ public interface MongoCollection<TDocument> {
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
@@ -1029,7 +1050,7 @@ public interface MongoCollection<TDocument> {
    *  Removes at most one document from the collection that matches the given filter.  If no documents match, the collection is not
    *  modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
@@ -1040,21 +1061,21 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    */
   Future<DeleteResult> deleteMany(JsonObject filter);
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    */
   void deleteMany(JsonObject filter, Handler<AsyncResult<DeleteResult>> resultHandler);
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @since 1.5
@@ -1063,7 +1084,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @since 1.5
@@ -1074,7 +1095,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1084,7 +1105,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
    *  @since 1.7
@@ -1095,7 +1116,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @return a future with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
@@ -1107,7 +1128,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Removes all documents from the collection that match the given query filter.  If no documents match, the collection is not modified.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter the query filter to apply the the delete operation
+   *  @param filter the query filter to apply the delete operation
    *  @param options the options to apply to the delete operation
    *  @param resultHandler an async result with a single element the DeleteResult or with an com.mongodb.MongoException
    *  @mongodb.server.release 3.6
@@ -1118,7 +1139,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Replace a document in the collection according to the specified arguments.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @return a future with a single element the UpdateResult
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
@@ -1127,7 +1148,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Replace a document in the collection according to the specified arguments.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param resultHandler an async result with a single element the UpdateResult
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
@@ -1155,7 +1176,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Replace a document in the collection according to the specified arguments.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the replace operation
    *  @return a future with a single element the UpdateResult
@@ -1166,7 +1187,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Replace a document in the collection according to the specified arguments.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the replace operation
    *  @param resultHandler an async result with a single element the UpdateResult
@@ -1202,7 +1223,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Replace a document in the collection according to the specified arguments.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @return a future with a single element the UpdateResult
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
@@ -1215,7 +1236,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Replace a document in the collection according to the specified arguments.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param resultHandler an async result with a single element the UpdateResult
    *  @mongodb.driver.manual tutorial/modify-documents/#replace-the-document Replace
@@ -1253,7 +1274,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Replace a document in the collection according to the specified arguments.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the replace operation
    *  @return a future with a single element the UpdateResult
@@ -1267,7 +1288,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Replace a document in the collection according to the specified arguments.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the replace operation
    *  @param resultHandler an async result with a single element the UpdateResult
@@ -1821,7 +1842,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Atomically find a document and replace it.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @return a future with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
@@ -1831,7 +1852,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Atomically find a document and replace it.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param resultHandler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
@@ -1842,7 +1863,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Atomically find a document and replace it.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the operation
    *  @return a future with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
@@ -1854,7 +1875,7 @@ public interface MongoCollection<TDocument> {
 
   /**
    *  Atomically find a document and replace it.
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the operation
    *  @param resultHandler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
@@ -1867,7 +1888,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Atomically find a document and replace it.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @return a future with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
@@ -1881,7 +1902,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Atomically find a document and replace it.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param resultHandler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
    *  property, this will either be the document as it was before the update or as it is after the update.  If no documents matched the
@@ -1895,7 +1916,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Atomically find a document and replace it.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the operation
    *  @return a future with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
@@ -1910,7 +1931,7 @@ public interface MongoCollection<TDocument> {
   /**
    *  Atomically find a document and replace it.
    *  @param clientSession the client session with which to associate this operation
-   *  @param filter      the query filter to apply the the replace operation
+   *  @param filter      the query filter to apply the replace operation
    *  @param replacement the replacement document
    *  @param options     the options to apply to the operation
    *  @param resultHandler an async result with a single element the document that was replaced.  Depending on the value of the {@code returnOriginal}
@@ -2173,6 +2194,49 @@ public interface MongoCollection<TDocument> {
    *  @since 1.7
    */
   void drop(ClientSession clientSession, Handler<AsyncResult<Void>> resultHandler);
+
+  /**
+   *  Drops this collection from the Database.
+   *  @param dropCollectionOptions various options for dropping the collection
+   *  @return an empty future that indicates when the operation has completed
+   *  @mongodb.driver.manual reference/command/drop/ Drop Collection
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  Future<Void> drop(DropCollectionOptions dropCollectionOptions);
+
+  /**
+   *  Drops this collection from the Database.
+   *  @param dropCollectionOptions various options for dropping the collection
+   *  @param resultHandler an empty async result that indicates when the operation has completed
+   *  @mongodb.driver.manual reference/command/drop/ Drop Collection
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  void drop(DropCollectionOptions dropCollectionOptions, Handler<AsyncResult<Void>> resultHandler);
+
+  /**
+   *  Drops this collection from the Database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param dropCollectionOptions various options for dropping the collection
+   *  @return an empty future that indicates when the operation has completed
+   *  @mongodb.driver.manual reference/command/drop/ Drop Collection
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  Future<Void> drop(ClientSession clientSession, DropCollectionOptions dropCollectionOptions);
+
+  /**
+   *  Drops this collection from the Database.
+   *  @param clientSession the client session with which to associate this operation
+   *  @param dropCollectionOptions various options for dropping the collection
+   *  @param resultHandler an empty async result that indicates when the operation has completed
+   *  @mongodb.driver.manual reference/command/drop/ Drop Collection
+   *  @since 4.7
+   *  @mongodb.server.release 6.0
+   */
+  void drop(ClientSession clientSession, DropCollectionOptions dropCollectionOptions,
+      Handler<AsyncResult<Void>> resultHandler);
 
   /**
    *  Creates an index.

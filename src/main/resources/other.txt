@@ -2,8 +2,10 @@ com.mongodb.CreateIndexCommitQuorum
 com.mongodb.MongoNamespace
 com.mongodb.ReadConcern
 com.mongodb.ReadPreference
+com.mongodb.RequestContext
 com.mongodb.WriteConcern
 com.mongodb.connection.ClusterDescription
+com.mongodb.reactivestreams.client.ReactiveContextProvider
 com.mongodb.selector.CompositeServerSelector
 com.mongodb.session.ClientSession
 com.mongodb.session.ServerSession

@@ -20,6 +20,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Boolean;
+import java.lang.Object;
 import java.lang.String;
 
 /**
@@ -64,6 +65,16 @@ public class UpdateOptions {
    */
   private String hintString;
 
+  /**
+   * the comment
+   */
+  private Object comment;
+
+  /**
+   * for the operation or null
+   */
+  private JsonObject let;
+
   public UpdateOptions() {
   }
 
@@ -100,6 +111,8 @@ public class UpdateOptions {
   /**
    *  Sets the bypass document level validation flag.
    *
+   *  <p>For bulk operations use: {@link BulkWriteOptions#bypassDocumentValidation(Boolean)}</p>
+   *
    *  @param bypassDocumentValidation If true, allows the write to opt-out of document level validation.
    *  @return this
    *  @since 3.2
@@ -111,7 +124,7 @@ public class UpdateOptions {
   }
 
   /**
-   *  Gets the the bypass document level validation flag
+   *  Gets the bypass document level validation flag
    *
    *  @return the bypass document level validation flag
    *  @since 3.2
@@ -215,6 +228,59 @@ public class UpdateOptions {
   }
 
   /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  <p>For bulk operations use: {@link BulkWriteOptions#comment(BsonValue)}</p>
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public UpdateOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  /**
+   *  @return the comment for this operation. A null value means no comment is set.
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public Object getComment() {
+    return comment;
+  }
+
+  /**
+   *  Add top-level variables for the operation
+   *
+   *  <p>Allows for improved command readability by separating the variables from the query text.
+   *  <p>For bulk operations use: {@link BulkWriteOptions#let(Bson)}
+   *
+   *  @param variables for the operation or null
+   *  @return this
+   *  @mongodb.server.release 5.0
+   *  @since 4.6
+   */
+  public UpdateOptions setLet(JsonObject variables) {
+    this.let = variables;
+    return this;
+  }
+
+  /**
+   *  Add top-level variables to the operation
+   *
+   *  <p>The value of let will be passed to all update and delete, but not insert, commands.
+   *
+   *  @return the top level variables if set or null.
+   *  @mongodb.server.release 5.0
+   *  @since 4.6
+   */
+  public JsonObject getLet() {
+    return let;
+  }
+
+  /**
    * @return MongoDB driver object
    * @hidden
    */
@@ -237,6 +303,12 @@ public class UpdateOptions {
     }
     if (this.hintString != null) {
       result.hintString(this.hintString);
+    }
+    if (this.comment != null) {
+      result.comment(clientContext.getMapper().toBsonValue(this.comment));
+    }
+    if (this.let != null) {
+      result.let(clientContext.getMapper().toBson(this.let));
     }
     return result;
   }

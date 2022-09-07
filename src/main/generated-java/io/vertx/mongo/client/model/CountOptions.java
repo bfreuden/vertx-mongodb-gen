@@ -20,6 +20,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mongo.impl.MongoClientContext;
 import java.lang.Integer;
 import java.lang.Long;
+import java.lang.Object;
 import java.lang.String;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +63,11 @@ public class CountOptions {
    * the collation options to use
    */
   private Collation collation;
+
+  /**
+   * the comment
+   */
+  private Object comment;
 
   public CountOptions() {
   }
@@ -208,6 +214,28 @@ public class CountOptions {
   }
 
   /**
+   *  Sets the comment for this operation. A null value means no comment is set.
+   *
+   *  @param comment the comment
+   *  @return this
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public CountOptions setComment(Object comment) {
+    this.comment = comment;
+    return this;
+  }
+
+  /**
+   *  @return the comment for this operation. A null value means no comment is set.
+   *  @since 4.6
+   *  @mongodb.server.release 4.4
+   */
+  public Object getComment() {
+    return comment;
+  }
+
+  /**
    * @return MongoDB driver object
    * @hidden
    */
@@ -230,6 +258,9 @@ public class CountOptions {
     }
     if (this.collation != null) {
       result.collation(this.collation.toDriverClass(clientContext));
+    }
+    if (this.comment != null) {
+      result.comment(clientContext.getMapper().toBsonValue(this.comment));
     }
     return result;
   }
